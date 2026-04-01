@@ -3,6 +3,7 @@ import { PageHeader } from '../components/common/PageHeader';
 import { StatCard } from '../components/common/StatCard';
 import { Alert } from '../components/common/Alert';
 import { Loader } from '../components/common/Loader';
+import { EmptyState } from '../components/common/EmptyState';
 import { useAuth } from '../context/AuthContext';
 import { getPaymentHistory } from '../services/paymentService';
 import { prettyDate, formatApiError } from '../utils/helpers';
@@ -35,11 +36,11 @@ export const ProfilePage = () => {
       <PageHeader
         eyebrow="Profile"
         title="Account and plan overview"
-        description="Review account details, premium state, payment history, and session controls."
+        description="Review account details, premium state, payment history, and session controls in a cleaner account workspace."
         actions={<button type="button" className="btn-secondary" onClick={logout}>Logout</button>}
       />
 
-      <div className="grid gap-5 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         <StatCard label="Account" value={user?.name || user?.email || 'Member'} helper={user?.email} />
         <StatCard label="Plan" value={premium?.isPremium ? 'Premium' : 'Free'} helper={premium?.message || 'Synced from premium status'} />
         <StatCard label="Exports used" value={exportStatus?.exportCount ?? exportStatus?.used ?? 0} helper={exportStatus?.adUnlocked ? 'Free export unlocked' : 'Awaiting ad unlock or premium'} />
@@ -47,35 +48,43 @@ export const ProfilePage = () => {
 
       <div className="card p-6">
         <h2 className="text-xl font-semibold text-slate-950">Payment history</h2>
-        <p className="mt-2 text-sm text-slate-600">All records are fetched from the payment history endpoint.</p>
+        <p className="mt-2 text-sm leading-7 text-slate-600">All records are fetched from the payment history endpoint.</p>
         <Alert variant="error" className="mt-4">{error}</Alert>
+
         {loading ? (
-          <div className="mt-6"><Loader label="Loading payment history..." /></div>
+          <div className="mt-6">
+            <Loader label="Loading payment history..." />
+          </div>
         ) : payments.length ? (
-          <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200">
-            <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
-              <thead className="bg-slate-50 text-slate-500">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Date</th>
-                  <th className="px-4 py-3 font-medium">Reference</th>
-                  <th className="px-4 py-3 font-medium">Amount</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
+          <div className="mt-6 overflow-x-auto">
+            <table className="min-w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-500">
+                  <th className="px-4 py-3 font-semibold">Date</th>
+                  <th className="px-4 py-3 font-semibold">Amount</th>
+                  <th className="px-4 py-3 font-semibold">Status</th>
+                  <th className="px-4 py-3 font-semibold">Reference</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 bg-white">
+              <tbody>
                 {payments.map((payment, index) => (
-                  <tr key={payment.id || payment._id || index}>
-                    <td className="px-4 py-3 text-slate-700">{prettyDate(payment.createdAt || payment.date)}</td>
-                    <td className="px-4 py-3 text-slate-700">{payment.reference || payment.paymentId || '—'}</td>
-                    <td className="px-4 py-3 text-slate-700">{payment.amount || '—'}</td>
-                    <td className="px-4 py-3 text-slate-700">{payment.status || 'completed'}</td>
+                  <tr key={payment.id || payment._id || index} className="border-b border-slate-100 last:border-b-0">
+                    <td className="px-4 py-4 text-slate-700">{prettyDate(payment.createdAt || payment.date || payment.updatedAt)}</td>
+                    <td className="px-4 py-4 text-slate-700">{payment.amount ?? payment.total ?? '—'}</td>
+                    <td className="px-4 py-4 text-slate-700">{payment.status || 'Processed'}</td>
+                    <td className="px-4 py-4 text-slate-500">{payment.reference || payment.orderId || payment.paymentId || '—'}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         ) : (
-          <div className="mt-6 rounded-2xl border border-dashed border-slate-300 p-6 text-sm text-slate-600">No payment history yet. Upgrade to Premium when you need more exports.</div>
+          <div className="mt-6">
+            <EmptyState
+              title="No payment history yet"
+              description="When you upgrade or complete a billing event, the records fetched from your backend will appear here."
+            />
+          </div>
         )}
       </div>
     </div>

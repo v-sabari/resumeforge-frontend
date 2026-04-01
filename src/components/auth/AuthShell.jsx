@@ -1,8 +1,8 @@
 import { Logo } from '../common/Logo';
 
 export const AuthShell = ({ title, subtitle, children, sideTitle, sideCopy }) => (
-  <div className="grid min-h-screen overflow-x-hidden bg-transparent lg:grid-cols-[1.02fr_0.98fr]">
-    <div className="hidden p-6 lg:flex lg:flex-col">
+  <div className="grid min-h-screen overflow-x-hidden bg-transparent xl:grid-cols-[1.02fr_0.98fr]">
+    <div className="hidden p-6 xl:flex xl:flex-col">
       <div className="surface-dark flex h-full flex-col justify-between p-10 xl:p-12">
         <Logo compact surface="dark" className="w-fit" />
         <div className="max-w-xl">
@@ -21,9 +21,9 @@ export const AuthShell = ({ title, subtitle, children, sideTitle, sideCopy }) =>
       </div>
     </div>
 
-    <div className="flex items-center justify-center px-4 py-10 sm:px-6 lg:px-10">
+    <div className="flex items-center justify-center px-4 py-10 sm:px-6 lg:px-8 xl:px-10">
       <div className="w-full max-w-xl">
-        <div className="mb-8 lg:hidden">
+        <div className="mb-8 xl:hidden">
           <Logo />
         </div>
         <div className="card p-6 sm:p-8 lg:p-10">

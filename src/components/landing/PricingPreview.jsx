@@ -6,10 +6,10 @@ import { SectionContainer } from '../ui/SectionContainer';
 export const PricingPreview = () => (
   <SectionContainer id="pricing">
     <div className="max-w-3xl">
-      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-700">Pricing</p>
+      <p className="kicker">Pricing</p>
       <h2 className="section-heading mt-4">Start free, upgrade when you need unlimited export momentum.</h2>
       <p className="mt-5 text-lg leading-8 text-slate-600">
-        Both plans are designed to stay visually aligned, clearly comparable, and easy to understand on every screen size.
+        Both plans are visually aligned, equal in height, and easy to compare across mobile, tablet, laptop, and desktop screens.
       </p>
     </div>
 
@@ -29,9 +29,11 @@ export const PricingPreview = () => (
           <li>✓ ATS-friendly live preview</li>
           <li>✓ Dashboard and saved resume access</li>
         </ul>
-        <Link to="/pricing" className="btn-secondary mt-auto w-full justify-center pt-3">
-          View free plan
-        </Link>
+        <div className="mt-auto pt-6">
+          <Link to="/pricing" className="btn-secondary w-full justify-center">
+            View free plan
+          </Link>
+        </div>
       </Card>
 
       <Card premium hover className="relative flex h-full flex-col p-6 sm:p-8">
@@ -53,9 +55,11 @@ export const PricingPreview = () => (
             <li key={feature}>✓ {feature}</li>
           ))}
         </ul>
-        <Link to="/pricing" className="btn-secondary mt-auto w-full justify-center border-white/20 bg-white/10 pt-3 text-white hover:bg-white/15 hover:text-white">
-          Compare plans
-        </Link>
+        <div className="mt-auto pt-6">
+          <Link to="/pricing" className="btn-secondary w-full justify-center border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white">
+            Compare plans
+          </Link>
+        </div>
       </Card>
     </div>
   </SectionContainer>

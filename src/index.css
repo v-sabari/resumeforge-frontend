@@ -17,14 +17,18 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 28%),
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 26%),
     radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 24%),
-    linear-gradient(180deg, #f8fafc 0%, #eef4ff 48%, #f8fafc 100%);
+    linear-gradient(180deg, #f8fafc 0%, #eef4ff 100%);
   color: #0f172a;
-  overflow-x: hidden;
 }
 
 * {
+  box-sizing: border-box;
+}
+
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -35,10 +39,12 @@ select {
   font: inherit;
 }
 
-input,
-textarea,
-select {
-  min-width: 0;
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
 }
 
 a {
@@ -54,12 +60,16 @@ canvas {
   max-width: 100%;
 }
 
+textarea {
+  resize: vertical;
+}
+
 #root {
   min-height: 100vh;
 }
 
 ::selection {
-  background: rgba(37, 99, 235, 0.18);
+  background: rgba(37, 99, 235, 0.16);
 }
 
 @layer base {
@@ -71,7 +81,7 @@ canvas {
   }
 
   p {
-    text-wrap: pretty;
+    @apply text-slate-600;
   }
 }
 
@@ -80,44 +90,44 @@ canvas {
     @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 
-  .section-shell {
-    @apply mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8;
+  .layout-wrapper {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 
-  .section-copy {
-    @apply text-sm leading-7 text-slate-600 sm:text-base sm:leading-8;
+  .section-shell {
+    @apply mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24;
+  }
+
+  .btn-base {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition duration-300 ease-out focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-100;
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-soft transition duration-300 ease-out hover:scale-[1.02] hover:-translate-y-1 hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60;
+    @apply btn-base bg-slate-950 text-white shadow-sm hover:scale-[1.02] hover:-translate-y-1 hover:bg-slate-900 hover:shadow-soft disabled:opacity-60;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition duration-300 ease-out hover:scale-[1.02] hover:-translate-y-1 hover:border-slate-300 hover:text-slate-950 hover:shadow-soft disabled:cursor-not-allowed disabled:opacity-60;
+    @apply btn-base border border-slate-200 bg-white text-slate-700 shadow-sm hover:scale-[1.02] hover:-translate-y-1 hover:border-slate-300 hover:text-slate-950 hover:shadow-soft disabled:opacity-60;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2 text-sm font-semibold text-slate-600 transition duration-300 ease-out hover:bg-slate-100 hover:text-slate-950;
+    @apply btn-base px-3 text-slate-600 hover:bg-slate-100 hover:text-slate-950 disabled:opacity-60;
   }
 
   .card {
-    @apply rounded-[28px] border border-white/80 bg-white/90 shadow-soft backdrop-blur;
+    @apply rounded-[28px] border border-white/80 bg-white/90 shadow-sm backdrop-blur;
   }
 
   .card-hover {
-    @apply transition duration-300 ease-out hover:-translate-y-1 hover:shadow-soft;
-  }
-
-  .card-interactive {
     @apply transition duration-300 ease-out hover:scale-[1.02] hover:-translate-y-1 hover:shadow-soft;
   }
 
-  .glass-panel {
-    @apply rounded-[28px] border border-white/70 bg-white/75 shadow-soft backdrop-blur-xl;
+  .card-section {
+    @apply card p-6 sm:p-6;
   }
 
   .input {
-    @apply w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition duration-300 placeholder:text-slate-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100;
+    @apply block min-h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition duration-300 placeholder:text-slate-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100;
   }
 
   .label {
@@ -129,7 +139,7 @@ canvas {
   }
 
   .panel-title {
-    @apply text-lg font-semibold tracking-tight text-slate-950;
+    @apply text-xl font-semibold tracking-tight text-slate-950;
   }
 
   .surface-dark {
@@ -138,5 +148,17 @@ canvas {
 
   .surface-muted {
     @apply rounded-[28px] border border-slate-200/80 bg-slate-50/90;
+  }
+
+  .kicker {
+    @apply text-xs font-semibold uppercase tracking-[0.24em] text-brand-700;
+  }
+
+  .marketing-grid {
+    @apply grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3;
+  }
+
+  .equal-grid {
+    @apply grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3;
   }
 }
