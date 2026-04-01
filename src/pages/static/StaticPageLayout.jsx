@@ -9,7 +9,7 @@ export const StaticPageLayout = ({ eyebrow, title, description, children }) => (
       </h1>
       <p className="mt-6 text-base leading-8 text-slate-600 sm:text-lg">{description}</p>
       <div className="card mt-10 p-6 sm:p-8 lg:p-10">
-        <div className="prose prose-slate max-w-none prose-headings:tracking-tight prose-p:leading-8 prose-li:leading-8">
+        <div className="prose prose-slate max-w-none prose-headings:tracking-tight prose-headings:text-slate-950 prose-p:leading-8 prose-li:leading-8 prose-a:text-brand-700">
           {children}
         </div>
       </div>

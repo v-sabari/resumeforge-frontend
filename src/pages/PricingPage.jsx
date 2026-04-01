@@ -76,9 +76,11 @@ export const PricingPage = () => {
             <li>✓ Live ATS-friendly preview</li>
             <li>✓ Backend-driven export and auth state</li>
           </ul>
-          <Link to="/register" className="btn-secondary mt-auto w-full justify-center pt-4">
-            Start free
-          </Link>
+          <div className="mt-auto pt-6">
+            <Link to="/register" className="btn-secondary w-full justify-center">
+              Start free
+            </Link>
+          </div>
         </Card>
 
         <Card premium hover className="relative flex h-full flex-col p-6 sm:p-8 lg:p-10">
@@ -99,14 +101,16 @@ export const PricingPage = () => {
             ))}
           </ul>
 
-          <button
-            type="button"
-            className="btn-secondary mt-auto w-full justify-center border-white/20 bg-white/10 pt-4 text-white hover:bg-white/15 hover:text-white"
-            onClick={handleUpgrade}
-            disabled={loading}
-          >
-            {loading ? 'Redirecting...' : 'Upgrade to Premium'}
-          </button>
+          <div className="mt-auto pt-6">
+            <button
+              type="button"
+              className="btn-secondary w-full justify-center border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white"
+              onClick={handleUpgrade}
+              disabled={loading}
+            >
+              {loading ? 'Redirecting...' : 'Upgrade to Premium'}
+            </button>
+          </div>
         </Card>
       </div>
     </section>

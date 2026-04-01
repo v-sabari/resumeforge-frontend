@@ -67,7 +67,11 @@ export const DashboardPage = () => {
       <PageHeader
         eyebrow="Dashboard"
         title={`Welcome back, ${user?.name || 'there'}`}
+<<<<<<< HEAD
         description="Manage resume versions, review export access, and jump back into editing with cleaner hierarchy and tighter alignment on every screen size."
+=======
+        description="Manage resume versions, track export access, and jump back into editing with cleaner hierarchy, stronger spacing, and better alignment on every screen size."
+>>>>>>> 488aee9d81e8e5f13867ea09e09bb01bb4567075
         actions={
           <>
             <button type="button" className="btn-primary" onClick={handleCreate} disabled={creating}>
@@ -80,10 +84,17 @@ export const DashboardPage = () => {
       />
 
       <section className="card overflow-hidden p-0">
+<<<<<<< HEAD
         <div className="grid gap-0 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.8fr)]">
           <div className="border-b border-slate-200 px-5 py-6 sm:px-6 xl:border-b-0 xl:border-r xl:px-8 xl:py-8">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-700">Workspace overview</p>
             <h2 className="mt-3 max-w-3xl text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+=======
+        <div className="grid gap-0 xl:grid-cols-[1.1fr_0.9fr]">
+          <div className="p-6 xl:border-r xl:border-slate-200">
+            <p className="kicker">Workspace overview</p>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
+>>>>>>> 488aee9d81e8e5f13867ea09e09bb01bb4567075
               Keep every application polished and ready to export.
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
@@ -97,6 +108,7 @@ export const DashboardPage = () => {
             </div>
           </div>
 
+<<<<<<< HEAD
           <div className="bg-slate-50/80 px-5 py-6 sm:px-6 xl:px-8 xl:py-8">
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
               <div className="flex min-h-[176px] flex-col rounded-[24px] bg-white p-5 shadow-sm">
@@ -110,12 +122,25 @@ export const DashboardPage = () => {
                 <p className="mt-4 text-2xl font-semibold text-slate-950">{exportStatus?.canExport ? 'Ready' : 'Restricted'}</p>
                 <p className="mt-3 text-sm leading-6 text-slate-600">{exportStatus?.message || 'Check export state before download.'}</p>
               </div>
+=======
+          <div className="grid gap-4 bg-slate-50/80 p-6 sm:grid-cols-2">
+            <div className="rounded-[24px] bg-white p-4 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Current plan</p>
+              <p className="mt-3 text-xl font-semibold text-slate-950">{premium?.isPremium ? 'Premium' : 'Free'}</p>
+              <p className="mt-2 text-sm leading-7 text-slate-600">{premium?.message || 'Account plan synced from backend.'}</p>
+            </div>
+
+            <div className="rounded-[24px] bg-white p-4 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Export state</p>
+              <p className="mt-3 text-xl font-semibold text-slate-950">{exportStatus?.canExport ? 'Ready' : 'Restricted'}</p>
+              <p className="mt-2 text-sm leading-7 text-slate-600">{exportStatus?.message || 'Check export state before download.'}</p>
+>>>>>>> 488aee9d81e8e5f13867ea09e09bb01bb4567075
             </div>
           </div>
         </div>
       </section>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Saved resumes" value={resumes.length} helper="Version your resume for multiple roles." />
         <StatCard label="Exports used" value={exportStatus?.usedExports ?? 0} helper={`${exportStatus?.remainingFreeExports ?? 0} free exports remaining`} />
         <StatCard label="Ad unlock" value={exportStatus?.adCompleted ? 'Completed' : 'Pending'} helper="Free-plan export state from backend." />
@@ -123,8 +148,13 @@ export const DashboardPage = () => {
       </div>
 
       {!premium?.isPremium ? (
+<<<<<<< HEAD
         <div className="card flex flex-col gap-5 bg-slate-950 px-5 py-6 text-white sm:px-6 xl:flex-row xl:items-center xl:justify-between xl:px-8">
           <div className="min-w-0">
+=======
+        <div className="card flex flex-col gap-5 bg-slate-950 p-6 text-white xl:flex-row xl:items-center xl:justify-between">
+          <div>
+>>>>>>> 488aee9d81e8e5f13867ea09e09bb01bb4567075
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-200">Premium unlock</p>
             <h2 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
               Remove export friction and keep building without limits.
@@ -133,7 +163,11 @@ export const DashboardPage = () => {
               Upgrade once and keep the same app flow, data, and backend logic while unlocking a smoother premium experience.
             </p>
           </div>
+<<<<<<< HEAD
           <Link to="/pricing" className="btn-primary xl:shrink-0">View premium plan</Link>
+=======
+          <Link to="/pricing" className="btn-secondary border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white">View premium plan</Link>
+>>>>>>> 488aee9d81e8e5f13867ea09e09bb01bb4567075
         </div>
       ) : null}
 

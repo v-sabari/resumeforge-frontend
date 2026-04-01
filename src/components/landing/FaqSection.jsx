@@ -23,12 +23,12 @@ const faqs = [
 export const FaqSection = () => (
   <SectionContainer id="faq" className="pt-0 sm:pt-0">
     <div className="text-center">
-      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-700">FAQ</p>
+      <p className="kicker">FAQ</p>
       <h2 className="section-heading mt-4">Common questions before you build.</h2>
     </div>
-    <div className="mt-12 grid gap-4">
+    <div className="mt-12 grid gap-6 md:grid-cols-2">
       {faqs.map((item) => (
-        <Card key={item.question} className="p-6" hover>
+        <Card key={item.question} className="h-full p-6" hover>
           <h3 className="text-lg font-semibold text-slate-950">{item.question}</h3>
           <p className="mt-3 text-sm leading-7 text-slate-600">{item.answer}</p>
         </Card>

@@ -22,7 +22,7 @@ const testimonials = [
 export const TestimonialsSection = () => (
   <SectionContainer>
     <div className="max-w-3xl">
-      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-700">Loved by applicants</p>
+      <p className="kicker">Loved by applicants</p>
       <h2 className="section-heading mt-4">The experience feels modern, but the workflow stays practical.</h2>
     </div>
     <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">

@@ -20,7 +20,7 @@ const jumpTo = (id) =>
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
 const MiniItem = ({ children }) => (
-  <div className="rounded-[24px] border border-slate-200 bg-slate-50/70 p-4">
+  <div className="rounded-[24px] border border-slate-200 bg-slate-50/70 p-4 sm:p-5">
     {children}
   </div>
 );
@@ -203,8 +203,8 @@ export const ResumeBuilderPage = () => {
       <Alert variant="success">{success}</Alert>
 
       <section className="card overflow-hidden p-0">
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)_520px]">
-          <aside className="border-b border-slate-200 bg-slate-50/80 p-4 lg:border-b-0 lg:border-r lg:p-5">
+        <div className="grid grid-cols-1 gap-0 xl:grid-cols-[248px_minmax(0,1fr)_440px] 2xl:grid-cols-[264px_minmax(0,1fr)_500px]">
+          <aside className="border-b border-slate-200 bg-slate-50/80 p-4 sm:p-6 xl:border-b-0 xl:border-r">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
               Sections
             </p>
@@ -214,7 +214,7 @@ export const ResumeBuilderPage = () => {
                 <button
                   key={section.id}
                   type="button"
-                  className="flex w-full items-center justify-between rounded-2xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-white hover:text-slate-950"
+                  className="flex min-h-12 w-full items-center justify-between rounded-2xl px-4 py-3 text-left text-sm font-semibold text-slate-600 transition duration-300 hover:bg-white hover:text-slate-950"
                   onClick={() => jumpTo(section.id)}
                 >
                   <span>{section.label}</span>
@@ -236,7 +236,7 @@ export const ResumeBuilderPage = () => {
             </div>
           </aside>
 
-          <div className="space-y-6 p-3 sm:p-5 lg:p-6">
+          <div className="space-y-6 p-4 sm:p-6 xl:border-r xl:border-slate-200">
             <SectionCard
               id="basics"
               eyebrow="Profile"
@@ -530,7 +530,7 @@ export const ResumeBuilderPage = () => {
             </SectionCard>
           </div>
 
-          <div className="hidden space-y-6 border-t border-slate-200 bg-slate-50/65 p-4 sm:p-6 xl:block xl:border-l xl:border-t-0">
+          <div className="hidden space-y-6 bg-slate-50/65 p-4 sm:p-6 xl:block">
             <AIActionPanel resume={resume} setResume={setResume} />
             <ExportPanel
               resumeId={currentId}

@@ -11,7 +11,7 @@ export const Alert = ({ variant = 'info', children, className = '' }) => {
   if (!children) return null;
 
   return (
-    <div className={cn('rounded-2xl border px-4 py-3 text-sm', variants[variant], className)}>
+    <div className={cn('rounded-2xl border px-4 py-3 text-sm leading-7', variants[variant], className)}>
       {children}
     </div>
   );

@@ -1,5 +1,5 @@
 import { Link, NavLink } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Logo } from '../common/Logo';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../utils/helpers';
@@ -15,34 +15,50 @@ const navItems = [
 export const Navbar = () => {
   const { isAuthenticated } = useAuth();
   const [open, setOpen] = useState(false);
+  const panelRef = useRef(null);
 
   useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    const handleClickOutside = (event) => {
+      if (!open) return;
+      if (panelRef.current && !panelRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handleClickOutside);
     document.body.style.overflow = open ? 'hidden' : '';
+
     return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleClickOutside);
       document.body.style.overflow = '';
     };
   }, [open]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/70 bg-white/80 backdrop-blur-xl">
-      <div className="app-shell flex items-center justify-between gap-4 py-4">
+      <div className="layout-wrapper flex items-center justify-between gap-4 py-4">
         <Logo />
 
-        <nav className="hidden items-center gap-8 lg:flex">
+        <nav className="hidden items-center gap-8 xl:flex">
           {navItems.map((item) => (
             item.href ? (
-              <a key={item.href} href={item.href} className="text-sm font-medium text-slate-600 transition hover:text-slate-950">
+              <a key={item.href} href={item.href} className="text-sm font-medium text-slate-600 transition duration-300 hover:text-slate-950">
                 {item.label}
               </a>
             ) : (
-              <NavLink key={item.to} to={item.to} className="text-sm font-medium text-slate-600 transition hover:text-slate-950">
+              <NavLink key={item.to} to={item.to} className="text-sm font-medium text-slate-600 transition duration-300 hover:text-slate-950">
                 {item.label}
               </NavLink>
             )
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 lg:flex">
+        <div className="hidden items-center gap-3 xl:flex">
           <Link to={isAuthenticated ? '/app/dashboard' : '/login'} className="btn-secondary">
             {isAuthenticated ? 'Open app' : 'Log in'}
           </Link>
@@ -53,7 +69,7 @@ export const Navbar = () => {
 
         <button
           type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 lg:hidden"
+          className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition duration-300 hover:bg-slate-50 xl:hidden"
           onClick={() => setOpen(true)}
           aria-label="Open navigation menu"
         >
@@ -65,22 +81,22 @@ export const Navbar = () => {
 
       {open ? (
         <>
-          <button type="button" className="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)} aria-label="Close menu overlay" />
-          <div className="fixed inset-y-0 right-0 z-50 flex w-[88vw] max-w-sm flex-col border-l border-white/10 bg-slate-950 p-5 text-white shadow-2xl transition-transform duration-300 ease-out lg:hidden">
+          <button type="button" className="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm xl:hidden" onClick={() => setOpen(false)} aria-label="Close menu overlay" />
+          <div ref={panelRef} className="fixed inset-y-0 right-0 z-50 flex w-[min(88vw,360px)] flex-col border-l border-white/10 bg-slate-950 p-5 text-white shadow-2xl transition-transform duration-300 ease-out xl:hidden">
             <div className="flex items-center justify-between gap-3">
               <Logo surface="dark" />
-              <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white" onClick={() => setOpen(false)} aria-label="Close menu">
+              <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition duration-300 hover:bg-white/10" onClick={() => setOpen(false)} aria-label="Close menu">
                 <span className="text-xl leading-none">×</span>
               </button>
             </div>
             <nav className="mt-8 space-y-2">
               {navItems.map((item) => (
                 item.href ? (
-                  <a key={item.href} href={item.href} className="block rounded-2xl px-4 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10" onClick={() => setOpen(false)}>
+                  <a key={item.href} href={item.href} className="block rounded-2xl px-4 py-3 text-sm font-semibold text-slate-200 transition duration-300 hover:bg-white/10" onClick={() => setOpen(false)}>
                     {item.label}
                   </a>
                 ) : (
-                  <NavLink key={item.to} to={item.to} className="block rounded-2xl px-4 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10" onClick={() => setOpen(false)}>
+                  <NavLink key={item.to} to={item.to} className="block rounded-2xl px-4 py-3 text-sm font-semibold text-slate-200 transition duration-300 hover:bg-white/10" onClick={() => setOpen(false)}>
                     {item.label}
                   </NavLink>
                 )
