@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { checkExportAccess, recordExport } from '../../services/exportService';
+import { checkExportAccess, downloadResumePdf, recordExport } from '../../services/exportService';
 import { createPayment } from '../../services/paymentService';
 import { RAZORPAY_LINK } from '../../utils/constants';
 import { Alert } from '../common/Alert';
@@ -29,6 +29,12 @@ export const ExportPanel = ({ resumeId, premium, onExported, refreshStatuses }) 
   };
 
   const handleExport = async () => {
+    if (!resumeId) {
+      setVariant('warning');
+      setMessage('Please save your resume before exporting.');
+      return;
+    }
+
     setLoading(true);
     setVariant('info');
     setMessage('Checking export access...');
@@ -38,10 +44,12 @@ export const ExportPanel = ({ resumeId, premium, onExported, refreshStatuses }) 
       const exportAccess = access?.access || access?.data || access;
 
       if (exportAccess?.allowed) {
-        await recordExport({ resumeId, source: exportAccess?.source || 'direct' });
+        setMessage('Preparing your PDF...');
+        await recordExport({ resumeId, source: 'direct' });
+        await downloadResumePdf(resumeId);
         await refreshStatuses?.();
         setVariant('success');
-        setMessage('Export recorded successfully. Your backend can now generate the PDF.');
+        setMessage('Your resume PDF has been downloaded.');
         onExported?.(exportAccess);
       } else {
         setVariant('warning');
@@ -49,7 +57,7 @@ export const ExportPanel = ({ resumeId, premium, onExported, refreshStatuses }) 
       }
     } catch (error) {
       setVariant('error');
-      setMessage(formatApiError(error, 'Could not verify export access.'));
+      setMessage(formatApiError(error, 'Could not export the resume PDF.'));
     } finally {
       setLoading(false);
     }
@@ -82,7 +90,7 @@ export const ExportPanel = ({ resumeId, premium, onExported, refreshStatuses }) 
       </div>
 
       <div className="mt-4 min-h-10">
-        {loading ? <Loader label="Working on export access..." /> : <Alert variant={variant}>{message}</Alert>}
+        {loading ? <Loader label="Working on export..." /> : <Alert variant={variant}>{message}</Alert>}
       </div>
     </div>
   );
