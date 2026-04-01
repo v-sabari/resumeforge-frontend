@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Logo } from '../components/common/Logo';
 import { useAuth } from '../context/AuthContext';
-import { Icon } from '../components/icons/Icon';
-import { AppSidebar } from '../components/navigation/AppSidebar';
 import { cn } from '../utils/helpers';
+import { Icon } from '../components/icons/Icon';
 
 const navItems = [
   { label: 'Dashboard', to: '/app/dashboard', icon: 'dashboard' },
@@ -12,319 +12,127 @@ const navItems = [
   { label: 'Profile', to: '/app/profile', icon: 'profile' },
 ];
 
-const SidebarContent = ({ collapsed = false, onNavigate, onToggleCollapse, canCollapse = false, onCloseMobile, onLogout, premium, exportStatus }) => (
-  <div className="flex h-full flex-col">
-    <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-4">
-      <div className="min-w-0 flex-1 overflow-hidden">
-        <Logo linkTo="/app/dashboard" surface="dark" compact={collapsed} />
-      </div>
-      <button
-        type="button"
-        onClick={onCloseMobile}
-        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition duration-300 hover:bg-white/10 xl:hidden"
-        aria-label="Close menu"
-      >
-        <span className="text-xl leading-none">×</span>
-      </button>
-      {canCollapse ? (
-        <button
-          type="button"
-          onClick={onToggleCollapse}
-          className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition duration-300 hover:bg-white/10 xl:inline-flex"
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-            {collapsed ? (
-              <path strokeLinecap="round" strokeLinejoin="round" d="m9 5 7 7-7 7" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" d="m15 19-7-7 7-7" />
-            )}
-          </svg>
-        </button>
-      ) : null}
-    </div>
-
-    <div className="flex-1 px-3 py-4">
-      {!collapsed ? (
-        <div className="rounded-3xl border border-white/10 bg-white/5 px-4 py-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-200">Workspace</p>
-          <p className="mt-3 text-sm leading-6 text-slate-300">
-            Manage resumes, exports, and billing-aware actions from one clean workspace.
-          </p>
-        </div>
-      ) : null}
-
-      <nav className={cn('space-y-2', collapsed ? 'mt-2' : 'mt-6')}>
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            onClick={onNavigate}
-            title={collapsed ? item.label : undefined}
-            className={({ isActive }) =>
-              cn(
-                'group flex items-center rounded-2xl px-3 py-3 text-sm font-medium transition-all duration-300',
-                collapsed ? 'justify-center' : 'gap-3',
-                isActive
-                  ? 'bg-white text-slate-950 shadow-soft'
-                  : 'text-slate-300 hover:bg-white/10 hover:text-white',
-              )
-            }
-          >
-            <Icon name={item.icon} className="h-5 w-5 shrink-0" />
-            {!collapsed ? <span className="truncate">{item.label}</span> : null}
-          </NavLink>
-        ))}
-      </nav>
-    </div>
-
-    <div className="border-t border-white/10 px-3 py-4">
-      <div className={cn('rounded-3xl border border-brand-400/20 bg-brand-500/10', collapsed ? 'px-3 py-4 text-center' : 'px-4 py-4')}>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-200">Plan</p>
-        <p className="mt-3 text-sm font-semibold text-white">{premium?.isPremium ? 'Premium' : 'Free'}</p>
-        {!collapsed ? (
-          <p className="mt-2 text-sm leading-6 text-slate-300">
-            {premium?.isPremium
-              ? 'Unlimited export access is active on your account.'
-              : `${exportStatus?.remainingFreeExports ?? 0} free exports left before upgrade.`}
-          </p>
-        ) : (
-          <p className="mt-1 text-xs text-slate-300">{exportStatus?.remainingFreeExports ?? 0} left</p>
-        )}
-      </div>
-
-      <button
-        type="button"
-        className={cn('btn-secondary mt-4 w-full justify-center', collapsed && 'px-3')}
-        onClick={onLogout}
-        title={collapsed ? 'Log out' : undefined}
-      >
-        <span className="truncate">{collapsed ? 'Exit' : 'Log out'}</span>
-      </button>
-    </div>
-  </div>
-);
-
 export const AppLayout = () => {
   const { logout, premium, user, exportStatus } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const sidebarRef = useRef(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const handleLogout = () => { logout(); navigate('/login'); };
+
+  useEffect(() => { setIsSidebarOpen(false); }, [location.pathname]);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem('resumeforge-sidebar-collapsed');
-    if (saved === 'true') setIsDesktopCollapsed(true);
-  }, []);
-
-  useEffect(() => {
-    window.localStorage.setItem('resumeforge-sidebar-collapsed', String(isDesktopCollapsed));
-  }, [isDesktopCollapsed]);
-
-  useEffect(() => {
-    setIsSidebarOpen(false);
-  }, [location.pathname]);
-
-  useEffect(() => {
-<<<<<<< HEAD
-    const handleEscape = (event) => {
-      if (event.key === 'Escape') {
-=======
-    const handleKeyDown = (event) => {
-      if (event.key === 'Escape') setIsSidebarOpen(false);
-    };
-
-    const handleClickOutside = (event) => {
-      if (!isSidebarOpen) return;
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
->>>>>>> 488aee9d81e8e5f13867ea09e09bb01bb4567075
-        setIsSidebarOpen(false);
-      }
-    };
-
-<<<<<<< HEAD
     document.body.style.overflow = isSidebarOpen ? 'hidden' : '';
-    window.addEventListener('keydown', handleEscape);
-=======
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('mousedown', handleClickOutside);
-    document.body.style.overflow = isSidebarOpen ? 'hidden' : '';
->>>>>>> 488aee9d81e8e5f13867ea09e09bb01bb4567075
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleEscape);
-    };
+    return () => { document.body.style.overflow = ''; };
   }, [isSidebarOpen]);
 
-<<<<<<< HEAD
-  const currentSection = location.pathname.replace('/app/', '').replace('/', ' · ') || 'App';
-
   return (
-    <div className="min-h-screen overflow-x-hidden bg-transparent text-slate-900">
-=======
-  const currentSection = useMemo(() => {
-    const value = location.pathname.replace('/app/', '').replace('/', ' · ') || 'App';
-    return value.charAt(0).toUpperCase() + value.slice(1);
-  }, [location.pathname]);
+    <div className="min-h-screen bg-slate-50/80">
+      {/* Mobile overlay */}
+      {isSidebarOpen && (
+        <button type="button" aria-label="Close sidebar"
+          className="fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm lg:hidden animate-fade-in"
+          onClick={() => setIsSidebarOpen(false)} />
+      )}
 
-  return (
-    <div className="min-h-screen overflow-x-hidden text-slate-900">
->>>>>>> 488aee9d81e8e5f13867ea09e09bb01bb4567075
-      {isSidebarOpen ? (
-        <button
-          type="button"
-          aria-label="Close sidebar overlay"
-          className="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm xl:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      ) : null}
+      <div className="flex min-h-screen">
+        {/* Sidebar */}
+        <aside className={cn(
+          'fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-slate-950 transition-transform duration-300 ease-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0',
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
+        )}>
+          {/* Sidebar header */}
+          <div className="flex items-center justify-between gap-3 border-b border-white/10 px-5 py-4">
+            <Logo linkTo="/app/dashboard" surface="dark" />
+            <button type="button"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 text-white/60 transition hover:bg-white/10 lg:hidden"
+              onClick={() => setIsSidebarOpen(false)} aria-label="Close menu">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
 
-<<<<<<< HEAD
-      <div className="mx-auto flex min-h-screen w-full max-w-[1600px] gap-0 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
-        <aside
-          className={cn(
-            'fixed inset-y-0 left-0 z-50 w-[288px] bg-slate-950 text-white shadow-2xl transition-transform duration-300 ease-out xl:static xl:inset-auto xl:block xl:h-[calc(100vh-3rem)] xl:shrink-0 xl:rounded-[32px] xl:border xl:border-white/10 xl:bg-slate-950 xl:shadow-soft',
-            isSidebarOpen ? 'translate-x-0' : '-translate-x-full xl:translate-x-0',
-            isDesktopCollapsed ? 'xl:w-24' : 'xl:w-[280px]',
-          )}
-        >
-          <SidebarContent
-            collapsed={isDesktopCollapsed}
-            canCollapse
-            onNavigate={() => setIsSidebarOpen(false)}
-            onToggleCollapse={() => setIsDesktopCollapsed((value) => !value)}
-            onCloseMobile={() => setIsSidebarOpen(false)}
-            onLogout={handleLogout}
-            premium={premium}
-            exportStatus={exportStatus}
-          />
+          {/* Nav */}
+          <nav className="flex-1 overflow-y-auto px-3 py-4">
+            <p className="mb-2 px-3 text-[9px] font-bold uppercase tracking-widest text-slate-500">Menu</p>
+            <div className="space-y-0.5">
+              {navItems.map((item) => (
+                <NavLink key={item.to} to={item.to}
+                  className={({ isActive }) => cn(
+                    'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
+                    isActive
+                      ? 'bg-white text-slate-950 shadow-sm'
+                      : 'text-slate-400 hover:bg-white/10 hover:text-white',
+                  )}>
+                  <Icon name={item.icon} className="h-4 w-4 shrink-0" />
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
+          </nav>
+
+          {/* Plan info */}
+          <div className="border-t border-white/10 p-4 space-y-3">
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-brand-300">Current plan</p>
+              <p className="mt-1.5 text-sm font-semibold text-white">
+                {premium?.isPremium ? '✦ Premium' : 'Free plan'}
+              </p>
+              <p className="mt-1 text-xs text-slate-400">
+                {premium?.isPremium
+                  ? 'Unlimited export access active.'
+                  : `${exportStatus?.remainingFreeExports ?? 0} free exports remaining.`}
+              </p>
+            </div>
+            <button type="button" className="btn-secondary w-full justify-center border-white/20 bg-white/10 text-white hover:bg-white/20 hover:text-white text-xs py-2.5" onClick={handleLogout}>
+              Log out
+            </button>
+          </div>
         </aside>
 
-        <div className="min-w-0 flex-1 xl:pl-6">
-          <header className="card mb-6 px-4 py-4 sm:px-6 sm:py-5">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex min-w-0 items-start gap-3 sm:gap-4">
-                <button
-                  type="button"
-                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition duration-300 hover:bg-slate-50 xl:hidden"
-                  onClick={() => setIsSidebarOpen(true)}
-                  aria-label="Open menu"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h16M4 12h16M4 17h16" />
-                  </svg>
-                </button>
-                <div className="min-w-0">
-                  <p className="truncate text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500 sm:text-xs">
-                    {currentSection}
-                  </p>
-                  <h1 className="mt-1 truncate text-xl font-semibold text-slate-950 sm:text-2xl lg:text-3xl">
-                    {user?.name || user?.email || 'ResumeForge AI'}
-                  </h1>
-                  <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-600">
-                    Keep resumes, exports, and premium state aligned across one polished workflow.
-                  </p>
-                </div>
+        {/* Main content */}
+        <div className="flex min-w-0 flex-1 flex-col">
+          {/* Top bar */}
+          <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b border-slate-200/70 bg-white/90 px-4 backdrop-blur-xl sm:px-6">
+            <div className="flex items-center gap-3">
+              <button type="button"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 lg:hidden"
+                onClick={() => setIsSidebarOpen(true)} aria-label="Open menu">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h16M4 12h16M4 17h16" />
+                </svg>
+              </button>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-slate-950">
+                  {user?.name || user?.email || 'ResumeForge AI'}
+                </p>
+                <p className="truncate text-xs text-slate-500">
+                  {location.pathname.replace('/app/', '').replace('/', ' › ')}
+                </p>
               </div>
+            </div>
 
-              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-                  <span className="font-semibold text-slate-950">{premium?.plan || 'Free'}</span>
-                  <span className="mx-2 text-slate-300">•</span>
-                  <span>{exportStatus?.usedExports ?? 0} exports used</span>
-                </div>
-                <button type="button" className="btn-primary justify-center" onClick={() => navigate('/app/builder')}>
-                  Open builder
-                </button>
+            <div className="flex items-center gap-2">
+              <div className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs sm:flex">
+                <span className={cn('h-2 w-2 rounded-full', premium?.isPremium ? 'bg-emerald-400' : 'bg-slate-300')} />
+                <span className="font-medium text-slate-700">{premium?.isPremium ? 'Premium' : 'Free'}</span>
+                <span className="text-slate-400">·</span>
+                <span className="text-slate-600">{exportStatus?.usedExports ?? 0} exports</span>
               </div>
+              <button type="button" className="btn-primary py-2 text-xs"
+                onClick={() => navigate('/app/builder')}>
+                <Icon name="builder" className="h-3.5 w-3.5" />
+                New resume
+              </button>
             </div>
           </header>
 
-          <main className="min-w-0 pb-8">
-            <div className="mx-auto w-full max-w-6xl">
-              <Outlet />
-            </div>
+          {/* Page content */}
+          <main className="flex-1 p-4 pb-8 sm:p-6 sm:pb-10">
+            <Outlet />
           </main>
-=======
-      <div className="layout-wrapper py-4 sm:py-6">
-        <div className="flex min-h-[calc(100vh-2rem)] gap-4 sm:gap-6">
-          <div ref={sidebarRef} className="shrink-0">
-            <AppSidebar
-              navItems={navItems}
-              isOpen={isSidebarOpen}
-              isDesktopCollapsed={isDesktopCollapsed}
-              onClose={() => setIsSidebarOpen(false)}
-              onToggleDesktop={() => setIsDesktopCollapsed((prev) => !prev)}
-              premium={premium}
-              exportStatus={exportStatus}
-              onLogout={handleLogout}
-            />
-          </div>
-
-          <div className="min-w-0 flex-1 xl:pl-0">
-            <header className="card mb-6 p-4 sm:p-6">
-              <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-                <div className="flex min-w-0 items-start gap-4">
-                  <button
-                    type="button"
-                    className="btn-secondary shrink-0 justify-center px-0 xl:hidden"
-                    onClick={() => setIsSidebarOpen(true)}
-                    aria-label="Open menu"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h16M4 12h16M4 17h16" />
-                    </svg>
-                  </button>
-
-                  <button
-                    type="button"
-                    className="hidden h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition duration-300 hover:bg-slate-50 xl:inline-flex"
-                    onClick={() => setIsDesktopCollapsed((prev) => !prev)}
-                    aria-label={isDesktopCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-                  >
-                    <Icon name="arrowRight" className={cn('h-5 w-5 transition-transform duration-300', isDesktopCollapsed && 'rotate-180')} />
-                  </button>
-
-                  <div className="min-w-0">
-                    <p className="truncate text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-                      {currentSection}
-                    </p>
-                    <h1 className="mt-2 truncate text-2xl font-semibold text-slate-950 sm:text-3xl">
-                      {user?.name || user?.email || 'ResumeForge AI'}
-                    </h1>
-                    <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-                      Edit faster, preview confidently, and keep export access synced across the same polished workflow.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2 xl:flex xl:flex-wrap xl:justify-end">
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-                    <span className="font-semibold text-slate-950">{premium?.plan || 'Free'}</span>
-                    <span className="mx-2 text-slate-300">•</span>
-                    <span>{exportStatus?.usedExports ?? 0} exports used</span>
-                  </div>
-                  <button type="button" className="btn-primary w-full justify-center sm:w-auto" onClick={() => navigate('/app/builder')}>
-                    Open builder
-                  </button>
-                </div>
-              </div>
-            </header>
-
-            <main className="min-w-0 pb-8">
-              <Outlet />
-            </main>
-          </div>
->>>>>>> 488aee9d81e8e5f13867ea09e09bb01bb4567075
         </div>
       </div>
     </div>

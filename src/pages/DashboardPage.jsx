@@ -34,17 +34,12 @@ export const DashboardPage = () => {
     }
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   const handleCreate = async () => {
     setCreating(true);
     try {
-      const resume = await createResume({
-        title: `${user?.name || 'New'} Resume`,
-        ...defaultResume,
-      });
+      const resume = await createResume({ title: `${user?.name || 'New'} Resume`, ...defaultResume });
       navigate(`/app/builder/${resume.id || resume._id}`);
     } catch (err) {
       setError(formatApiError(err, 'Could not create a new resume.'));
@@ -63,147 +58,109 @@ export const DashboardPage = () => {
   };
 
   return (
-    <div className="space-y-6 pb-8 sm:space-y-8">
+    <div className="space-y-6 animate-fade-in-up">
       <PageHeader
         eyebrow="Dashboard"
-        title={`Welcome back, ${user?.name || 'there'}`}
-<<<<<<< HEAD
-        description="Manage resume versions, review export access, and jump back into editing with cleaner hierarchy and tighter alignment on every screen size."
-=======
-        description="Manage resume versions, track export access, and jump back into editing with cleaner hierarchy, stronger spacing, and better alignment on every screen size."
->>>>>>> 488aee9d81e8e5f13867ea09e09bb01bb4567075
+        title={`Welcome back, ${user?.name || 'there'} 👋`}
+        description="Manage your resumes, track export access, and jump back into editing."
         actions={
           <>
             <button type="button" className="btn-primary" onClick={handleCreate} disabled={creating}>
               <Icon name="plus" className="h-4 w-4" />
-              {creating ? 'Creating...' : 'Create new resume'}
+              {creating ? 'Creating...' : 'New resume'}
             </button>
-            <Link to="/pricing" className="btn-secondary">Upgrade</Link>
+            <Link to="/pricing" className="btn-secondary">Upgrade plan</Link>
           </>
         }
       />
 
-      <section className="card overflow-hidden p-0">
-<<<<<<< HEAD
-        <div className="grid gap-0 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.8fr)]">
-          <div className="border-b border-slate-200 px-5 py-6 sm:px-6 xl:border-b-0 xl:border-r xl:px-8 xl:py-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-700">Workspace overview</p>
-            <h2 className="mt-3 max-w-3xl text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-=======
-        <div className="grid gap-0 xl:grid-cols-[1.1fr_0.9fr]">
-          <div className="p-6 xl:border-r xl:border-slate-200">
-            <p className="kicker">Workspace overview</p>
-            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
->>>>>>> 488aee9d81e8e5f13867ea09e09bb01bb4567075
-              Keep every application polished and ready to export.
-            </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-              Your builder, preview, payment flow, and resume history stay connected so you can iterate quickly without changing backend-driven logic.
-            </p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <button type="button" className="btn-primary" onClick={handleCreate} disabled={creating}>
-                Start from template
-              </button>
-              <Link to="/app/builder" className="btn-secondary">Open blank workspace</Link>
-            </div>
-          </div>
-
-<<<<<<< HEAD
-          <div className="bg-slate-50/80 px-5 py-6 sm:px-6 xl:px-8 xl:py-8">
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-              <div className="flex min-h-[176px] flex-col rounded-[24px] bg-white p-5 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Current plan</p>
-                <p className="mt-4 text-2xl font-semibold text-slate-950">{premium?.isPremium ? 'Premium' : 'Free'}</p>
-                <p className="mt-3 text-sm leading-6 text-slate-600">{premium?.message || 'Account plan synced from backend.'}</p>
-              </div>
-
-              <div className="flex min-h-[176px] flex-col rounded-[24px] bg-white p-5 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Export state</p>
-                <p className="mt-4 text-2xl font-semibold text-slate-950">{exportStatus?.canExport ? 'Ready' : 'Restricted'}</p>
-                <p className="mt-3 text-sm leading-6 text-slate-600">{exportStatus?.message || 'Check export state before download.'}</p>
-              </div>
-=======
-          <div className="grid gap-4 bg-slate-50/80 p-6 sm:grid-cols-2">
-            <div className="rounded-[24px] bg-white p-4 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Current plan</p>
-              <p className="mt-3 text-xl font-semibold text-slate-950">{premium?.isPremium ? 'Premium' : 'Free'}</p>
-              <p className="mt-2 text-sm leading-7 text-slate-600">{premium?.message || 'Account plan synced from backend.'}</p>
-            </div>
-
-            <div className="rounded-[24px] bg-white p-4 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Export state</p>
-              <p className="mt-3 text-xl font-semibold text-slate-950">{exportStatus?.canExport ? 'Ready' : 'Restricted'}</p>
-              <p className="mt-2 text-sm leading-7 text-slate-600">{exportStatus?.message || 'Check export state before download.'}</p>
->>>>>>> 488aee9d81e8e5f13867ea09e09bb01bb4567075
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Saved resumes" value={resumes.length} helper="Version your resume for multiple roles." />
-        <StatCard label="Exports used" value={exportStatus?.usedExports ?? 0} helper={`${exportStatus?.remainingFreeExports ?? 0} free exports remaining`} />
-        <StatCard label="Ad unlock" value={exportStatus?.adCompleted ? 'Completed' : 'Pending'} helper="Free-plan export state from backend." />
-        <StatCard label="Plan status" value={premium?.isPremium ? 'Premium' : 'Free'} helper={premium?.isPremium ? 'Unlimited exports enabled.' : 'Upgrade whenever you need more.'} />
+      {/* Stats */}
+      <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+        <StatCard label="Saved resumes" value={resumes.length} helper="Version your resume for each role" />
+        <StatCard label="Exports used" value={exportStatus?.usedExports ?? 0} helper={`${exportStatus?.remainingFreeExports ?? 0} free remaining`} />
+        <StatCard label="Ad unlock" value={exportStatus?.adCompleted ? 'Completed' : 'Pending'} helper="Free-plan export unlock state" />
+        <StatCard label="Plan" value={premium?.isPremium ? 'Premium ✦' : 'Free'} helper={premium?.isPremium ? 'Unlimited exports active' : 'Upgrade for more'} />
       </div>
 
-      {!premium?.isPremium ? (
-<<<<<<< HEAD
-        <div className="card flex flex-col gap-5 bg-slate-950 px-5 py-6 text-white sm:px-6 xl:flex-row xl:items-center xl:justify-between xl:px-8">
-          <div className="min-w-0">
-=======
-        <div className="card flex flex-col gap-5 bg-slate-950 p-6 text-white xl:flex-row xl:items-center xl:justify-between">
-          <div>
->>>>>>> 488aee9d81e8e5f13867ea09e09bb01bb4567075
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-200">Premium unlock</p>
-            <h2 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
-              Remove export friction and keep building without limits.
-            </h2>
-            <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-300">
-              Upgrade once and keep the same app flow, data, and backend logic while unlocking a smoother premium experience.
+      {/* Overview banner */}
+      <div className="card overflow-hidden">
+        <div className="grid lg:grid-cols-2">
+          <div className="p-6 sm:p-7">
+            <p className="eyebrow">Workspace overview</p>
+            <h2 className="mt-2 text-xl font-semibold text-slate-950">Keep every application polished and ready.</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Your builder, preview, payment flow, and resume history stay connected so you can iterate quickly without breaking backend-driven logic.
             </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <button type="button" className="btn-primary text-sm" onClick={handleCreate} disabled={creating}>
+                Start from template
+              </button>
+              <Link to="/app/builder" className="btn-secondary text-sm">Open blank workspace</Link>
+            </div>
           </div>
-<<<<<<< HEAD
-          <Link to="/pricing" className="btn-primary xl:shrink-0">View premium plan</Link>
-=======
-          <Link to="/pricing" className="btn-secondary border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white">View premium plan</Link>
->>>>>>> 488aee9d81e8e5f13867ea09e09bb01bb4567075
+          <div className="grid grid-cols-2 gap-3 border-t border-slate-100 bg-slate-50/70 p-6 sm:p-7 lg:border-l lg:border-t-0">
+            <div className="rounded-xl bg-white p-4 shadow-sm border border-slate-100">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Plan</p>
+              <p className="mt-2 text-base font-semibold text-slate-950">{premium?.isPremium ? 'Premium' : 'Free'}</p>
+              <p className="mt-1 text-xs text-slate-500">{premium?.message || 'Synced from backend'}</p>
+            </div>
+            <div className="rounded-xl bg-white p-4 shadow-sm border border-slate-100">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Export state</p>
+              <p className="mt-2 text-base font-semibold text-slate-950">{exportStatus?.canExport ? 'Ready' : 'Restricted'}</p>
+              <p className="mt-1 text-xs text-slate-500">{exportStatus?.message || 'Check before download'}</p>
+            </div>
+          </div>
         </div>
-      ) : null}
+      </div>
+
+      {/* Premium upsell */}
+      {!premium?.isPremium && (
+        <div className="flex flex-col gap-4 rounded-2xl border border-brand-900/30 bg-gradient-to-br from-slate-950 to-slate-900 p-6 text-white sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-brand-300">Premium unlock</p>
+            <h2 className="mt-1.5 text-lg font-semibold">Remove export limits and build without friction.</h2>
+            <p className="mt-1 text-sm text-slate-400">One-time payment of ₹99 for unlimited exports.</p>
+          </div>
+          <Link to="/pricing" className="btn-primary shrink-0">View Premium plan</Link>
+        </div>
+      )}
 
       <Alert variant="error">{error}</Alert>
 
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold tracking-tight text-slate-950">Recent resumes</h2>
+      {/* Resume list */}
+      <div>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-slate-950">Your resumes</h2>
+          {resumes.length > 0 && (
+            <button type="button" className="btn-ghost text-xs" onClick={handleCreate} disabled={creating}>
+              <Icon name="plus" className="h-3.5 w-3.5" /> New
+            </button>
+          )}
         </div>
 
         {loading ? (
-          <div className="card p-6">
+          <div className="card flex items-center justify-center py-12">
             <Loader label="Loading your resumes..." />
           </div>
         ) : resumes.length ? (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {resumes.map((resume) => (
-              <ResumeListCard
-                key={resume.id || resume._id}
-                resume={resume}
-                onDelete={handleDelete}
-              />
+              <ResumeListCard key={resume.id || resume._id} resume={resume} onDelete={handleDelete} />
             ))}
           </div>
         ) : (
           <EmptyState
             title="No resumes yet"
-            description="Create your first resume to start editing, use the AI tools, and preview your final PDF layout live."
+            description="Create your first resume to start editing in the workspace, use AI tools, and preview your PDF layout live."
             action={
-              <button type="button" className="btn-primary" onClick={handleCreate}>
-                Create your first resume
+              <button type="button" className="btn-primary" onClick={handleCreate} disabled={creating}>
+                <Icon name="plus" className="h-4 w-4" />
+                Create first resume
               </button>
             }
           />
         )}
-      </section>
+      </div>
     </div>
   );
 };

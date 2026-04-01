@@ -1,39 +1,52 @@
 import { SectionContainer } from '../ui/SectionContainer';
-import { Card } from '../ui/Card';
 
 const testimonials = [
   {
-    name: 'Nisha Rao',
-    role: 'Growth Marketer',
-    quote: 'The AI rewriting tools helped me sound clearer and more senior without making my resume feel generic.',
+    quote: "ResumeForge AI helped me land three interviews in one week. The AI bullet generator completely transformed how I described my experience.",
+    name: "Priya Sharma",
+    role: "Marketing Manager, Bangalore",
+    avatar: "PS",
   },
   {
-    name: 'Rohan Das',
-    role: 'Frontend Engineer',
-    quote: 'The live preview made it easy to keep everything ATS-friendly while still looking polished and modern.',
+    quote: "The real-time ATS preview is a game changer. I could see exactly how recruiters would scan my resume and adjust on the fly.",
+    name: "Rahul Verma",
+    role: "Software Engineer, Hyderabad",
+    avatar: "RV",
   },
   {
-    name: 'Priya Kulkarni',
-    role: 'Customer Success Lead',
-    quote: 'I unlocked the first export, upgraded later, and never felt lost in the product flow. It feels simple in the best way.',
+    quote: "Best ₹99 I ever spent. Unlimited exports made the whole process so much smoother for my ongoing job search.",
+    name: "Ananya Iyer",
+    role: "Product Designer, Mumbai",
+    avatar: "AI",
   },
 ];
 
 export const TestimonialsSection = () => (
-  <SectionContainer>
-    <div className="max-w-3xl">
-      <p className="kicker">Loved by applicants</p>
-      <h2 className="section-heading mt-4">The experience feels modern, but the workflow stays practical.</h2>
+  <SectionContainer className="pt-0 sm:pt-0">
+    <div className="text-center">
+      <p className="eyebrow">Testimonials</p>
+      <h2 className="section-heading mt-3">Loved by job seekers across India</h2>
     </div>
-    <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-      {testimonials.map((item) => (
-        <Card key={item.name} className="flex h-full flex-col p-6" hover>
-          <p className="text-base leading-8 text-slate-700">“{item.quote}”</p>
-          <div className="mt-auto pt-6">
-            <p className="font-semibold text-slate-950">{item.name}</p>
-            <p className="text-sm text-slate-500">{item.role}</p>
+
+    <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {testimonials.map((t, i) => (
+        <div key={t.name}
+          className={`card card-hover flex flex-col p-6 animate-fade-in-up stagger-${i + 1}`}>
+          {/* Stars */}
+          <div className="flex gap-0.5 text-amber-400 text-sm">
+            {'★★★★★'.split('').map((s, j) => <span key={j}>{s}</span>)}
           </div>
-        </Card>
+          <p className="mt-4 flex-1 text-sm leading-7 text-slate-600">"{t.quote}"</p>
+          <div className="mt-5 flex items-center gap-3 border-t border-slate-100 pt-4">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-700">
+              {t.avatar}
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-900">{t.name}</p>
+              <p className="text-xs text-slate-500">{t.role}</p>
+            </div>
+          </div>
+        </div>
       ))}
     </div>
   </SectionContainer>

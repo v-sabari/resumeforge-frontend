@@ -1,14 +1,20 @@
 import { Link } from 'react-router-dom';
+import { Logo } from '../components/common/Logo';
 
 export const PaymentFailedPage = () => (
-  <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6">
-    <div className="card w-full max-w-2xl p-8 text-center sm:p-10">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-rose-50 text-3xl">!</div>
-      <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-950">Payment failed</h1>
-      <p className="mt-4 text-base leading-8 text-slate-600 sm:text-lg">Your upgrade did not complete. You can retry the payment flow or continue using the free plan.</p>
-      <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-        <Link to="/pricing" className="btn-primary">Retry upgrade</Link>
-        <Link to="/app/dashboard" className="btn-secondary">Back to dashboard</Link>
+  <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
+    <div className="w-full max-w-md text-center">
+      <Logo className="mx-auto mb-8 justify-center" />
+      <div className="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-100 text-2xl">
+        ✕
+      </div>
+      <h1 className="text-2xl font-semibold tracking-tight text-slate-950">Payment not completed</h1>
+      <p className="mt-3 text-sm leading-6 text-slate-600">
+        Your payment was not processed successfully. No charge has been made to your account. Please try again or contact support if the issue persists.
+      </p>
+      <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+        <Link to="/pricing" className="btn-primary">Try again</Link>
+        <Link to="/contact" className="btn-secondary">Contact support</Link>
       </div>
     </div>
   </div>

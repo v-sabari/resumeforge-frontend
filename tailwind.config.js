@@ -3,9 +3,13 @@ export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        display: ['Instrument Serif', 'Georgia', 'serif'],
+        body: ['DM Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
       colors: {
         brand: {
-          50: '#eff6ff',
+          50:  '#eff6ff',
           100: '#dbeafe',
           200: '#bfdbfe',
           300: '#93c5fd',
@@ -16,17 +20,22 @@ export default {
           800: '#1e40af',
           900: '#172554',
         },
-        slate: {
-          950: '#020617',
-        },
+        slate: { 950: '#020617' },
       },
       boxShadow: {
-        soft: '0 24px 80px rgba(15, 23, 42, 0.08)',
-        glow: '0 20px 60px rgba(37, 99, 235, 0.16)',
-        inset: 'inset 0 1px 0 rgba(255,255,255,0.7)',
+        soft: '0 1px 3px rgba(15,23,42,0.06), 0 8px 24px rgba(15,23,42,0.06)',
+        md:   '0 4px 16px rgba(15,23,42,0.10)',
+        lg:   '0 12px 40px rgba(15,23,42,0.12)',
+        glow: '0 0 0 1px rgba(37,99,235,0.12), 0 8px 32px rgba(37,99,235,0.18)',
+        'inner-white': 'inset 0 1px 0 rgba(255,255,255,0.1)',
+      },
+      borderRadius: {
+        xl:  '12px',
+        '2xl': '16px',
+        '3xl': '24px',
       },
       backgroundImage: {
-        'hero-grid': 'radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 30%), radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.08), transparent 32%), linear-gradient(180deg, rgba(255,255,255,0.9), rgba(241,245,249,0.96))',
+        'mesh-light': 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(37,99,235,0.07), transparent)',
       },
     },
   },

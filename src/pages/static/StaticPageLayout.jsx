@@ -1,18 +1,19 @@
-import { SectionBadge } from '../../components/common/SectionBadge';
-
 export const StaticPageLayout = ({ eyebrow, title, description, children }) => (
-  <section className="section-shell pt-12 sm:pt-16 lg:pt-20">
-    <div className="mx-auto max-w-4xl">
-      <SectionBadge>{eyebrow}</SectionBadge>
-      <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
-        {title}
-      </h1>
-      <p className="mt-6 text-base leading-8 text-slate-600 sm:text-lg">{description}</p>
-      <div className="card mt-10 p-6 sm:p-8 lg:p-10">
-        <div className="prose prose-slate max-w-none prose-headings:tracking-tight prose-headings:text-slate-950 prose-p:leading-8 prose-li:leading-8 prose-a:text-brand-700">
-          {children}
-        </div>
+  <div className="section-shell pt-12 sm:pt-16">
+    {/* Header */}
+    <div className="mx-auto max-w-2xl">
+      {eyebrow && <p className="eyebrow mb-3">{eyebrow}</p>}
+      <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">{title}</h1>
+      {description && (
+        <p className="mt-4 text-base leading-7 text-slate-600">{description}</p>
+      )}
+    </div>
+
+    {/* Content */}
+    <div className="mx-auto mt-10 max-w-2xl">
+      <div className="card p-7 sm:p-8 prose-content">
+        {children}
       </div>
     </div>
-  </section>
+  </div>
 );

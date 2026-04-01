@@ -1,54 +1,21 @@
-import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { verifyPayment } from '../services/paymentService';
-import { activatePremium } from '../services/premiumService';
-import { Alert } from '../components/common/Alert';
-import { Loader } from '../components/common/Loader';
-import { useAuth } from '../context/AuthContext';
-import { formatApiError } from '../utils/helpers';
+import { Link } from 'react-router-dom';
+import { Logo } from '../components/common/Logo';
 
-export const PaymentSuccessPage = () => {
-  const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState('Verifying payment and unlocking premium...');
-  const [error, setError] = useState('');
-  const location = useLocation();
-  const { refreshPremiumStatus } = useAuth();
-
-  useEffect(() => {
-    const runVerification = async () => {
-      try {
-        const params = new URLSearchParams(location.search);
-        const payload = Object.fromEntries(params.entries());
-        await verifyPayment(payload);
-        await activatePremium(payload);
-        await refreshPremiumStatus();
-        setMessage('Payment verified successfully. Premium is now active on your account.');
-      } catch (err) {
-        setError(formatApiError(err, 'We could not verify your payment automatically.'));
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    runVerification();
-  }, [location.search]);
-
-  return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6">
-      <div className="card w-full max-w-2xl p-8 text-center sm:p-10">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-50 text-3xl">✓</div>
-        <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-950">Payment successful</h1>
-        <p className="mt-4 text-base leading-8 text-slate-600 sm:text-lg">Your Premium experience is being activated and synced with backend status.</p>
-        {loading ? (
-          <div className="mt-8 flex justify-center"><Loader label="Verifying payment..." /></div>
-        ) : (
-          <Alert variant={error ? 'error' : 'success'} className="mt-8 text-left">{error || message}</Alert>
-        )}
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link to="/app/dashboard" className="btn-primary">Go to dashboard</Link>
-          <Link to="/app/builder" className="btn-secondary">Open builder</Link>
-        </div>
+export const PaymentSuccessPage = () => (
+  <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
+    <div className="w-full max-w-md text-center">
+      <Logo className="mx-auto mb-8 justify-center" />
+      <div className="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-2xl">
+        ✓
+      </div>
+      <h1 className="text-2xl font-semibold tracking-tight text-slate-950">Payment successful!</h1>
+      <p className="mt-3 text-sm leading-6 text-slate-600">
+        Your Premium plan is now active. Enjoy unlimited exports and a smoother workflow.
+      </p>
+      <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+        <Link to="/app/dashboard" className="btn-primary">Open dashboard</Link>
+        <Link to="/app/builder" className="btn-secondary">Start building</Link>
       </div>
     </div>
-  );
-};
+  </div>
+);

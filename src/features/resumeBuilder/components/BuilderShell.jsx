@@ -5,30 +5,23 @@ import { AIActionPanel } from '../../../components/builder/AIActionPanel';
 import { ExportPanel } from '../../../components/builder/ExportPanel';
 
 export const BuilderShell = ({
-  resume,
-  skillsText,
-  achievementsText,
-  actions,
-  onDragEnd,
-  resumeId,
-  premium,
-  onExported,
-  onBlockedExport,
-  refreshStatuses,
-  autoSaveLabel,
+  resume, skillsText, achievementsText, actions, onDragEnd,
+  resumeId, premium, onExported, onBlockedExport, refreshStatuses, autoSaveLabel,
 }) => (
-  <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-    <div className="space-y-6">
+  <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
+    {/* Editor column */}
+    <div className="space-y-5">
       <div className="card p-5">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-700">Builder workflow</p>
-            <h3 className="mt-2 text-lg font-semibold text-slate-950">FlowCV-style split builder, aligned to ResumeForge AI</h3>
-            <p className="mt-2 text-sm text-slate-600">Drag sections to reorder, collapse sections while editing, and switch templates instantly.</p>
+            <p className="eyebrow">Builder</p>
+            <h2 className="mt-1 text-base font-semibold text-slate-950">
+              Drag to reorder · Switch templates · Edit inline
+            </h2>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <TemplateSwitcher value={resume.templateId} onChange={actions.setTemplateId} />
-            <p className="text-right text-xs text-slate-500">{autoSaveLabel}</p>
+            {autoSaveLabel && <p className="text-right text-[10px] text-slate-400">{autoSaveLabel}</p>}
           </div>
         </div>
       </div>
@@ -42,7 +35,8 @@ export const BuilderShell = ({
       />
     </div>
 
-    <div className="space-y-6">
+    {/* Preview + actions column */}
+    <div className="space-y-5">
       <ResumePreview resume={resume} />
       <AIActionPanel resume={resume} setResume={actions.setResumeCompat} />
       <ExportPanel

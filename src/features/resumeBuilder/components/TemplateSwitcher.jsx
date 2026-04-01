@@ -1,16 +1,10 @@
 export const TemplateSwitcher = ({ value, onChange }) => (
-  <div className="flex flex-wrap gap-2">
-    {[
-      { id: 'classic', label: 'Classic' },
-      { id: 'modern', label: 'Modern' },
-    ].map((template) => (
-      <button
-        key={template.id}
-        type="button"
-        onClick={() => onChange(template.id)}
-        className={value === template.id ? 'btn-primary' : 'btn-secondary'}
-      >
-        {template.label}
+  <div className="flex gap-2">
+    {[{ id: 'classic', label: 'Classic' }, { id: 'modern', label: 'Modern' }].map((t) => (
+      <button key={t.id} type="button"
+        onClick={() => onChange(t.id)}
+        className={value === t.id ? 'btn-primary text-xs py-2 px-4' : 'btn-secondary text-xs py-2 px-4'}>
+        {t.label}
       </button>
     ))}
   </div>

@@ -3,64 +3,78 @@ import { Card } from '../ui/Card';
 
 const features = [
   {
+    icon: '⌘',
     title: 'Guided resume workspace',
-    description: 'Edit with structured sections, clear labels, and a practical writing flow that feels deliberate rather than overwhelming.',
+    description: 'Structured sections with clear labels and a deliberate writing flow — never overwhelming, always purposeful.',
   },
   {
+    icon: '◎',
     title: 'Real-time ATS preview',
-    description: 'See every update reflected instantly so you can improve readability and maintain recruiter-friendly formatting.',
+    description: 'Every update reflects instantly so you maintain recruiter-friendly formatting throughout the editing process.',
   },
   {
+    icon: '✦',
     title: 'AI writing assistance',
-    description: 'Improve summaries, generate stronger bullets, rewrite copy professionally, and surface useful skills in context.',
+    description: 'Improve summaries, generate stronger bullets, rewrite professionally, and surface skills — all in context.',
   },
   {
-    title: 'Payment-aware export flow',
-    description: 'Keep the existing export and premium logic intact while presenting the upgrade journey in a clearer, cleaner way.',
+    icon: '⬡',
+    title: 'Payment-aware exports',
+    description: 'Keep the existing export and premium logic intact while presenting the upgrade path in a clear, clean way.',
   },
   {
-    title: 'Dashboard built for iteration',
-    description: 'Manage multiple resume versions, check plan status, and jump back into editing without losing your place.',
+    icon: '◈',
+    title: 'Dashboard for iteration',
+    description: 'Manage multiple resume versions, check plan status, and jump back into editing without losing your progress.',
   },
   {
-    title: 'Responsive product quality',
-    description: 'Designed to work smoothly across mobile, tablet, laptop, and desktop without broken layouts or awkward spacing.',
+    icon: '⊞',
+    title: 'Responsive quality',
+    description: 'Smooth across mobile, tablet, laptop, and desktop — no broken layouts or awkward spacing anywhere.',
   },
 ];
 
 export const FeatureSection = () => (
   <SectionContainer id="features">
-    <div className="max-w-3xl">
-      <p className="kicker">Why ResumeForge AI</p>
-      <h2 className="section-heading mt-4">A premium frontend redesign that keeps the product logic stable and the UI consistently aligned.</h2>
-      <p className="mt-5 text-lg leading-8 text-slate-600">
-        The interface is intentionally structured to feel calm, modern, and dependable. Candidates can move from first draft to final export with less friction, while the product keeps the same routes, backend integrations, and monetization mechanics already powering the app.
+    <div className="mx-auto max-w-2xl text-center">
+      <p className="eyebrow">Why ResumeForge AI</p>
+      <h2 className="section-heading mt-3">
+        Everything you need to land the interview
+      </h2>
+      <p className="mt-4 text-base leading-7 text-slate-600">
+        A premium interface that feels calm, modern, and dependable — built to reduce friction from first draft to final export, while keeping the same backend integrations and monetization mechanics.
       </p>
     </div>
 
-    <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-      {features.map((feature) => (
-        <Card key={feature.title} className="flex h-full flex-col p-6" hover>
-          <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-700 shadow-sm">✦</div>
-          <h3 className="text-xl font-semibold text-slate-950">{feature.title}</h3>
-          <p className="mt-3 text-sm leading-7 text-slate-600">{feature.description}</p>
-        </Card>
+    {/* Feature grid */}
+    <div className="mt-14 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      {features.map((feature, i) => (
+        <div key={feature.title}
+          className={`card card-hover flex flex-col p-6 animate-fade-in-up stagger-${Math.min(i + 1, 6)}`}>
+          <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-lg text-slate-700">
+            {feature.icon}
+          </div>
+          <h3 className="text-base font-semibold text-slate-950">{feature.title}</h3>
+          <p className="mt-2 text-sm leading-6 text-slate-500">{feature.description}</p>
+        </div>
       ))}
     </div>
 
-    <div className="mt-12 grid gap-6 xl:grid-cols-2">
-      <Card className="h-full p-6 sm:p-8" hover>
-        <p className="kicker">Built for real job searches</p>
-        <h3 className="mt-4 text-2xl font-semibold text-slate-950">Write once, tailor often, and keep every version organized.</h3>
-        <p className="mt-4 text-sm leading-8 text-slate-600">
-          ResumeForge AI is useful when candidates need to move quickly across multiple applications. A marketing role may need sharper growth metrics, a product role may need cleaner project language, and a design role may need stronger storytelling. Instead of rewriting from scratch each time, users can duplicate, refine, preview, and export from a single workspace that keeps everything together.
+    {/* Two deeper feature cards */}
+    <div className="mt-8 grid gap-6 lg:grid-cols-2">
+      <Card className="p-7 sm:p-8" hover>
+        <p className="eyebrow">Built for real job searches</p>
+        <h3 className="mt-3 text-xl font-semibold text-slate-950">Write once, tailor often, keep every version organised.</h3>
+        <p className="mt-3 text-sm leading-7 text-slate-600">
+          A marketing role may need sharper growth metrics, a product role cleaner project language, a design role stronger storytelling. Instead of rewriting from scratch, duplicate, refine, preview, and export from a single workspace that keeps everything together.
         </p>
       </Card>
-      <Card className="h-full p-6 sm:p-8" hover>
-        <p className="kicker">Designed for trust</p>
-        <h3 className="mt-4 text-2xl font-semibold text-slate-950">Every screen focuses on clarity, hierarchy, and next-step confidence.</h3>
-        <p className="mt-4 text-sm leading-8 text-slate-600">
-          Premium SaaS products earn trust through consistency. That means aligned cards, predictable spacing, strong focus states, readable typography, and clear empty, loading, and error states. This redesign brings those details into the product while preserving the flows that already work behind the scenes.
+
+      <Card className="p-7 sm:p-8" hover>
+        <p className="eyebrow">Designed for trust</p>
+        <h3 className="mt-3 text-xl font-semibold text-slate-950">Every screen focuses on clarity, hierarchy, and confidence.</h3>
+        <p className="mt-3 text-sm leading-7 text-slate-600">
+          Premium SaaS products earn trust through consistency — aligned cards, predictable spacing, strong focus states, readable typography, and clear empty, loading, and error states. This redesign brings those details in while preserving the flows that already work behind the scenes.
         </p>
       </Card>
     </div>
