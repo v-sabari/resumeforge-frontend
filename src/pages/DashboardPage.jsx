@@ -63,7 +63,7 @@ export const DashboardPage = () => {
   };
 
   return (
-    <div className="space-y-8 pb-8">
+    <div className="space-y-6 sm:space-y-8 pb-8 px-2 sm:px-0">
       <PageHeader
         eyebrow="Dashboard"
         title={`Welcome back, ${user?.name || 'there'}`}
@@ -107,7 +107,7 @@ export const DashboardPage = () => {
         </div>
       </section>
 
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Saved resumes" value={resumes.length} helper="Version your resume for multiple roles." />
         <StatCard label="Exports used" value={exportStatus?.usedExports ?? 0} helper={`${exportStatus?.remainingFreeExports ?? 0} free exports remaining`} />
         <StatCard label="Ad unlock" value={exportStatus?.adCompleted ? 'Completed' : 'Pending'} helper="Free-plan export state from backend." />

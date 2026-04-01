@@ -102,8 +102,11 @@ export const ResumeBuilderPage = () => {
       <Alert variant="success">{success}</Alert>
 
       <section className="card overflow-hidden p-0">
-        <div className="grid gap-0 xl:grid-cols-[260px_minmax(0,1fr)_520px]">
-          <aside className="border-b border-slate-200 bg-slate-50/80 p-5 xl:border-b-0 xl:border-r">
+        <div className="grid gap-4 
+  grid-cols-1 
+  lg:grid-cols-[240px_minmax(0,1fr)] 
+  xl:grid-cols-[260px_minmax(0,1fr)_520px]">
+          <aside className="border-b border-slate-200 bg-slate-50/80 p-4 lg:p-5 lg:border-b-0 lg:border-r">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Sections</p>
             <div className="mt-4 space-y-2">
               {builderSections.map((section) => (
@@ -124,7 +127,7 @@ export const ResumeBuilderPage = () => {
             </div>
           </aside>
 
-          <div className="space-y-6 p-4 sm:p-6">
+          <div className="space-y-6 p-3 sm:p-5 lg:p-6">
             <SectionCard id="basics" eyebrow="Profile" title="Personal information" description="Keep your resume header sharp, scannable, and recruiter-friendly.">
               <div className="grid gap-4 md:grid-cols-2">
                 {[
@@ -233,7 +236,7 @@ export const ResumeBuilderPage = () => {
             </SectionCard>
           </div>
 
-          <div className="space-y-6 border-t border-slate-200 bg-slate-50/65 p-4 sm:p-6 xl:border-l xl:border-t-0">
+          <div className="hidden xl:block space-y-6 border-t border-slate-200 bg-slate-50/65 p-4 sm:p-6 xl:border-l xl:border-t-0">
             <AIActionPanel resume={resume} setResume={setResume} />
             <ExportPanel resumeId={currentId} premium={premium} onExported={handleExported} refreshStatuses={refreshStatuses} />
             <ResumePreview resume={resume} />
