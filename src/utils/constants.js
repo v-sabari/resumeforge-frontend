@@ -1,5 +1,4 @@
 export const APP_NAME = import.meta.env.VITE_APP_NAME || 'ResumeForge AI';
-export const RAZORPAY_LINK = import.meta.env.VITE_RAZORPAY_LINK || 'https://rzp.io/l/YOUR_PAYMENT_LINK';
 export const TOKEN_STORAGE_KEY = 'resumeforge_token';
 
 export const defaultResume = {
@@ -24,7 +23,7 @@ export const defaultResume = {
       location: 'Remote',
       bullets: [
         'Led redesign of onboarding flow, improving activation by 24% across self-serve users.',
-        'Partnered with product and engineering to launch multi-brand design system adopted by 5 squads.',
+        'Partnered with product and engineering to launch a multi-brand design system adopted by 5 squads.',
       ],
     },
   ],
@@ -44,6 +43,7 @@ export const defaultResume = {
       startDate: '2012',
       endDate: '2016',
       location: 'Ahmedabad',
+      field: 'Communication Design',
     },
   ],
   certifications: [
@@ -62,9 +62,20 @@ export const defaultResume = {
 
 export const premiumFeatures = [
   'Unlimited exports',
-  'No ads or watermark',
-  'Premium templates',
-  'Multiple saved resumes',
-  'Advanced formatting tools',
-  'Faster editing workflow',
+  'No ad gate after upgrade',
+  'Premium template quality',
+  'Multiple saved resume versions',
+  'Advanced formatting support',
+  'Faster application workflow',
+];
+
+export const builderSections = [
+  { id: 'basics', label: 'Basics' },
+  { id: 'summary', label: 'Summary' },
+  { id: 'skills', label: 'Skills' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'education', label: 'Education' },
+  { id: 'certifications', label: 'Certifications' },
+  { id: 'achievements', label: 'Achievements' },
 ];

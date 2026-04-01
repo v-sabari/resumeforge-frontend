@@ -10,16 +10,11 @@ export const RegisterPage = () => {
   const { register, errorFormatter } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState('');
-  const { values, errors, setErrors, handleChange } = useForm({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
+  const { values, errors, setErrors, handleChange } = useForm({ name: '', email: '', password: '', confirmPassword: '' });
 
   const validate = () => {
     const nextErrors = {};
-    if (!values.name.trim()) nextErrors.name = 'Name is required.';
+    if (!values.name.trim()) nextErrors.name = 'Full name is required.';
     if (!values.email.trim()) nextErrors.email = 'Email is required.';
     if (!values.password.trim()) nextErrors.password = 'Password is required.';
     if (values.password.length < 6) nextErrors.password = 'Use at least 6 characters.';
@@ -46,9 +41,9 @@ export const RegisterPage = () => {
   return (
     <AuthShell
       title="Create your account"
-      subtitle="Start building smarter resumes with AI-guided editing and export controls."
-      sideTitle="Join the modern resume workflow built to convert."
-      sideCopy="From polished templates to premium unlock flows, ResumeForge AI is made to feel like a real product from day one."
+      subtitle="Start building smarter resumes with AI-assisted writing and a polished dashboard experience."
+      sideTitle="Get into a more professional builder flow from your very first resume."
+      sideCopy="Sign up once, keep the same backend logic, and start editing inside a cleaner workspace inspired by top-tier resume tools."
     >
       <form className="space-y-5" onSubmit={handleSubmit}>
         <div>
@@ -72,12 +67,8 @@ export const RegisterPage = () => {
           {errors.confirmPassword ? <p className="mt-2 text-sm text-rose-600">{errors.confirmPassword}</p> : null}
         </div>
         <Alert variant="error">{serverError}</Alert>
-        <button type="submit" className="btn-primary w-full justify-center" disabled={submitting}>
-          {submitting ? 'Creating account...' : 'Create account'}
-        </button>
-        <p className="text-center text-sm text-slate-600">
-          Already have an account? <Link to="/login" className="font-semibold text-brand-700">Log in</Link>
-        </p>
+        <button type="submit" className="btn-primary w-full justify-center" disabled={submitting}>{submitting ? 'Creating account...' : 'Create account'}</button>
+        <p className="text-center text-sm text-slate-600">Already have an account? <Link to="/login" className="font-semibold text-brand-700">Log in</Link></p>
       </form>
     </AuthShell>
   );

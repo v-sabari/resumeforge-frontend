@@ -40,9 +40,9 @@ export const LoginPage = () => {
   return (
     <AuthShell
       title="Welcome back"
-      subtitle="Access your builder, export controls, and premium workspace."
-      sideTitle="Log in to continue shaping your best application."
-      sideCopy="Pick up right where you left off, refresh plan status from the backend, and keep your resume export-ready."
+      subtitle="Access your resumes, payment-aware export controls, and polished builder workspace."
+      sideTitle="Return to the resume workspace that keeps editing and preview perfectly in sync."
+      sideCopy="ResumeForge AI now feels cleaner and more structured while keeping your auth flow, backend purpose, and product identity intact."
     >
       <form className="space-y-5" onSubmit={handleSubmit}>
         <div>
@@ -56,12 +56,8 @@ export const LoginPage = () => {
           {errors.password ? <p className="mt-2 text-sm text-rose-600">{errors.password}</p> : null}
         </div>
         <Alert variant="error">{serverError}</Alert>
-        <button type="submit" className="btn-primary w-full justify-center" disabled={submitting}>
-          {submitting ? 'Logging in...' : 'Log in'}
-        </button>
-        <p className="text-center text-sm text-slate-600">
-          New to ResumeForge AI? <Link to="/register" className="font-semibold text-brand-700">Create an account</Link>
-        </p>
+        <button type="submit" className="btn-primary w-full justify-center" disabled={submitting}>{submitting ? 'Logging in...' : 'Log in'}</button>
+        <p className="text-center text-sm text-slate-600">New to ResumeForge AI? <Link to="/register" className="font-semibold text-brand-700">Create an account</Link></p>
       </form>
     </AuthShell>
   );

@@ -10,23 +10,24 @@ export default {
           200: '#bfdbfe',
           300: '#93c5fd',
           400: '#60a5fa',
-          500: '#2563eb',
-          600: '#1d4ed8',
-          700: '#1e40af',
-          800: '#1e3a8a',
-          900: '#172554'
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#172554',
         },
         slate: {
-          950: '#020617'
-        }
+          950: '#020617',
+        },
       },
       boxShadow: {
-        soft: '0 20px 60px rgba(15, 23, 42, 0.08)',
-        glow: '0 10px 40px rgba(37, 99, 235, 0.18)',
+        soft: '0 24px 80px rgba(15, 23, 42, 0.08)',
+        glow: '0 20px 60px rgba(37, 99, 235, 0.16)',
+        inset: 'inset 0 1px 0 rgba(255,255,255,0.7)',
       },
       backgroundImage: {
-        'hero-grid': 'radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 35%), radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.16), transparent 30%)'
-      }
+        'hero-grid': 'radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 30%), radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.08), transparent 32%), linear-gradient(180deg, rgba(255,255,255,0.9), rgba(241,245,249,0.96))',
+      },
     },
   },
   plugins: [],
