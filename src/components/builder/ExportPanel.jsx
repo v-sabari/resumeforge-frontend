@@ -7,9 +7,9 @@ import { Alert } from '../common/Alert';
 import { Loader } from '../common/Loader';
 import { formatApiError } from '../../utils/helpers';
 
-export const ExportPanel = ({ resumeId, premium, onRequireAd, onExported, refreshStatuses }) => {
+export const ExportPanel = ({ resumeId, premium, onExported, refreshStatuses }) => {
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('Exports are checked against backend permissions before being recorded.');
+  const [message, setMessage] = useState('Your free exports are available directly. Upgrade to Premium for more exports and extras.');
   const [variant, setVariant] = useState('info');
   const navigate = useNavigate();
 
@@ -43,15 +43,8 @@ export const ExportPanel = ({ resumeId, premium, onRequireAd, onExported, refres
         setVariant('success');
         setMessage('Export recorded successfully. Your backend can now generate the PDF.');
         onExported?.(exportAccess);
-      } else if (exportAccess?.requiresAd) {
-        setVariant('warning');
-        setMessage('Complete the ad unlock flow to access your first free export.');
-        onRequireAd?.();
-      } else if (exportAccess?.requiresPremium) {
-        setVariant('warning');
-        setMessage('Additional exports require Premium. Redirecting to pricing options is available below.');
       } else {
-        setVariant('error');
+        setVariant('warning');
         setMessage(exportAccess?.message || 'Export is currently unavailable.');
       }
     } catch (error) {
@@ -69,21 +62,25 @@ export const ExportPanel = ({ resumeId, premium, onRequireAd, onExported, refres
         <h3 className="mt-2 text-lg font-semibold text-slate-950">Ship your resume with the right access state</h3>
         <p className="mt-2 text-sm text-slate-600">
           {premium?.isPremium
-            ? 'Premium unlocked: export without ads or watermark gates.'
-            : 'Free users unlock the first export via ad completion. More exports require Premium.'}
+            ? 'Premium unlocked: export without limits.'
+            : 'Your free exports are available directly. Upgrade to Premium for more exports and extras.'}
         </p>
       </div>
+
       <div className="space-y-3">
         <button type="button" className="btn-primary w-full justify-center" onClick={handleExport} disabled={loading}>
-          {loading ? 'Processing...' : 'Check access & export'}
+          {loading ? 'Processing...' : 'Export resume'}
         </button>
+
         <button type="button" className="btn-secondary w-full justify-center" onClick={handleUpgrade} disabled={loading}>
           Upgrade to Premium
         </button>
+
         <button type="button" className="btn-secondary w-full justify-center" onClick={() => navigate('/pricing')}>
           View pricing details
         </button>
       </div>
+
       <div className="mt-4 min-h-10">
         {loading ? <Loader label="Working on export access..." /> : <Alert variant={variant}>{message}</Alert>}
       </div>
