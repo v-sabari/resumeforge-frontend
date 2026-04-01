@@ -67,7 +67,7 @@ export const DashboardPage = () => {
       <PageHeader
         eyebrow="Dashboard"
         title={`Welcome back, ${user?.name || 'there'}`}
-        description="A cleaner FlowCV-style workspace for managing resume versions, tracking export access, and jumping back into editing faster."
+        description="A cleaner workspace for managing resume versions, tracking export access, and jumping back into editing faster without changing any of the underlying backend-driven flows."
         actions={
           <>
             <button type="button" className="btn-primary" onClick={handleCreate} disabled={creating}>
@@ -99,13 +99,13 @@ export const DashboardPage = () => {
 
           <div className="bg-slate-50/80 px-4 py-5 sm:px-6 sm:py-6">
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-[24px] bg-white p-4 shadow-sm">
+              <div className="rounded-[24px] bg-white p-4 shadow-sm card-interactive">
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Current plan</p>
                 <p className="mt-3 text-xl font-semibold text-slate-950">{premium?.isPremium ? 'Premium' : 'Free'}</p>
                 <p className="mt-2 text-sm text-slate-600">{premium?.message || 'Account plan synced from backend.'}</p>
               </div>
 
-              <div className="rounded-[24px] bg-white p-4 shadow-sm">
+              <div className="rounded-[24px] bg-white p-4 shadow-sm card-interactive">
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Export state</p>
                 <p className="mt-3 text-xl font-semibold text-slate-950">{exportStatus?.canExport ? 'Ready' : 'Restricted'}</p>
                 <p className="mt-2 text-sm text-slate-600">{exportStatus?.message || 'Check export state before download.'}</p>
@@ -130,7 +130,7 @@ export const DashboardPage = () => {
               Remove export friction and keep building without limits.
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-300">
-              Upgrade once and keep the same app flow, data, and backend logic while unlocking a smoother FlowCV-inspired experience.
+              Upgrade once and keep the same app flow, data, and backend logic while unlocking a smoother premium workspace.
             </p>
           </div>
           <Link to="/pricing" className="btn-primary">View premium plan</Link>
@@ -161,7 +161,7 @@ export const DashboardPage = () => {
         ) : (
           <EmptyState
             title="No resumes yet"
-            description="Create your first resume to start editing in the new workspace, use the AI tools, and preview your final PDF layout live."
+            description="Create your first resume to start editing in the premium workspace, use the AI tools, and preview your final PDF layout live."
             action={
               <button type="button" className="btn-primary" onClick={handleCreate}>
                 Create your first resume

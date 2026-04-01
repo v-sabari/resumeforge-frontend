@@ -2,16 +2,25 @@ import { Link } from 'react-router-dom';
 import { SectionBadge } from '../common/SectionBadge';
 import { Icon } from '../icons/Icon';
 
+const metricCards = [
+  ['20k+', 'Resumes generated'],
+  ['4.9/5', 'Average user rating'],
+  ['2x faster', 'Application prep time'],
+];
+
 export const HeroSection = () => (
   <section className="section-shell pt-12 sm:pt-16 lg:pt-20">
     <div className="grid items-center gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:gap-16">
       <div>
         <SectionBadge>AI resume builder</SectionBadge>
         <h1 className="mt-6 max-w-4xl text-5xl font-semibold tracking-tight text-slate-950 sm:text-6xl lg:text-7xl">
-          Build sharper resumes with a premium workflow that feels effortless.
+          Premium resume building for candidates who need speed, clarity, and better interview-ready output.
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-          ResumeForge AI combines structured editing, real-time preview, AI-powered refinement, and payment-aware export controls in one polished interface designed for serious job seekers.
+          ResumeForge AI combines structured editing, real-time preview, AI-powered refinement, and payment-aware export controls in one polished workspace that feels calmer, cleaner, and easier to trust.
+        </p>
+        <p className="mt-4 max-w-2xl text-base leading-8 text-slate-600">
+          Instead of juggling disconnected forms, messy layouts, and unclear upgrade prompts, users can move from first draft to final PDF inside a guided flow that keeps every important action visible. The frontend is redesigned to feel premium while preserving the routes, APIs, backend integrations, and export logic that already power the product.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Link to="/register" className="btn-primary">
@@ -22,12 +31,8 @@ export const HeroSection = () => (
           </a>
         </div>
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
-          {[
-            ['20k+', 'Resumes generated'],
-            ['4.9/5', 'Average user rating'],
-            ['2x faster', 'Application prep time'],
-          ].map(([value, label]) => (
-            <div key={label} className="rounded-[24px] border border-slate-200 bg-white/80 p-4 shadow-sm">
+          {metricCards.map(([value, label]) => (
+            <div key={label} className="glass-panel p-4 card-interactive">
               <p className="text-2xl font-semibold text-slate-950">{value}</p>
               <p className="mt-1 text-sm text-slate-500">{label}</p>
             </div>
@@ -65,9 +70,15 @@ export const HeroSection = () => (
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-slate-950">AI suggestion</p>
-                      <p className="text-sm text-slate-600">Add measurable outcomes to your latest role.</p>
+                      <p className="text-sm text-slate-600">Add measurable outcomes to your latest role and sharpen the summary for recruiter scans.</p>
                     </div>
                   </div>
+                </div>
+                <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Why this redesign matters</p>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">
+                    Better spacing, clearer hierarchy, aligned cards, and calmer interactions make the product feel more reliable for users preparing important job applications.
+                  </p>
                 </div>
               </div>
 
@@ -75,7 +86,7 @@ export const HeroSection = () => (
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-200">Export access</p>
                 <h3 className="mt-3 text-2xl font-semibold text-white">1 free export via ad unlock</h3>
                 <p className="mt-3 text-sm leading-7 text-slate-300">
-                  Keep the existing payment and export logic while presenting a much cleaner premium path for unlimited downloads.
+                  The UI becomes much more premium without touching the existing monetization flow, payment integration, or download logic already wired into the app.
                 </p>
                 <div className="mt-6 space-y-3">
                   {['Unlimited exports after upgrade', 'Cleaner dashboard and builder flow', 'Faster editing and preview loop'].map((item) => (
@@ -85,7 +96,7 @@ export const HeroSection = () => (
                     </div>
                   ))}
                 </div>
-                <button type="button" className="btn-secondary mt-6 w-full justify-center">Premium workflow</button>
+                <button type="button" className="btn-secondary mt-6 w-full justify-center border-white/15 bg-white/10 text-white hover:bg-white/15 hover:text-white">Premium workflow</button>
               </div>
             </div>
           </div>

@@ -7,6 +7,14 @@ import { Alert } from '../components/common/Alert';
 import { formatApiError } from '../utils/helpers';
 import { Card } from '../components/ui/Card';
 
+const freeFeatures = [
+  'Full editing workspace',
+  'AI summary, bullet, rewrite, and skills tools',
+  'One free ad-unlocked export',
+  'Live ATS-friendly preview',
+  'Backend-driven export and auth state',
+];
+
 export const PricingPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -52,7 +60,7 @@ export const PricingPage = () => {
           Clear pricing for every stage of the job search.
         </h1>
         <p className="mt-6 text-lg leading-8 text-slate-600">
-          Start with the full builder experience, unlock an export through the existing free flow, and upgrade only when you need unlimited downloads and less friction.
+          Start with the full builder experience, unlock an export through the existing free flow, and upgrade only when you need unlimited downloads, faster export access, and a cleaner premium workflow.
         </p>
       </div>
 
@@ -62,30 +70,35 @@ export const PricingPage = () => {
 
       <div className="mt-14 grid items-stretch gap-6 lg:grid-cols-2">
         <Card className="flex h-full flex-col p-6 sm:p-8 lg:p-10" hover>
-          <div>
+          <div className="flex min-h-[140px] flex-col">
             <p className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">Free</p>
             <h2 className="mt-4 text-4xl font-semibold text-slate-950">₹0</h2>
             <p className="mt-4 text-sm leading-8 text-slate-600">
               A strong starting point for users who want to experience the builder, improve content with AI, and unlock the first export through the current ad-enabled workflow.
             </p>
           </div>
-          <ul className="mt-8 space-y-3 text-sm text-slate-700">
-            <li>✓ Full editing workspace</li>
-            <li>✓ AI summary, bullet, rewrite, and skills tools</li>
-            <li>✓ One free ad-unlocked export</li>
-            <li>✓ Live ATS-friendly preview</li>
-            <li>✓ Backend-driven export and auth state</li>
-          </ul>
-          <Link to="/register" className="btn-secondary mt-auto w-full justify-center pt-4">
-            Start free
-          </Link>
+
+          <div className="mt-8 grid gap-3">
+            {freeFeatures.map((feature) => (
+              <div key={feature} className="flex min-h-[56px] items-center rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-700">
+                <span className="mr-3 text-brand-700">✓</span>
+                <span>{feature}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-auto pt-8">
+            <Link to="/register" className="btn-secondary w-full justify-center">
+              Start free
+            </Link>
+          </div>
         </Card>
 
         <Card premium hover className="relative flex h-full flex-col p-6 sm:p-8 lg:p-10">
-          <div className="absolute right-6 top-6 rounded-full bg-brand-500/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand-100">
+          <div className="absolute right-6 top-6 rounded-full bg-brand-500/20 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-100">
             Best value
           </div>
-          <div>
+          <div className="flex min-h-[140px] flex-col pr-24">
             <p className="text-sm font-semibold uppercase tracking-[0.25em] text-brand-200">Premium</p>
             <h2 className="mt-4 text-4xl font-semibold text-white">₹99</h2>
             <p className="mt-4 text-sm leading-8 text-slate-300">
@@ -93,21 +106,41 @@ export const PricingPage = () => {
             </p>
           </div>
 
-          <ul className="mt-8 space-y-3 text-sm text-slate-100">
+          <div className="mt-8 grid gap-3">
             {premiumFeatures.map((feature) => (
-              <li key={feature}>✓ {feature}</li>
+              <div key={feature} className="flex min-h-[56px] items-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-100">
+                <span className="mr-3 text-brand-200">✓</span>
+                <span>{feature}</span>
+              </div>
             ))}
-          </ul>
+          </div>
 
-          <button
-            type="button"
-            className="btn-secondary mt-auto w-full justify-center border-white/20 bg-white/10 pt-4 text-white hover:bg-white/15 hover:text-white"
-            onClick={handleUpgrade}
-            disabled={loading}
-          >
-            {loading ? 'Redirecting...' : 'Upgrade to Premium'}
-          </button>
+          <div className="mt-auto pt-8">
+            <button
+              type="button"
+              className="btn-secondary w-full justify-center border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white"
+              onClick={handleUpgrade}
+              disabled={loading}
+            >
+              {loading ? 'Redirecting...' : 'Upgrade to Premium'}
+            </button>
+          </div>
         </Card>
+      </div>
+
+      <div className="mt-8 grid gap-4 rounded-[32px] border border-slate-200 bg-white/80 p-6 sm:grid-cols-3 sm:p-8">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Equal height cards</p>
+          <p className="mt-3 text-sm leading-7 text-slate-600">Both plans use matched spacing, aligned content blocks, and consistent call-to-action positioning.</p>
+        </div>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">No route changes</p>
+          <p className="mt-3 text-sm leading-7 text-slate-600">The pricing experience remains connected to the same payment service and redirect logic already used by the app.</p>
+        </div>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Responsive stack</p>
+          <p className="mt-3 text-sm leading-7 text-slate-600">Mobile uses one column, larger screens use a balanced two-column layout without overflow or uneven spacing.</p>
+        </div>
       </div>
     </section>
   );
