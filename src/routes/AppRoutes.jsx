@@ -12,12 +12,20 @@ import { PaymentSuccessPage } from '../pages/PaymentSuccessPage';
 import { PaymentFailedPage } from '../pages/PaymentFailedPage';
 import { ProfilePage } from '../pages/ProfilePage';
 import { NotFoundPage } from '../pages/NotFoundPage';
+import { PrivacyPage } from '../pages/PrivacyPage';
+import { TermsPage } from '../pages/TermsPage';
+import { ContactPage } from '../pages/ContactPage';
+import { AboutPage } from '../pages/AboutPage';
 
 export const AppRoutes = () => (
   <Routes>
     <Route element={<MarketingLayout />}>
       <Route path="/" element={<LandingPage />} />
       <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/about" element={<AboutPage />} />
     </Route>
 
     <Route path="/login" element={<LoginPage />} />

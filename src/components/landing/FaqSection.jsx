@@ -1,35 +1,38 @@
+import { SectionContainer } from '../ui/SectionContainer';
+import { Card } from '../ui/Card';
+
 const faqs = [
   {
     question: 'How does the free export work?',
-    answer: 'Your first export is gated behind a rewarded ad flow. Once completed successfully, the export is unlocked with no watermark for that attempt.',
+    answer: 'Your first export is gated behind a rewarded ad flow. Once completed successfully, the export is unlocked for that attempt according to the backend-controlled rules.',
   },
   {
     question: 'What changes after I upgrade?',
-    answer: 'Premium unlocks unlimited exports, removes ads and watermark concerns, and exposes a more convenient editing and template experience.',
+    answer: 'Premium unlocks unlimited exports, removes the ad dependency, and gives users a smoother path for repeated job applications.',
   },
   {
-    question: 'Does the frontend depend on backend truth for premium?',
-    answer: 'Yes. The UI reads auth, premium status, export permission, and ad unlock state from backend endpoints rather than relying on frontend-only flags.',
+    question: 'Does the frontend rely on backend truth for premium and export access?',
+    answer: 'Yes. The UI reads authenticated state, premium status, payment verification, and export permissions from the backend rather than using frontend-only assumptions.',
   },
   {
-    question: 'Can I save multiple resumes?',
-    answer: 'Yes. The dashboard and builder support multiple saved resumes through the resumes API and show upgrade-oriented value throughout the experience.',
+    question: 'Can I save multiple resumes for different roles?',
+    answer: 'Yes. The dashboard and builder support multiple saved resumes so you can tailor versions for specific applications while keeping a central workspace.',
   },
 ];
 
 export const FaqSection = () => (
-  <section id="faq" className="mx-auto max-w-5xl px-6 py-20">
+  <SectionContainer id="faq" className="pt-0 sm:pt-0">
     <div className="text-center">
       <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-700">FAQ</p>
       <h2 className="section-heading mt-4">Common questions before you build.</h2>
     </div>
-    <div className="mt-12 space-y-4">
+    <div className="mt-12 grid gap-4">
       {faqs.map((item) => (
-        <div key={item.question} className="card p-6">
+        <Card key={item.question} className="p-6" hover>
           <h3 className="text-lg font-semibold text-slate-950">{item.question}</h3>
           <p className="mt-3 text-sm leading-7 text-slate-600">{item.answer}</p>
-        </div>
+        </Card>
       ))}
     </div>
-  </section>
+  </SectionContainer>
 );

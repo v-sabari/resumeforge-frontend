@@ -1,3 +1,6 @@
+import { SectionContainer } from '../ui/SectionContainer';
+import { Card } from '../ui/Card';
+
 const testimonials = [
   {
     name: 'Nisha Rao',
@@ -12,31 +15,26 @@ const testimonials = [
   {
     name: 'Priya Kulkarni',
     role: 'Customer Success Lead',
-    quote: 'I unlocked the first export, saw the quality, and upgraded right away. It felt like a real premium product.',
+    quote: 'I unlocked the first export, upgraded later, and never felt lost in the product flow. It feels simple in the best way.',
   },
 ];
 
 export const TestimonialsSection = () => (
-  <section className="mx-auto max-w-7xl px-6 py-20">
-    <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-700">Loved by candidates</p>
-        <h2 className="section-heading mt-4">Designed to feel credible, helpful, and worth paying for.</h2>
-      </div>
-      <p className="max-w-xl text-sm leading-7 text-slate-600">
-        ResumeForge AI is built for candidates who want clean UX, serious export quality, and smarter writing support.
-      </p>
+  <SectionContainer>
+    <div className="max-w-3xl">
+      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-700">Loved by applicants</p>
+      <h2 className="section-heading mt-4">The experience feels modern, but the workflow stays practical.</h2>
     </div>
-    <div className="mt-12 grid gap-6 lg:grid-cols-3">
-      {testimonials.map((testimonial) => (
-        <div key={testimonial.name} className="card p-6">
-          <p className="text-base leading-7 text-slate-700">“{testimonial.quote}”</p>
-          <div className="mt-6">
-            <p className="font-semibold text-slate-950">{testimonial.name}</p>
-            <p className="text-sm text-slate-500">{testimonial.role}</p>
+    <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {testimonials.map((item) => (
+        <Card key={item.name} className="flex h-full flex-col p-6" hover>
+          <p className="text-base leading-8 text-slate-700">“{item.quote}”</p>
+          <div className="mt-auto pt-6">
+            <p className="font-semibold text-slate-950">{item.name}</p>
+            <p className="text-sm text-slate-500">{item.role}</p>
           </div>
-        </div>
+        </Card>
       ))}
     </div>
-  </section>
+  </SectionContainer>
 );
