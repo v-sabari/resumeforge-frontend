@@ -63,7 +63,7 @@ export const DashboardPage = () => {
   };
 
   return (
-    <div className="space-y-6 sm:space-y-8 pb-8 px-2 sm:px-0">
+    <div className="space-y-6 pb-8 sm:space-y-8 sm:px-0">
       <PageHeader
         eyebrow="Dashboard"
         title={`Welcome back, ${user?.name || 'there'}`}
@@ -81,22 +81,30 @@ export const DashboardPage = () => {
 
       <section className="card overflow-hidden p-0">
         <div className="grid gap-0 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="border-b border-slate-200 px-6 py-6 lg:border-b-0 lg:border-r">
+          <div className="border-b border-slate-200 px-4 py-5 sm:px-6 sm:py-6 lg:border-b-0 lg:border-r">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-700">Workspace overview</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">Keep every application polished and ready to export.</h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">Your builder, preview, payment flow, and resume history stay connected so you can iterate quickly without breaking backend-driven logic.</p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <button type="button" className="btn-primary" onClick={handleCreate} disabled={creating}>Start from template</button>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
+              Keep every application polished and ready to export.
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
+              Your builder, preview, payment flow, and resume history stay connected so you can iterate quickly without breaking backend-driven logic.
+            </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <button type="button" className="btn-primary" onClick={handleCreate} disabled={creating}>
+                Start from template
+              </button>
               <Link to="/app/builder" className="btn-secondary">Open blank workspace</Link>
             </div>
           </div>
-          <div className="bg-slate-50/80 px-6 py-6">
+
+          <div className="bg-slate-50/80 px-4 py-5 sm:px-6 sm:py-6">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-[24px] bg-white p-4 shadow-sm">
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Current plan</p>
                 <p className="mt-3 text-xl font-semibold text-slate-950">{premium?.isPremium ? 'Premium' : 'Free'}</p>
                 <p className="mt-2 text-sm text-slate-600">{premium?.message || 'Account plan synced from backend.'}</p>
               </div>
+
               <div className="rounded-[24px] bg-white p-4 shadow-sm">
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Export state</p>
                 <p className="mt-3 text-xl font-semibold text-slate-950">{exportStatus?.canExport ? 'Ready' : 'Restricted'}</p>
@@ -115,11 +123,15 @@ export const DashboardPage = () => {
       </div>
 
       {!premium?.isPremium ? (
-        <div className="card flex flex-col gap-5 bg-slate-950 p-6 text-white lg:flex-row lg:items-center lg:justify-between">
+        <div className="card flex flex-col gap-5 bg-slate-950 p-5 text-white sm:p-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-200">Premium unlock</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight">Remove export friction and keep building without limits.</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-300">Upgrade once and keep the same app flow, data, and backend logic while unlocking a smoother FlowCV-inspired experience.</p>
+            <h2 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
+              Remove export friction and keep building without limits.
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-300">
+              Upgrade once and keep the same app flow, data, and backend logic while unlocking a smoother FlowCV-inspired experience.
+            </p>
           </div>
           <Link to="/pricing" className="btn-primary">View premium plan</Link>
         </div>
@@ -131,17 +143,30 @@ export const DashboardPage = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold tracking-tight text-slate-950">Recent resumes</h2>
         </div>
+
         {loading ? (
-          <div className="card p-6"><Loader label="Loading your resumes..." /></div>
+          <div className="card p-6">
+            <Loader label="Loading your resumes..." />
+          </div>
         ) : resumes.length ? (
           <div className="space-y-4">
-            {resumes.map((resume) => <ResumeListCard key={resume.id || resume._id} resume={resume} onDelete={handleDelete} />)}
+            {resumes.map((resume) => (
+              <ResumeListCard
+                key={resume.id || resume._id}
+                resume={resume}
+                onDelete={handleDelete}
+              />
+            ))}
           </div>
         ) : (
           <EmptyState
             title="No resumes yet"
             description="Create your first resume to start editing in the new workspace, use the AI tools, and preview your final PDF layout live."
-            action={<button type="button" className="btn-primary" onClick={handleCreate}>Create your first resume</button>}
+            action={
+              <button type="button" className="btn-primary" onClick={handleCreate}>
+                Create your first resume
+              </button>
+            }
           />
         )}
       </section>
