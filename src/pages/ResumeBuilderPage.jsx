@@ -6,7 +6,6 @@ import { Loader } from '../components/common/Loader';
 import { SectionCard } from '../components/builder/SectionCard';
 import { ResumePreview } from '../components/builder/ResumePreview';
 import { AIActionPanel } from '../components/builder/AIActionPanel';
-import { AdUnlockModal } from '../components/builder/AdUnlockModal';
 import { ExportPanel } from '../components/builder/ExportPanel';
 import { useAuth } from '../context/AuthContext';
 import { createResume, getResumeById, updateResume } from '../services/resumeService';
@@ -25,7 +24,6 @@ export const ResumeBuilderPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [currentId, setCurrentId] = useState(resumeId || null);
-  const [showAdModal, setShowAdModal] = useState(false);
 
   const achievementsText = useMemo(() => (resume.achievements || []).join('\n'), [resume.achievements]);
   const skillsText = useMemo(() => (resume.skills || []).join(', '), [resume.skills]);
@@ -127,7 +125,7 @@ export const ResumeBuilderPage = () => {
   };
 
   const handleExported = () => {
-    setSuccess('Export access granted and export recorded. Connect your PDF generation backend to complete file delivery.');
+    setSuccess('Export recorded successfully. Connect your PDF generation backend to complete file delivery.');
   };
 
   if (loading) {
@@ -289,24 +287,12 @@ export const ResumeBuilderPage = () => {
           <ExportPanel
             resumeId={currentId}
             premium={premium}
-            onRequireAd={() => setShowAdModal(true)}
             onExported={handleExported}
             refreshStatuses={refreshStatuses}
           />
           <ResumePreview resume={resume} />
         </div>
       </div>
-
-      <AdUnlockModal
-        isOpen={showAdModal}
-        onClose={() => setShowAdModal(false)}
-        resumeId={currentId}
-        onUnlocked={async () => {
-          setShowAdModal(false);
-          await refreshStatuses();
-          setSuccess('Ad unlock complete. You can now trigger export again.');
-        }}
-      />
     </div>
   );
 };
