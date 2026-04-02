@@ -3,9 +3,9 @@ import { Navbar } from '../components/navigation/Navbar';
 import { Footer } from '../components/navigation/Footer';
 
 export const MarketingLayout = () => (
-  <div className="flex min-h-screen flex-col overflow-x-hidden">
+  <div className="min-h-screen overflow-x-hidden text-slate-900">
     <Navbar />
-    <main className="flex-1 overflow-x-hidden">
+    <main className="overflow-x-hidden">
       <Outlet />
     </main>
     <Footer />

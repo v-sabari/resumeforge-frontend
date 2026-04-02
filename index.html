@@ -2,33 +2,56 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
-    <!-- Viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="google-site-verification" content="auu7nbOUUJMyQ0hoyO24cE_TboWq8w5YSaZlbCtPc54" />
-    <!-- SEO -->
     <meta
       name="description"
       content="ResumeForge AI helps you craft polished, ATS-friendly resumes with AI-powered writing and export workflows."
     />
-
-    <!-- Adsense Verification -->
-    <meta name="google-adsense-account" content="ca-pub-8772182714007004">
-
-    <!-- Adsense Script -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8772182714007004"
-     crossorigin="anonymous"></script>
-
-    <!-- Favicon -->
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="ResumeForge AI — AI-Powered Resume Builder" />
+    <meta property="og:description" content="Build ATS-friendly resumes with AI precision. Real-time preview, structured editing, and smart export controls." />
+    <meta property="og:type" content="website" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="shortcut icon" href="/favicon.svg" />
-
-    <!-- Title -->
     <title>ResumeForge AI</title>
-  </head>
 
+    <!-- Preconnect to speed up Google Fonts DNS + TLS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Non-blocking font load: media=print trick defers render until font CSS loads -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+      />
+    </noscript>
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- AdSense deferred: loads after page interactive using requestIdleCallback -->
+    <!-- This prevents 285 KB of ad JS from blocking page render -->
+    <script>
+      function loadAdSense() {
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8772182714007004';
+        s.crossOrigin = 'anonymous';
+        document.body.appendChild(s);
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadAdSense, { timeout: 4000 });
+      } else {
+        window.addEventListener('load', loadAdSense);
+      }
+    </script>
   </body>
 </html>

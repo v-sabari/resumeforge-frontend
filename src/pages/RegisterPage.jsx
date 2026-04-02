@@ -13,14 +13,14 @@ export const RegisterPage = () => {
   const { values, errors, setErrors, handleChange } = useForm({ name: '', email: '', password: '', confirmPassword: '' });
 
   const validate = () => {
-    const nextErrors = {};
-    if (!values.name.trim()) nextErrors.name = 'Full name is required.';
-    if (!values.email.trim()) nextErrors.email = 'Email is required.';
-    if (!values.password.trim()) nextErrors.password = 'Password is required.';
-    if (values.password.length < 6) nextErrors.password = 'Use at least 6 characters.';
-    if (values.confirmPassword !== values.password) nextErrors.confirmPassword = 'Passwords must match.';
-    setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
+    const e = {};
+    if (!values.name.trim()) e.name = 'Full name is required.';
+    if (!values.email.trim()) e.email = 'Email is required.';
+    if (!values.password.trim()) e.password = 'Password is required.';
+    if (values.password.length < 6) e.password = 'Use at least 6 characters.';
+    if (values.confirmPassword !== values.password) e.confirmPassword = 'Passwords must match.';
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
 
   const handleSubmit = async (event) => {
@@ -41,34 +41,48 @@ export const RegisterPage = () => {
   return (
     <AuthShell
       title="Create your account"
-      subtitle="Start building smarter resumes with AI-assisted writing and a polished dashboard experience."
-      sideTitle="Get into a more professional builder flow from your very first resume."
+      subtitle="Start building smarter resumes with AI-assisted writing and a polished dashboard."
+      sideTitle="Get into a professional builder flow from your very first resume."
       sideCopy="Sign up once, keep the same backend logic, and start editing inside a cleaner workspace inspired by top-tier resume tools."
     >
-      <form className="space-y-5" onSubmit={handleSubmit}>
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
           <label className="label" htmlFor="name">Full name</label>
-          <input id="name" name="name" type="text" className="input" value={values.name} onChange={handleChange} />
-          {errors.name ? <p className="mt-2 text-sm text-rose-600">{errors.name}</p> : null}
+          <input id="name" name="name" type="text" autoComplete="name"
+            className="input" value={values.name} onChange={handleChange}
+            placeholder="Aarav Mehta" />
+          {errors.name && <p className="mt-1.5 text-xs text-rose-600">{errors.name}</p>}
         </div>
         <div>
-          <label className="label" htmlFor="email">Email</label>
-          <input id="email" name="email" type="email" className="input" value={values.email} onChange={handleChange} />
-          {errors.email ? <p className="mt-2 text-sm text-rose-600">{errors.email}</p> : null}
+          <label className="label" htmlFor="email">Email address</label>
+          <input id="email" name="email" type="email" autoComplete="email"
+            className="input" value={values.email} onChange={handleChange}
+            placeholder="you@example.com" />
+          {errors.email && <p className="mt-1.5 text-xs text-rose-600">{errors.email}</p>}
         </div>
         <div>
           <label className="label" htmlFor="password">Password</label>
-          <input id="password" name="password" type="password" className="input" value={values.password} onChange={handleChange} />
-          {errors.password ? <p className="mt-2 text-sm text-rose-600">{errors.password}</p> : null}
+          <input id="password" name="password" type="password" autoComplete="new-password"
+            className="input" value={values.password} onChange={handleChange}
+            placeholder="Min. 6 characters" />
+          {errors.password && <p className="mt-1.5 text-xs text-rose-600">{errors.password}</p>}
         </div>
         <div>
           <label className="label" htmlFor="confirmPassword">Confirm password</label>
-          <input id="confirmPassword" name="confirmPassword" type="password" className="input" value={values.confirmPassword} onChange={handleChange} />
-          {errors.confirmPassword ? <p className="mt-2 text-sm text-rose-600">{errors.confirmPassword}</p> : null}
+          <input id="confirmPassword" name="confirmPassword" type="password" autoComplete="new-password"
+            className="input" value={values.confirmPassword} onChange={handleChange}
+            placeholder="Repeat password" />
+          {errors.confirmPassword && <p className="mt-1.5 text-xs text-rose-600">{errors.confirmPassword}</p>}
         </div>
         <Alert variant="error">{serverError}</Alert>
-        <button type="submit" className="btn-primary w-full justify-center" disabled={submitting}>{submitting ? 'Creating account...' : 'Create account'}</button>
-        <p className="text-center text-sm text-slate-600">Already have an account? <Link to="/login" className="font-semibold text-brand-700">Log in</Link></p>
+        <button type="submit" className="btn-primary w-full justify-center py-3 mt-2"
+          disabled={submitting}>
+          {submitting ? 'Creating account...' : 'Create account'}
+        </button>
+        <p className="text-center text-sm text-slate-500">
+          Already have an account?{' '}
+          <Link to="/login" className="font-semibold text-brand-700 hover:underline">Log in</Link>
+        </p>
       </form>
     </AuthShell>
   );

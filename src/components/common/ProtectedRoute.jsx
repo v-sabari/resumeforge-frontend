@@ -9,7 +9,7 @@ export const ProtectedRoute = ({ children }) => {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader label="Restoring your workspace…" />
+        <Loader label="Restoring your workspace..." />
       </div>
     );
   }
