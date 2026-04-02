@@ -117,7 +117,7 @@ textarea { resize: vertical; }
            text-sm text-slate-900 shadow-soft outline-none
            placeholder:text-slate-400
            transition-all duration-150
-           focus:border-brand-400 focus:ring-3 focus:ring-brand-100 focus:shadow-none;
+           focus:border-brand-400 focus:ring-2 focus:ring-brand-100 focus:shadow-none;
     min-height: 40px;
   }
 
