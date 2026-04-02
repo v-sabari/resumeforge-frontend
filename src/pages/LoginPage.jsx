@@ -14,11 +14,11 @@ export const LoginPage = () => {
   const { values, errors, setErrors, handleChange } = useForm({ email: '', password: '' });
 
   const validate = () => {
-    const e = {};
-    if (!values.email.trim()) e.email = 'Email is required.';
-    if (!values.password.trim()) e.password = 'Password is required.';
-    setErrors(e);
-    return Object.keys(e).length === 0;
+    const nextErrors = {};
+    if (!values.email.trim()) nextErrors.email = 'Email is required.';
+    if (!values.password.trim()) nextErrors.password = 'Password is required.';
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
   };
 
   const handleSubmit = async (event) => {
@@ -28,7 +28,8 @@ export const LoginPage = () => {
     setServerError('');
     try {
       await login(values);
-      navigate(location.state?.from?.pathname || '/app/dashboard', { replace: true });
+      const nextPath = location.state?.from?.pathname || '/app/dashboard';
+      navigate(nextPath, { replace: true });
     } catch (error) {
       setServerError(errorFormatter(error, 'Unable to log in right now.'));
     } finally {
@@ -39,34 +40,24 @@ export const LoginPage = () => {
   return (
     <AuthShell
       title="Welcome back"
-      subtitle="Access your resumes, export controls, and builder workspace."
-      sideTitle="Return to the workspace that keeps editing and preview in sync."
-      sideCopy="ResumeForge AI brings premium polish while keeping your auth flow, backend purpose, and product identity intact."
+      subtitle="Access your resumes, payment-aware export controls, and polished builder workspace."
+      sideTitle="Return to the resume workspace that keeps editing and preview perfectly in sync."
+      sideCopy="ResumeForge AI now feels cleaner and more structured while keeping your auth flow, backend purpose, and product identity intact."
     >
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form className="space-y-5" onSubmit={handleSubmit}>
         <div>
-          <label className="label" htmlFor="email">Email address</label>
-          <input id="email" name="email" type="email" autoComplete="email"
-            className="input" value={values.email} onChange={handleChange}
-            placeholder="you@example.com" />
-          {errors.email && <p className="mt-1.5 text-xs text-rose-600">{errors.email}</p>}
+          <label className="label" htmlFor="email">Email</label>
+          <input id="email" name="email" type="email" className="input" value={values.email} onChange={handleChange} />
+          {errors.email ? <p className="mt-2 text-sm text-rose-600">{errors.email}</p> : null}
         </div>
         <div>
           <label className="label" htmlFor="password">Password</label>
-          <input id="password" name="password" type="password" autoComplete="current-password"
-            className="input" value={values.password} onChange={handleChange}
-            placeholder="••••••••" />
-          {errors.password && <p className="mt-1.5 text-xs text-rose-600">{errors.password}</p>}
+          <input id="password" name="password" type="password" className="input" value={values.password} onChange={handleChange} />
+          {errors.password ? <p className="mt-2 text-sm text-rose-600">{errors.password}</p> : null}
         </div>
         <Alert variant="error">{serverError}</Alert>
-        <button type="submit" className="btn-primary w-full justify-center py-3 mt-2"
-          disabled={submitting}>
-          {submitting ? 'Logging in...' : 'Log in'}
-        </button>
-        <p className="text-center text-sm text-slate-500">
-          New to ResumeForge AI?{' '}
-          <Link to="/register" className="font-semibold text-brand-700 hover:underline">Create an account</Link>
-        </p>
+        <button type="submit" className="btn-primary w-full justify-center" disabled={submitting}>{submitting ? 'Logging in...' : 'Log in'}</button>
+        <p className="text-center text-sm text-slate-600">New to ResumeForge AI? <Link to="/register" className="font-semibold text-brand-700">Create an account</Link></p>
       </form>
     </AuthShell>
   );

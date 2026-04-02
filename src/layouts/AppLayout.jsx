@@ -1,139 +1,247 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Logo } from '../components/common/Logo';
+import { Icon } from '../components/icons/Icon';
 import { useAuth } from '../context/AuthContext';
 import { cn } from '../utils/helpers';
-import { Icon } from '../components/icons/Icon';
 
-const navItems = [
+const NAV_ITEMS = [
   { label: 'Dashboard', to: '/app/dashboard', icon: 'dashboard' },
-  { label: 'Builder', to: '/app/builder', icon: 'builder' },
-  { label: 'Pricing', to: '/pricing', icon: 'pricing' },
-  { label: 'Profile', to: '/app/profile', icon: 'profile' },
+  { label: 'Builder',   to: '/app/builder',   icon: 'builder'   },
+  { label: 'Pricing',   to: '/pricing',        icon: 'pricing'   },
+  { label: 'Profile',   to: '/app/profile',    icon: 'profile'   },
 ];
 
+/* ─── Sidebar inner content (reused for both mobile drawer and desktop) ─ */
+const SidebarContent = ({ collapsed, onClose, onToggleCollapse, onLogout, premium, exportStatus }) => (
+  <div className="flex h-full flex-col">
+    {/* Header */}
+    <div className="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-white/10 px-4">
+      <div className={cn('min-w-0 overflow-hidden transition-all duration-200', collapsed ? 'w-0 opacity-0' : 'flex-1 opacity-100')}>
+        <Logo linkTo="/app/dashboard" surface="dark" />
+      </div>
+      {collapsed && (
+        <div className="mx-auto">
+          <Logo compact linkTo="/app/dashboard" surface="dark" />
+        </div>
+      )}
+      {/* Mobile close button */}
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close sidebar"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-white/10 hover:text-white xl:hidden"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+      </button>
+      {/* Desktop collapse toggle */}
+      <button
+        type="button"
+        onClick={onToggleCollapse}
+        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-white/10 hover:text-white xl:flex"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className={cn('h-4 w-4 transition-transform duration-200', collapsed && 'rotate-180')} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+    </div>
+
+    {/* Nav */}
+    <nav className="flex-1 overflow-y-auto px-3 py-4">
+      {!collapsed && (
+        <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">Navigation</p>
+      )}
+      <ul className="space-y-0.5">
+        {NAV_ITEMS.map((item) => (
+          <li key={item.to}>
+            <NavLink
+              to={item.to}
+              title={collapsed ? item.label : undefined}
+              className={({ isActive }) => cn(
+                'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
+                collapsed && 'justify-center px-2',
+                isActive
+                  ? 'bg-white text-slate-950 shadow-soft'
+                  : 'text-slate-400 hover:bg-white/10 hover:text-white',
+              )}
+            >
+              <Icon name={item.icon} className="h-4 w-4 shrink-0" />
+              {!collapsed && <span>{item.label}</span>}
+            </NavLink>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    {/* Footer: plan info + logout */}
+    <div className="shrink-0 border-t border-white/10 px-3 py-4 space-y-3">
+      {!collapsed ? (
+        <div className="rounded-xl border border-brand-400/25 bg-brand-500/10 p-3">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-brand-300">Current plan</p>
+          <p className="mt-1.5 text-sm font-semibold text-white">
+            {premium?.isPremium ? 'Premium' : 'Free'}
+          </p>
+          <p className="mt-1 text-xs leading-5 text-slate-400">
+            {premium?.isPremium
+              ? 'Unlimited exports active.'
+              : `${exportStatus?.remainingFreeExports ?? 0} free exports remaining.`}
+          </p>
+        </div>
+      ) : (
+        <div className="flex justify-center rounded-xl border border-brand-400/25 bg-brand-500/10 py-2">
+          <span className="text-xs font-bold text-brand-300">{premium?.isPremium ? '★' : 'F'}</span>
+        </div>
+      )}
+      <button
+        type="button"
+        onClick={onLogout}
+        title={collapsed ? 'Log out' : undefined}
+        className={cn(
+          'btn-secondary w-full justify-center border-white/15 bg-white/8 text-slate-300 hover:bg-white/15 hover:text-white text-xs',
+          collapsed && 'px-2',
+        )}
+      >
+        <Icon name="lock" className="h-3.5 w-3.5 shrink-0" />
+        {!collapsed && 'Log out'}
+      </button>
+    </div>
+  </div>
+);
+
+/* ─── App Layout ──────────────────────────────────────────────────────── */
 export const AppLayout = () => {
   const { logout, premium, user, exportStatus } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const sidebarRef = useRef(null);
 
-  const handleLogout = () => { logout(); navigate('/login'); };
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [desktopCollapsed, setDesktopCollapsed] = useState(() => {
+    try { return localStorage.getItem('rf-sidebar-collapsed') === 'true'; } catch { return false; }
+  });
 
-  useEffect(() => { setIsSidebarOpen(false); }, [location.pathname]);
+  const handleLogout = useCallback(() => { logout(); navigate('/login'); }, [logout, navigate]);
+  const closeMobile  = useCallback(() => setMobileOpen(false), []);
+  const toggleDesktop = useCallback(() => {
+    setDesktopCollapsed((v) => {
+      try { localStorage.setItem('rf-sidebar-collapsed', String(!v)); } catch {}
+      return !v;
+    });
+  }, []);
 
+  /* Close mobile sidebar on route change */
+  useEffect(() => { setMobileOpen(false); }, [location.pathname]);
+
+  /* Keyboard + click-outside for mobile */
   useEffect(() => {
-    document.body.style.overflow = isSidebarOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [isSidebarOpen]);
+    if (!mobileOpen) return;
+    const onKey   = (e) => { if (e.key === 'Escape') closeMobile(); };
+    const onClick  = (e) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(e.target)) closeMobile();
+    };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onClick);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onClick);
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen, closeMobile]);
+
+  const currentPage = location.pathname
+    .replace('/app/', '')
+    .replace(/\//g, ' › ')
+    .replace(/^./, (c) => c.toUpperCase()) || 'App';
 
   return (
-    <div className="min-h-screen bg-slate-50/80">
-      {/* Mobile overlay */}
-      {isSidebarOpen && (
-        <button type="button" aria-label="Close sidebar"
-          className="fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm lg:hidden animate-fade-in"
-          onClick={() => setIsSidebarOpen(false)} />
+    <div className="flex h-screen overflow-hidden bg-slate-50">
+
+      {/* ── Mobile backdrop ── */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm xl:hidden animate-fade-in"
+          onClick={closeMobile}
+          aria-hidden="true"
+        />
       )}
 
-      <div className="flex min-h-screen">
-        {/* Sidebar */}
-        <aside className={cn(
-          'fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-slate-950 transition-transform duration-300 ease-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0',
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
-        )}>
-          {/* Sidebar header */}
-          <div className="flex items-center justify-between gap-3 border-b border-white/10 px-5 py-4">
-            <Logo linkTo="/app/dashboard" surface="dark" />
-            <button type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 text-white/60 transition hover:bg-white/10 lg:hidden"
-              onClick={() => setIsSidebarOpen(false)} aria-label="Close menu">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+      {/* ── Sidebar ── */}
+      <aside
+        ref={sidebarRef}
+        className={cn(
+          /* Mobile: fixed drawer from left */
+          'fixed inset-y-0 left-0 z-50 bg-slate-950 transition-transform duration-300 ease-out will-change-transform',
+          /* Desktop: sticky column */
+          'xl:relative xl:inset-auto xl:z-auto xl:translate-x-0 xl:transition-[width] xl:duration-200',
+          /* Mobile open/close */
+          mobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full',
+          /* Desktop width */
+          desktopCollapsed ? 'xl:w-[68px]' : 'xl:w-64',
+          /* Mobile width */
+          'w-72',
+        )}
+      >
+        <SidebarContent
+          collapsed={desktopCollapsed}
+          onClose={closeMobile}
+          onToggleCollapse={toggleDesktop}
+          onLogout={handleLogout}
+          premium={premium}
+          exportStatus={exportStatus}
+        />
+      </aside>
+
+      {/* ── Main area ── */}
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+
+        {/* Top bar */}
+        <header className="flex h-16 shrink-0 items-center justify-between gap-4 border-b border-slate-200 bg-white/90 px-4 backdrop-blur-sm sm:px-6">
+          <div className="flex min-w-0 items-center gap-3">
+            {/* Mobile hamburger */}
+            <button
+              type="button"
+              aria-label="Open menu"
+              onClick={() => setMobileOpen(true)}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-soft transition hover:bg-slate-50 hover:text-slate-900 xl:hidden"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h16M4 12h16M4 17h16" />
               </svg>
             </button>
+            <div className="min-w-0">
+              <p className="truncate text-[10px] font-semibold uppercase tracking-widest text-slate-400">{currentPage}</p>
+              <p className="truncate text-sm font-semibold text-slate-950 sm:text-base">{user?.name || user?.email || 'ResumeForge AI'}</p>
+            </div>
           </div>
 
-          {/* Nav */}
-          <nav className="flex-1 overflow-y-auto px-3 py-4">
-            <p className="mb-2 px-3 text-[9px] font-bold uppercase tracking-widest text-slate-500">Menu</p>
-            <div className="space-y-0.5">
-              {navItems.map((item) => (
-                <NavLink key={item.to} to={item.to}
-                  className={({ isActive }) => cn(
-                    'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
-                    isActive
-                      ? 'bg-white text-slate-950 shadow-sm'
-                      : 'text-slate-400 hover:bg-white/10 hover:text-white',
-                  )}>
-                  <Icon name={item.icon} className="h-4 w-4 shrink-0" />
-                  {item.label}
-                </NavLink>
-              ))}
+          <div className="flex shrink-0 items-center gap-2">
+            <div className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 sm:flex">
+              <span className={cn('h-1.5 w-1.5 rounded-full', premium?.isPremium ? 'bg-emerald-400' : 'bg-slate-300')} />
+              <span className="text-xs font-medium text-slate-700">{premium?.isPremium ? 'Premium' : 'Free'}</span>
+              <span className="text-slate-300">·</span>
+              <span className="text-xs text-slate-500">{exportStatus?.usedExports ?? 0} exports</span>
             </div>
-          </nav>
-
-          {/* Plan info */}
-          <div className="border-t border-white/10 p-4 space-y-3">
-            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-              <p className="text-[9px] font-bold uppercase tracking-widest text-brand-300">Current plan</p>
-              <p className="mt-1.5 text-sm font-semibold text-white">
-                {premium?.isPremium ? '✦ Premium' : 'Free plan'}
-              </p>
-              <p className="mt-1 text-xs text-slate-400">
-                {premium?.isPremium
-                  ? 'Unlimited export access active.'
-                  : `${exportStatus?.remainingFreeExports ?? 0} free exports remaining.`}
-              </p>
-            </div>
-            <button type="button" className="btn-secondary w-full justify-center border-white/20 bg-white/10 text-white hover:bg-white/20 hover:text-white text-xs py-2.5" onClick={handleLogout}>
-              Log out
+            <button
+              type="button"
+              className="btn-primary text-xs py-2 px-3"
+              onClick={() => navigate('/app/builder')}
+            >
+              <Icon name="plus" className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">New resume</span>
             </button>
           </div>
-        </aside>
+        </header>
 
-        {/* Main content */}
-        <div className="flex min-w-0 flex-1 flex-col">
-          {/* Top bar */}
-          <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b border-slate-200/70 bg-white/90 px-4 backdrop-blur-xl sm:px-6">
-            <div className="flex items-center gap-3">
-              <button type="button"
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 lg:hidden"
-                onClick={() => setIsSidebarOpen(true)} aria-label="Open menu">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h16M4 12h16M4 17h16" />
-                </svg>
-              </button>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-slate-950">
-                  {user?.name || user?.email || 'ResumeForge AI'}
-                </p>
-                <p className="truncate text-xs text-slate-500">
-                  {location.pathname.replace('/app/', '').replace('/', ' › ')}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs sm:flex">
-                <span className={cn('h-2 w-2 rounded-full', premium?.isPremium ? 'bg-emerald-400' : 'bg-slate-300')} />
-                <span className="font-medium text-slate-700">{premium?.isPremium ? 'Premium' : 'Free'}</span>
-                <span className="text-slate-400">·</span>
-                <span className="text-slate-600">{exportStatus?.usedExports ?? 0} exports</span>
-              </div>
-              <button type="button" className="btn-primary py-2 text-xs"
-                onClick={() => navigate('/app/builder')}>
-                <Icon name="builder" className="h-3.5 w-3.5" />
-                New resume
-              </button>
-            </div>
-          </header>
-
-          {/* Page content */}
-          <main className="flex-1 p-4 pb-8 sm:p-6 sm:pb-10">
+        {/* Page content */}
+        <main className="flex-1 overflow-y-auto">
+          <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
             <Outlet />
-          </main>
-        </div>
+          </div>
+        </main>
       </div>
     </div>
   );

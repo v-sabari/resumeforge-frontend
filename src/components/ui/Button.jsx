@@ -1,19 +1,14 @@
 import { cn } from '../../utils/helpers';
 
-const variants = {
-  primary: 'btn-primary',
+const VARIANTS = {
+  primary:   'btn-primary',
   secondary: 'btn-secondary',
-  ghost: 'btn-ghost',
+  ghost:     'btn-ghost',
+  danger:    'btn-danger',
 };
 
-export const Button = ({
-  as: Component = 'button',
-  variant = 'primary',
-  className = '',
-  children,
-  ...props
-}) => (
-  <Component className={cn(variants[variant] || variants.primary, className)} {...props}>
+export const Button = ({ as: Tag = 'button', variant = 'primary', className = '', children, ...props }) => (
+  <Tag className={cn(VARIANTS[variant] ?? VARIANTS.primary, className)} {...props}>
     {children}
-  </Component>
+  </Tag>
 );
