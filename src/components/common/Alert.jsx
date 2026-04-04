@@ -1,17 +1,19 @@
-import { cn } from '../../utils/helpers';
+import { Icon } from '../icons/Icon';
 
-const variants = {
-  success: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-  error:   'border-rose-200 bg-rose-50 text-rose-700',
-  info:    'border-blue-200 bg-blue-50 text-blue-700',
-  warning: 'border-amber-200 bg-amber-50 text-amber-700',
+const variantMap = {
+  info:    { cls: 'alert-info',    icon: 'info'    },
+  success: { cls: 'alert-success', icon: 'check'   },
+  warning: { cls: 'alert-warning', icon: 'warning' },
+  error:   { cls: 'alert-error',   icon: 'warning' },
 };
 
 export const Alert = ({ variant = 'info', children, className = '' }) => {
   if (!children) return null;
+  const { cls, icon } = variantMap[variant] || variantMap.info;
   return (
-    <div className={cn('flex items-start gap-2.5 rounded-xl border px-4 py-3 text-sm leading-6', variants[variant], className)}>
-      {children}
+    <div role="alert" className={`${cls} flex items-start gap-2.5 ${className}`}>
+      <Icon name={icon} className="h-4 w-4 mt-0.5 shrink-0" />
+      <span>{children}</span>
     </div>
   );
 };

@@ -1,13 +1,13 @@
-export const SectionCard = ({ title, description, children, actions, eyebrow, id }) => (
-  <section id={id} className="card scroll-mt-20 p-5 sm:p-6">
-    <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+export const SectionCard = ({ id, eyebrow, title, description, children, actions }) => (
+  <div id={id} className="card p-5 scroll-mt-6">
+    <div className="flex items-start justify-between gap-3 mb-4">
       <div>
-        {eyebrow && <p className="eyebrow mb-1.5">{eyebrow}</p>}
-        <h3 className="panel-title">{title}</h3>
-        {description && <p className="mt-1.5 text-sm leading-6 text-slate-500">{description}</p>}
+        {eyebrow && <p className="kicker mb-0.5">{eyebrow}</p>}
+        <h3 className="text-base font-semibold text-ink-950">{title}</h3>
+        {description && <p className="mt-0.5 text-xs text-ink-400">{description}</p>}
       </div>
-      {actions && <div className="flex shrink-0 gap-2">{actions}</div>}
+      {actions && <div className="shrink-0">{actions}</div>}
     </div>
     {children}
-  </section>
+  </div>
 );

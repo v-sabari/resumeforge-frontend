@@ -1,7 +1,15 @@
-import { AppRoutes } from './routes/AppRoutes';
+import { BrowserRouter }  from 'react-router-dom';
+import { AuthProvider }   from './context/AuthContext';
+import { AppRoutes }      from './routes/AppRoutes';
+import { CookieBanner }   from './components/common/CookieBanner';
 
-function App() {
-  return <AppRoutes />;
-}
+const App = () => (
+  <BrowserRouter>
+    <AuthProvider>
+      <AppRoutes />
+      <CookieBanner />
+    </AuthProvider>
+  </BrowserRouter>
+);
 
 export default App;

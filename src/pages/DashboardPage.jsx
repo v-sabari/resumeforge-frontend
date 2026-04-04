@@ -1,164 +1,202 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { getAllResumes, deleteResume } from '../services/resumeService';
 import { PageHeader } from '../components/common/PageHeader';
-import { StatCard } from '../components/common/StatCard';
+import { Alert } from '../components/common/Alert';
 import { EmptyState } from '../components/common/EmptyState';
 import { Loader } from '../components/common/Loader';
-import { Alert } from '../components/common/Alert';
-import { ResumeListCard } from '../components/dashboard/ResumeListCard';
-import { useAuth } from '../context/AuthContext';
-import { createResume, deleteResume, getResumes } from '../services/resumeService';
-import { defaultResume } from '../utils/constants';
-import { formatApiError } from '../utils/helpers';
 import { Icon } from '../components/icons/Icon';
+import { formatApiError, prettyDate, truncate } from '../utils/helpers';
+import { FREE_EXPORT_LIMIT } from '../utils/constants';
 
-export const DashboardPage = () => {
-  const { user, premium, exportStatus, refreshExportStatus, refreshPremiumStatus } = useAuth();
-  const navigate = useNavigate();
-  const [resumes, setResumes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [creating, setCreating] = useState(false);
-  const [error, setError] = useState('');
+const StatCard = ({ icon, label, value, sub, accent }) => (
+  <div className={`card p-5 ${accent ? 'border-brand-200 bg-brand-50/50' : ''}`}>
+    <div className="flex items-start justify-between">
+      <div>
+        <p className="text-xs font-semibold text-ink-400 uppercase tracking-wide mb-1">{label}</p>
+        <p className={`text-2xl font-display font-semibold ${accent ? 'text-brand-700' : 'text-ink-950'}`}>{value}</p>
+        {sub && <p className="text-xs text-ink-400 mt-0.5">{sub}</p>}
+      </div>
+      <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${accent ? 'bg-brand-100 text-brand-600' : 'bg-surface-100 text-ink-400'}`}>
+        <Icon name={icon} className="h-4 w-4" />
+      </div>
+    </div>
+  </div>
+);
 
-  const loadData = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const list = await getResumes();
-      setResumes(Array.isArray(list) ? list : []);
-      await Promise.all([refreshExportStatus(), refreshPremiumStatus()]);
-    } catch (err) {
-      setError(formatApiError(err, 'Could not load your resumes.'));
-    } finally {
-      setLoading(false);
-    }
-  };
+const ResumeCard = ({ resume, onDelete }) => {
+  const navigate   = useNavigate();
+  const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => { loadData(); }, []);
-
-  const handleCreate = async () => {
-    setCreating(true);
-    try {
-      const resume = await createResume({ title: `${user?.name || 'New'} Resume`, ...defaultResume });
-      navigate(`/app/builder/${resume.id || resume._id}`);
-    } catch (err) {
-      setError(formatApiError(err, 'Could not create a new resume.'));
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await deleteResume(id);
-      await loadData();
-    } catch (err) {
-      setError(formatApiError(err, 'Could not delete the resume.'));
-    }
+  const handleDelete = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!window.confirm('Delete this resume? This action cannot be undone.')) return;
+    setDeleting(true);
+    try { await onDelete(resume.id); } catch { setDeleting(false); }
   };
 
   return (
-    <div className="space-y-6 animate-fade-in-up">
+    <div className="card-hover group relative p-5"
+      onClick={() => navigate(`/app/builder/${resume.id}`)}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h3 className="font-semibold text-ink-950 truncate">
+            {resume.fullName || 'Untitled Resume'}
+          </h3>
+          <p className="text-sm text-ink-400 truncate mt-0.5">
+            {resume.role || 'No title set'}
+          </p>
+        </div>
+        <button
+          onClick={handleDelete}
+          disabled={deleting}
+          aria-label="Delete resume"
+          className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity btn-danger btn-sm p-1.5 shrink-0"
+          title="Delete resume">
+          {deleting ? <Loader size="sm" label="" /> : <Icon name="trash" className="h-3.5 w-3.5" />}
+        </button>
+      </div>
+
+      {resume.summary && (
+        <p className="mt-3 text-xs text-ink-400 line-clamp-2 leading-relaxed">
+          {truncate(resume.summary, 100)}
+        </p>
+      )}
+
+      <div className="mt-4 flex items-center justify-between">
+        <div className="flex flex-wrap gap-1">
+          {(resume.skills || []).slice(0, 3).map((s) => (
+            <span key={s} className="badge-neutral text-[11px]">{s}</span>
+          ))}
+          {(resume.skills || []).length > 3 && (
+            <span className="badge-neutral text-[11px]">+{resume.skills.length - 3}</span>
+          )}
+        </div>
+        <span className="text-[11px] text-ink-300 shrink-0 ml-2">
+          {prettyDate(resume.updatedAt || resume.createdAt)}
+        </span>
+      </div>
+
+      <div className="mt-4 pt-3 border-t border-surface-100 flex items-center gap-2 text-xs text-brand-600 font-medium">
+        <Icon name="eye" className="h-3.5 w-3.5" />
+        Open builder
+        <Icon name="arrowRight" className="h-3 w-3 ml-auto" />
+      </div>
+    </div>
+  );
+};
+
+export const DashboardPage = () => {
+  const { user, premium, exportStatus } = useAuth();
+  const [resumes,  setResumes]  = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [error,    setError]    = useState('');
+
+  useEffect(() => {
+    getAllResumes()
+      .then(setResumes)
+      .catch((e) => setError(formatApiError(e, 'Could not load your resumes.')))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleDelete = async (id) => {
+    await deleteResume(id);
+    setResumes((prev) => prev.filter((r) => r.id !== id));
+  };
+
+  const exportsUsed      = exportStatus?.usedExports || 0;
+  const exportsRemaining = premium?.isPremium ? '∞' : Math.max(0, FREE_EXPORT_LIMIT - exportsUsed);
+
+  return (
+    <div className="space-y-6 animate-fade-in">
       <PageHeader
-        eyebrow="Dashboard"
-        title={`Welcome back, ${user?.name || 'there'} 👋`}
-        description="Manage your resumes, track export access, and jump back into editing."
+        eyebrow={`Welcome back, ${user?.name?.split(' ')[0] || 'there'}`}
+        title="Your Resume Dashboard"
+        description="Manage all your resumes, track exports, and start new applications."
         actions={
-          <>
-            <button type="button" className="btn-primary" onClick={handleCreate} disabled={creating}>
-              <Icon name="plus" className="h-4 w-4" />
-              {creating ? 'Creating...' : 'New resume'}
-            </button>
-            <Link to="/pricing" className="btn-secondary">Upgrade plan</Link>
-          </>
+          <Link to="/app/builder" className="btn-primary">
+            <Icon name="plus" className="h-4 w-4" />
+            New resume
+          </Link>
         }
       />
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 items-stretch xl:grid-cols-4">
-        <StatCard label="Saved resumes" value={resumes.length} helper="Version your resume for each role" />
-        <StatCard label="Exports used" value={exportStatus?.usedExports ?? 0} helper={`${exportStatus?.remainingFreeExports ?? 0} free remaining`} />
-        <StatCard label="Ad unlock" value={exportStatus?.adCompleted ? 'Completed' : 'Pending'} helper="Free-plan export unlock state" />
-        <StatCard label="Plan" value={premium?.isPremium ? 'Premium ✦' : 'Free'} helper={premium?.isPremium ? 'Unlimited exports active' : 'Upgrade for more'} />
-      </div>
+      <Alert variant="error">{error}</Alert>
 
-      {/* Overview banner */}
-      <div className="card overflow-hidden">
-        <div className="grid lg:grid-cols-2">
-          <div className="p-6 sm:p-7">
-            <p className="eyebrow">Workspace overview</p>
-            <h2 className="mt-2 text-xl font-semibold text-slate-950">Keep every application polished and ready.</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-500">
-              Your builder, preview, payment flow, and resume history stay connected so you can iterate quickly without breaking backend-driven logic.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-3">
-              <button type="button" className="btn-primary text-sm" onClick={handleCreate} disabled={creating}>
-                Start from template
-              </button>
-              <Link to="/app/builder" className="btn-secondary text-sm">Open blank workspace</Link>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3 border-t border-slate-100 bg-slate-50/70 p-6 sm:p-7 lg:border-l lg:border-t-0">
-            <div className="rounded-xl bg-white p-4 shadow-sm border border-slate-100">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Plan</p>
-              <p className="mt-2 text-base font-semibold text-slate-950">{premium?.isPremium ? 'Premium' : 'Free'}</p>
-              <p className="mt-1 text-xs text-slate-600">{premium?.message || 'Synced from backend'}</p>
-            </div>
-            <div className="rounded-xl bg-white p-4 shadow-sm border border-slate-100">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Export state</p>
-              <p className="mt-2 text-base font-semibold text-slate-950">{exportStatus?.canExport ? 'Ready' : 'Restricted'}</p>
-              <p className="mt-1 text-xs text-slate-600">{exportStatus?.message || 'Check before download'}</p>
-            </div>
-          </div>
-        </div>
+      {/* Stats */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard icon="text"     label="Resumes"         value={resumes.length}     sub="in your account" />
+        <StatCard icon="export"   label="Exports used"    value={exportsUsed}        sub={`of ${premium?.isPremium ? '∞' : FREE_EXPORT_LIMIT} available`} />
+        <StatCard icon="zap"      label="Exports left"    value={exportsRemaining}   sub="remaining"       accent />
+        <StatCard icon="crown"    label="Plan"
+          value={premium?.isPremium ? 'Premium' : 'Free'}
+          sub={premium?.isPremium ? 'Unlimited exports' : 'Upgrade for unlimited'}
+          accent={premium?.isPremium} />
       </div>
 
       {/* Premium upsell */}
       {!premium?.isPremium && (
-        <div className="flex flex-col gap-4 rounded-2xl border border-brand-900/30 bg-gradient-to-br from-slate-950 to-slate-900 p-6 text-white sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-brand-300">Premium unlock</p>
-            <h2 className="mt-1.5 text-lg font-semibold">Remove export limits and build without friction.</h2>
-            <p className="mt-1 text-sm text-slate-400">One-time payment of ₹99 for unlimited exports.</p>
+        <div className="card p-5 border-brand-200 bg-gradient-to-r from-brand-50 to-surface-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-100 text-brand-600 shrink-0">
+              <Icon name="crown" className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="font-semibold text-ink-950 text-sm">Unlock unlimited exports for $9</p>
+              <p className="text-xs text-ink-400 mt-0.5">One-time payment. No subscription. Download as many PDFs as you want.</p>
+            </div>
           </div>
-          <Link to="/pricing" className="btn-primary shrink-0">View Premium plan</Link>
+          <Link to="/pricing" className="btn-primary btn-sm shrink-0">
+            Upgrade now
+            <Icon name="arrowRight" className="h-3.5 w-3.5" />
+          </Link>
         </div>
       )}
 
-      <Alert variant="error">{error}</Alert>
-
-      {/* Resume list */}
+      {/* Resumes grid */}
       <div>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-950">Your resumes</h2>
-          {resumes.length > 0 && (
-            <button type="button" className="btn-ghost text-xs" onClick={handleCreate} disabled={creating}>
-              <Icon name="plus" className="h-3.5 w-3.5" /> New
-            </button>
-          )}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-semibold text-ink-950">
+            Your resumes
+            {resumes.length > 0 && (
+              <span className="ml-2 text-sm font-normal text-ink-400">({resumes.length})</span>
+            )}
+          </h2>
         </div>
 
         {loading ? (
-          <div className="card flex items-center justify-center py-12">
-            <Loader label="Loading your resumes..." />
+          <div className="card flex items-center justify-center py-16">
+            <Loader label="Loading your resumes…" />
           </div>
-        ) : resumes.length ? (
-          <div className="space-y-3">
-            {resumes.map((resume) => (
-              <ResumeListCard key={resume.id || resume._id} resume={resume} onDelete={handleDelete} />
-            ))}
-          </div>
-        ) : (
+        ) : resumes.length === 0 ? (
           <EmptyState
+            icon={<Icon name="text" className="h-7 w-7" />}
             title="No resumes yet"
-            description="Create your first resume to start editing in the workspace, use AI tools, and preview your PDF layout live."
+            description="Create your first resume and start applying to jobs today."
             action={
-              <button type="button" className="btn-primary" onClick={handleCreate} disabled={creating}>
+              <Link to="/app/builder" className="btn-primary">
                 <Icon name="plus" className="h-4 w-4" />
                 Create first resume
-              </button>
+              </Link>
             }
           />
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {resumes.map((resume) => (
+              <ResumeCard key={resume.id} resume={resume} onDelete={handleDelete} />
+            ))}
+            {/* Add new card */}
+            <Link to="/app/builder"
+              className="card flex flex-col items-center justify-center gap-3 p-8 border-dashed border-2
+                         border-surface-200 hover:border-brand-300 hover:bg-brand-50/30 transition-all min-h-[180px]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-brand-500">
+                <Icon name="plus" className="h-5 w-5" />
+              </div>
+              <span className="text-sm font-medium text-ink-500">New resume</span>
+            </Link>
+          </div>
         )}
       </div>
     </div>

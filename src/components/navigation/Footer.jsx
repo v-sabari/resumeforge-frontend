@@ -1,69 +1,75 @@
 import { Link } from 'react-router-dom';
 import { Logo } from '../common/Logo';
+import { APP_NAME } from '../../utils/constants';
 
-const footerLinks = {
-  Product: [
-    { label: 'Home', to: '/' },
-    { label: 'Pricing', to: '/pricing' },
-    { label: 'Features', href: '#features' },
-  ],
-  Company: [
-    { label: 'About', to: '/about' },
-    { label: 'Contact', to: '/contact' },
-  ],
-  Legal: [
-    { label: 'Privacy Policy', to: '/privacy' },
-    { label: 'Terms & Conditions', to: '/terms' },
-  ],
-  Account: [
-    { label: 'Login', to: '/login' },
-    { label: 'Create account', to: '/register' },
-    { label: 'Dashboard', to: '/app/dashboard' },
-  ],
-};
+const cols = [
+  {
+    heading: 'Product',
+    links: [
+      { to: '/features',  label: 'Features'     },
+      { to: '/pricing',   label: 'Pricing'      },
+      { to: '/resources', label: 'Resources'    },
+      { to: '/app/builder', label: 'Build Resume' },
+    ],
+  },
+  {
+    heading: 'Company',
+    links: [
+      { to: '/about',   label: 'About Us' },
+      { to: '/contact', label: 'Contact'  },
+    ],
+  },
+  {
+    heading: 'Legal',
+    links: [
+      { to: '/privacy',       label: 'Privacy Policy'    },
+      { to: '/terms',         label: 'Terms of Service'  },
+      { to: '/refund-policy', label: 'Refund Policy'     },
+    ],
+  },
+];
+
+const trustItems = [
+  '🔒 Secure & encrypted',
+  '✅ ATS-optimised',
+  '🌏 Used worldwide',
+  '💳 Powered by Razorpay',
+];
 
 export const Footer = () => (
-  <footer className="mt-12 border-t border-slate-200/70 bg-white">
-    <div className="app-shell py-12 lg:py-16">
-      <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
+  <footer className="border-t border-surface-200 bg-white">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+      {/* Trust bar */}
+      <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-10 pb-8 border-b border-surface-100">
+        {trustItems.map((t) => (
+          <span key={t} className="text-xs text-ink-400 font-medium">{t}</span>
+        ))}
+      </div>
+
+      <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
         {/* Brand */}
-        <div className="sm:col-span-2 lg:col-span-1">
-          <Logo className="mb-4" />
-          <p className="max-w-xs text-sm leading-6 text-slate-600">
-            Build sharper resumes with AI-assisted writing, real-time preview, and a clean workspace designed for serious job seekers.
+        <div>
+          <Logo size="sm" />
+          <p className="mt-3 text-sm text-ink-400 max-w-xs leading-relaxed">
+            AI-powered resume builder for modern professionals.
+            ATS-ready, free to start, trusted by job seekers worldwide.
           </p>
-          <div className="mt-5 flex gap-2">
-            <span className="inline-flex items-center rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700">
-              AI-powered
-            </span>
-            <span className="inline-flex items-center rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700">
-              ATS-friendly
-            </span>
+          <div className="mt-4 space-y-1 text-xs text-ink-400">
+            <p><a href="mailto:support@resumeforge.ai" className="hover:text-brand-600 transition-colors">support@resumeforge.ai</a></p>
+            <p><a href="mailto:billing@resumeforge.ai"  className="hover:text-brand-600 transition-colors">billing@resumeforge.ai</a></p>
           </div>
+          <p className="mt-4 text-xs text-ink-300">© {new Date().getFullYear()} {APP_NAME}.<br />All rights reserved.</p>
         </div>
 
-        {/* Link columns — use h2 for section headings (semantic) */}
-        {Object.entries(footerLinks).map(([title, links]) => (
-          <div key={title}>
-            <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-500">{title}</h2>
+        {cols.map((col) => (
+          <div key={col.heading}>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-ink-400 mb-4">{col.heading}</h4>
             <ul className="space-y-2.5">
-              {links.map((link) => (
-                <li key={link.label}>
-                  {link.href ? (
-                    <a
-                      href={link.href}
-                      className="text-sm text-slate-600 transition-colors hover:text-slate-950"
-                    >
-                      {link.label}
-                    </a>
-                  ) : (
-                    <Link
-                      to={link.to}
-                      className="text-sm text-slate-600 transition-colors hover:text-slate-950"
-                    >
-                      {link.label}
-                    </Link>
-                  )}
+              {col.links.map(({ to, label }) => (
+                <li key={to}>
+                  <Link to={to} className="text-sm text-ink-500 hover:text-brand-600 transition-colors">
+                    {label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -71,12 +77,23 @@ export const Footer = () => (
         ))}
       </div>
 
-      {/* Bottom bar — no duplicate links; all section links already above */}
-      <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-slate-100 pt-8 sm:flex-row">
-        <p className="text-xs text-slate-500">© {new Date().getFullYear()} ResumeForge AI. All rights reserved.</p>
-        <p className="text-xs text-slate-500">
-          Made for serious job seekers
+      {/* Bottom bar */}
+      <div className="mt-10 pt-6 border-t border-surface-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p className="text-xs text-ink-300">
+          Free to start · No credit card needed · Instant PDF download
         </p>
+        <div className="flex gap-4">
+          {[
+            { to: '/privacy',       label: 'Privacy' },
+            { to: '/terms',         label: 'Terms'   },
+            { to: '/refund-policy', label: 'Refunds' },
+            { to: '/contact',       label: 'Support' },
+          ].map(({ to, label }) => (
+            <Link key={to} to={to} className="text-xs text-ink-300 hover:text-ink-500 transition-colors">
+              {label}
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   </footer>

@@ -1,1 +1,4 @@
-google.com, pub-8772182714007004, DIRECT, f08c47fec0942fa0
+# Google AdSense ads.txt
+# ACTION REQUIRED: After AdSense approval, replace the line below with your real publisher entry.
+# Format: google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+# Until then, leave this file as-is (empty/comment-only is fine — do NOT leave a placeholder line).

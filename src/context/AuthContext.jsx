@@ -1,78 +1,94 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { getCurrentUser, loginUser, registerUser } from '../services/authService';
-import { getPremiumStatus } from '../services/premiumService';
-import { getExportStatus } from '../services/exportService';
-import { TOKEN_STORAGE_KEY } from '../utils/constants';
-import { formatApiError } from '../utils/helpers';
+import { getPremiumStatus }  from '../services/premiumService';
+import { getExportStatus }   from '../services/exportService';
+import { TOKEN_STORAGE_KEY, INACTIVITY_TIMEOUT_MS } from '../utils/constants';
+import { formatApiError }    from '../utils/helpers';
 
 const AuthContext = createContext(null);
 
-const normalizePremium = (value) => {
-  if (!value) return null;
-  return {
-    ...value,
-    isPremium: Boolean(value.isPremium ?? value.premium),
-    plan: value.plan || (value.isPremium ?? value.premium ? 'Premium' : 'Free'),
-  };
+const normalisePremium = (v) => {
+  if (!v) return null;
+  return { ...v, isPremium: Boolean(v.isPremium ?? v.premium) };
 };
 
-const normalizeExportStatus = (value) => {
-  if (!value) return null;
-  const usedExports = value.usedExports ?? value.exportCount ?? value.used ?? 0;
-  const remainingFreeExports = value.remainingFreeExports ?? value.remaining ?? 0;
-  const adCompleted = Boolean(value.adCompleted ?? value.adUnlocked);
+const normaliseExport = (v) => {
+  if (!v) return null;
   return {
-    ...value,
-    usedExports,
-    remainingFreeExports,
-    adCompleted,
-    canExport: Boolean(value.canExport ?? value.allowed),
+    ...v,
+    usedExports:         v.usedExports         ?? v.exportCount ?? 0,
+    remainingFreeExports: v.remainingFreeExports ?? v.remaining   ?? 0,
+    canExport:           Boolean(v.canExport ?? v.allowed),
   };
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [premium, setPremium] = useState(null);
+  const [user,         setUser]         = useState(null);
+  const [premium,      setPremium]      = useState(null);
   const [exportStatus, setExportStatus] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading,      setLoading]      = useState(true);
+  const [showInactivityWarning, setShowInactivityWarning] = useState(false);
 
-  const setSession = (token) => {
-    if (token) localStorage.setItem(TOKEN_STORAGE_KEY, token);
-    else localStorage.removeItem(TOKEN_STORAGE_KEY);
-  };
+  const inactivityTimer  = useRef(null);
+  const warningTimer     = useRef(null);
 
-  const refreshPremiumStatus = async () => {
-    try {
-      const response = await getPremiumStatus();
-      const next = normalizePremium(response?.premium || response?.data || response);
-      setPremium(next);
-      return next;
-    } catch {
-      setPremium(null);
-      return null;
-    }
-  };
+  // ── Inactivity logout ────────────────────────────────────────────
+  const resetInactivityTimer = useCallback(() => {
+    clearTimeout(inactivityTimer.current);
+    clearTimeout(warningTimer.current);
+    setShowInactivityWarning(false);
 
-  const refreshExportStatus = async () => {
-    try {
-      const response = await getExportStatus();
-      const next = normalizeExportStatus(response?.status || response?.data || response);
-      setExportStatus(next);
-      return next;
-    } catch {
-      setExportStatus(null);
-      return null;
-    }
-  };
+    warningTimer.current = setTimeout(() => {
+      setShowInactivityWarning(true);
+    }, INACTIVITY_TIMEOUT_MS - 30_000); // warn 30s before logout
+
+    inactivityTimer.current = setTimeout(() => {
+      logout(); // eslint-disable-line no-use-before-define
+    }, INACTIVITY_TIMEOUT_MS);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    const hydrateSession = async () => {
-      const token = localStorage.getItem(TOKEN_STORAGE_KEY);
-      if (!token) {
-        setLoading(false);
-        return;
-      }
+    if (!user) return;
+    const events = ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'];
+    events.forEach((e) => window.addEventListener(e, resetInactivityTimer, { passive: true }));
+    resetInactivityTimer();
+    return () => {
+      events.forEach((e) => window.removeEventListener(e, resetInactivityTimer));
+      clearTimeout(inactivityTimer.current);
+      clearTimeout(warningTimer.current);
+    };
+  }, [user, resetInactivityTimer]);
 
+  // ── Token helpers ────────────────────────────────────────────────
+  const setSession = (token) => {
+    if (token) localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    else       localStorage.removeItem(TOKEN_STORAGE_KEY);
+  };
+
+  // ── Status refreshers ────────────────────────────────────────────
+  const refreshPremiumStatus = useCallback(async () => {
+    try {
+      const res  = await getPremiumStatus();
+      const next = normalisePremium(res?.premium || res?.data || res);
+      setPremium(next);
+      return next;
+    } catch { setPremium(null); return null; }
+  }, []);
+
+  const refreshExportStatus = useCallback(async () => {
+    try {
+      const res  = await getExportStatus();
+      const next = normaliseExport(res?.status || res?.data || res);
+      setExportStatus(next);
+      return next;
+    } catch { setExportStatus(null); return null; }
+  }, []);
+
+  // ── Hydrate on mount ─────────────────────────────────────────────
+  useEffect(() => {
+    const hydrate = async () => {
+      const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+      if (!token) { setLoading(false); return; }
       try {
         const me = await getCurrentUser();
         setUser(me.user || me.data || me);
@@ -84,65 +100,60 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     };
+    hydrate();
+  }, [refreshPremiumStatus, refreshExportStatus]);
 
-    hydrateSession();
-  }, []);
-
+  // ── Auth actions ─────────────────────────────────────────────────
   const login = async (payload) => {
-    const response = await loginUser(payload);
-    const token = response?.token || response?.data?.token;
+    const res   = await loginUser(payload);
+    const token = res?.token || res?.data?.token;
     if (!token) throw new Error('Login response did not include a token.');
-
     setSession(token);
     const me = await getCurrentUser();
     setUser(me.user || me.data || me);
     await Promise.all([refreshPremiumStatus(), refreshExportStatus()]);
-    return response;
+    return res;
   };
 
   const register = async (payload) => {
-    const response = await registerUser(payload);
-    const token = response?.token || response?.data?.token;
+    const res   = await registerUser(payload);
+    const token = res?.token || res?.data?.token;
     if (token) {
       setSession(token);
       const me = await getCurrentUser();
       setUser(me.user || me.data || me);
       await Promise.all([refreshPremiumStatus(), refreshExportStatus()]);
     }
-    return response;
+    return res;
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setSession(null);
     setUser(null);
     setPremium(null);
     setExportStatus(null);
-  };
+    setShowInactivityWarning(false);
+    clearTimeout(inactivityTimer.current);
+    clearTimeout(warningTimer.current);
+  }, []);
 
-  const value = useMemo(
-    () => ({
-      user,
-      premium,
-      exportStatus,
-      loading,
-      isAuthenticated: Boolean(user),
-      login,
-      register,
-      logout,
-      refreshPremiumStatus,
-      refreshExportStatus,
-      setUser,
-      setPremium,
-      errorFormatter: formatApiError,
-    }),
-    [user, premium, exportStatus, loading],
-  );
+  const value = useMemo(() => ({
+    user, premium, exportStatus, loading,
+    showInactivityWarning,
+    isAuthenticated: Boolean(user),
+    login, register, logout,
+    refreshPremiumStatus, refreshExportStatus,
+    setUser, setPremium,
+    errorFormatter: formatApiError,
+    dismissInactivityWarning: () => { setShowInactivityWarning(false); resetInactivityTimer(); },
+  }), [user, premium, exportStatus, loading, showInactivityWarning,
+      refreshPremiumStatus, refreshExportStatus, logout, resetInactivityTimer]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within an AuthProvider');
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
 };

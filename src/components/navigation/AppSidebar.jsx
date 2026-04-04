@@ -1,104 +1,87 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { Logo } from '../common/Logo';
 import { Icon } from '../icons/Icon';
-import { cn } from '../../utils/helpers';
 
-export const AppSidebar = ({
-  navItems,
-  isOpen,
-  isDesktopCollapsed,
-  onClose,
-  onToggleDesktop,
-  premium,
-  exportStatus,
-  onLogout,
-}) => (
-  <aside
-    className={cn(
-      'surface-dark fixed inset-y-4 left-4 z-50 flex h-[calc(100vh-2rem)] flex-col justify-between overflow-hidden transition-all duration-300 ease-out xl:sticky xl:top-4 xl:z-20',
-      isOpen ? 'translate-x-0' : '-translate-x-[115%] xl:translate-x-0',
-      isDesktopCollapsed ? 'w-[96px]' : 'w-[min(88vw,320px)] xl:w-[304px]',
-    )}
-  >
-    <div className="flex h-full flex-col gap-6 p-4 sm:p-5">
-      <div className="flex items-center justify-between gap-3">
-        <Logo compact={isDesktopCollapsed} linkTo="/app/dashboard" surface="dark" className={cn(isDesktopCollapsed && 'mx-auto')} />
+const navItems = [
+  { to: '/app/dashboard', icon: 'grid',      label: 'Dashboard' },
+  { to: '/app/builder',   icon: 'text',      label: 'New Resume' },
+  { to: '/app/profile',   icon: 'user',      label: 'Profile'   },
+  { to: '/pricing',       icon: 'crown',     label: 'Upgrade'   },
+];
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="hidden h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition duration-300 hover:bg-white/10 xl:inline-flex"
-            onClick={onToggleDesktop}
-            aria-label={isDesktopCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            <Icon name="arrowRight" className={cn('h-4 w-4 transition-transform duration-300', isDesktopCollapsed && 'rotate-180')} />
-          </button>
-          <button
-            type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition duration-300 hover:bg-white/10 xl:hidden"
-            onClick={onClose}
-            aria-label="Close menu"
-          >
-            <span className="text-xl leading-none">×</span>
-          </button>
-        </div>
+export const AppSidebar = () => {
+  const { user, premium, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  return (
+    <aside className="hidden lg:flex flex-col w-56 shrink-0 bg-white border-r border-surface-200 h-screen sticky top-0 overflow-y-auto">
+      <div className="flex h-16 items-center px-5 border-b border-surface-200">
+        <Logo size="sm" linkTo="/app/dashboard" />
       </div>
 
-      <div className={cn('rounded-[24px] border border-white/10 bg-white/5 p-4 transition-all duration-300', isDesktopCollapsed && 'p-3 text-center')}>
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-200">Workspace</p>
-        {!isDesktopCollapsed ? (
-          <p className="mt-3 text-sm leading-7 text-slate-300">
-            Build, preview, and export resumes inside a cleaner premium workspace without changing your working app logic.
-          </p>
-        ) : (
-          <p className="mt-3 text-xs leading-6 text-slate-300">Premium UI</p>
-        )}
-      </div>
-
-      <nav className="space-y-2">
-        {navItems.map((item) => (
+      <nav className="flex-1 p-3 space-y-0.5">
+        {navItems.map(({ to, icon, label }) => (
           <NavLink
-            key={item.to}
-            to={item.to}
-            title={item.label}
+            key={to}
+            to={to}
+            end={to === '/app/dashboard'}
             className={({ isActive }) =>
-              cn(
-                'flex min-h-12 items-center rounded-2xl px-4 py-3 text-sm font-semibold transition duration-300 ease-out',
-                isDesktopCollapsed ? 'justify-center px-3' : 'gap-3',
-                isActive
-                  ? 'bg-white text-slate-950 shadow-sm'
-                  : 'text-slate-300 hover:bg-white/10 hover:text-white',
-              )
-            }
-          >
-            <Icon name={item.icon} className="h-5 w-5 shrink-0" />
-            {!isDesktopCollapsed ? <span>{item.label}</span> : null}
+              `flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-all
+               ${isActive
+                 ? 'bg-brand-600 text-white shadow-sm'
+                 : 'text-ink-500 hover:bg-surface-100 hover:text-ink-950'}`}>
+            <Icon name={icon} className="h-4 w-4 shrink-0" />
+            {label}
+            {label === 'Upgrade' && !premium?.isPremium && (
+              <span className="ml-auto premium-badge text-[10px] px-1.5 py-0.5">PRO</span>
+            )}
           </NavLink>
         ))}
       </nav>
 
-      <div className="mt-auto space-y-4">
-        <div className={cn('rounded-[24px] border border-brand-400/20 bg-brand-500/10 p-4 transition-all duration-300', isDesktopCollapsed && 'p-3 text-center')}>
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-200">Plan</p>
-          <h3 className={cn('mt-3 font-semibold text-white', isDesktopCollapsed ? 'text-sm' : 'text-lg')}>
-            {premium?.isPremium ? 'Premium unlocked' : 'Free workspace'}
-          </h3>
-          {!isDesktopCollapsed ? (
-            <p className="mt-2 text-sm leading-7 text-slate-300">
-              {premium?.isPremium
-                ? 'Unlimited exports are active on your account.'
-                : `${exportStatus?.remainingFreeExports ?? 0} free exports remaining before upgrade.`}
-            </p>
-          ) : (
-            <p className="mt-2 text-xs text-slate-300">{premium?.isPremium ? 'Unlimited' : `${exportStatus?.remainingFreeExports ?? 0} left`}</p>
-          )}
+      {/* User panel */}
+      <div className="p-3 border-t border-surface-200 space-y-2">
+        {premium?.isPremium ? (
+          <div className="rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/60 p-3">
+            <div className="flex items-center gap-2">
+              <Icon name="crown" className="h-4 w-4 text-amber-500" />
+              <span className="text-xs font-bold text-amber-700">Premium Active</span>
+            </div>
+            <p className="mt-0.5 text-xs text-amber-600">Unlimited exports</p>
+          </div>
+        ) : (
+          <NavLink to="/pricing"
+            className="flex items-center gap-2 rounded-xl bg-brand-50 border border-brand-200/60 p-3 hover:bg-brand-100 transition-colors">
+            <Icon name="zap" className="h-4 w-4 text-brand-600" />
+            <div>
+              <p className="text-xs font-semibold text-brand-700">Upgrade to Pro</p>
+              <p className="text-xs text-brand-500">Unlimited exports</p>
+            </div>
+          </NavLink>
+        )}
+
+        <div className="flex items-center gap-2 px-3 py-2">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">
+            {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+          </span>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-ink-950 truncate">{user?.name}</p>
+            <p className="text-xs text-ink-400 truncate">{user?.email}</p>
+          </div>
         </div>
 
-        <button type="button" className="btn-secondary w-full justify-center" onClick={onLogout}>
-          <Icon name="lock" className="h-4 w-4" />
-          {!isDesktopCollapsed ? 'Log out' : ''}
+        <button onClick={handleLogout}
+          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-ink-400 hover:text-danger-600 hover:bg-danger-50 transition-colors">
+          <Icon name="logout" className="h-4 w-4" />
+          Sign out
         </button>
       </div>
-    </div>
-  </aside>
-);
+    </aside>
+  );
+};

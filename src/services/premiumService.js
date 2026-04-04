@@ -5,7 +5,7 @@ export const getPremiumStatus = async () => {
   return data;
 };
 
-export const activatePremium = async (payload = {}) => {
-  const { data } = await api.post('/api/premium/activate', payload);
+export const activatePremium = async (paymentId) => {
+  const { data } = await api.post('/api/premium/activate', { paymentId });
   return data;
 };

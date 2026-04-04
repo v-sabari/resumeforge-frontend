@@ -1,73 +1,96 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { AuthShell } from '../components/auth/AuthShell';
-import { useForm } from '../hooks/useForm';
 import { useAuth } from '../context/AuthContext';
+import { Logo } from '../components/common/Logo';
 import { Alert } from '../components/common/Alert';
+import { Loader } from '../components/common/Loader';
+import { Icon } from '../components/icons/Icon';
+import { formatApiError } from '../utils/helpers';
 
 export const LoginPage = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { login, errorFormatter } = useAuth();
-  const [submitting, setSubmitting] = useState(false);
-  const [serverError, setServerError] = useState('');
-  const { values, errors, setErrors, handleChange } = useForm({ email: '', password: '' });
+  const { login } = useAuth();
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const from      = location.state?.from?.pathname || '/app/dashboard';
 
-  const validate = () => {
-    const e = {};
-    if (!values.email.trim()) e.email = 'Email is required.';
-    if (!values.password.trim()) e.password = 'Password is required.';
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
+  const [form,     setForm]     = useState({ email: '', password: '' });
+  const [error,    setError]    = useState('');
+  const [loading,  setLoading]  = useState(false);
+  const [showPass, setShowPass] = useState(false);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (!validate()) return;
-    setSubmitting(true);
-    setServerError('');
+  const set = (k) => (e) => setForm((p) => ({ ...p, [k]: e.target.value }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.email || !form.password) { setError('Please enter your email and password.'); return; }
+    setLoading(true); setError('');
     try {
-      await login(values);
-      navigate(location.state?.from?.pathname || '/app/dashboard', { replace: true });
-    } catch (error) {
-      setServerError(errorFormatter(error, 'Unable to log in right now.'));
+      await login({ email: form.email.trim().toLowerCase(), password: form.password });
+      navigate(from, { replace: true });
+    } catch (err) {
+      setError(formatApiError(err, 'Invalid email or password. Please try again.'));
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
   };
 
   return (
-    <AuthShell
-      title="Welcome back"
-      subtitle="Access your resumes, export controls, and builder workspace."
-      sideTitle="Return to the workspace that keeps editing and preview in sync."
-      sideCopy="ResumeForge AI brings premium polish while keeping your auth flow, backend purpose, and product identity intact."
-    >
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        <div>
-          <label className="label" htmlFor="email">Email address</label>
-          <input id="email" name="email" type="email" autoComplete="email"
-            className="input" value={values.email} onChange={handleChange}
-            placeholder="you@example.com" />
-          {errors.email && <p className="mt-1.5 text-xs text-rose-600">{errors.email}</p>}
+    <div className="min-h-screen bg-surface-50 flex flex-col items-center justify-center px-4 py-12">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <Logo size="md" linkTo="/" className="justify-center" />
+          <h1 className="mt-6 text-2xl font-display font-semibold text-ink-950">Welcome back</h1>
+          <p className="mt-1.5 text-sm text-ink-400">Sign in to continue building your resume</p>
         </div>
-        <div>
-          <label className="label" htmlFor="password">Password</label>
-          <input id="password" name="password" type="password" autoComplete="current-password"
-            className="input" value={values.password} onChange={handleChange}
-            placeholder="••••••••" />
-          {errors.password && <p className="mt-1.5 text-xs text-rose-600">{errors.password}</p>}
+
+        <div className="card p-6 shadow-lift">
+          <Alert variant="error" className="mb-4">{error}</Alert>
+
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            <div>
+              <label className="label">Email address</label>
+              <div className="relative">
+                <Icon name="mail" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
+                <input
+                  type="email" autoComplete="email" required
+                  className="input pl-9"
+                  placeholder="you@example.com"
+                  value={form.email}
+                  onChange={set('email')} />
+              </div>
+            </div>
+
+            <div>
+              <label className="label">Password</label>
+              <div className="relative">
+                <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
+                <input
+                  type={showPass ? 'text' : 'password'} autoComplete="current-password" required
+                  className="input pl-9 pr-10"
+                  placeholder="••••••••"
+                  value={form.password}
+                  onChange={set('password')} />
+                <button type="button" tabIndex={-1}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-300 hover:text-ink-500"
+                  onClick={() => setShowPass(!showPass)}>
+                  <Icon name={showPass ? 'eyeOff' : 'eye'} className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" className="btn-primary w-full justify-center mt-2" disabled={loading}>
+              {loading ? <Loader label="Signing in…" size="sm" /> : 'Sign in'}
+            </button>
+          </form>
         </div>
-        <Alert variant="error">{serverError}</Alert>
-        <button type="submit" className="btn-primary w-full justify-center py-3 mt-2"
-          disabled={submitting}>
-          {submitting ? 'Logging in...' : 'Log in'}
-        </button>
-        <p className="text-center text-sm text-slate-500">
-          New to ResumeForge AI?{' '}
-          <Link to="/register" className="font-semibold text-brand-700 hover:underline">Create an account</Link>
+
+        <p className="text-center mt-5 text-sm text-ink-400">
+          Don't have an account?{' '}
+          <Link to="/register" className="font-semibold text-brand-600 hover:text-brand-700">
+            Create one free
+          </Link>
         </p>
-      </form>
-    </AuthShell>
+      </div>
+    </div>
   );
 };

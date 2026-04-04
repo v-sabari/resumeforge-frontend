@@ -1,89 +1,125 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthShell } from '../components/auth/AuthShell';
-import { useForm } from '../hooks/useForm';
 import { useAuth } from '../context/AuthContext';
+import { Logo } from '../components/common/Logo';
 import { Alert } from '../components/common/Alert';
+import { Loader } from '../components/common/Loader';
+import { Icon } from '../components/icons/Icon';
+import { formatApiError } from '../utils/helpers';
 
 export const RegisterPage = () => {
-  const navigate = useNavigate();
-  const { register, errorFormatter } = useAuth();
-  const [submitting, setSubmitting] = useState(false);
-  const [serverError, setServerError] = useState('');
-  const { values, errors, setErrors, handleChange } = useForm({ name: '', email: '', password: '', confirmPassword: '' });
+  const { register } = useAuth();
+  const navigate     = useNavigate();
+
+  const [form,     setForm]     = useState({ name: '', email: '', password: '', confirm: '' });
+  const [error,    setError]    = useState('');
+  const [loading,  setLoading]  = useState(false);
+  const [showPass, setShowPass] = useState(false);
+
+  const set = (k) => (e) => setForm((p) => ({ ...p, [k]: e.target.value }));
 
   const validate = () => {
-    const e = {};
-    if (!values.name.trim()) e.name = 'Full name is required.';
-    if (!values.email.trim()) e.email = 'Email is required.';
-    if (!values.password.trim()) e.password = 'Password is required.';
-    if (values.password.length < 6) e.password = 'Use at least 6 characters.';
-    if (values.confirmPassword !== values.password) e.confirmPassword = 'Passwords must match.';
-    setErrors(e);
-    return Object.keys(e).length === 0;
+    if (!form.name.trim())               return 'Full name is required.';
+    if (!form.email.includes('@'))        return 'Please enter a valid email address.';
+    if (form.password.length < 6)         return 'Password must be at least 6 characters.';
+    if (form.password !== form.confirm)   return 'Passwords do not match.';
+    return null;
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (!validate()) return;
-    setSubmitting(true);
-    setServerError('');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const err = validate();
+    if (err) { setError(err); return; }
+    setLoading(true); setError('');
     try {
-      await register({ name: values.name, email: values.email, password: values.password });
+      await register({
+        name:     form.name.trim(),
+        email:    form.email.trim().toLowerCase(),
+        password: form.password,
+      });
       navigate('/app/dashboard', { replace: true });
-    } catch (error) {
-      setServerError(errorFormatter(error, 'Unable to create your account.'));
+    } catch (err) {
+      setError(formatApiError(err, 'Registration failed. Please try again.'));
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
   };
 
   return (
-    <AuthShell
-      title="Create your account"
-      subtitle="Start building smarter resumes with AI-assisted writing and a polished dashboard."
-      sideTitle="Get into a professional builder flow from your very first resume."
-      sideCopy="Sign up once, keep the same backend logic, and start editing inside a cleaner workspace inspired by top-tier resume tools."
-    >
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        <div>
-          <label className="label" htmlFor="name">Full name</label>
-          <input id="name" name="name" type="text" autoComplete="name"
-            className="input" value={values.name} onChange={handleChange}
-            placeholder="Aarav Mehta" />
-          {errors.name && <p className="mt-1.5 text-xs text-rose-600">{errors.name}</p>}
+    <div className="min-h-screen bg-surface-50 flex flex-col items-center justify-center px-4 py-12">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <Logo size="md" linkTo="/" className="justify-center" />
+          <h1 className="mt-6 text-2xl font-display font-semibold text-ink-950">Create your account</h1>
+          <p className="mt-1.5 text-sm text-ink-400">Free forever. No credit card needed.</p>
         </div>
-        <div>
-          <label className="label" htmlFor="email">Email address</label>
-          <input id="email" name="email" type="email" autoComplete="email"
-            className="input" value={values.email} onChange={handleChange}
-            placeholder="you@example.com" />
-          {errors.email && <p className="mt-1.5 text-xs text-rose-600">{errors.email}</p>}
+
+        <div className="card p-6 shadow-lift">
+          <Alert variant="error" className="mb-4">{error}</Alert>
+
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            <div>
+              <label className="label">Full name</label>
+              <div className="relative">
+                <Icon name="user" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
+                <input type="text" autoComplete="name" required
+                  className="input pl-9" placeholder="Your full name"
+                  value={form.name} onChange={set('name')} />
+              </div>
+            </div>
+
+            <div>
+              <label className="label">Email address</label>
+              <div className="relative">
+                <Icon name="mail" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
+                <input type="email" autoComplete="email" required
+                  className="input pl-9" placeholder="you@example.com"
+                  value={form.email} onChange={set('email')} />
+              </div>
+            </div>
+
+            <div>
+              <label className="label">Password</label>
+              <div className="relative">
+                <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
+                <input type={showPass ? 'text' : 'password'} autoComplete="new-password" required
+                  className="input pl-9 pr-10" placeholder="Min. 6 characters"
+                  value={form.password} onChange={set('password')} />
+                <button type="button" tabIndex={-1}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-300 hover:text-ink-500"
+                  onClick={() => setShowPass(!showPass)}>
+                  <Icon name={showPass ? 'eyeOff' : 'eye'} className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="label">Confirm password</label>
+              <div className="relative">
+                <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
+                <input type="password" autoComplete="new-password" required
+                  className="input pl-9" placeholder="Repeat your password"
+                  value={form.confirm} onChange={set('confirm')} />
+              </div>
+            </div>
+
+            <p className="text-xs text-ink-400">
+              By registering you agree to our{' '}
+              <Link to="/terms"   className="text-brand-600 hover:underline">Terms</Link> and{' '}
+              <Link to="/privacy" className="text-brand-600 hover:underline">Privacy Policy</Link>.
+            </p>
+
+            <button type="submit" className="btn-primary w-full justify-center" disabled={loading}>
+              {loading ? <Loader label="Creating account…" size="sm" /> : 'Create free account'}
+            </button>
+          </form>
         </div>
-        <div>
-          <label className="label" htmlFor="password">Password</label>
-          <input id="password" name="password" type="password" autoComplete="new-password"
-            className="input" value={values.password} onChange={handleChange}
-            placeholder="Min. 6 characters" />
-          {errors.password && <p className="mt-1.5 text-xs text-rose-600">{errors.password}</p>}
-        </div>
-        <div>
-          <label className="label" htmlFor="confirmPassword">Confirm password</label>
-          <input id="confirmPassword" name="confirmPassword" type="password" autoComplete="new-password"
-            className="input" value={values.confirmPassword} onChange={handleChange}
-            placeholder="Repeat password" />
-          {errors.confirmPassword && <p className="mt-1.5 text-xs text-rose-600">{errors.confirmPassword}</p>}
-        </div>
-        <Alert variant="error">{serverError}</Alert>
-        <button type="submit" className="btn-primary w-full justify-center py-3 mt-2"
-          disabled={submitting}>
-          {submitting ? 'Creating account...' : 'Create account'}
-        </button>
-        <p className="text-center text-sm text-slate-500">
+
+        <p className="text-center mt-5 text-sm text-ink-400">
           Already have an account?{' '}
-          <Link to="/login" className="font-semibold text-brand-700 hover:underline">Log in</Link>
+          <Link to="/login" className="font-semibold text-brand-600 hover:text-brand-700">Sign in</Link>
         </p>
-      </form>
-    </AuthShell>
+      </div>
+    </div>
   );
 };
