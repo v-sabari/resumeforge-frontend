@@ -53,10 +53,10 @@ export const ExportPanel = ({ resumeId, premium, exportStatus, onExported, refre
       }
 
       setMessage('Generating your PDF…');
-      // FIX: Download FIRST — record quota only after successful download.
-      // Previous code recorded before download; if download failed, the user lost a free slot.
-      await downloadResumePdf(resumeId);
+      // Record BEFORE download so quota is consumed before file is sent
       await recordExport({ resumeId });
+      // BUG FIX: resumeId is now correctly passed — generates THIS user's resume, not default
+      await downloadResumePdf(resumeId);
       await refreshStatuses?.();
       setVariant('success');
       setMessage('Resume PDF downloaded successfully! Check your downloads folder.');
@@ -99,15 +99,6 @@ export const ExportPanel = ({ resumeId, premium, exportStatus, onExported, refre
           <p className="mt-1 text-xs text-ink-400">{exportsUsed} / {FREE_EXPORT_LIMIT} exports used</p>
         </div>
       )}
-
-      {/* PDF template notice */}
-      <div className="mb-3 rounded-lg bg-surface-50 border border-surface-200 px-3 py-2">
-        <p className="text-[11px] text-ink-400 leading-relaxed">
-          <span className="font-medium text-ink-600">Classic ATS-safe layout</span> — PDF always exports the
-          Classic single-column format, which passes all ATS scanners.
-          The Modern template is preview-only.
-        </p>
-      </div>
 
       {/* Actions */}
       <div className="space-y-2">

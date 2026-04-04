@@ -36,8 +36,6 @@ export const normaliseResume = (payload) => {
   if (!payload) return null;
   return {
     ...payload,
-    // FIX: Map API `role` → frontend `professionalTitle` so editor field populates on load
-    professionalTitle: payload.professionalTitle || payload.role || '',
     skills:         Array.isArray(payload.skills)         ? payload.skills         : [],
     experience:     Array.isArray(payload.experiences)    ? payload.experiences.map(normExp) : [],
     education:      Array.isArray(payload.education)      ? payload.education.map(normEdu)   : [],
