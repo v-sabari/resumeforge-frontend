@@ -1,17 +1,27 @@
 import axios from 'axios';
 import { TOKEN_STORAGE_KEY } from '../utils/constants';
 
-// BUG FIX: Original used VITE_API_URL — env file defines VITE_API_BASE_URL.
-// This mismatch caused baseURL to be undefined, silently breaking all calls.
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').trim();
+
+if (!API_BASE_URL) {
+  throw new Error('VITE_API_BASE_URL is missing. Set it in .env and Vercel Environment Variables.');
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
-  timeout: 30_000,
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 30000,
 });
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem(TOKEN_STORAGE_KEY);
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
   return config;
 });
 
@@ -20,13 +30,17 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem(TOKEN_STORAGE_KEY);
-      // Redirect to login only if not already there
-      if (!window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) {
+
+      if (
+        !window.location.pathname.startsWith('/login') &&
+        !window.location.pathname.startsWith('/register')
+      ) {
         window.location.href = '/login';
       }
     }
+
     return Promise.reject(error);
-  },
+  }
 );
 
 export default api;
