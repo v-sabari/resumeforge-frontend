@@ -4,105 +4,116 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Primary SEO (per-page overrides handled by useSeoMeta hook) -->
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NLW9TY94DQ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', 'G-NLW9TY94DQ');
+    </script>
+
+    <!-- Primary SEO -->
     <title>ResumeForge AI – Build ATS-Ready Resumes in Minutes</title>
-    <meta name="description" content="ResumeForge AI helps you build professional, ATS-optimized resumes with AI assistance. Free to start. Export PDF in minutes." />
-    <meta name="keywords" content="resume builder, AI resume, ATS resume, free resume maker, CV builder, professional resume, job application, resume tips" />
+    <meta
+      name="description"
+      content="ResumeForge AI helps you build professional, ATS-optimized resumes with AI assistance. Free to start. Export PDF in minutes."
+    />
+    <meta
+      name="keywords"
+      content="resume builder, AI resume, ATS resume, free resume maker, CV builder, professional resume, job application, resume tips"
+    />
     <meta name="author" content="ResumeForge AI" />
     <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://resumeforge.ai" />
+    <link rel="canonical" href="https://resume-forge-ai-frontend.vercel.app" />
 
     <!-- Open Graph -->
-    <meta property="og:type"         content="website" />
-    <meta property="og:url"          content="https://resumeforge.ai" />
-    <meta property="og:title"        content="ResumeForge AI – Build ATS-Ready Resumes in Minutes" />
-    <meta property="og:description"  content="AI-powered resume builder. Create professional, ATS-optimized resumes in minutes with smart templates and AI writing assistance." />
-    <!--
-      ACTION REQUIRED ▶ Create og-image.png (1200×630 px) and place in /public/
-      Show logo + tagline on brand-colour background. Keep under 200 KB.
-      Tools: Canva (free), Figma, or any image editor.
-    -->
-    <meta property="og:image"        content="https://resumeforge.ai/og-image.png" />
-    <meta property="og:image:width"  content="1200" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://resume-forge-ai-frontend.vercel.app" />
+    <meta property="og:title" content="ResumeForge AI – Build ATS-Ready Resumes in Minutes" />
+    <meta
+      property="og:description"
+      content="AI-powered resume builder. Create professional, ATS-optimized resumes in minutes with smart templates and AI writing assistance."
+    />
+    <meta property="og:image" content="https://resume-forge-ai-frontend.vercel.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:site_name"    content="ResumeForge AI" />
+    <meta property="og:site_name" content="ResumeForge AI" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card"        content="summary_large_image" />
-    <meta name="twitter:title"       content="ResumeForge AI – Build ATS-Ready Resumes in Minutes" />
-    <meta name="twitter:description" content="AI-powered resume builder. Create professional, ATS-optimized resumes in minutes." />
-    <meta name="twitter:image"       content="https://resumeforge.ai/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ResumeForge AI – Build ATS-Ready Resumes in Minutes" />
+    <meta
+      name="twitter:description"
+      content="AI-powered resume builder. Create professional, ATS-optimized resumes in minutes."
+    />
+    <meta name="twitter:image" content="https://resume-forge-ai-frontend.vercel.app/og-image.png" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <!--
-      RECOMMENDED ▶ Also add /public/favicon.ico (32×32) and /public/apple-touch-icon.png (180×180)
-      for iOS home screen and older browser support.
+    <!-- Recommended additional icons:
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     -->
 
-    <!-- Font preconnects — must come BEFORE stylesheet links -->
+    <!-- Font preconnects -->
     <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- Fonts — display=swap prevents render-blocking -->
-    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=sora@300,400,500,600&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <!-- Fonts -->
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=sora@300,400,500,600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Google Search Console verification -->
-    <!--
-      ACTION REQUIRED ▶ Go to Search Console → Settings → Ownership verification → HTML tag
-      Paste your token below and uncomment.
-    -->
+    <!-- Replace token and uncomment when ready -->
     <!-- <meta name="google-site-verification" content="PASTE_YOUR_TOKEN_HERE" /> -->
 
-    <!-- Google Analytics 4 -->
-    <!--
-      ACTION REQUIRED ▶ GA4 → Admin → Data Streams → your stream → Measurement ID (G-XXXXXXXXXX)
-      Replace G-XXXXXXXXXX in both places below, then uncomment.
-    -->
-    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-XXXXXXXXXX');
-    </script> -->
-
     <!-- Google AdSense -->
+    <!-- Enable only after site approval is confirmed -->
     <!--
-      ACTION REQUIRED ▶ Add ONLY after AdSense approval.
-      Replace ca-pub-XXXXXXXXXXXXXXXX with your Publisher ID, then uncomment.
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8772182714007004"
+      crossorigin="anonymous">
+    </script>
     -->
-    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
 
     <!-- Structured Data: WebApplication schema -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "ResumeForge AI",
-      "url": "https://resumeforge.ai",
-      "description": "AI-powered resume builder for professionals. Create ATS-ready resumes in minutes.",
-      "applicationCategory": "BusinessApplication",
-      "operatingSystem": "Any",
-      "offers": [
-        {
-          "@type": "Offer",
-          "name": "Free Plan",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        {
-          "@type": "Offer",
-          "name": "Premium Plan",
-          "price": "9",
-          "priceCurrency": "USD"
-        }
-      ]
-    }
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "ResumeForge AI",
+        "url": "https://resume-forge-ai-frontend.vercel.app",
+        "description": "AI-powered resume builder for professionals. Create ATS-ready resumes in minutes.",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Any",
+        "offers": [
+          {
+            "@type": "Offer",
+            "name": "Free Plan",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          {
+            "@type": "Offer",
+            "name": "Premium Plan",
+            "price": "9",
+            "priceCurrency": "USD"
+          }
+        ]
+      }
     </script>
   </head>
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>

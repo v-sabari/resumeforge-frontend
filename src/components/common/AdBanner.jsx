@@ -1,30 +1,34 @@
-/**
- * AdBanner — safe AdSense placement component.
- *
- * PLACEMENT RULES:
- *   ✅ OK to show ads: /resources, /resources/:slug, /about, /contact, /pricing (non-checkout sections)
- *   ❌ NEVER show ads in: /app/*, /login, /register, /payment/*
- *
- * Usage:
- *   <AdBanner slot="XXXXXXXXXX" />
- *
- * To enable: replace the client and slot with your AdSense values in .env
- *   VITE_ADSENSE_CLIENT=ca-pub-XXXXXXXXXXXXXXXX
- *   VITE_ADSENSE_SLOT_CONTENT=XXXXXXXXXX
- */
+import { useEffect } from "react";
 
 const ADSENSE_CLIENT = import.meta.env.VITE_ADSENSE_CLIENT;
+const DEFAULT_SLOT = import.meta.env.VITE_ADSENSE_SLOT_CONTENT;
 
-export const AdBanner = ({ slot, className = '' }) => {
-  // Only render if AdSense is configured
+const AdBanner = ({ slot = DEFAULT_SLOT, className = "" }) => {
+
+  useEffect(() => {
+    if (!ADSENSE_CLIENT || !slot) return;
+
+    try {
+      if (typeof window !== "undefined" && window.adsbygoogle) {
+        window.adsbygoogle.push({});
+      }
+    } catch (e) {
+      console.error("AdSense push error:", e);
+    }
+  }, [slot]);
+
+  // Prevent render if not configured
   if (!ADSENSE_CLIENT || !slot) return null;
 
   return (
-    <div className={`adsense-wrapper my-6 overflow-hidden ${className}`}
-         aria-label="Advertisement">
+    <div
+      className={`adsense-wrapper my-6 overflow-hidden ${className}`}
+      aria-label="Advertisement"
+      role="complementary"
+    >
       <ins
         className="adsbygoogle"
-        style={{ display: 'block' }}
+        style={{ display: "block" }}
         data-ad-client={ADSENSE_CLIENT}
         data-ad-slot={slot}
         data-ad-format="auto"
@@ -33,3 +37,5 @@ export const AdBanner = ({ slot, className = '' }) => {
     </div>
   );
 };
+
+export default AdBanner;
