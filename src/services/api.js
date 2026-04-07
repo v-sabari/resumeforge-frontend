@@ -26,9 +26,12 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem(TOKEN_STORAGE_KEY);
+
+      const path = window.location.pathname;
       if (
-        !window.location.pathname.startsWith('/login') &&
-        !window.location.pathname.startsWith('/register')
+        !path.startsWith('/login') &&
+        !path.startsWith('/register') &&
+        !path.startsWith('/verify-email')
       ) {
         window.location.href = '/login';
       }

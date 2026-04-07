@@ -151,18 +151,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (payload) => {
+    // OTP flow: register should NOT auto-login
     const res = await registerUser(payload);
-    const token = res?.token || res?.data?.token;
-
-    if (token) {
-      setSession(token);
-
-      const me = await getCurrentUser();
-      setUser(me.user || me.data || me);
-
-      await Promise.all([refreshPremiumStatus(), refreshExportStatus()]);
-    }
-
     return res;
   };
 

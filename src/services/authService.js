@@ -5,6 +5,16 @@ export const registerUser = async (payload) => {
   return data;
 };
 
+export const verifyEmailOtp = async (payload) => {
+  const { data } = await api.post('/api/auth/verify-email-otp', payload);
+  return data;
+};
+
+export const resendEmailOtp = async (payload) => {
+  const { data } = await api.post('/api/auth/resend-email-otp', payload);
+  return data;
+};
+
 export const loginUser = async (payload) => {
   const { data } = await api.post('/api/auth/login', payload);
   return data;
