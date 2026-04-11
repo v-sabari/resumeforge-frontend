@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Logo } from '../components/common/Logo';
 import { Alert } from '../components/common/Alert';
 import { Loader } from '../components/common/Loader';
@@ -8,6 +8,8 @@ import { forgotPassword } from '../services/authService';
 import { formatApiError } from '../utils/helpers';
 
 export const ForgotPasswordPage = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -27,11 +29,22 @@ export const ForgotPasswordPage = () => {
     setSuccess('');
 
     try {
+      const normalizedEmail = email.trim().toLowerCase();
+
       const response = await forgotPassword({
-        email: email.trim().toLowerCase(),
+        email: normalizedEmail,
       });
 
-      setSuccess(response?.message || 'If an account exists with this email, a password reset OTP has been sent.');
+      setSuccess(
+        response?.message || 'If an account exists with this email, a password reset OTP has been sent.'
+      );
+
+      setTimeout(() => {
+        navigate('/reset-password', {
+          replace: true,
+          state: { email: normalizedEmail },
+        });
+      }, 1000);
     } catch (err) {
       setError(formatApiError(err, 'Could not process your request. Please try again.'));
     } finally {
@@ -53,8 +66,12 @@ export const ForgotPasswordPage = () => {
         </div>
 
         <div className="card p-6 shadow-lift">
-          <Alert variant="error" className="mb-4">{error}</Alert>
-          <Alert variant="success" className="mb-4">{success}</Alert>
+          <Alert variant="error" className="mb-4">
+            {error}
+          </Alert>
+          <Alert variant="success" className="mb-4">
+            {success}
+          </Alert>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
