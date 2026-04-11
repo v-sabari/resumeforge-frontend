@@ -55,8 +55,8 @@ export const Footer = () => (
             ATS-ready, free to start, trusted by job seekers worldwide.
           </p>
           <div className="mt-4 space-y-1 text-xs text-ink-400">
-            <p><a href="mailto:support@resumeforge.ai" className="hover:text-brand-600 transition-colors">support@resumeforge.ai</a></p>
-            <p><a href="mailto:billing@resumeforge.ai"  className="hover:text-brand-600 transition-colors">billing@resumeforge.ai</a></p>
+            <p><a href="mailto:support@resumeforgeai.site" className="hover:text-brand-600 transition-colors">support@resumeforgeai.site</a></p>
+            <p><a href="mailto:billing@resumeforgeai.site"  className="hover:text-brand-600 transition-colors">billing@resumeforgeai.site</a></p>
           </div>
           <p className="mt-4 text-xs text-ink-300">© {new Date().getFullYear()} {APP_NAME}.<br />All rights reserved.</p>
         </div>
