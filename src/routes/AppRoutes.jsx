@@ -13,9 +13,13 @@ import { PricingPage } from '../pages/PricingPage';
 import { ProfilePage } from '../pages/ProfilePage';
 import { PaymentSuccessPage, PaymentFailedPage } from '../pages/PaymentPages';
 import { ResourcesPage, ArticlePage } from '../pages/ResourcesPages';
+import { ContactPage } from '../pages/ContactPage';
 import {
-  TermsPage, PrivacyPage, RefundPolicyPage,
-  AboutPage, ContactPage, NotFoundPage,
+  TermsPage,
+  PrivacyPage,
+  RefundPolicyPage,
+  AboutPage,
+  NotFoundPage,
 } from '../pages/StaticPages';
 
 const SeoWrapper = ({ children }) => {
