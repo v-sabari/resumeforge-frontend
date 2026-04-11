@@ -15,6 +15,16 @@ export const resendEmailOtp = async (payload) => {
   return data;
 };
 
+export const forgotPassword = async (payload) => {
+  const { data } = await api.post('/api/auth/forgot-password', payload);
+  return data;
+};
+
+export const resetPassword = async (payload) => {
+  const { data } = await api.post('/api/auth/reset-password', payload);
+  return data;
+};
+
 export const loginUser = async (payload) => {
   const { data } = await api.post('/api/auth/login', payload);
   return data;
