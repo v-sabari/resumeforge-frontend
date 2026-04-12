@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { ARTICLES } from '../pages/ResourcesPages';
+import { ARTICLES } from '../data/articles';
 
 const APP_NAME = 'ResumeForge AI';
 const BASE_URL = 'https://www.resumeforgeai.site';
@@ -54,30 +54,50 @@ const PAGE_META = {
   },
   '/terms': {
     title: `Terms of Service – ${APP_NAME}`,
-    description: `Read the terms of service for ResumeForge AI.`,
+    description: 'Read the terms of service for ResumeForge AI.',
   },
   '/privacy': {
     title: `Privacy Policy – ${APP_NAME}`,
     description:
-      `Read the privacy policy for ResumeForge AI. We take your data privacy seriously.`,
+      'Read the privacy policy for ResumeForge AI. We take your data privacy seriously.',
   },
   '/resources': {
     title: `Career Resources & Resume Tips – ${APP_NAME}`,
     description:
-      `Free resume writing guides, ATS tips, action verb lists, LinkedIn advice, and career resources from the ResumeForge AI team.`,
+      'Free resume writing guides, ATS tips, action verb lists, LinkedIn advice, and career resources from the ResumeForge AI team.',
   },
   '/refund-policy': {
     title: `Refund Policy – ${APP_NAME}`,
-    description: `Read the refund and cancellation policy for ResumeForge AI Premium.`,
+    description: 'Read the refund and cancellation policy for ResumeForge AI Premium.',
   },
   '/app/dashboard': {
     title: `Dashboard – ${APP_NAME}`,
-    description: `Your resume dashboard.`,
+    description: 'Your resume dashboard.',
     noIndex: true,
   },
   '/app/builder': {
     title: `Resume Builder – ${APP_NAME}`,
-    description: `Build your resume.`,
+    description: 'Build your resume.',
+    noIndex: true,
+  },
+  '/app/profile': {
+    title: `Profile – ${APP_NAME}`,
+    description: 'Manage your ResumeForge AI account profile.',
+    noIndex: true,
+  },
+  '/verify-email': {
+    title: `Verify Email – ${APP_NAME}`,
+    description: 'Verify your ResumeForge AI email address using OTP.',
+    noIndex: true,
+  },
+  '/payment/success': {
+    title: `Payment Successful – ${APP_NAME}`,
+    description: 'Your ResumeForge AI payment was successful.',
+    noIndex: true,
+  },
+  '/payment/failed': {
+    title: `Payment Failed – ${APP_NAME}`,
+    description: 'Your ResumeForge AI payment could not be completed.',
     noIndex: true,
   },
 };
@@ -87,11 +107,6 @@ const upsertMetaTag = (selector, attributes) => {
 
   if (!tag) {
     tag = document.createElement('meta');
-    Object.entries(attributes).forEach(([key, value]) => {
-      if (key !== 'content') {
-        tag.setAttribute(key, value);
-      }
-    });
     document.head.appendChild(tag);
   }
 
@@ -143,7 +158,7 @@ const getMetaForPath = (path) => {
 
   const prefixMatch = Object.entries(PAGE_META).find(([key]) => {
     if (key === '/') return false;
-    return path.startsWith(key);
+    return path === key || path.startsWith(`${key}/`);
   });
 
   if (prefixMatch) {
@@ -231,11 +246,12 @@ export const useSeoMeta = () => {
 
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'page_view', {
-        page_path: path,
+        page_path: location.pathname + location.search,
         page_title: meta.title,
+        page_location: window.location.href,
       });
     }
-  }, [location.pathname]);
+  }, [location.pathname, location.search]);
 };
 
 export const trackEvent = (eventName, params = {}) => {
