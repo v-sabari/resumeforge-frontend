@@ -29,7 +29,7 @@ export const CookieBanner = () => {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-0 inset-x-0 z-50 p-4 sm:p-6">
+    <div className="fixed bottom-4 left-1/2 z-50 w-full max-w-[calc(100%-1rem)] -translate-x-1/2 px-2 sm:max-w-3xl sm:px-0">
       <div className="mx-auto max-w-3xl card shadow-lift-lg p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 animate-fade-up">
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-ink-950 mb-0.5">We use cookies</p>
