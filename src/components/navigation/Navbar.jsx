@@ -5,10 +5,10 @@ import { Logo } from '../common/Logo';
 import { Icon } from '../icons/Icon';
 
 const navLinks = [
-  { to: '/features', label: 'Features' },
   { to: '/pricing', label: 'Pricing' },
   { to: '/resources', label: 'Resources' },
   { to: '/about', label: 'About' },
+  { to: '/contact', label: 'Contact' },
 ];
 
 export const Navbar = memo(() => {
@@ -27,10 +27,14 @@ export const Navbar = memo(() => {
   const isActive = (path) =>
     location.pathname === path || location.pathname.startsWith(`${path}/`);
 
+  const closeMenus = () => {
+    setMobileOpen(false);
+    setUserMenuOpen(false);
+  };
+
   const handleLogout = () => {
     logout();
-    setUserMenuOpen(false);
-    setMobileOpen(false);
+    closeMenus();
     navigate('/');
   };
 
@@ -69,6 +73,7 @@ export const Navbar = memo(() => {
                   onClick={() => setUserMenuOpen((prev) => !prev)}
                   aria-haspopup="menu"
                   aria-expanded={userMenuOpen}
+                  aria-label="Open user menu"
                   className="flex items-center gap-2 rounded-xl border border-surface-200 px-3 py-2 text-sm font-medium text-ink-600 transition-colors hover:bg-surface-50"
                 >
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">
@@ -82,18 +87,20 @@ export const Navbar = memo(() => {
 
                 {userMenuOpen && (
                   <>
-                    <div
-                      className="fixed inset-0 z-10"
+                    <button
+                      type="button"
+                      className="fixed inset-0 z-10 cursor-default"
                       onClick={() => setUserMenuOpen(false)}
-                      aria-hidden="true"
+                      aria-label="Close user menu overlay"
                     />
                     <div
                       className="absolute right-0 top-full z-20 mt-2 w-48 animate-fade-up card p-1.5 shadow-lift-lg"
                       role="menu"
+                      aria-label="User menu"
                     >
                       <Link
                         to="/app/profile"
-                        onClick={() => setUserMenuOpen(false)}
+                        onClick={closeMenus}
                         className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-ink-600 hover:bg-surface-100"
                         role="menuitem"
                       >
@@ -154,6 +161,7 @@ export const Navbar = memo(() => {
             <Link
               key={to}
               to={to}
+              onClick={closeMenus}
               className={`block rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${
                 isActive(to)
                   ? 'bg-brand-50 text-brand-700'
@@ -168,10 +176,10 @@ export const Navbar = memo(() => {
         <div className="mt-3 flex flex-col gap-2 border-t border-surface-200 pt-3">
           {isAuthenticated ? (
             <>
-              <Link to="/app/dashboard" className="btn-secondary justify-center">
+              <Link to="/app/dashboard" onClick={closeMenus} className="btn-secondary justify-center">
                 Dashboard
               </Link>
-              <Link to="/app/profile" className="btn-ghost justify-center">
+              <Link to="/app/profile" onClick={closeMenus} className="btn-ghost justify-center">
                 Profile
               </Link>
               <button type="button" onClick={handleLogout} className="btn-danger justify-center">
@@ -180,10 +188,10 @@ export const Navbar = memo(() => {
             </>
           ) : (
             <>
-              <Link to="/login" className="btn-secondary justify-center">
+              <Link to="/login" onClick={closeMenus} className="btn-secondary justify-center">
                 Sign in
               </Link>
-              <Link to="/register" className="btn-primary justify-center">
+              <Link to="/register" onClick={closeMenus} className="btn-primary justify-center">
                 Get started free
               </Link>
             </>
