@@ -1,8 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/icons/Icon';
 
-/* ── Article data ──────────────────────────────────────────────── */
-
+/* ── Inline markdown renderer ──────────────────────────────────── */
 const renderInlineMarkdown = (text) => {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
 
@@ -16,14 +15,17 @@ const renderInlineMarkdown = (text) => {
     )
   );
 };
+
+/* ── Article data ──────────────────────────────────────────────── */
 export const ARTICLES = [
   {
-    slug:     'how-to-write-ats-resume',
-    title:    'How to Write an ATS-Friendly Resume in 2025',
-    excerpt:  'Most resumes are rejected before a human ever reads them. Learn exactly how Applicant Tracking Systems work and how to structure your resume to pass every ATS filter.',
+    slug: 'how-to-write-ats-resume',
+    title: 'How to Write an ATS-Friendly Resume in 2025',
+    excerpt:
+      'Most resumes are rejected before a human ever reads them. Learn exactly how Applicant Tracking Systems work and how to structure your resume to pass every ATS filter.',
     category: 'Resume Tips',
     readTime: '8 min read',
-    date:     'March 2025',
+    date: 'March 2025',
     content: `
 ## What is an ATS and Why Does It Matter?
 
@@ -80,12 +82,13 @@ The perfect ATS-friendly resume is clean, text-based, keyword-matched to the job
     `,
   },
   {
-    slug:     'resume-action-verbs-list',
-    title:    '200+ Strong Resume Action Verbs (By Category)',
-    excerpt:  'Weak verbs like "helped" and "worked on" kill the impact of your experience. Here are 200+ powerful action verbs organized by job function that will make your resume stand out.',
+    slug: 'resume-action-verbs-list',
+    title: '200+ Strong Resume Action Verbs (By Category)',
+    excerpt:
+      'Weak verbs like "helped" and "worked on" kill the impact of your experience. Here are 200+ powerful action verbs organized by job function that will make your resume stand out.',
     category: 'Resume Writing',
     readTime: '5 min read',
-    date:     'February 2025',
+    date: 'February 2025',
     content: `
 ## Why Action Verbs Matter
 
@@ -127,12 +130,13 @@ Educated, Counseled, Assessed, Diagnosed, Treated, Rehabilitated, Instructed, Fa
     `,
   },
   {
-    slug:     'resume-vs-cv-difference',
-    title:    'Resume vs CV: What\'s the Difference and Which Do You Need?',
-    excerpt:  'Many job seekers use "resume" and "CV" interchangeably, but they are very different documents used in different contexts. Understanding which one to submit can determine whether you get an interview.',
+    slug: 'resume-vs-cv-difference',
+    title: "Resume vs CV: What's the Difference and Which Do You Need?",
+    excerpt:
+      'Many job seekers use "resume" and "CV" interchangeably, but they are very different documents used in different contexts. Understanding which one to submit can determine whether you get an interview.',
     category: 'Career Basics',
     readTime: '6 min read',
-    date:     'January 2025',
+    date: 'January 2025',
     content: `
 ## The Core Difference
 
@@ -186,12 +190,13 @@ For most private-sector jobs globally: submit a resume. For academic, medical, o
     `,
   },
   {
-    slug:     'gaps-in-employment-resume',
-    title:    'How to Handle Gaps in Employment on Your Resume',
-    excerpt:  'Employment gaps are more common than ever. Whether you took time off for health, family, education, or economic reasons, here\'s how to address gaps honestly without hurting your chances.',
+    slug: 'gaps-in-employment-resume',
+    title: 'How to Handle Gaps in Employment on Your Resume',
+    excerpt:
+      "Employment gaps are more common than ever. Whether you took time off for health, family, education, or economic reasons, here's how to address gaps honestly without hurting your chances.",
     category: 'Resume Tips',
     readTime: '7 min read',
-    date:     'December 2024',
+    date: 'December 2024',
     content: `
 ## Employment Gaps Are Normal
 
@@ -235,12 +240,13 @@ Most gaps, if addressed honestly and briefly, have minimal impact on your candid
     `,
   },
   {
-    slug:     'linkedin-profile-tips',
-    title:    'LinkedIn Profile Tips to Get Noticed by Recruiters in 2025',
-    excerpt:  'Your LinkedIn profile is your always-on resume. With over 1 billion members and millions of active recruiters, an optimized LinkedIn profile can bring opportunities directly to you.',
+    slug: 'linkedin-profile-tips',
+    title: 'LinkedIn Profile Tips to Get Noticed by Recruiters in 2025',
+    excerpt:
+      'Your LinkedIn profile is your always-on resume. With over 1 billion members and millions of active recruiters, an optimized LinkedIn profile can bring opportunities directly to you.',
     category: 'Career Growth',
     readTime: '9 min read',
-    date:     'November 2024',
+    date: 'November 2024',
     content: `
 ## Why LinkedIn Matters More Than Ever
 
@@ -311,21 +317,27 @@ export const ResourcesPage = () => (
     </div>
 
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {ARTICLES.map((a) => (
-        <Link key={a.slug} to={`/resources/${a.slug}`}
-          className="card-hover p-5 flex flex-col gap-3">
-          <span className="badge-brand self-start">{a.category}</span>
-          <h2 className="text-base font-semibold text-ink-950 leading-snug">{a.title}</h2>
-          <p className="text-sm text-ink-400 line-clamp-3 leading-relaxed flex-1">{a.excerpt}</p>
+      {ARTICLES.map((article) => (
+        <Link
+          key={article.slug}
+          to={`/resources/${article.slug}`}
+          className="card-hover p-5 flex flex-col gap-3"
+        >
+          <span className="badge-brand self-start">{article.category}</span>
+          <h2 className="text-base font-semibold text-ink-950 leading-snug">
+            {article.title}
+          </h2>
+          <p className="text-sm text-ink-400 line-clamp-3 leading-relaxed flex-1">
+            {article.excerpt}
+          </p>
           <div className="flex items-center justify-between text-xs text-ink-300 pt-1 border-t border-surface-100">
-            <span>{a.date}</span>
-            <span>{a.readTime}</span>
+            <span>{article.date}</span>
+            <span>{article.readTime}</span>
           </div>
         </Link>
       ))}
     </div>
 
-    {/* CTA */}
     <div className="mt-14 card p-8 text-center border-brand-200 bg-gradient-to-r from-brand-50 to-surface-50">
       <h2 className="text-xl font-display font-semibold text-ink-950 mb-2">
         Ready to build your resume?
@@ -343,27 +355,31 @@ export const ResourcesPage = () => (
 /* ── Individual article page ─────────────────────────────────────── */
 export const ArticlePage = () => {
   const { slug } = useParams();
-  const article  = ARTICLES.find((a) => a.slug === slug);
+  const article = ARTICLES.find((item) => item.slug === slug);
 
-  if (!article) return (
-    <div className="mx-auto max-w-3xl px-4 py-20 text-center">
-      <h1 className="text-2xl font-semibold text-ink-950 mb-3">Article not found</h1>
-      <Link to="/resources" className="btn-secondary">Back to resources</Link>
-    </div>
-  );
+  if (!article) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-20 text-center">
+        <h1 className="text-2xl font-semibold text-ink-950 mb-3">Article not found</h1>
+        <Link to="/resources" className="btn-secondary">
+          Back to resources
+        </Link>
+      </div>
+    );
+  }
 
   const paragraphs = article.content.trim().split('\n');
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12">
-      {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-ink-400 mb-8">
-        <Link to="/resources" className="hover:text-brand-600 transition-colors">Resources</Link>
+        <Link to="/resources" className="hover:text-brand-600 transition-colors">
+          Resources
+        </Link>
         <Icon name="chevronRight" className="h-4 w-4" />
         <span className="text-ink-600">{article.category}</span>
       </nav>
 
-      {/* Header */}
       <div className="mb-8">
         <span className="badge-brand mb-3 inline-block">{article.category}</span>
         <h1 className="text-3xl sm:text-4xl font-display font-semibold text-ink-950 tracking-tight leading-snug mb-4">
@@ -376,74 +392,111 @@ export const ArticlePage = () => {
         </div>
       </div>
 
-      {/* Lead */}
       <p className="text-lg text-ink-600 leading-relaxed border-l-4 border-brand-300 pl-4 mb-8 italic">
         {article.excerpt}
       </p>
 
-      {/* Article body — render markdown-like */}
       <div className="prose-content space-y-4 text-ink-700 leading-relaxed">
-        {paragraphs.map((line, i) => {
+        {paragraphs.map((line, index) => {
           const trimmed = line.trim();
+
           if (!trimmed) return null;
-          if (trimmed.startsWith('## ')) return (
-            <h2 key={i} className="text-xl font-display font-semibold text-ink-950 mt-8 mb-3">
-              {trimmed.slice(3)}
-            </h2>
-          );
-          if (trimmed.startsWith('### ')) return (
-            <h3 key={i} className="text-base font-semibold text-ink-950 mt-5 mb-2">
-              {trimmed.slice(4)}
-            </h3>
-          );
-          if (trimmed.startsWith('- ')) return (
-  <li key={i} className="ml-4 text-sm list-disc text-ink-600">
-    {renderInlineMarkdown(trimmed.slice(2))}
-  </li>
-);
-if (/^\d+\.\s/.test(trimmed)) return (
-  <li key={i} className="ml-4 text-sm list-decimal text-ink-600">
-    {renderInlineMarkdown(trimmed.replace(/^\d+\.\s/, ''))}
-  </li>
-);
-          if (trimmed.startsWith('**') && trimmed.endsWith('**')) return (
-            <p key={i} className="font-semibold text-ink-950 text-sm">{trimmed.slice(2, -2)}</p>
-          );
-          // Inline bold rendering
+
+          if (trimmed.startsWith('## ')) {
+            return (
+              <h2
+                key={index}
+                className="text-xl font-display font-semibold text-ink-950 mt-8 mb-3"
+              >
+                {renderInlineMarkdown(trimmed.slice(3))}
+              </h2>
+            );
+          }
+
+          if (trimmed.startsWith('### ')) {
+            return (
+              <h3
+                key={index}
+                className="text-base font-semibold text-ink-950 mt-5 mb-2"
+              >
+                {renderInlineMarkdown(trimmed.slice(4))}
+              </h3>
+            );
+          }
+
+          if (trimmed.startsWith('- ')) {
+            return (
+              <li key={index} className="ml-4 text-sm list-disc text-ink-600">
+                {renderInlineMarkdown(trimmed.slice(2))}
+              </li>
+            );
+          }
+
+          if (/^\d+\.\s/.test(trimmed)) {
+            return (
+              <li key={index} className="ml-4 text-sm list-decimal text-ink-600">
+                {renderInlineMarkdown(trimmed.replace(/^\d+\.\s/, ''))}
+              </li>
+            );
+          }
+
+          if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
+            return (
+              <p key={index} className="font-semibold text-ink-950 text-sm">
+                {trimmed.slice(2, -2)}
+              </p>
+            );
+          }
+
           return (
-  <p key={i} className="text-sm leading-relaxed">
-    {renderInlineMarkdown(trimmed)}
-  </p>
-);
+            <p key={index} className="text-sm leading-relaxed">
+              {renderInlineMarkdown(trimmed)}
+            </p>
+          );
         })}
       </div>
 
-      {/* Bottom CTA */}
       <div className="mt-12 card p-6 border-brand-200 bg-brand-50/50">
-        <h3 className="font-semibold text-ink-950 mb-2">Build an ATS-ready resume in minutes</h3>
+        <h3 className="font-semibold text-ink-950 mb-2">
+          Build an ATS-ready resume in minutes
+        </h3>
         <p className="text-sm text-ink-500 mb-4">
           ResumeForge AI writes your bullet points, optimises for ATS, and exports a clean PDF — free to start.
         </p>
         <div className="flex gap-3 flex-wrap">
-          <Link to="/register" className="btn-primary btn-sm">Start for free</Link>
-          <Link to="/resources" className="btn-secondary btn-sm">More resources</Link>
+          <Link to="/register" className="btn-primary btn-sm">
+            Start for free
+          </Link>
+          <Link to="/resources" className="btn-secondary btn-sm">
+            More resources
+          </Link>
         </div>
       </div>
 
-      {/* Related articles */}
       <div className="mt-10">
-        <h3 className="text-base font-semibold text-ink-950 mb-4">More from our resources</h3>
+        <h3 className="text-base font-semibold text-ink-950 mb-4">
+          More from our resources
+        </h3>
         <div className="space-y-3">
-          {ARTICLES.filter((a) => a.slug !== slug).slice(0, 3).map((a) => (
-            <Link key={a.slug} to={`/resources/${a.slug}`}
-              className="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-100 transition-colors">
-              <Icon name="arrowRight" className="h-4 w-4 text-brand-500 shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-ink-900">{a.title}</p>
-                <p className="text-xs text-ink-400">{a.category} · {a.readTime}</p>
-              </div>
-            </Link>
-          ))}
+          {ARTICLES.filter((item) => item.slug !== slug)
+            .slice(0, 3)
+            .map((relatedArticle) => (
+              <Link
+                key={relatedArticle.slug}
+                to={`/resources/${relatedArticle.slug}`}
+                className="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-100 transition-colors"
+              >
+                <Icon name="arrowRight" className="h-4 w-4 text-brand-500 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-ink-900">
+                    {relatedArticle.title}
+                  </p>
+                  <p className="text-xs text-ink-400">
+                    {relatedArticle.category} · {relatedArticle.readTime}
+                  </p>
+                </div>
+              </Link>
+            ))}
         </div>
       </div>
     </div>
