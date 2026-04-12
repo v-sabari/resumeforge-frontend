@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/icons/Icon';
 import { APP_NAME } from '../utils/constants';
-
+import AdBanner from '../components/common/AdBanner';
 /* ─── Data ──────────────────────────────────────────────────────── */
 const features = [
   { icon: 'sparkles', title: 'AI-Powered Writing',    desc: 'Instantly generate ATS-optimised bullet points, professional summaries, and smart skill suggestions — powered by AI.' },
@@ -302,6 +302,7 @@ const CtaBanner = () => (
 export const LandingPage = () => (
   <div>
     <HeroSection />
+    <AdBanner className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" />
     <FeaturesSection />
     <HowItWorksSection />
     <PricingPreviewSection />

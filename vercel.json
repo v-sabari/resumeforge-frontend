@@ -1,7 +1,107 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/",
+      "destination": "/"
+    },
+    {
+      "source": "/pricing",
+      "destination": "/"
+    },
+    {
+      "source": "/about",
+      "destination": "/"
+    },
+    {
+      "source": "/contact",
+      "destination": "/"
+    },
+    {
+      "source": "/terms",
+      "destination": "/"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/"
+    },
+    {
+      "source": "/refund-policy",
+      "destination": "/"
+    },
+    {
+      "source": "/resources",
+      "destination": "/"
+    },
+    {
+      "source": "/resources/how-to-write-ats-resume",
+      "destination": "/"
+    },
+    {
+      "source": "/resources/resume-action-verbs-list",
+      "destination": "/"
+    },
+    {
+      "source": "/resources/resume-vs-cv-difference",
+      "destination": "/"
+    },
+    {
+      "source": "/resources/gaps-in-employment-resume",
+      "destination": "/"
+    },
+    {
+      "source": "/resources/linkedin-profile-tips",
+      "destination": "/"
+    },
+    {
+      "source": "/features",
+      "destination": "/"
+    },
+    {
+      "source": "/login",
+      "destination": "/"
+    },
+    {
+      "source": "/register",
+      "destination": "/"
+    },
+    {
+      "source": "/verify-email",
+      "destination": "/"
+    },
+    {
+      "source": "/forgot-password",
+      "destination": "/"
+    },
+    {
+      "source": "/reset-password",
+      "destination": "/"
+    },
+    {
+      "source": "/payment/success",
+      "destination": "/"
+    },
+    {
+      "source": "/payment/failed",
+      "destination": "/"
+    },
+    {
+      "source": "/app",
+      "destination": "/"
+    },
+    {
+      "source": "/app/dashboard",
+      "destination": "/"
+    },
+    {
+      "source": "/app/profile",
+      "destination": "/"
+    },
+    {
+      "source": "/app/builder",
+      "destination": "/"
+    },
+    {
+      "source": "/app/builder/(.*)",
       "destination": "/"
     }
   ],
