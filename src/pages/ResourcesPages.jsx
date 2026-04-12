@@ -2,6 +2,20 @@ import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/icons/Icon';
 
 /* ── Article data ──────────────────────────────────────────────── */
+
+const renderInlineMarkdown = (text) => {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+
+  return parts.map((part, index) =>
+    part.startsWith('**') && part.endsWith('**') ? (
+      <strong key={index} className="font-semibold text-ink-950">
+        {part.slice(2, -2)}
+      </strong>
+    ) : (
+      part
+    )
+  );
+};
 export const ARTICLES = [
   {
     slug:     'how-to-write-ats-resume',
@@ -383,22 +397,19 @@ export const ArticlePage = () => {
             </h3>
           );
           if (trimmed.startsWith('- ')) return (
-            <li key={i} className="ml-4 text-sm list-disc text-ink-600">{trimmed.slice(2)}</li>
-          );
+  <li key={i} className="ml-4 text-sm list-disc text-ink-600">
+    {renderInlineMarkdown(trimmed.slice(2))}
+  </li>
+);
           if (trimmed.startsWith('**') && trimmed.endsWith('**')) return (
             <p key={i} className="font-semibold text-ink-950 text-sm">{trimmed.slice(2, -2)}</p>
           );
           // Inline bold rendering
-          const parts = trimmed.split(/(\*\*[^*]+\*\*)/g);
           return (
-            <p key={i} className="text-sm leading-relaxed">
-              {parts.map((part, j) =>
-                part.startsWith('**') && part.endsWith('**')
-                  ? <strong key={j} className="font-semibold text-ink-950">{part.slice(2, -2)}</strong>
-                  : part
-              )}
-            </p>
-          );
+  <p key={i} className="text-sm leading-relaxed">
+    {renderInlineMarkdown(trimmed)}
+  </p>
+);
         })}
       </div>
 
