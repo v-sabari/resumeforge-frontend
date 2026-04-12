@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { MarketingLayout } from '../layouts/MarketingLayout';
 import { AppLayout } from '../layouts/AppLayout';
 import { ProtectedRoute } from '../components/common/ProtectedRoute';
+import { FeaturesRedirect } from '../components/common/FeaturesRedirect';
 import { useSeoMeta } from '../hooks/useSeoMeta';
 import { LandingPage } from '../pages/LandingPage';
 import { LoginPage } from '../pages/LoginPage';
@@ -42,7 +43,7 @@ export const AppRoutes = () => (
         <Route path="refund-policy" element={<RefundPolicyPage />} />
         <Route path="resources" element={<ResourcesPage />} />
         <Route path="resources/:slug" element={<ArticlePage />} />
-        <Route path="features" element={<Navigate to="/" replace />} />
+        <Route path="features" element={<FeaturesRedirect />} />
       </Route>
 
       <Route path="login" element={<LoginPage />} />
