@@ -127,7 +127,7 @@ const getArticleMeta = (path) => {
   if (!article) return null;
 
   return {
-    title: `${article.title}– ${APP_NAME}`,
+    title: `${article.title} – ${APP_NAME}`,
     description: article.excerpt,
     canonicalPath: `/resources/${article.slug}`,
   };
