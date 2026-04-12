@@ -36,7 +36,6 @@ const faqs = [
 /* ─── Sections ───────────────────────────────────────────────────── */
 const HeroSection = () => (
   <section className="relative overflow-hidden bg-white">
-    {/* Background decoration */}
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-brand-50 opacity-60 blur-3xl" />
       <div className="absolute -bottom-20 -left-20 h-[400px] w-[400px] rounded-full bg-brand-100/40 blur-3xl" />
@@ -227,6 +226,20 @@ const PricingPreviewSection = () => (
   </section>
 );
 
+// ── FIX BUG-20: Added aria-label to first star, aria-hidden to remaining 4 ──
+const StarRating = () => (
+  <div className="flex gap-0.5 mb-3" role="img" aria-label="5 out of 5 stars">
+    {[...Array(5)].map((_, i) => (
+      <Icon
+        key={i}
+        name="star"
+        className="h-4 w-4 fill-amber-400 text-amber-400"
+        aria-hidden="true"
+      />
+    ))}
+  </div>
+);
+
 const TestimonialsSection = () => (
   <section className="py-20 bg-white">
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -237,11 +250,7 @@ const TestimonialsSection = () => (
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {testimonials.map(({ name, role, quote }) => (
           <div key={name} className="card p-5">
-            <div className="flex gap-0.5 mb-3">
-              {[...Array(5)].map((_, i) => (
-                <Icon key={i} name="star" className="h-4 w-4 fill-amber-400 text-amber-400" />
-              ))}
-            </div>
+            <StarRating />
             <p className="text-sm text-ink-600 leading-relaxed mb-4">"{quote}"</p>
             <div>
               <p className="text-sm font-semibold text-ink-950">{name}</p>

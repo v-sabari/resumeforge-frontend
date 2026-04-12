@@ -396,65 +396,120 @@ export const ArticlePage = () => {
         {article.excerpt}
       </p>
 
-      <div className="prose-content space-y-4 text-ink-700 leading-relaxed">
-        {paragraphs.map((line, index) => {
-          const trimmed = line.trim();
+      <div className="prose-content text-ink-700 leading-relaxed">
+  {(() => {
+    const elements = [];
+    let i = 0;
 
-          if (!trimmed) return null;
+    while (i < paragraphs.length) {
+      const trimmed = paragraphs[i].trim();
 
-          if (trimmed.startsWith('## ')) {
-            return (
-              <h2
-                key={index}
-                className="text-xl font-display font-semibold text-ink-950 mt-8 mb-3"
-              >
-                {renderInlineMarkdown(trimmed.slice(3))}
-              </h2>
-            );
-          }
+      if (!trimmed) {
+        i++;
+        continue;
+      }
 
-          if (trimmed.startsWith('### ')) {
-            return (
-              <h3
-                key={index}
-                className="text-base font-semibold text-ink-950 mt-5 mb-2"
-              >
-                {renderInlineMarkdown(trimmed.slice(4))}
-              </h3>
-            );
-          }
+      if (trimmed.startsWith('## ')) {
+        elements.push(
+          <h2
+            key={i}
+            className="text-xl font-display font-semibold text-ink-950 mt-8 mb-3"
+          >
+            {renderInlineMarkdown(trimmed.slice(3))}
+          </h2>
+        );
+        i++;
+        continue;
+      }
 
-          if (trimmed.startsWith('- ')) {
-            return (
-              <li key={index} className="ml-4 text-sm list-disc text-ink-600">
-                {renderInlineMarkdown(trimmed.slice(2))}
-              </li>
-            );
-          }
+      if (trimmed.startsWith('### ')) {
+        elements.push(
+          <h3
+            key={i}
+            className="text-base font-semibold text-ink-950 mt-5 mb-2"
+          >
+            {renderInlineMarkdown(trimmed.slice(4))}
+          </h3>
+        );
+        i++;
+        continue;
+      }
 
-          if (/^\d+\.\s/.test(trimmed)) {
-            return (
-              <li key={index} className="ml-4 text-sm list-decimal text-ink-600">
-                {renderInlineMarkdown(trimmed.replace(/^\d+\.\s/, ''))}
-              </li>
-            );
-          }
+      if (trimmed.startsWith('- ')) {
+        const items = [];
 
-          if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
-            return (
-              <p key={index} className="font-semibold text-ink-950 text-sm">
-                {trimmed.slice(2, -2)}
-              </p>
-            );
-          }
-
-          return (
-            <p key={index} className="text-sm leading-relaxed">
-              {renderInlineMarkdown(trimmed)}
-            </p>
+        while (i < paragraphs.length && paragraphs[i].trim().startsWith('- ')) {
+          items.push(
+            <li key={i}>
+              {renderInlineMarkdown(paragraphs[i].trim().slice(2))}
+            </li>
           );
-        })}
-      </div>
+          i++;
+        }
+
+        elements.push(
+          <ul
+            key={`ul-${i}`}
+            className="list-disc ml-6 space-y-2 text-sm text-ink-600 mb-4"
+          >
+            {items}
+          </ul>
+        );
+
+        continue;
+      }
+
+      if (/^\d+\.\s/.test(trimmed)) {
+        const items = [];
+
+        while (
+          i < paragraphs.length &&
+          /^\d+\.\s/.test(paragraphs[i].trim())
+        ) {
+          items.push(
+            <li key={i}>
+              {renderInlineMarkdown(
+                paragraphs[i].trim().replace(/^\d+\.\s/, '')
+              )}
+            </li>
+          );
+          i++;
+        }
+
+        elements.push(
+          <ol
+            key={`ol-${i}`}
+            className="list-decimal ml-6 space-y-2 text-sm text-ink-600 mb-4"
+          >
+            {items}
+          </ol>
+        );
+
+        continue;
+      }
+
+      if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
+        elements.push(
+          <p key={i} className="font-semibold text-ink-950 text-sm">
+            {trimmed.slice(2, -2)}
+          </p>
+        );
+        i++;
+        continue;
+      }
+
+      elements.push(
+        <p key={i} className="text-sm leading-relaxed mb-4">
+          {renderInlineMarkdown(trimmed)}
+        </p>
+      );
+
+      i++;
+    }
+
+    return elements;
+  })()}
+</div>
 
       <div className="mt-12 card p-6 border-brand-200 bg-brand-50/50">
         <h3 className="font-semibold text-ink-950 mb-2">

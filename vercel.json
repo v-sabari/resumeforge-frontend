@@ -1,134 +1,82 @@
 {
   "rewrites": [
+    { "source": "/", "destination": "/" },
+    { "source": "/pricing", "destination": "/" },
+    { "source": "/about", "destination": "/" },
+    { "source": "/contact", "destination": "/" },
+    { "source": "/terms", "destination": "/" },
+    { "source": "/privacy", "destination": "/" },
+    { "source": "/refund-policy", "destination": "/" },
+    { "source": "/resources", "destination": "/" },
+    { "source": "/resources/how-to-write-ats-resume", "destination": "/" },
+    { "source": "/resources/resume-action-verbs-list", "destination": "/" },
+    { "source": "/resources/resume-vs-cv-difference", "destination": "/" },
+    { "source": "/resources/gaps-in-employment-resume", "destination": "/" },
+    { "source": "/resources/linkedin-profile-tips", "destination": "/" },
+    { "source": "/features", "destination": "/" },
+    { "source": "/login", "destination": "/" },
+    { "source": "/register", "destination": "/" },
+    { "source": "/verify-email", "destination": "/" },
+    { "source": "/forgot-password", "destination": "/" },
+    { "source": "/reset-password", "destination": "/" },
+    { "source": "/payment/success", "destination": "/" },
+    { "source": "/payment/failed", "destination": "/" },
+    { "source": "/app", "destination": "/" },
+    { "source": "/app/dashboard", "destination": "/" },
+    { "source": "/app/profile", "destination": "/" },
+    { "source": "/app/builder", "destination": "/" },
+    { "source": "/app/builder/(.*)", "destination": "/" }
+  ],
+  "routes": [
     {
-      "source": "/",
-      "destination": "/"
+      "src": "^/assets/(.*)",
+      "headers": { "cache-control": "public, max-age=31536000, immutable" },
+      "continue": true
     },
     {
-      "source": "/pricing",
-      "destination": "/"
+      "src": "^/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map))$",
+      "continue": true
     },
     {
-      "source": "/about",
-      "destination": "/"
+      "src": "^/(pricing|about|contact|terms|privacy|refund-policy|resources|features|login|register|verify-email|forgot-password|reset-password|app|app/dashboard|app/profile|app/builder)$",
+      "dest": "/index.html",
+      "status": 200
     },
     {
-      "source": "/contact",
-      "destination": "/"
+      "src": "^/resources/[^/]+$",
+      "dest": "/index.html",
+      "status": 200
     },
     {
-      "source": "/terms",
-      "destination": "/"
+      "src": "^/app/builder/.+$",
+      "dest": "/index.html",
+      "status": 200
     },
     {
-      "source": "/privacy",
-      "destination": "/"
+      "src": "^/payment/(success|failed)$",
+      "dest": "/index.html",
+      "status": 200
     },
     {
-      "source": "/refund-policy",
-      "destination": "/"
+      "src": "^/$",
+      "dest": "/index.html",
+      "status": 200
     },
     {
-      "source": "/resources",
-      "destination": "/"
-    },
-    {
-      "source": "/resources/how-to-write-ats-resume",
-      "destination": "/"
-    },
-    {
-      "source": "/resources/resume-action-verbs-list",
-      "destination": "/"
-    },
-    {
-      "source": "/resources/resume-vs-cv-difference",
-      "destination": "/"
-    },
-    {
-      "source": "/resources/gaps-in-employment-resume",
-      "destination": "/"
-    },
-    {
-      "source": "/resources/linkedin-profile-tips",
-      "destination": "/"
-    },
-    {
-      "source": "/features",
-      "destination": "/"
-    },
-    {
-      "source": "/login",
-      "destination": "/"
-    },
-    {
-      "source": "/register",
-      "destination": "/"
-    },
-    {
-      "source": "/verify-email",
-      "destination": "/"
-    },
-    {
-      "source": "/forgot-password",
-      "destination": "/"
-    },
-    {
-      "source": "/reset-password",
-      "destination": "/"
-    },
-    {
-      "source": "/payment/success",
-      "destination": "/"
-    },
-    {
-      "source": "/payment/failed",
-      "destination": "/"
-    },
-    {
-      "source": "/app",
-      "destination": "/"
-    },
-    {
-      "source": "/app/dashboard",
-      "destination": "/"
-    },
-    {
-      "source": "/app/profile",
-      "destination": "/"
-    },
-    {
-      "source": "/app/builder",
-      "destination": "/"
-    },
-    {
-      "source": "/app/builder/(.*)",
-      "destination": "/"
+      "src": "^/.*$",
+      "dest": "/index.html",
+      "status": 404
     }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        },
-        {
-          "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(), geolocation=()"
-        },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
         {
           "key": "Content-Security-Policy",
           "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://checkout.razorpay.com https://www.google-analytics.com https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google; style-src 'self' 'unsafe-inline' https://api.fontshare.com https://fonts.googleapis.com; font-src 'self' https://api.fontshare.com https://cdn.fontshare.com https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.onrender.com https://www.google-analytics.com https://region1.google-analytics.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://www.google.com; frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://googleads.g.doubleclick.net https://td.doubleclick.net https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://formspree.io; frame-ancestors 'none'; upgrade-insecure-requests;"
@@ -138,19 +86,13 @@
     {
       "source": "/assets/(.*)",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     },
     {
       "source": "/favicon.svg",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=86400"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=86400" }
       ]
     }
   ]
