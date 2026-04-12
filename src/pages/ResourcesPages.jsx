@@ -401,6 +401,11 @@ export const ArticlePage = () => {
     {renderInlineMarkdown(trimmed.slice(2))}
   </li>
 );
+if (/^\d+\.\s/.test(trimmed)) return (
+  <li key={i} className="ml-4 text-sm list-decimal text-ink-600">
+    {renderInlineMarkdown(trimmed.replace(/^\d+\.\s/, ''))}
+  </li>
+);
           if (trimmed.startsWith('**') && trimmed.endsWith('**')) return (
             <p key={i} className="font-semibold text-ink-950 text-sm">{trimmed.slice(2, -2)}</p>
           );
