@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/icons/Icon';
 import { APP_NAME } from '../utils/constants';
-import AdBanner from '../components/common/AdBanner';
+
 /* ─── Data ──────────────────────────────────────────────────────── */
 const features = [
   { icon: 'sparkles', title: 'AI-Powered Writing',    desc: 'Instantly generate ATS-optimised bullet points, professional summaries, and smart skill suggestions — powered by AI.' },
@@ -37,11 +37,11 @@ const faqs = [
 const HeroSection = () => (
   <section className="relative overflow-hidden bg-white">
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-brand-50 opacity-60 blur-3xl" />
-      <div className="absolute -bottom-20 -left-20 h-[400px] w-[400px] rounded-full bg-brand-100/40 blur-3xl" />
+      <div className="absolute -top-24 -right-24 h-[260px] w-[260px] rounded-full bg-brand-50/70 blur-2xl" />
+      <div className="absolute -bottom-16 -left-16 h-[220px] w-[220px] rounded-full bg-brand-100/40 blur-2xl" />
     </div>
 
-    <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-32">
+    <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
       <div className="max-w-3xl">
         <div className="inline-flex items-center gap-2 badge-brand mb-6 py-1 px-3">
           <Icon name="sparkles" className="h-3.5 w-3.5" />
@@ -78,8 +78,7 @@ const HeroSection = () => (
       </div>
 
       {/* Mock resume card */}
-      <div className="hidden lg:block absolute right-8 top-1/2 -translate-y-1/2 w-72 card shadow-lift-lg p-5 space-y-3">
-        <div className="space-y-1">
+     <div className="hidden xl:block absolute right-8 top-1/2 -translate-y-1/2 w-64 card shadow-lift p-4 space-y-3">        <div className="space-y-1">
           <div className="h-5 w-36 rounded-lg bg-brand-600" />
           <div className="h-3 w-24 rounded bg-surface-200" />
         </div>
@@ -311,7 +310,7 @@ const CtaBanner = () => (
 export const LandingPage = () => (
   <div>
     <HeroSection />
-    <AdBanner className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" />
+   
     <FeaturesSection />
     <HowItWorksSection />
     <PricingPreviewSection />
