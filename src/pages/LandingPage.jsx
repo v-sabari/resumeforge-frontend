@@ -104,7 +104,7 @@ const HeroSection = () => (
         </div>
 
         <h1 className="hero-title">
-          AI Resume Builder for
+          AI Resume Builder to Create
           <br />
           <span className="gradient-text">ATS-Friendly Resumes</span>
         </h1>
