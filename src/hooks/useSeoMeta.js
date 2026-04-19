@@ -39,18 +39,15 @@ const PAGE_META = {
   },
   '/login': {
     title: `Sign In – ${APP_NAME}`,
-    description:
-      'Sign in to your ResumeForge AI account and continue building your resume.',
+    description: 'Sign in to your ResumeForge AI account and continue building your resume.',
   },
   '/forgot-password': {
     title: `Forgot Password – ${APP_NAME}`,
-    description:
-      'Request a password reset OTP for your ResumeForge AI account.',
+    description: 'Request a password reset OTP for your ResumeForge AI account.',
   },
   '/reset-password': {
     title: `Reset Password – ${APP_NAME}`,
-    description:
-      'Reset your ResumeForge AI account password securely using the OTP sent to your email.',
+    description: 'Reset your ResumeForge AI account password securely using the OTP sent to your email.',
   },
   '/terms': {
     title: `Terms of Service – ${APP_NAME}`,
@@ -58,89 +55,47 @@ const PAGE_META = {
   },
   '/privacy': {
     title: `Privacy Policy – ${APP_NAME}`,
-    description:
-      'Read the privacy policy for ResumeForge AI. We take your data privacy seriously.',
+    description: 'Read the privacy policy for ResumeForge AI. We take your data privacy seriously.',
+  },
+  '/refund-policy': {
+    title: `Refund Policy – ${APP_NAME}`,
+    description: 'Read the refund and cancellation policy for ResumeForge AI Premium.',
   },
   '/resources': {
     title: `Career Resources & Resume Tips – ${APP_NAME}`,
     description:
       'Free resume writing guides, ATS tips, action verb lists, LinkedIn advice, and career resources from the ResumeForge AI team.',
   },
-  '/refund-policy': {
-    title: `Refund Policy – ${APP_NAME}`,
-    description: 'Read the refund and cancellation policy for ResumeForge AI Premium.',
+  // Phase 6: Free tools page
+  '/tools': {
+    title: `Free Resume Tools – ATS Keyword Checker & Word Count | ${APP_NAME}`,
+    description:
+      'Free resume analysis tools: check your ATS keyword strength, count resume words, and get instant tips — no account required. Powered by ResumeForge AI.',
   },
-  '/app/dashboard': {
-    title: `Dashboard – ${APP_NAME}`,
-    description: 'Your resume dashboard.',
-    noIndex: true,
-  },
-  '/app/builder': {
-    title: `Resume Builder – ${APP_NAME}`,
-    description: 'Build your resume.',
-    noIndex: true,
-  },
-  '/app/profile': {
-    title: `Profile – ${APP_NAME}`,
-    description: 'Manage your ResumeForge AI account profile.',
-    noIndex: true,
-  },
-  '/verify-email': {
-    title: `Verify Email – ${APP_NAME}`,
-    description: 'Verify your ResumeForge AI email address using OTP.',
-    noIndex: true,
-  },
-  '/payment/success': {
-    title: `Payment Successful – ${APP_NAME}`,
-    description: 'Your ResumeForge AI payment was successful.',
-    noIndex: true,
-  },
-  '/payment/failed': {
-    title: `Payment Failed – ${APP_NAME}`,
-    description: 'Your ResumeForge AI payment could not be completed.',
-    noIndex: true,
-  },
+  // App pages (noindex)
+  '/app/dashboard': { title: `Dashboard – ${APP_NAME}`,   description: 'Your resume dashboard.', noIndex: true },
+  '/app/builder':   { title: `Resume Builder – ${APP_NAME}`, description: 'Build your resume.', noIndex: true },
+  '/app/profile':   { title: `Profile – ${APP_NAME}`,     description: 'Manage your account.', noIndex: true },
+  '/app/referral':  { title: `Referral Hub – ${APP_NAME}`, description: 'Refer friends and earn Premium.', noIndex: true },
+  '/admin':         { title: `Admin Panel – ${APP_NAME}`, description: 'Admin dashboard.', noIndex: true },
+  '/verify-email':  { title: `Verify Email – ${APP_NAME}`, description: 'Verify your email.', noIndex: true },
+  '/payment/callback': { title: `Payment Confirmation – ${APP_NAME}`, description: 'Confirming your payment.', noIndex: true },
+  '/payment/success':  { title: `Payment Successful – ${APP_NAME}`,   description: 'Payment successful.',      noIndex: true },
+  '/payment/failed':   { title: `Payment Failed – ${APP_NAME}`,       description: 'Payment could not be completed.', noIndex: true },
 };
 
-const upsertMetaTag = (selector, attributes) => {
-  let tag = document.querySelector(selector);
-
-  if (!tag) {
-    tag = document.createElement('meta');
-    document.head.appendChild(tag);
-  }
-
-  Object.entries(attributes).forEach(([key, value]) => {
-    tag.setAttribute(key, value);
-  });
-
-  return tag;
-};
-
-const upsertLinkTag = (selector, attributes) => {
-  let tag = document.querySelector(selector);
-
-  if (!tag) {
-    tag = document.createElement('link');
-    document.head.appendChild(tag);
-  }
-
-  Object.entries(attributes).forEach(([key, value]) => {
-    tag.setAttribute(key, value);
-  });
-
-  return tag;
+const upsert = (selector, attrs, tag = 'meta') => {
+  let el = document.querySelector(selector);
+  if (!el) { el = document.createElement(tag); document.head.appendChild(el); }
+  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
 };
 
 const getArticleMeta = (path) => {
   if (!path.startsWith('/resources/')) return null;
-
   const slug = path.replace('/resources/', '').trim();
   if (!slug) return null;
-
-  const article = ARTICLES.find((item) => item.slug === slug);
+  const article = ARTICLES.find(a => a.slug === slug);
   if (!article) return null;
-
   return {
     title: `${article.title} – ${APP_NAME}`,
     description: article.excerpt,
@@ -148,24 +103,13 @@ const getArticleMeta = (path) => {
   };
 };
 
-const getMetaForPath = (path) => {
-  const articleMeta = getArticleMeta(path);
-  if (articleMeta) return articleMeta;
-
-  if (PAGE_META[path]) {
-    return PAGE_META[path];
-  }
-
-  const prefixMatch = Object.entries(PAGE_META).find(([key]) => {
-    if (key === '/') return false;
-    return path === key || path.startsWith(`${key}/`);
-  });
-
-  if (prefixMatch) {
-    return prefixMatch[1];
-  }
-
-  return PAGE_META['/'];
+const getMeta = (path) => {
+  const article = getArticleMeta(path);
+  if (article) return article;
+  if (PAGE_META[path]) return PAGE_META[path];
+  const prefix = Object.entries(PAGE_META).find(([k]) =>
+    k !== '/' && (path === k || path.startsWith(`${k}/`)));
+  return prefix ? prefix[1] : PAGE_META['/'];
 };
 
 export const useSeoMeta = () => {
@@ -173,81 +117,29 @@ export const useSeoMeta = () => {
 
   useEffect(() => {
     const path = location.pathname;
-    const meta = getMetaForPath(path);
-    const canonicalPath = meta.canonicalPath || path;
-    const canonicalUrl = `${BASE_URL}${canonicalPath}`;
+    const meta = getMeta(path);
+    const canonical = `${BASE_URL}${meta.canonicalPath || path}`;
 
     document.title = meta.title;
 
-    upsertMetaTag('meta[name="description"]', {
-      name: 'description',
-      content: meta.description,
-    });
-
-    upsertLinkTag('link[rel="canonical"]', {
-      rel: 'canonical',
-      href: canonicalUrl,
-    });
-
-    upsertMetaTag('meta[name="robots"]', {
-      name: 'robots',
-      content: meta.noIndex ? 'noindex,nofollow' : 'index,follow',
-    });
-
-    upsertMetaTag('meta[property="og:type"]', {
-      property: 'og:type',
-      content: 'website',
-    });
-
-    upsertMetaTag('meta[property="og:url"]', {
-      property: 'og:url',
-      content: canonicalUrl,
-    });
-
-    upsertMetaTag('meta[property="og:title"]', {
-      property: 'og:title',
-      content: meta.title,
-    });
-
-    upsertMetaTag('meta[property="og:description"]', {
-      property: 'og:description',
-      content: meta.description,
-    });
-
-    upsertMetaTag('meta[property="og:image"]', {
-      property: 'og:image',
-      content: DEFAULT_OG_IMAGE,
-    });
-
-    upsertMetaTag('meta[property="og:site_name"]', {
-      property: 'og:site_name',
-      content: APP_NAME,
-    });
-
-    upsertMetaTag('meta[name="twitter:card"]', {
-      name: 'twitter:card',
-      content: 'summary_large_image',
-    });
-
-    upsertMetaTag('meta[name="twitter:title"]', {
-      name: 'twitter:title',
-      content: meta.title,
-    });
-
-    upsertMetaTag('meta[name="twitter:description"]', {
-      name: 'twitter:description',
-      content: meta.description,
-    });
-
-    upsertMetaTag('meta[name="twitter:image"]', {
-      name: 'twitter:image',
-      content: DEFAULT_OG_IMAGE,
-    });
+    upsert('meta[name="description"]',     { name: 'description', content: meta.description });
+    upsert('link[rel="canonical"]',        { rel: 'canonical', href: canonical }, 'link');
+    upsert('meta[name="robots"]',          { name: 'robots', content: meta.noIndex ? 'noindex,nofollow' : 'index,follow' });
+    upsert('meta[property="og:type"]',     { property: 'og:type', content: 'website' });
+    upsert('meta[property="og:url"]',      { property: 'og:url', content: canonical });
+    upsert('meta[property="og:title"]',    { property: 'og:title', content: meta.title });
+    upsert('meta[property="og:description"]', { property: 'og:description', content: meta.description });
+    upsert('meta[property="og:image"]',    { property: 'og:image', content: DEFAULT_OG_IMAGE });
+    upsert('meta[property="og:site_name"]',{ property: 'og:site_name', content: APP_NAME });
+    upsert('meta[name="twitter:card"]',    { name: 'twitter:card', content: 'summary_large_image' });
+    upsert('meta[name="twitter:title"]',   { name: 'twitter:title', content: meta.title });
+    upsert('meta[name="twitter:description"]', { name: 'twitter:description', content: meta.description });
+    upsert('meta[name="twitter:image"]',   { name: 'twitter:image', content: DEFAULT_OG_IMAGE });
 
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'page_view', {
-        page_path: location.pathname + location.search,
-        page_title: meta.title,
+        page_path:     location.pathname + location.search,
+        page_title:    meta.title,
         page_location: window.location.href,
       });
     }
@@ -255,7 +147,5 @@ export const useSeoMeta = () => {
 };
 
 export const trackEvent = (eventName, params = {}) => {
-  if (typeof window.gtag === 'function') {
-    window.gtag('event', eventName, params);
-  }
+  if (typeof window.gtag === 'function') window.gtag('event', eventName, params);
 };

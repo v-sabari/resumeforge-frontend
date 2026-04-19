@@ -1,3 +1,6 @@
+// articles.js — REPLACE the full file with this version.
+// Adds 3 new articles to the existing 5, targeting high-traffic keywords.
+
 export const ARTICLES = [
   {
     slug: 'how-to-write-ats-resume',
@@ -39,246 +42,340 @@ Use these exact headings:
 - **Summary** or **Professional Summary**
 - **Projects**
 
-## Keyword Optimization
+## Keyword Optimisation
 
-Read the job description carefully and mirror its language. If the job says "project management," don't write "programme coordination." ATS systems match exact phrases.
+Read the job description carefully and identify the key skills and tools mentioned. Include these naturally in your experience bullets and skills section. Don't keyword-stuff — ATS systems have become sophisticated enough to penalise obvious stuffing.
 
-**How to find the right keywords:**
-1. Copy the job description into a text editor
-2. Identify the most repeated skills, tools, and responsibilities
-3. Make sure those exact terms appear in your resume naturally
-4. Don't keyword-stuff — write in complete sentences
+## Build Your ATS Resume with ResumeForge AI
 
-## Contact Information Placement
-
-Put your name, phone number, email, and LinkedIn URL at the very top of your resume — not in a header or footer. Many ATS systems can't read header/footer content.
-
-## The 6-Second Human Test
-
-Even after passing ATS, your resume has about 6 seconds to impress a recruiter. Use clear formatting, strong action verbs, and quantified achievements (numbers, percentages, dollar amounts) to stand out immediately.
-
-## Summary
-
-The perfect ATS-friendly resume is clean, text-based, keyword-matched to the job description, and uses standard section titles. Tools like ResumeForge AI are built specifically to generate resumes that pass ATS systems and look professional to human reviewers.
+ResumeForge AI generates ATS-optimised content automatically and scores your resume against any job description before you apply.
     `,
   },
   {
     slug: 'resume-action-verbs-list',
-    title: '200+ Strong Resume Action Verbs (By Category)',
+    title: '200+ Resume Action Verbs That Get You Hired (2025 List)',
     excerpt:
-      'Weak verbs like "helped" and "worked on" kill the impact of your experience. Here are 200+ powerful action verbs organized by job function that will make your resume stand out.',
-    category: 'Resume Writing',
+      'Weak verbs like "responsible for" and "helped with" bury your accomplishments. This complete list of power action verbs transforms passive job descriptions into compelling achievements.',
+    category: 'Resume Tips',
     readTime: '5 min read',
-    date: 'February 2025',
+    date: 'March 2025',
     content: `
 ## Why Action Verbs Matter
 
-Recruiters spend seconds skimming a resume. Strong action verbs create immediate impact and communicate confidence. "Led a team of 8 engineers" reads very differently from "was part of a team."
-
-The rule: start every bullet point with a strong present-tense or past-tense action verb.
+Recruiters spend an average of 7 seconds scanning a resume. Strong action verbs immediately signal competence, initiative, and impact. "Responsible for customer support" tells a recruiter nothing. "Resolved 150+ customer escalations per month with a 98% satisfaction rate" shows them exactly what you delivered.
 
 ## Leadership & Management
-Directed, Spearheaded, Orchestrated, Oversaw, Mentored, Supervised, Championed, Delegated, Mobilized, Coordinated, Established, Launched, Founded, Initiated
+Accelerated · Championed · Coached · Consolidated · Coordinated · Cultivated · Delegated · Directed · Drove · Enabled · Established · Executed · Expanded · Facilitated · Guided · Headed · Hired · Influenced · Initiated · Launched · Led · Managed · Mentored · Mobilised · Motivated · Negotiated · Orchestrated · Oversaw · Pioneered · Spearheaded · Supervised · Unified
 
-## Achievement & Impact
-Increased, Reduced, Improved, Delivered, Generated, Achieved, Exceeded, Accelerated, Maximized, Optimized, Boosted, Transformed, Doubled, Tripled
-
-## Technical & Engineering
-Architected, Developed, Engineered, Implemented, Deployed, Integrated, Automated, Debugged, Refactored, Scaled, Migrated, Configured, Built, Designed
-
-## Analysis & Research
-Analyzed, Evaluated, Assessed, Audited, Investigated, Diagnosed, Forecasted, Identified, Quantified, Researched, Synthesized, Tested, Validated
+## Analysis & Strategy
+Analysed · Assessed · Audited · Benchmarked · Calculated · Categorised · Clarified · Compared · Compiled · Conducted · Diagnosed · Evaluated · Examined · Forecasted · Identified · Implemented · Investigated · Mapped · Measured · Modelled · Monitored · Optimised · Prioritised · Quantified · Researched · Resolved · Streamlined · Synthesised · Tested · Tracked
 
 ## Communication & Collaboration
-Presented, Negotiated, Facilitated, Collaborated, Liaised, Authored, Communicated, Partnered, Advised, Consulted, Drafted, Trained, Coached
+Advocated · Authored · Briefed · Collaborated · Communicated · Composed · Consulted · Corresponded · Delivered · Documented · Drafted · Edited · Educated · Facilitated · Influenced · Liaised · Mediated · Presented · Proposed · Published · Reported · Translated · Trained
 
-## Sales & Marketing
-Acquired, Converted, Grew, Retained, Prospected, Pitched, Closed, Marketed, Promoted, Expanded, Launched, Positioned, Targeted
+## Technical & Engineering
+Architected · Automated · Built · Coded · Configured · Debugged · Deployed · Designed · Developed · Engineered · Implemented · Integrated · Maintained · Migrated · Optimised · Programmed · Refactored · Tested · Upgraded
 
-## Finance & Operations
-Managed, Allocated, Budgeted, Forecasted, Processed, Streamlined, Reduced, Audited, Reconciled, Administered, Controlled, Reported
+## Sales & Growth
+Acquired · Achieved · Converted · Cultivated · Expanded · Generated · Grew · Increased · Launched · Negotiated · Outperformed · Partnered · Penetrated · Prospected · Surpassed · Targeted · Upsold
 
-## Education & Healthcare
-Educated, Counseled, Assessed, Diagnosed, Treated, Rehabilitated, Instructed, Facilitated, Guided, Supported, Monitored, Evaluated
+## Use AI to Apply These Verbs Instantly
 
-## Quick-Reference Rules
-
-1. **Past tense for previous roles** — "Led," "Built," "Managed"
-2. **Present tense for current role** — "Lead," "Build," "Manage"
-3. **Vary your verbs** — Don't start every bullet with "Managed"
-4. **Be specific** — "Reduced API response time by 40%" beats "Improved performance"
-5. **Avoid passive voice** — "The project was led by me" → "Led the project"
+ResumeForge AI automatically rewrites your bullet points using strong action verbs tailored to your role and target job description.
     `,
   },
   {
     slug: 'resume-vs-cv-difference',
-    title: "Resume vs CV: What's the Difference and Which Do You Need?",
+    title: 'Resume vs CV: What\'s the Difference and Which Do You Need?',
     excerpt:
-      'Many job seekers use "resume" and "CV" interchangeably, but they are very different documents used in different contexts. Understanding which one to submit can determine whether you get an interview.',
-    category: 'Career Basics',
-    readTime: '6 min read',
-    date: 'January 2025',
+      'Many job seekers confuse resumes and CVs — and send the wrong document. Here is exactly when to use each one and how they differ by country, industry, and role.',
+    category: 'Career Advice',
+    readTime: '4 min read',
+    date: 'February 2025',
     content: `
 ## The Core Difference
 
-A **resume** is a concise, 1–2 page summary of your work experience, skills, and education tailored to a specific job. A **curriculum vitae (CV)** is a comprehensive, multi-page document of your entire academic and professional history.
+A **resume** is a concise 1–2 page document summarising your skills, experience, and achievements. It is tailored for a specific role and industry.
 
-In the United States and Canada, "resume" is the standard for almost all jobs. In the UK, Europe, Australia, and academic settings globally, "CV" is often used — but it typically means what Americans call a resume (1–2 pages).
+A **CV** (Curriculum Vitae) is a comprehensive document — often 3–10+ pages — that lists your full academic and professional history. It is common in academia, medicine, and research.
 
 ## When to Use a Resume
 
-- Job applications in the US, Canada
-- Industry roles (tech, finance, marketing, operations)
-- Any role that specifies "please submit your resume"
-- When the employer uses an ATS system (shorter is better)
+Use a resume for most private-sector jobs in the United States, Canada, and Australia. It should be:
+- **1–2 pages maximum**
+- Tailored to the specific job
+- Focused on achievements and quantifiable results
 
 ## When to Use a CV
 
-- Academic positions (professor, researcher, postdoc)
-- Medical and scientific roles
-- International applications (UK, Europe, Middle East, Asia)
-- Grant or fellowship applications
-- Any application that specifically requests a CV
+Use a CV when applying to:
+- Academic or research positions
+- Medical and clinical roles
+- Government positions in the UK, Ireland, and most of Europe
+- International roles where CVs are the norm
 
-## What Goes in Each
+## Country-Specific Conventions
 
-**Resume:**
-- Professional Summary (3–5 lines)
-- Work Experience (last 10 years, most relevant)
-- Skills
-- Education (degrees only, no high school if you have a degree)
-- Certifications (relevant ones)
-- 1–2 pages maximum
+**India:** Both terms are used interchangeably. Most private-sector recruiters want a 1–2 page document (effectively a resume) though it's called a CV.
 
-**CV:**
-- Publications
-- Conferences and presentations
-- Awards and honors
-- Grants and funding
-- Teaching experience
-- Professional memberships
-- Research interests
-- References
-- Length: as long as your career demands (often 3–10+ pages for senior academics)
+**UK/Europe:** "CV" typically refers to what Americans call a resume — a 1–2 page document. Academic CVs are longer.
 
-## The Global Confusion
+**USA/Canada:** "Resume" is standard for private-sector. "CV" is used specifically in academic, research, and medical contexts.
 
-In many English-speaking countries outside North America, "CV" simply means what Americans call a "resume." When applying to jobs in the UK or Australia and they ask for a "CV," they typically want a 1–2 page resume-style document, not a full academic CV.
+## The Bottom Line
 
-## Bottom Line
-
-For most private-sector jobs globally: submit a resume. For academic, medical, or research positions: submit a full CV. When in doubt, read the job description carefully — the format they use in the description usually signals which they want.
+When in doubt, read the job posting carefully. If it says "resume," keep it to 2 pages and focus on achievements. If it says "CV" for an academic role, be comprehensive. For most Indian and Southeast Asian applications: 1–2 pages of focused, ATS-optimised content wins.
     `,
   },
   {
     slug: 'gaps-in-employment-resume',
-    title: 'How to Handle Gaps in Employment on Your Resume',
+    title: 'How to Handle Employment Gaps on Your Resume (2025 Guide)',
     excerpt:
-      "Employment gaps are more common than ever. Whether you took time off for health, family, education, or economic reasons, here's how to address gaps honestly without hurting your chances.",
-    category: 'Resume Tips',
-    readTime: '7 min read',
-    date: 'December 2024',
+      'Employment gaps are more common than ever. Here is how to address them honestly on your resume without sabotaging your chances — including real examples that work.',
+    category: 'Career Advice',
+    readTime: '6 min read',
+    date: 'April 2025',
     content: `
 ## Employment Gaps Are Normal
 
-The pandemic, layoffs, family responsibilities, health issues, career transitions — employment gaps happen to millions of people. A well-handled gap rarely disqualifies a candidate. A poorly handled one raises unnecessary red flags.
+Layoffs, caregiving responsibilities, health issues, career pivots, further study — gaps happen. A 2023 LinkedIn survey found that over 60% of professionals have experienced at least one employment gap. Recruiters know this.
 
-The key principle: **never lie, never hide, always reframe**.
+The mistake isn't having a gap. The mistake is trying to hide it awkwardly, or leaving it unexplained.
 
-## Strategies by Gap Length
+## Strategy 1: Use Years Instead of Months
 
-### Gaps Under 3 Months
-Omit months from your date format. Use "2022 – 2024" instead of "March 2022 – January 2024." This is honest and minimizes emphasis on short gaps.
+If your gap is less than a year, simply listing employment dates as years (2022–2023) instead of months (Feb 2022–Jan 2023) is a clean, honest approach that doesn't draw attention to short gaps.
 
-### Gaps of 3–12 Months
-Use a brief explanation if you have something relevant to show (freelance work, course, volunteering). If you were simply job-searching, that's fine — you don't need to explain everything on a resume. Save the explanation for the cover letter or interview.
+**Only use this if it's accurate** — never fabricate dates.
 
-### Gaps Over 1 Year
-You'll want to address this more directly. Options:
-- **Freelance/consulting work:** List it as a role — "Independent Consultant, [Your Name], 2022–2023"
-- **Caregiving:** Many recruiters respect this. "Career break — primary caregiver for a family member" is honest and acceptable.
-- **Health reasons:** You're not required to disclose, but "medical leave" or "personal health matter" is professional and sufficient.
-- **Education/upskilling:** List the course, certification, or program.
-- **Layoff + job search:** Completely normal. No explanation needed on the resume.
+## Strategy 2: Fill the Gap With Real Activity
 
-## What NOT to Do
+Were you freelancing? Caregiving? Taking courses? Learning a new skill? These all belong on your resume:
 
-- Don't list fake jobs or inflate dates to cover gaps — background checks catch this and it's grounds for immediate rejection and possible legal issues
-- Don't write a long, defensive explanation in your resume — keep it brief
-- Don't apologize for the gap
+- **Freelance Projects:** List it as freelance work with the type of clients or projects
+- **Online Courses / Certifications:** Add to your Education or Certifications section
+- **Caregiving:** A simple "Career break: family caregiving responsibilities" is clear and respected
+- **Health:** No explanation needed — "Personal leave" is sufficient and legally protected
 
-## The Cover Letter Is Your Friend
+## Strategy 3: Address It in Your Cover Letter
 
-A one-sentence honest mention of a gap in your cover letter — "After a planned career break to care for a family member, I'm ready to return to full-time work with renewed focus" — completely neutralizes the concern for most recruiters.
+If the gap is recent and substantial (over 6 months), a single sentence in your cover letter is the cleanest approach: *"In 2024, I took time away from work to [reason]. During that period, I [what you did]. I am now fully committed to returning to [field]."*
 
-## At the Interview
+## What Recruiters Actually Think
 
-Prepare a 30-second, confident explanation. Practice it until it feels natural. End with what you learned or how you stayed productive. Then pivot back to your strengths.
+Most recruiters spend less than 10 seconds on a resume. They're looking for skills and fit — not forensically auditing your timeline. A clear, confident resume with strong skills and achievements will progress regardless of a gap.
 
-## The Bottom Line
+## Build a Confident Resume With AI
 
-Most gaps, if addressed honestly and briefly, have minimal impact on your candidacy. The job market has shifted dramatically since the pandemic. Recruiters have become far more understanding. Focus your resume energy on making your experience, skills, and achievements as compelling as possible.
+ResumeForge AI helps you write strong summaries and bullet points that put your skills front and centre, so gaps become less visible and your strengths more prominent.
     `,
   },
   {
     slug: 'linkedin-profile-tips',
-    title: 'LinkedIn Profile Tips to Get Noticed by Recruiters in 2025',
+    title: 'LinkedIn Profile Tips: How to Get Found by Recruiters in 2025',
     excerpt:
-      'Your LinkedIn profile is your always-on resume. With over 1 billion members and millions of active recruiters, an optimized LinkedIn profile can bring opportunities directly to you.',
-    category: 'Career Growth',
-    readTime: '9 min read',
-    date: 'November 2024',
+      'Over 95% of recruiters use LinkedIn to find candidates. This guide shows you exactly how to optimise your headline, About section, and experience to rank higher in recruiter searches.',
+    category: 'LinkedIn',
+    readTime: '7 min read',
+    date: 'April 2025',
     content: `
-## Why LinkedIn Matters More Than Ever
+## Why LinkedIn SEO Matters
 
-Recruiters source candidates on LinkedIn every day. Many roles are filled before they're ever publicly advertised — through recruiter outreach to candidates with strong profiles. An optimized profile isn't just nice-to-have; it's part of your job search infrastructure.
+LinkedIn has its own search algorithm. When a recruiter searches for "React developer Mumbai" or "product manager fintech," LinkedIn ranks profiles based on keyword relevance, connection distance, and profile completeness.
 
-## Profile Photo
+Getting found is step one. Your profile needs to be optimised before you can get interviews.
 
-A professional headshot increases profile views by up to 14x. You don't need a photographer — a well-lit selfie against a clean background works. Smile, dress professionally, and ensure your face takes up 60% of the frame.
+## Your Headline Is Your Most Important Field
 
-## Headline (Most Underused Space on LinkedIn)
+The headline defaults to your job title, but it should be a keyword-rich value statement. Compare:
 
-Your headline is not just your job title. It's indexable by LinkedIn's search algorithm and visible in every search result, comment, and connection request.
+**Weak:** Software Engineer at TCS
 
-**Weak:** "Software Engineer at Acme Corp"
-**Strong:** "Software Engineer | React + Node.js | Building scalable web apps | Open to remote opportunities"
+**Strong:** Software Engineer | React · Node.js · AWS | Open to Senior Frontend Roles
 
-Include: your role, your core skills or specialization, and optionally a signal of availability or expertise.
+Your headline appears in search results, connection requests, and message previews. Every word counts.
 
-## The About Section
+## Optimise Your About Section
 
-Write in first person. Tell your story in 3–5 paragraphs:
-1. Who you are and what you do
-2. Your biggest professional achievement or area of expertise
-3. What you're passionate about or looking for next
-4. A call to action (connect, message, etc.)
+Your About section should:
+1. Start with a hook (not "I am a passionate professional")
+2. Highlight your top 2–3 skills or achievements with specifics
+3. List the keywords recruiters search for in your industry
+4. End with a clear call-to-action ("Open to opportunities in X" or "Connect with me to discuss Y")
 
-End with your key skills as a keyword-rich list — this helps LinkedIn's search algorithm surface your profile.
+## The Open to Work Feature
 
-## Experience Section
+Enabling "Open to Work" (either publicly or only visible to recruiters) significantly increases profile views. LinkedIn's own data shows profiles with this enabled get 40% more InMail messages from recruiters.
 
-Mirror your resume here, but LinkedIn allows more space. For each role, write 3–5 bullet points with quantified achievements. Use the same strong action verbs as your resume.
+## Complete Your Profile to All-Star Status
 
-## Skills and Endorsements
+LinkedIn's algorithm heavily favours complete profiles. Ensure you have:
+- A professional headshot
+- A banner image
+- All experience entries with descriptions
+- 5+ skills listed
+- At least 3 recommendations
+- Education entries
 
-Add your top 10 skills in the Skills section. Prioritize skills relevant to your target role. Endorsements add social proof — endorse colleagues and many will endorse you back.
+## Use ResumeForge AI to Optimise Your LinkedIn
 
-## Recommendations
+Our LinkedIn Optimizer feature writes a keyword-rich headline and About section tailored to your target role — in seconds.
+    `,
+  },
 
-Three strong recommendations (from managers, senior colleagues, or clients) add significant credibility. Reach out to former managers or colleagues you worked with closely and ask specifically for a recommendation focused on your impact in a particular area.
+  // ── NEW ARTICLES (Phase 6) ──────────────────────────────────────────────────
 
-## Open to Work
+  {
+    slug: 'how-to-write-cover-letter',
+    title: 'How to Write a Cover Letter That Gets Read (2025 Guide)',
+    excerpt:
+      'Most cover letters are generic and ignored. This guide shows you the exact structure that hiring managers respond to — with examples for fresh graduates and experienced professionals.',
+    category: 'Cover Letters',
+    readTime: '7 min read',
+    date: 'April 2025',
+    content: `
+## Do Cover Letters Still Matter?
 
-Use LinkedIn's "Open to Work" feature. You can make it visible to recruiters only (not your current employer) or public. This directly increases recruiter outreach.
+For many online applications — especially those through ATS portals — cover letters are optional and often not read. For direct applications, referrals, and roles specifically requesting them, a strong cover letter can be the deciding factor.
 
-## Activity Matters
+The rule: if it's optional and you have less than 3 minutes to write it, skip it. If you have time, a tailored letter always helps.
 
-Posting once a week, commenting thoughtfully on posts in your field, and sharing your own insights significantly increases your visibility. The LinkedIn algorithm favors active profiles.
+## The 3-Paragraph Structure That Works
 
-## The Profile-Resume Connection
+**Paragraph 1 — The hook**
+Don't start with "I am writing to apply for..." Open with why this specific company and role excites you, or lead with your most relevant achievement.
 
-Your LinkedIn profile and resume should tell the same story — consistent dates, titles, and achievements. Recruiters cross-reference them. Inconsistencies raise flags.
+*Example:* "After three years building fintech products at a startup, scaling a payments feature from 10,000 to 2 million users taught me that great product work is 20% idea and 80% execution. That's exactly the mindset I'd bring to your Senior PM role."
+
+**Paragraph 2 — The evidence**
+Pick 2–3 specific, quantifiable achievements that directly match the job description's requirements. Mirror the language from the posting.
+
+**Paragraph 3 — The close**
+Express genuine interest, show you've researched the company, and end with a confident (not desperate) call to action.
+
+## Common Mistakes
+
+- Repeating your resume line by line
+- Addressing it "To Whom It May Concern" (research the hiring manager)
+- Making it about what the company can do for you
+- Using the same letter for every application
+- Being longer than one page
+
+## Use AI to Generate a Tailored Cover Letter
+
+ResumeForge AI's Cover Letter Generator creates a role-specific, 3-paragraph letter in seconds using your resume content and the job description.
+    `,
+  },
+  {
+    slug: 'resume-for-remote-jobs',
+    title: 'How to Write a Resume for Remote Jobs (What Hiring Managers Look For)',
+    excerpt:
+      'Remote job applications are 3x more competitive than office roles. Here is how to signal remote-readiness, self-management skills, and async communication ability on your resume.',
+    category: 'Resume Tips',
+    readTime: '5 min read',
+    date: 'May 2025',
+    content: `
+## Remote Roles Are More Competitive Than Ever
+
+A single remote job posting typically receives 3–5x more applications than its office equivalent. The talent pool is global. This means your resume needs to work harder, and it needs to signal something specific: that you can succeed without a manager looking over your shoulder.
+
+## What Remote Employers Are Really Screening For
+
+Remote hiring managers look for evidence of:
+- **Async communication** — Can you write clearly? Do you document your work?
+- **Self-management** — Can you set your own priorities without being told?
+- **Results orientation** — Did you deliver outcomes, not just log hours?
+- **Tech comfort** — Are you fluent in the tools remote teams use?
+
+## How to Show Remote-Readiness in Your Resume
+
+**1. Add a location note**
+If you are location-flexible, add "(Remote)" to your current or target location field. This signals to ATS filters that you're open to remote roles.
+
+**2. Highlight async collaboration in bullets**
+Instead of "Worked with design team," write "Collaborated asynchronously with a distributed design team across 3 time zones using Figma and Slack to deliver features on schedule."
+
+**3. List remote-specific tools in your Skills section**
+Notion, Confluence, Jira, Slack, Zoom, Loom, Linear, Asana, Miro — these signal remote-native experience.
+
+**4. Quantify self-managed outcomes**
+Remote employers love to see numbers that imply independence: "Independently managed a $250K product roadmap" or "Shipped 6 features in Q3 with zero missed deadlines."
+
+## Remote Resume Keywords That Help ATS
+
+Include phrases like: remote work, distributed team, asynchronous collaboration, self-directed, cross-functional, time zone coordination, documentation, written communication.
+
+## Build a Remote-Ready Resume
+
+ResumeForge AI tailors your bullet points and summary to highlight the skills remote employers prioritise most.
+    `,
+  },
+  {
+    slug: 'interview-preparation-guide',
+    title: 'How to Prepare for a Job Interview: The Complete 2025 Guide',
+    excerpt:
+      'Most candidates wing their interview preparation and it shows. This step-by-step guide covers STAR method, company research, salary negotiation, and the questions you must prepare answers for.',
+    category: 'Interviews',
+    readTime: '10 min read',
+    date: 'May 2025',
+    content: `
+## The 72-Hour Preparation Framework
+
+The best interview preparation happens in three stages:
+
+**72 hours before:** Research the company, role, and interviewers.
+**24 hours before:** Prepare and practise your answers.
+**Morning of:** Review your notes, prepare your questions, arrive rested.
+
+## Step 1: Research the Company
+
+Go beyond the About page. You need to understand:
+- What problems the company is trying to solve
+- Recent news, product launches, or company milestones
+- The team culture (Glassdoor, LinkedIn posts, company blog)
+- How the role you're applying for fits their goals
+
+Interviewers ask "Why us?" and they can tell when the answer is shallow.
+
+## Step 2: Master the STAR Method
+
+Most behavioural questions can be answered with this structure:
+
+**S — Situation:** Set the context briefly (1–2 sentences)
+**T — Task:** What was your responsibility?
+**A — Action:** What specific steps did you take? (This is the most important part)
+**R — Result:** What happened? Quantify where possible.
+
+## Questions You Must Prepare For
+
+**Behavioural:**
+- Tell me about a time you failed and what you learned
+- Describe a conflict with a colleague and how you resolved it
+- Give an example of a time you took initiative without being asked
+
+**Technical/Role-specific:**
+- What's your process for [core skill of the role]?
+- How do you prioritise when everything feels urgent?
+
+**Motivational:**
+- Why are you leaving your current role?
+- Where do you see yourself in 3 years?
+- Why do you want to work here specifically?
+
+## Prepare 3 Questions to Ask Them
+
+Always ask thoughtful questions at the end. Good ones:
+- "What does success look like in this role in the first 90 days?"
+- "What are the biggest challenges the team is currently facing?"
+- "How would you describe the team culture?"
+
+## Salary Negotiation
+
+Research market rates on Glassdoor, LinkedIn Salary, and Levels.fyi (for tech). If asked for your expectation, give a range based on research — not your current salary. Always negotiate; most offers have 10–20% flexibility.
+
+## Generate Interview Prep with AI
+
+ResumeForge AI's Interview Prep feature generates role-specific questions and model answers tailored to your resume and target company — in seconds.
     `,
   },
 ];

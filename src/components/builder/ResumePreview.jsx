@@ -1,14 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { RESUME_TEMPLATES } from '../../utils/constants';
 
 const safe = (v) => v || '';
 
 /* ── Bullet helpers ──────────────────────────────────────────────────
-   IMPORTANT: Do NOT use Tailwind before:content-['•'] — the bullet
-   character U+2022 inside a Tailwind class string breaks esbuild's
-   JS parser with "Unterminated regular expression". Use explicit
-   HTML entity spans instead.
-─────────────────────────────────────────────────────────────────── */
+   Do NOT use Tailwind before:content-['•'] — the bullet character
+   inside a Tailwind class string breaks esbuild's JS parser.
+   Use explicit HTML entity spans instead.
+────────────────────────────────────────────────────────────────────── */
 const Bullet = ({ children, className }) => (
   <li className="flex gap-1.5">
     <span className="text-gray-400 shrink-0 select-none" aria-hidden="true">&#8226;</span>
@@ -120,11 +119,11 @@ const ClassicTemplate = ({ r }) => (
             <div key={e.id || i} className="flex justify-between">
               <div>
                 <span className="font-semibold">{e.degree}</span>
-                {e.institution && <span className="text-gray-600"> \u2014 {e.institution}</span>}
-                {e.field && <span className="text-gray-500">, {e.field}</span>}
+                {e.field && <span className="text-gray-600"> in {e.field}</span>}
+                {e.institution && <div className="text-gray-500">{e.institution}</div>}
               </div>
               <span className="text-gray-500 shrink-0 ml-2">
-                {e.startDate}{e.endDate ? '\u2013' + e.endDate : ''}
+                {e.startDate}{e.endDate ? ' \u2013 ' + e.endDate : ''}
               </span>
             </div>
           ))}
@@ -135,25 +134,15 @@ const ClassicTemplate = ({ r }) => (
     {(r.certifications || []).length > 0 && (
       <div>
         <SectionHead>Certifications</SectionHead>
-        <ul className="space-y-0.5 pl-1">
-          {(r.certifications || []).map((c, i) => (
-            <Bullet key={i}>
-              {typeof c === 'string'
-                ? c
-                : c.name + (c.issuer ? ' \u2013 ' + c.issuer : '') + (c.year ? ' (' + c.year + ')' : '')}
-            </Bullet>
-          ))}
-        </ul>
+        <p>{(r.certifications || []).join(' · ')}</p>
       </div>
     )}
 
-    {(r.achievements || []).filter(Boolean).length > 0 && (
+    {(r.achievements || []).length > 0 && (
       <div>
         <SectionHead>Achievements</SectionHead>
         <ul className="space-y-0.5 pl-1">
-          {(r.achievements || []).filter(Boolean).map((a, i) => (
-            <Bullet key={i}>{a}</Bullet>
-          ))}
+          {(r.achievements || []).map((a, i) => <Bullet key={i}>{a}</Bullet>)}
         </ul>
       </div>
     )}
@@ -164,6 +153,7 @@ const ClassicTemplate = ({ r }) => (
 const ModernTemplate = ({ r }) => (
   <div className="font-sans text-[10px] leading-tight text-gray-900 bg-white flex">
 
+    {/* Left sidebar */}
     <div className="w-[38%] bg-slate-800 text-white p-4 space-y-3">
       <div>
         <div className="text-sm font-bold leading-tight">{safe(r.fullName) || 'Your Name'}</div>
@@ -208,8 +198,18 @@ const ModernTemplate = ({ r }) => (
           ))}
         </div>
       )}
+
+      {(r.certifications || []).length > 0 && (
+        <div>
+          <SectionHead dark>Certifications</SectionHead>
+          {(r.certifications || []).map((c, i) => (
+            <div key={i} className="text-slate-300">{c}</div>
+          ))}
+        </div>
+      )}
     </div>
 
+    {/* Right main */}
     <div className="flex-1 p-4 space-y-3">
       {r.summary && (
         <div>
@@ -259,45 +259,190 @@ const ModernTemplate = ({ r }) => (
           ))}
         </div>
       )}
+
+      {(r.achievements || []).length > 0 && (
+        <div>
+          <div className="text-[9px] font-bold uppercase tracking-widest text-blue-700 border-b border-blue-100 pb-0.5 mb-1.5">
+            Achievements
+          </div>
+          <ul className="space-y-0.5 pl-1">
+            {(r.achievements || []).map((a, i) => <ChevronBullet key={i}>{a}</ChevronBullet>)}
+          </ul>
+        </div>
+      )}
     </div>
   </div>
 );
 
-/* ── ResumePreview wrapper ───────────────────────────────────────── */
-export const ResumePreview = ({ resume, template = 'classic' }) => {
-  const [activeTemplate, setActiveTemplate] = useState(template);
+/* ── Minimal template ────────────────────────────────────────────── */
+/*
+ * Design: maximum whitespace, ultra-clean typography, no borders or rules.
+ * ATS-safe: single-column, semantic headings, no graphics.
+ * Appeals to creative/senior roles where design taste matters.
+ */
+const MinimalTemplate = ({ r }) => {
+  const MinHead = ({ children }) => (
+    <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-gray-400 mt-3 mb-1">
+      {children}
+    </div>
+  );
 
   return (
-    <div className="card overflow-hidden">
-      <div className="flex items-center justify-between p-3 border-b border-surface-200 bg-surface-50">
-        <p className="kicker">Preview</p>
-        <div className="flex gap-1">
-          {RESUME_TEMPLATES.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setActiveTemplate(t.id)}
-              className={`btn-sm rounded-lg text-xs ${
-                activeTemplate === t.id ? 'bg-brand-600 text-white' : 'btn-ghost'
-              }`}>
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
+    <div className="font-sans text-[10px] leading-relaxed text-gray-800 bg-white px-8 py-6 space-y-0.5">
 
-      <div className="relative bg-white overflow-hidden" style={{ height: '480px' }}>
-        <div className="absolute inset-0 overflow-hidden">
-          <div style={{ transform: 'scale(0.68)', transformOrigin: 'top left', width: '147%', height: '147%' }}>
-            {activeTemplate === 'modern'
-              ? <ModernTemplate r={resume} />
-              : <ClassicTemplate r={resume} />}
+      {/* Name + title */}
+      <div className="mb-4">
+        <div className="text-xl font-light tracking-tight text-gray-900">
+          {safe(r.fullName) || 'Your Name'}
+        </div>
+        {(safe(r.professionalTitle) || safe(r.role)) && (
+          <div className="text-[10px] text-gray-500 mt-0.5 font-medium">
+            {safe(r.professionalTitle) || safe(r.role)}
           </div>
+        )}
+        <div className="flex flex-wrap gap-x-4 mt-1.5 text-gray-400 text-[9px]">
+          {r.email    && <span>{r.email}</span>}
+          {r.phone    && <span>{r.phone}</span>}
+          {r.location && <span>{r.location}</span>}
+          {r.linkedin && <span>{r.linkedin}</span>}
+          {r.github   && <span>{r.github}</span>}
         </div>
       </div>
 
-      <div className="p-2.5 bg-surface-50 border-t border-surface-200 text-center">
-        <p className="text-xs text-ink-400">Live preview &middot; Exports in full quality</p>
+      {r.summary && (
+        <>
+          <MinHead>Profile</MinHead>
+          <p className="text-gray-600 leading-relaxed">{r.summary}</p>
+        </>
+      )}
+
+      {(r.experience || []).length > 0 && (
+        <>
+          <MinHead>Experience</MinHead>
+          {(r.experience || []).map((e, i) => (
+            <div key={i} className="mb-2.5">
+              <div className="flex justify-between items-baseline">
+                <span className="font-semibold text-gray-900">{e.role}</span>
+                <span className="text-gray-400 text-[9px]">
+                  {e.startDate}{e.endDate ? ' – ' + e.endDate : ''}
+                </span>
+              </div>
+              <div className="text-gray-500">{e.company}{e.location ? ', ' + e.location : ''}</div>
+              {(e.bullets || []).filter(Boolean).length > 0 && (
+                <ul className="mt-0.5 space-y-0.5">
+                  {(e.bullets || []).filter(Boolean).map((b, j) => (
+                    <li key={j} className="flex gap-2 text-gray-600">
+                      <span className="text-gray-300 shrink-0">–</span>
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </>
+      )}
+
+      {(r.skills || []).length > 0 && (
+        <>
+          <MinHead>Skills</MinHead>
+          <p className="text-gray-600">{(r.skills || []).join('  ·  ')}</p>
+        </>
+      )}
+
+      {(r.projects || []).length > 0 && (
+        <>
+          <MinHead>Projects</MinHead>
+          {(r.projects || []).map((p, i) => (
+            <div key={i} className="mb-1.5">
+              <span className="font-semibold text-gray-900">{p.name}</span>
+              {p.link && <span className="text-gray-400 ml-2 text-[9px]">{p.link}</span>}
+              {p.description && <p className="text-gray-500 mt-0.5">{p.description}</p>}
+            </div>
+          ))}
+        </>
+      )}
+
+      {(r.education || []).length > 0 && (
+        <>
+          <MinHead>Education</MinHead>
+          {(r.education || []).map((e, i) => (
+            <div key={i} className="flex justify-between mb-1">
+              <div>
+                <span className="font-semibold text-gray-900">{e.degree}</span>
+                {e.field && <span className="text-gray-500"> in {e.field}</span>}
+                {e.institution && <span className="text-gray-400">, {e.institution}</span>}
+              </div>
+              <span className="text-gray-400 text-[9px] shrink-0 ml-2">
+                {e.startDate}{e.endDate ? ' – ' + e.endDate : ''}
+              </span>
+            </div>
+          ))}
+        </>
+      )}
+
+      {(r.certifications || []).length > 0 && (
+        <>
+          <MinHead>Certifications</MinHead>
+          <p className="text-gray-600">{(r.certifications || []).join('  ·  ')}</p>
+        </>
+      )}
+
+      {(r.achievements || []).length > 0 && (
+        <>
+          <MinHead>Achievements</MinHead>
+          <ul className="space-y-0.5">
+            {(r.achievements || []).map((a, i) => (
+              <li key={i} className="flex gap-2 text-gray-600">
+                <span className="text-gray-300 shrink-0">–</span>
+                <span>{a}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  );
+};
+
+/* ── ResumePreview wrapper ───────────────────────────────────────── */
+export const ResumePreview = ({ resume, template = 'classic', onTemplateChange }) => {
+  const [activeTemplate, setActiveTemplate] = useState(template);
+
+  // Sync when parent changes template (e.g. from ExportPanel selector)
+  useEffect(() => {
+    setActiveTemplate(template);
+  }, [template]);
+
+  const handleChange = (id) => {
+    setActiveTemplate(id);
+    onTemplateChange?.(id);
+  };
+
+  return (
+    <div>
+      {/* Template switcher pills */}
+      <div className="flex gap-1 mb-3 rounded-xl bg-surface-100 p-1 w-fit">
+        {RESUME_TEMPLATES.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => handleChange(t.id)}
+            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
+              activeTemplate === t.id
+                ? 'bg-white shadow-sm text-ink-950'
+                : 'text-ink-400 hover:text-ink-700'
+            }`}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Resume paper */}
+      <div className="rounded-xl border border-surface-200 overflow-hidden shadow-sm bg-white">
+        {activeTemplate === 'modern'  && <ModernTemplate  r={resume} />}
+        {activeTemplate === 'minimal' && <MinimalTemplate r={resume} />}
+        {(!activeTemplate || activeTemplate === 'classic') && <ClassicTemplate r={resume} />}
       </div>
     </div>
   );

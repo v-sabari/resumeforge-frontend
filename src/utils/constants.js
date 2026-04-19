@@ -3,7 +3,7 @@ export const TOKEN_STORAGE_KEY = 'resumeforge_token';
 export const INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
 export const FREE_EXPORT_LIMIT     = 2;
 
-// BUG FIX: Empty defaults — never pre-fill with sample person's data
+// Empty defaults — never pre-fill with sample data
 export const defaultResume = {
   fullName: '', professionalTitle: '', email: '', phone: '',
   location: '', linkedin: '', github: '', portfolio: '',
@@ -12,11 +12,13 @@ export const defaultResume = {
 };
 
 export const premiumFeatures = [
-  'Unlimited PDF exports',
+  'Unlimited PDF + DOCX exports',
   'No ad interruptions ever',
-  'Classic & Modern templates',
-  'Multiple saved resume versions',
-  'Priority AI writing assistance',
+  'Classic, Modern & Minimal templates',
+  'AI Cover Letter generation',
+  'AI Resume Tailoring to job descriptions',
+  'AI Interview Prep (5 questions + answers)',
+  'ATS Pro Scan — unlimited per day',
   'Lifetime access — pay once',
 ];
 
@@ -32,6 +34,19 @@ export const builderSections = [
 ];
 
 export const RESUME_TEMPLATES = [
-  { id: 'classic', label: 'Classic', description: 'Clean, ATS-safe single column' },
-  { id: 'modern',  label: 'Modern',  description: 'Two-column with accent sidebar' },
+  {
+    id:          'classic',
+    label:       'Classic',
+    description: 'Clean, ATS-safe single column — maximum recruiter compatibility',
+  },
+  {
+    id:          'modern',
+    label:       'Modern',
+    description: 'Two-column with dark sidebar — visually distinctive for senior roles',
+  },
+  {
+    id:          'minimal',
+    label:       'Minimal',
+    description: 'Ultra-clean whitespace — popular in design, tech, and creative fields',
+  },
 ];

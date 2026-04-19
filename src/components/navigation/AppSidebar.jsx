@@ -3,21 +3,19 @@ import { useAuth } from '../../context/AuthContext';
 import { Logo } from '../common/Logo';
 import { Icon } from '../icons/Icon';
 
-const navItems = [
-  { to: '/app/dashboard', icon: 'grid',      label: 'Dashboard' },
-  { to: '/app/builder',   icon: 'text',      label: 'New Resume' },
-  { to: '/app/profile',   icon: 'user',      label: 'Profile'   },
-  { to: '/pricing',       icon: 'crown',     label: 'Upgrade'   },
-];
-
 export const AppSidebar = () => {
   const { user, premium, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
+  const handleLogout = () => { logout(); navigate('/'); };
+
+  const navItems = [
+    { to: '/app/dashboard', icon: 'grid',     label: 'Dashboard' },
+    { to: '/app/builder',   icon: 'text',     label: 'New Resume' },
+    { to: '/app/referral',  icon: 'sparkles', label: 'Referral hub' },
+    { to: '/app/profile',   icon: 'user',     label: 'Profile'    },
+    { to: '/pricing',       icon: 'crown',    label: 'Upgrade',   hideIfPremium: true },
+  ].filter(item => !(item.hideIfPremium && premium?.isPremium));
 
   return (
     <aside className="hidden lg:flex flex-col w-56 shrink-0 bg-white border-r border-surface-200 h-screen sticky top-0 overflow-y-auto">
@@ -27,10 +25,7 @@ export const AppSidebar = () => {
 
       <nav className="flex-1 p-3 space-y-0.5">
         {navItems.map(({ to, icon, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={to === '/app/dashboard'}
+          <NavLink key={to} to={to} end={to === '/app/dashboard'}
             className={({ isActive }) =>
               `flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-all
                ${isActive
@@ -38,11 +33,21 @@ export const AppSidebar = () => {
                  : 'text-ink-500 hover:bg-surface-100 hover:text-ink-950'}`}>
             <Icon name={icon} className="h-4 w-4 shrink-0" />
             {label}
-            {label === 'Upgrade' && !premium?.isPremium && (
-              <span className="ml-auto premium-badge text-[10px] px-1.5 py-0.5">PRO</span>
-            )}
           </NavLink>
         ))}
+
+        {/* Admin link — only visible to ADMIN role */}
+        {user?.role === 'ADMIN' && (
+          <NavLink to="/admin"
+            className={({ isActive }) =>
+              `flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-all mt-2
+               ${isActive
+                 ? 'bg-amber-600 text-white shadow-sm'
+                 : 'text-amber-600 hover:bg-amber-50'}`}>
+            <Icon name="star" className="h-4 w-4 shrink-0" />
+            Admin panel
+          </NavLink>
+        )}
       </nav>
 
       {/* User panel */}

@@ -98,3 +98,13 @@ export const updateResume = async (id, resume) => {
 export const deleteResume = async (id) => {
   await api.delete(`/api/resumes/${id}`);
 };
+
+export const getResumeHistory = async (id) => {
+  const { data } = await api.get(`/api/resumes/${id}/history`);
+  return data;
+};
+
+export const restoreResumeSnapshot = async (id, snapshotId) => {
+  const { data } = await api.post(`/api/resumes/${id}/history/${snapshotId}/restore`);
+  return data;
+};
