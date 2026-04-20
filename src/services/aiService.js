@@ -95,3 +95,20 @@ export const checkGrammar = async (payload) => {
   const { data } = await api.post('/api/ai/grammar-check', payload);
   return data;
 };
+
+// Default export with all methods
+export const aiService = {
+  generateSummary,
+  generateBullets,
+  suggestSkills,
+  rewriteText,
+  getATSScore: getAtsScore,
+  generateCoverLetter,
+  tailorResume,
+  optimizeLinkedIn,
+  generateInterviewPrep,
+  checkGrammar,
+};
+
+export default aiService;
+

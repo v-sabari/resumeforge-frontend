@@ -34,6 +34,14 @@ const PaymentFailedPage   = lazy(() => import('../pages/PaymentPages').then(m =>
 // Phase 3: referral hub (authenticated, inside /app)
 const ReferralPage        = lazy(() => import('../pages/ReferralPage').then(m => ({ default: m.ReferralPage })));
 
+// Free tools and AI-powered pages (public)
+const FreeToolsPage       = lazy(() => import('../pages/FreeToolsPage').then(m => ({ default: m.FreeToolsPage })));
+const LinkedInToolsPage   = lazy(() => import('../pages/LinkedInToolsPage').then(m => ({ default: m.LinkedInToolsPage })));
+const ATSScorePage        = lazy(() => import('../pages/ATSScorePage').then(m => ({ default: m.ATSScorePage })));
+
+// Admin panel (authenticated, admin-only)
+const AdminPage           = lazy(() => import('../pages/AdminPage').then(m => ({ default: m.AdminPage })));
+
 const SeoWrapper = ({ children }) => {
   useSeoMeta();
   return children;
@@ -56,6 +64,11 @@ export const AppRoutes = () => (
           <Route path="resources"     element={<ResourcesPage />} />
           <Route path="resources/:slug" element={<ArticlePage />} />
           <Route path="features"      element={<FeaturesRedirect />} />
+          
+          {/* Free Tools */}
+          <Route path="tools"         element={<FreeToolsPage />} />
+          <Route path="tools/linkedin" element={<LinkedInToolsPage />} />
+          <Route path="tools/ats-score" element={<ATSScorePage />} />
         </Route>
 
         {/* ── Auth (public) ─────────────────────────────────── */}
@@ -93,6 +106,8 @@ export const AppRoutes = () => (
           <Route path="profile"           element={<ProfilePage />} />
           {/* Phase 3: referral hub */}
           <Route path="referral"          element={<ReferralPage />} />
+          {/* Admin panel - requires ADMIN role */}
+          <Route path="admin"             element={<AdminPage />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />
