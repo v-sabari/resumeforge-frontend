@@ -35,18 +35,28 @@ export const builderSections = [
 
 export const RESUME_TEMPLATES = [
   {
-    id:          'classic',
-    label:       'Classic',
-    description: 'Clean, ATS-safe single column — maximum recruiter compatibility',
-  },
-  {
     id:          'modern',
-    label:       'Modern',
-    description: 'Two-column with dark sidebar — visually distinctive for senior roles',
+    label:       'Modern Pro',
+    description: 'Clean and professional for all industries — ATS-optimized',
   },
   {
     id:          'minimal',
-    label:       'Minimal',
-    description: 'Ultra-clean whitespace — popular in design, tech, and creative fields',
+    label:       'Minimal ATS',
+    description: 'Maximum ATS compatibility with minimal styling',
+  },
+  {
+    id:          'executive',
+    label:       'Executive',
+    description: 'Bold and authoritative for senior roles',
+  },
+  {
+    id:          'fresher',
+    label:       'Fresher',
+    description: 'Optimized for entry-level candidates with projects focus',
+  },
+  {
+    id:          'creative',
+    label:       'Creative ATS',
+    description: 'Stylish with accent colors, yet ATS-safe',
   },
 ];

@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
 import { RESUME_TEMPLATES } from '../../utils/constants';
+import { 
+  ModernProTemplate, 
+  MinimalATSTemplate, 
+  ExecutiveTemplate, 
+  FresherTemplate, 
+  CreativeATSTemplate 
+} from '../resume/templates';
 
 const safe = (v) => v || '';
 
@@ -406,7 +413,7 @@ const MinimalTemplate = ({ r }) => {
 };
 
 /* ── ResumePreview wrapper ───────────────────────────────────────── */
-export const ResumePreview = ({ resume, template = 'classic', onTemplateChange }) => {
+export const ResumePreview = ({ resume, template = 'modern', onTemplateChange }) => {
   const [activeTemplate, setActiveTemplate] = useState(template);
 
   // Sync when parent changes template (e.g. from ExportPanel selector)
@@ -418,6 +425,53 @@ export const ResumePreview = ({ resume, template = 'classic', onTemplateChange }
     setActiveTemplate(id);
     onTemplateChange?.(id);
   };
+
+  // Transform resume data to match ATS template structure
+  const transformedData = {
+    personalInfo: {
+      fullName: resume.fullName || 'Your Name',
+      title: resume.professionalTitle || resume.role,
+      email: resume.email,
+      phone: resume.phone,
+      location: resume.location,
+      linkedin: resume.linkedin,
+      github: resume.github,
+      portfolio: resume.portfolio,
+    },
+    summary: resume.summary,
+    experience: (resume.experience || []).map(exp => ({
+      position: exp.role,
+      company: exp.company,
+      duration: exp.duration || `${exp.startDate || ''} - ${exp.endDate || 'Present'}`.trim(),
+      location: exp.location,
+      responsibilities: exp.responsibilities || [],
+    })),
+    education: (resume.education || []).map(edu => ({
+      degree: edu.degree,
+      institution: edu.school || edu.institution,
+      year: edu.year || `${edu.startDate || ''} - ${edu.endDate || ''}`.trim(),
+      gpa: edu.gpa,
+    })),
+    skills: resume.skills,
+    projects: (resume.projects || []).map(proj => ({
+      name: proj.name,
+      description: proj.description,
+      technologies: proj.technologies,
+      highlights: proj.highlights || [],
+    })),
+    certifications: resume.certifications,
+    achievements: resume.achievements,
+  };
+
+  const templateMap = {
+    modern: ModernProTemplate,
+    minimal: MinimalATSTemplate,
+    executive: ExecutiveTemplate,
+    fresher: FresherTemplate,
+    creative: CreativeATSTemplate,
+  };
+
+  const TemplateComponent = templateMap[activeTemplate] || ModernProTemplate;
 
   return (
     <div>
@@ -440,9 +494,7 @@ export const ResumePreview = ({ resume, template = 'classic', onTemplateChange }
 
       {/* Resume paper */}
       <div className="rounded-xl border border-surface-200 overflow-hidden shadow-sm bg-white">
-        {activeTemplate === 'modern'  && <ModernTemplate  r={resume} />}
-        {activeTemplate === 'minimal' && <MinimalTemplate r={resume} />}
-        {(!activeTemplate || activeTemplate === 'classic') && <ClassicTemplate r={resume} />}
+        <TemplateComponent data={transformedData} />
       </div>
     </div>
   );
