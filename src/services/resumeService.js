@@ -1,98 +1,94 @@
 import api from './api';
 
-const numericIdOnly = (value) => {
-  if (typeof value === 'number' && Number.isFinite(value)) return value;
-  if (typeof value === 'string' && /^\d+$/.test(value.trim())) return Number(value.trim());
-  return undefined;
+/**
+ * Convert frontend resume → backend payload
+ */
+const toApiPayload = (resume) => {
+  return {
+    title: resume.fullName || 'Untitled Resume',
+    template: resume.template || 'modern',
+
+    personalInfo: JSON.stringify({
+      fullName: resume.fullName || '',
+      role: resume.professionalTitle || '',
+      email: resume.email || '',
+      phone: resume.phone || '',
+      location: resume.location || '',
+      linkedin: resume.linkedin || '',
+      github: resume.github || '',
+      portfolio: resume.portfolio || '',
+    }),
+
+    summary: resume.summary || '',
+
+    experience: JSON.stringify(resume.experience || []),
+    education: JSON.stringify(resume.education || []),
+    skills: JSON.stringify(resume.skills || []),
+    projects: JSON.stringify(resume.projects || []),
+    certifications: JSON.stringify(resume.certifications || []),
+    customSections: JSON.stringify({
+      achievements: resume.achievements || [],
+    }),
+  };
 };
 
-const cleanStringArray = (value) =>
-  Array.isArray(value)
-    ? value.map((item) => String(item || '').trim()).filter(Boolean)
-    : [];
+/**
+ * Convert backend → frontend usable format
+ */
+const fromApiResponse = (data) => {
+  const safeParse = (value, fallback) => {
+    try {
+      return value ? JSON.parse(value) : fallback;
+    } catch {
+      return fallback;
+    }
+  };
 
-const toApiPayload = (resume) => ({
-  fullName: resume.fullName || '',
-  role: resume.professionalTitle || resume.role || '',
-  email: resume.email || '',
-  phone: resume.phone || '',
-  location: resume.location || '',
-  linkedin: resume.linkedin || '',
-  github: resume.github || '',
-  portfolio: resume.portfolio || '',
-  summary: resume.summary || '',
-  skills: cleanStringArray(resume.skills),
-  achievements: cleanStringArray(resume.achievements),
+  const personal = safeParse(data.personalInfo, {});
 
-  certifications: Array.isArray(resume.certifications)
-    ? resume.certifications
-        .map((c) => {
-          if (typeof c === 'string') return c.trim();
-          return String(c?.name || '').trim();
-        })
-        .filter(Boolean)
-    : [],
+  return {
+    id: data.id,
+    template: data.template || 'modern',
 
-  experiences: Array.isArray(resume.experience)
-    ? resume.experience.map((e) => {
-        const id = numericIdOnly(e.id);
-        return {
-          ...(id !== undefined ? { id } : {}),
-          company: e.company || '',
-          role: e.role || '',
-          location: e.location || '',
-          startDate: e.startDate || '',
-          endDate: e.isCurrent ? 'Present' : (e.endDate || ''),
-          bullets: cleanStringArray(e.bullets),
-        };
-      })
-    : [],
+    fullName: personal.fullName || '',
+    professionalTitle: personal.role || '',
+    email: personal.email || '',
+    phone: personal.phone || '',
+    location: personal.location || '',
+    linkedin: personal.linkedin || '',
+    github: personal.github || '',
+    portfolio: personal.portfolio || '',
 
-  education: Array.isArray(resume.education)
-    ? resume.education.map((e) => {
-        const id = numericIdOnly(e.id);
-        return {
-          ...(id !== undefined ? { id } : {}),
-          institution: e.institution || '',
-          degree: e.degree || '',
-          field: e.field || '',
-          startDate: e.startDate || '',
-          endDate: e.endDate || '',
-        };
-      })
-    : [],
+    summary: data.summary || '',
 
-  projects: Array.isArray(resume.projects)
-    ? resume.projects.map((p) => {
-        const id = numericIdOnly(p.id);
-        return {
-          ...(id !== undefined ? { id } : {}),
-          name: p.name || '',
-          link: p.link || '',
-          description: p.description || '',
-        };
-      })
-    : [],
-});
+    experience: safeParse(data.experience, []),
+    education: safeParse(data.education, []),
+    skills: safeParse(data.skills, []),
+    projects: safeParse(data.projects, []),
+    certifications: safeParse(data.certifications, []),
 
-export const getAllResumes = async () => {
-  const { data } = await api.get('/api/resumes');
-  return data;
-};
-
-export const getResumeById = async (id) => {
-  const { data } = await api.get(`/api/resumes/${id}`);
-  return data;
+    achievements: safeParse(data.customSections, {}).achievements || [],
+  };
 };
 
 export const createResume = async (resume) => {
   const { data } = await api.post('/api/resumes', toApiPayload(resume));
-  return data;
+  return fromApiResponse(data);
 };
 
 export const updateResume = async (id, resume) => {
   const { data } = await api.put(`/api/resumes/${id}`, toApiPayload(resume));
-  return data;
+  return fromApiResponse(data);
+};
+
+export const getResumeById = async (id) => {
+  const { data } = await api.get(`/api/resumes/${id}`);
+  return fromApiResponse(data);
+};
+
+export const getAllResumes = async () => {
+  const { data } = await api.get('/api/resumes');
+  return data.map(fromApiResponse);
 };
 
 export const deleteResume = async (id) => {
@@ -106,5 +102,5 @@ export const getResumeHistory = async (id) => {
 
 export const restoreResumeSnapshot = async (id, snapshotId) => {
   const { data } = await api.post(`/api/resumes/${id}/history/${snapshotId}/restore`);
-  return data;
+  return fromApiResponse(data);
 };

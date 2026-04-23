@@ -34,14 +34,29 @@ export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // Safely normalise resume payload from API → internal shape
 export const normaliseResume = (payload) => {
   if (!payload) return null;
+
+  const safeParse = (value, fallback) => {
+    try {
+      return value ? JSON.parse(value) : fallback;
+    } catch {
+      return fallback;
+    }
+  };
+
+  const personal = safeParse(payload.personalInfo, {});
+
   return {
     ...payload,
-    skills:         Array.isArray(payload.skills)         ? payload.skills         : [],
-    experience:     Array.isArray(payload.experiences)    ? payload.experiences.map(normExp) : [],
-    education:      Array.isArray(payload.education)      ? payload.education.map(normEdu)   : [],
-    projects:       Array.isArray(payload.projects)       ? payload.projects.map(normProj)   : [],
-    certifications: Array.isArray(payload.certifications) ? payload.certifications.map(normCert) : [],
-    achievements:   Array.isArray(payload.achievements)   ? payload.achievements    : [],
+
+    fullName: personal.fullName || '',
+    professionalTitle: personal.role || '',
+
+    skills: safeParse(payload.skills, []),
+    experience: safeParse(payload.experience, []),
+    education: safeParse(payload.education, []),
+    projects: safeParse(payload.projects, []),
+    certifications: safeParse(payload.certifications, []),
+    achievements: safeParse(payload.customSections, {}).achievements || [],
   };
 };
 
