@@ -12,7 +12,7 @@ import { ExportPanel }  from '../components/builder/ExportPanel';
 import { Icon }         from '../components/icons/Icon';
 import { defaultResume, builderSections } from '../utils/constants';
 import { formatApiError, normaliseResume, toArray, uid } from '../utils/helpers';
-import ModernProTemplate from '../components/resume/templates/ModernProTemplate';
+
 const fromLines = (v) => v.split('\n').map((s) => s.trim()).filter(Boolean);
 const jumpTo    = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
