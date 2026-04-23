@@ -1,11 +1,12 @@
 {
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "https://resumeforge-backend-9uj6.onrender.com/api/$1"
-    }
-  ],
   "routes": [
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "https://resumeforge-backend-9uj6.onrender.com/api/$1"
+    },
     {
       "src": "/(.*)",
       "dest": "/index.html"
