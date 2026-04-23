@@ -1,8 +1,8 @@
-import ModernProTemplate from './ModernProTemplate';
-import MinimalATSTemplate from './MinimalATSTemplate';
-import ExecutiveTemplate from './ExecutiveTemplate';
-import FresherTemplate from './FresherTemplate';
-import CreativeATSTemplate from './CreativeATSTemplate';
+import { ModernProTemplate } from './ModernProTemplate';
+import { MinimalATSTemplate } from './MinimalATSTemplate';
+import { ExecutiveTemplate } from './ExecutiveTemplate';
+import { FresherTemplate } from './FresherTemplate';
+import { CreativeATSTemplate } from './CreativeATSTemplate';
 
 export {
   ModernProTemplate,
