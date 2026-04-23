@@ -1,8 +1,16 @@
-export { ModernProTemplate } from './ModernProTemplate';
-export { MinimalATSTemplate } from './MinimalATSTemplate';
-export { ExecutiveTemplate } from './ExecutiveTemplate';
-export { FresherTemplate } from './FresherTemplate';
-export { CreativeATSTemplate } from './CreativeATSTemplate';
+import ModernProTemplate from './ModernProTemplate';
+import MinimalATSTemplate from './MinimalATSTemplate';
+import ExecutiveTemplate from './ExecutiveTemplate';
+import FresherTemplate from './FresherTemplate';
+import CreativeATSTemplate from './CreativeATSTemplate';
+
+export {
+  ModernProTemplate,
+  MinimalATSTemplate,
+  ExecutiveTemplate,
+  FresherTemplate,
+  CreativeATSTemplate,
+};
 
 export const TEMPLATES = {
   modern: ModernProTemplate,

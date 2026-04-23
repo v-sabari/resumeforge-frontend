@@ -494,7 +494,7 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange })
 
       {/* Resume paper */}
       <div className="rounded-xl border border-surface-200 overflow-hidden shadow-sm bg-white">
-        <TemplateComponent data={transformedData} />
+        <TemplateComponent r={resume} />
       </div>
     </div>
   );
