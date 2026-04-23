@@ -263,58 +263,75 @@ export const ResumeBuilderPage = () => {
       ...prev,
       [section]: (prev[section] || []).filter((item) => item.id !== id),
     }));
+const addExp = () =>
+  setResume((prev) => ({
+    ...prev,
+    experience: [
+      ...(prev.experience || []),
+      {
+        id: uid('exp'),
+        company: '',
+        role: '',
+        location: '',
+        employmentType: '',
+        startDate: '',
+        endDate: '',
+        summary: '',
+        bullets: [],
+      },
+    ],
+  }));
 
-  const addExp = () =>
-    setResume((prev) => ({
-      ...prev,
-      experience: [
-        ...(prev.experience || []),
-        {
-          id: uid('exp'),
-          company: '',
-          role: '',
-          startDate: '',
-          endDate: '',
-          location: '',
-          bullets: [],
-        },
-      ],
-    }));
+const addProj = () =>
+  setResume((prev) => ({
+    ...prev,
+    projects: [
+      ...(prev.projects || []),
+      {
+        id: uid('proj'),
+        name: '',
+        role: '',
+        link: '',
+        github: '',
+        techStack: '',
+        description: '',
+        highlights: [],
+      },
+    ],
+  }));
 
-  const addProj = () =>
-    setResume((prev) => ({
-      ...prev,
-      projects: [
-        ...(prev.projects || []),
-        { id: uid('proj'), name: '', link: '', description: '' },
-      ],
-    }));
+const addEdu = () =>
+  setResume((prev) => ({
+    ...prev,
+    education: [
+      ...(prev.education || []),
+      {
+        id: uid('edu'),
+        institution: '',
+        degree: '',
+        field: '',
+        grade: '',
+        startDate: '',
+        endDate: '',
+        details: '',
+      },
+    ],
+  }));
 
-  const addEdu = () =>
-    setResume((prev) => ({
-      ...prev,
-      education: [
-        ...(prev.education || []),
-        {
-          id: uid('edu'),
-          institution: '',
-          degree: '',
-          startDate: '',
-          endDate: '',
-          field: '',
-        },
-      ],
-    }));
-
-  const addCert = () =>
-    setResume((prev) => ({
-      ...prev,
-      certifications: [
-        ...(prev.certifications || []),
-        { id: uid('cert'), name: '', issuer: '', year: '' },
-      ],
-    }));
-
+const addCert = () =>
+  setResume((prev) => ({
+    ...prev,
+    certifications: [
+      ...(prev.certifications || []),
+      {
+        id: uid('cert'),
+        name: '',
+        issuer: '',
+        year: '',
+        credentialUrl: '',
+      },
+    ],
+  }));
   const updateCertification = (index, field, value) =>
     setResume((prev) => ({
       ...prev,
@@ -524,227 +541,455 @@ export const ResumeBuilderPage = () => {
               placeholder="React, Node.js, PostgreSQL, Figma, Agile…"
             />
           </SectionCard>
-
           <SectionCard
-            id="experience"
-            eyebrow="Experience"
-            title="Work experience"
-            description="List your most recent role first."
-            action={
-              <button type="button" onClick={addExp} className="btn-secondary btn-sm gap-1">
-                <Icon name="plus" className="h-3.5 w-3.5" />
-                Add role
-              </button>
-            }
+  id="experience"
+  eyebrow="Experience"
+  title="Work experience"
+  description="Add roles in reverse chronological order with measurable impact."
+  action={
+    <button type="button" onClick={addExp} className="btn-secondary btn-sm gap-1">
+      <Icon name="plus" className="h-3.5 w-3.5" />
+      Add role
+    </button>
+  }
+>
+  {(resume.experience || []).length === 0 ? (
+    <div className="rounded-xl border border-dashed border-surface-300 bg-surface-50 p-4 text-sm text-ink-500">
+      No work experience added yet. Click <span className="font-semibold">Add role</span> to start.
+    </div>
+  ) : (
+    (resume.experience || []).map((exp, index) => (
+      <FieldGroup key={exp.id}>
+        <div className="mb-3 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold text-ink-900">
+              Role {index + 1}
+            </p>
+            <p className="text-xs text-ink-500">
+              Add role title, company, dates, and strong achievement bullets.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => remove('experience', exp.id)}
+            className="btn-danger btn-sm"
           >
-            {(resume.experience || []).map((exp) => (
-              <FieldGroup key={exp.id}>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {[
-                    ['role', 'Job title'],
-                    ['company', 'Company'],
-                    ['location', 'Location'],
-                    ['startDate', 'Start date'],
-                    ['endDate', 'End date (or "Present")'],
-                  ].map(([field, label]) => (
-                    <div key={field}>
-                      <label className="label">{label}</label>
-                      <input
-                        className="input"
-                        value={exp[field] || ''}
-                        onChange={(e) => arr('experience', exp.id, field, e.target.value)}
-                      />
-                    </div>
-                  ))}
-                </div>
+            <Icon name="trash" className="h-3.5 w-3.5" />
+            Remove
+          </button>
+        </div>
 
-                <div className="mt-3">
-                  <label className="label">Bullet points (one per line)</label>
-                  <textarea
-                    className="input min-h-[80px] resize-none text-xs"
-                    value={(exp.bullets || []).join('\n')}
-                    onChange={(e) =>
-                      arr('experience', exp.id, 'bullets', fromLines(e.target.value))
-                    }
-                    placeholder={'• Led a team of 5 engineers to deliver X ahead of schedule\n• Reduced load time by 40% through caching'}
-                  />
-                </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <label className="label">Job title</label>
+            <input
+              className="input"
+              value={exp.role || ''}
+              onChange={(e) => arr('experience', exp.id, 'role', e.target.value)}
+              placeholder="Frontend Developer"
+            />
+          </div>
 
-                <button
-                  type="button"
-                  onClick={() => remove('experience', exp.id)}
-                  className="btn-danger btn-sm mt-2"
-                >
-                  <Icon name="trash" className="h-3.5 w-3.5" />
-                  Remove
-                </button>
-              </FieldGroup>
-            ))}
-          </SectionCard>
+          <div>
+            <label className="label">Company</label>
+            <input
+              className="input"
+              value={exp.company || ''}
+              onChange={(e) => arr('experience', exp.id, 'company', e.target.value)}
+              placeholder="Acme Technologies"
+            />
+          </div>
 
+          <div>
+            <label className="label">Location</label>
+            <input
+              className="input"
+              value={exp.location || ''}
+              onChange={(e) => arr('experience', exp.id, 'location', e.target.value)}
+              placeholder="Chennai, India"
+            />
+          </div>
+
+          <div>
+            <label className="label">Employment type</label>
+            <input
+              className="input"
+              value={exp.employmentType || ''}
+              onChange={(e) => arr('experience', exp.id, 'employmentType', e.target.value)}
+              placeholder="Full-time / Internship / Freelance"
+            />
+          </div>
+
+          <div>
+            <label className="label">Start date</label>
+            <input
+              className="input"
+              value={exp.startDate || ''}
+              onChange={(e) => arr('experience', exp.id, 'startDate', e.target.value)}
+              placeholder="Jan 2024"
+            />
+          </div>
+
+          <div>
+            <label className="label">End date</label>
+            <input
+              className="input"
+              value={exp.endDate || ''}
+              onChange={(e) => arr('experience', exp.id, 'endDate', e.target.value)}
+              placeholder="Present"
+            />
+          </div>
+        </div>
+
+        <div className="mt-3">
+          <label className="label">Brief role summary</label>
+          <textarea
+            className="input min-h-[72px] resize-none text-sm"
+            value={exp.summary || ''}
+            onChange={(e) => arr('experience', exp.id, 'summary', e.target.value)}
+            placeholder="Describe your responsibility scope in 1–2 lines."
+          />
+        </div>
+
+        <div className="mt-3">
+          <label className="label">Achievement bullets (one per line)</label>
+          <textarea
+            className="input min-h-[120px] resize-none text-sm"
+            value={(exp.bullets || []).join('\n')}
+            onChange={(e) => arr('experience', exp.id, 'bullets', fromLines(e.target.value))}
+            placeholder={'Built responsive UI for 20+ pages\nImproved page speed by 35%\nIntegrated REST APIs and reduced manual workflow time'}
+          />
+          <p className="mt-1 text-xs text-ink-400">
+            Write impact-driven bullets with action + result + metric wherever possible.
+          </p>
+        </div>
+      </FieldGroup>
+    ))
+  )}
+</SectionCard>
           <SectionCard
-            id="projects"
-            eyebrow="Projects"
-            title="Projects"
-            action={
-              <button type="button" onClick={addProj} className="btn-secondary btn-sm gap-1">
-                <Icon name="plus" className="h-3.5 w-3.5" />
-                Add project
-              </button>
-            }
+  id="projects"
+  eyebrow="Projects"
+  title="Projects"
+  description="Highlight strong projects with stack, links, and measurable outcomes."
+  action={
+    <button type="button" onClick={addProj} className="btn-secondary btn-sm gap-1">
+      <Icon name="plus" className="h-3.5 w-3.5" />
+      Add project
+    </button>
+  }
+>
+  {(resume.projects || []).length === 0 ? (
+    <div className="rounded-xl border border-dashed border-surface-300 bg-surface-50 p-4 text-sm text-ink-500">
+      No projects added yet. Add projects that prove your skills.
+    </div>
+  ) : (
+    (resume.projects || []).map((proj, index) => (
+      <FieldGroup key={proj.id}>
+        <div className="mb-3 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold text-ink-900">
+              Project {index + 1}
+            </p>
+            <p className="text-xs text-ink-500">
+              Add title, links, technologies, and the outcome.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => remove('projects', proj.id)}
+            className="btn-danger btn-sm"
           >
-            {(resume.projects || []).map((proj) => (
-              <FieldGroup key={proj.id}>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <label className="label">Project name</label>
-                    <input
-                      className="input"
-                      value={proj.name || ''}
-                      onChange={(e) => arr('projects', proj.id, 'name', e.target.value)}
-                    />
-                  </div>
+            <Icon name="trash" className="h-3.5 w-3.5" />
+            Remove
+          </button>
+        </div>
 
-                  <div>
-                    <label className="label">Link / URL</label>
-                    <input
-                      className="input"
-                      value={proj.link || ''}
-                      onChange={(e) => arr('projects', proj.id, 'link', e.target.value)}
-                    />
-                  </div>
-                </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <label className="label">Project name</label>
+            <input
+              className="input"
+              value={proj.name || ''}
+              onChange={(e) => arr('projects', proj.id, 'name', e.target.value)}
+              placeholder="ResumeForge AI"
+            />
+          </div>
 
-                <div className="mt-3">
-                  <label className="label">Description</label>
-                  <textarea
-                    className="input min-h-[60px] resize-none text-xs"
-                    value={proj.description || ''}
-                    onChange={(e) =>
-                      arr('projects', proj.id, 'description', e.target.value)
-                    }
-                  />
-                </div>
+          <div>
+            <label className="label">Project role</label>
+            <input
+              className="input"
+              value={proj.role || ''}
+              onChange={(e) => arr('projects', proj.id, 'role', e.target.value)}
+              placeholder="Full Stack Developer"
+            />
+          </div>
 
-                <button
-                  type="button"
-                  onClick={() => remove('projects', proj.id)}
-                  className="btn-danger btn-sm mt-2"
-                >
-                  <Icon name="trash" className="h-3.5 w-3.5" />
-                  Remove
-                </button>
-              </FieldGroup>
-            ))}
-          </SectionCard>
+          <div>
+            <label className="label">Live URL</label>
+            <input
+              className="input"
+              value={proj.link || ''}
+              onChange={(e) => arr('projects', proj.id, 'link', e.target.value)}
+              placeholder="https://example.com"
+            />
+          </div>
 
-          <SectionCard
-            id="education"
-            eyebrow="Education"
-            title="Education"
-            action={
-              <button type="button" onClick={addEdu} className="btn-secondary btn-sm gap-1">
-                <Icon name="plus" className="h-3.5 w-3.5" />
-                Add education
-              </button>
-            }
+          <div>
+            <label className="label">GitHub URL</label>
+            <input
+              className="input"
+              value={proj.github || ''}
+              onChange={(e) => arr('projects', proj.id, 'github', e.target.value)}
+              placeholder="https://github.com/username/project"
+            />
+          </div>
+        </div>
+
+        <div className="mt-3">
+          <label className="label">Tech stack</label>
+          <input
+            className="input"
+            value={proj.techStack || ''}
+            onChange={(e) => arr('projects', proj.id, 'techStack', e.target.value)}
+            placeholder="React, Spring Boot, PostgreSQL, JWT, Razorpay"
+          />
+        </div>
+
+        <div className="mt-3">
+          <label className="label">Project description</label>
+          <textarea
+            className="input min-h-[100px] resize-none text-sm"
+            value={proj.description || ''}
+            onChange={(e) => arr('projects', proj.id, 'description', e.target.value)}
+            placeholder="Describe what the project does, your contribution, and why it matters."
+          />
+        </div>
+
+        <div className="mt-3">
+          <label className="label">Key highlights (one per line)</label>
+          <textarea
+            className="input min-h-[100px] resize-none text-sm"
+            value={(proj.highlights || []).join('\n')}
+            onChange={(e) => arr('projects', proj.id, 'highlights', fromLines(e.target.value))}
+            placeholder={'Implemented secure JWT authentication\nBuilt ATS resume scoring workflow\nDeployed frontend and backend separately for scalability'}
+          />
+        </div>
+      </FieldGroup>
+    ))
+  )}
+</SectionCard>
+
+<SectionCard
+  id="education"
+  eyebrow="Education"
+  title="Education"
+  description="Add institution, degree, specialization, and academic results if relevant."
+  action={
+    <button type="button" onClick={addEdu} className="btn-secondary btn-sm gap-1">
+      <Icon name="plus" className="h-3.5 w-3.5" />
+      Add education
+    </button>
+  }
+>
+  {(resume.education || []).length === 0 ? (
+    <div className="rounded-xl border border-dashed border-surface-300 bg-surface-50 p-4 text-sm text-ink-500">
+      No education details added yet.
+    </div>
+  ) : (
+    (resume.education || []).map((edu, index) => (
+      <FieldGroup key={edu.id}>
+        <div className="mb-3 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold text-ink-900">
+              Education {index + 1}
+            </p>
+            <p className="text-xs text-ink-500">
+              Include degree, field, institution, and score if useful.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => remove('education', edu.id)}
+            className="btn-danger btn-sm"
           >
-            {(resume.education || []).map((edu) => (
-              <FieldGroup key={edu.id}>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {[
-                    ['institution', 'Institution'],
-                    ['degree', 'Degree'],
-                    ['field', 'Field of study'],
-                    ['startDate', 'Start year'],
-                    ['endDate', 'End year'],
-                  ].map(([field, label]) => (
-                    <div key={field}>
-                      <label className="label">{label}</label>
-                      <input
-                        className="input"
-                        value={edu[field] || ''}
-                        onChange={(e) => arr('education', edu.id, field, e.target.value)}
-                      />
-                    </div>
-                  ))}
-                </div>
+            <Icon name="trash" className="h-3.5 w-3.5" />
+            Remove
+          </button>
+        </div>
 
-                <button
-                  type="button"
-                  onClick={() => remove('education', edu.id)}
-                  className="btn-danger btn-sm mt-2"
-                >
-                  <Icon name="trash" className="h-3.5 w-3.5" />
-                  Remove
-                </button>
-              </FieldGroup>
-            ))}
-          </SectionCard>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <label className="label">Institution</label>
+            <input
+              className="input"
+              value={edu.institution || ''}
+              onChange={(e) => arr('education', edu.id, 'institution', e.target.value)}
+              placeholder="XYZ Engineering College"
+            />
+          </div>
 
-          <SectionCard
-            id="certifications"
-            eyebrow="Certifications"
-            title="Certifications"
-            action={
-              <button type="button" onClick={addCert} className="btn-secondary btn-sm gap-1">
-                <Icon name="plus" className="h-3.5 w-3.5" />
-                Add
-              </button>
-            }
-          >
-            {(resume.certifications || []).map((cert, index) => {
-              const certObj =
-                typeof cert === 'string'
-                  ? { name: cert, issuer: '', year: '' }
-                  : cert || { name: '', issuer: '', year: '' };
+          <div>
+            <label className="label">Degree</label>
+            <input
+              className="input"
+              value={edu.degree || ''}
+              onChange={(e) => arr('education', edu.id, 'degree', e.target.value)}
+              placeholder="B.E / B.Tech / M.Sc"
+            />
+          </div>
 
-              return (
-                <FieldGroup key={certObj.id || index}>
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    <div className="sm:col-span-2">
-                      <label className="label">Certification name</label>
-                      <input
-                        className="input"
-                        value={certObj.name || ''}
-                        placeholder="e.g. AWS Certified Solutions Architect"
-                        onChange={(e) => updateCertification(index, 'name', e.target.value)}
-                      />
-                    </div>
+          <div>
+            <label className="label">Field of study</label>
+            <input
+              className="input"
+              value={edu.field || ''}
+              onChange={(e) => arr('education', edu.id, 'field', e.target.value)}
+              placeholder="Computer Science and Engineering"
+            />
+          </div>
 
-                    <div>
-                      <label className="label">Year</label>
-                      <input
-                        className="input"
-                        value={certObj.year || ''}
-                        placeholder="2024"
-                        onChange={(e) => updateCertification(index, 'year', e.target.value)}
-                      />
-                    </div>
-                  </div>
+          <div>
+            <label className="label">Grade / CGPA</label>
+            <input
+              className="input"
+              value={edu.grade || ''}
+              onChange={(e) => arr('education', edu.id, 'grade', e.target.value)}
+              placeholder="8.4 CGPA"
+            />
+          </div>
 
-                  <div className="mt-3">
-                    <label className="label">Issuer</label>
-                    <input
-                      className="input"
-                      value={certObj.issuer || ''}
-                      placeholder="e.g. Amazon Web Services"
-                      onChange={(e) => updateCertification(index, 'issuer', e.target.value)}
-                    />
-                  </div>
+          <div>
+            <label className="label">Start year</label>
+            <input
+              className="input"
+              value={edu.startDate || ''}
+              onChange={(e) => arr('education', edu.id, 'startDate', e.target.value)}
+              placeholder="2021"
+            />
+          </div>
 
-                  <button
-                    type="button"
-                    onClick={() => removeCertification(index)}
-                    className="btn-danger btn-sm mt-2"
-                  >
-                    <Icon name="trash" className="h-3.5 w-3.5" />
-                    Remove
-                  </button>
-                </FieldGroup>
-              );
-            })}
-          </SectionCard>
+          <div>
+            <label className="label">End year</label>
+            <input
+              className="input"
+              value={edu.endDate || ''}
+              onChange={(e) => arr('education', edu.id, 'endDate', e.target.value)}
+              placeholder="2025"
+            />
+          </div>
+        </div>
+
+        <div className="mt-3">
+          <label className="label">Additional details</label>
+          <textarea
+            className="input min-h-[80px] resize-none text-sm"
+            value={edu.details || ''}
+            onChange={(e) => arr('education', edu.id, 'details', e.target.value)}
+            placeholder="Relevant coursework, honors, academic achievements, scholarships, etc."
+          />
+        </div>
+      </FieldGroup>
+    ))
+  )}
+</SectionCard>
+<SectionCard
+  id="certifications"
+  eyebrow="Certifications"
+  title="Certifications"
+  description="Add professional certifications with issuer, year, and credential link."
+  action={
+    <button type="button" onClick={addCert} className="btn-secondary btn-sm gap-1">
+      <Icon name="plus" className="h-3.5 w-3.5" />
+      Add certification
+    </button>
+  }
+>
+  {(resume.certifications || []).length === 0 ? (
+    <div className="rounded-xl border border-dashed border-surface-300 bg-surface-50 p-4 text-sm text-ink-500">
+      No certifications added yet.
+    </div>
+  ) : (
+    (resume.certifications || []).map((cert, index) => {
+      const certObj =
+        typeof cert === 'string'
+          ? { id: uid('cert'), name: cert, issuer: '', year: '', credentialUrl: '' }
+          : {
+              id: cert?.id || uid('cert'),
+              name: cert?.name || '',
+              issuer: cert?.issuer || '',
+              year: cert?.year || '',
+              credentialUrl: cert?.credentialUrl || '',
+            };
+
+      return (
+        <FieldGroup key={certObj.id}>
+          <div className="mb-3 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-ink-900">
+                Certification {index + 1}
+              </p>
+              <p className="text-xs text-ink-500">
+                Keep certification name exact and add issuer details clearly.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => removeCertification(index)}
+              className="btn-danger btn-sm"
+            >
+              <Icon name="trash" className="h-3.5 w-3.5" />
+              Remove
+            </button>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <label className="label">Certification name</label>
+              <input
+                className="input"
+                value={certObj.name}
+                onChange={(e) => updateCertification(index, 'name', e.target.value)}
+                placeholder="AWS Certified Solutions Architect – Associate"
+              />
+            </div>
+
+            <div>
+              <label className="label">Issuer</label>
+              <input
+                className="input"
+                value={certObj.issuer}
+                onChange={(e) => updateCertification(index, 'issuer', e.target.value)}
+                placeholder="Amazon Web Services"
+              />
+            </div>
+
+            <div>
+              <label className="label">Year</label>
+              <input
+                className="input"
+                value={certObj.year}
+                onChange={(e) => updateCertification(index, 'year', e.target.value)}
+                placeholder="2024"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="label">Credential URL</label>
+              <input
+                className="input"
+                value={certObj.credentialUrl}
+                onChange={(e) => updateCertification(index, 'credentialUrl', e.target.value)}
+                placeholder="https://www.credly.com/..."
+              />
+            </div>
+          </div>
+        </FieldGroup>
+      );
+    })
+  )}
+</SectionCard>
 
           <SectionCard
             id="achievements"
