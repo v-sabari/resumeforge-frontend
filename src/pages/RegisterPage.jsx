@@ -136,7 +136,7 @@ export const RegisterPage = () => {
                 <button type="button"
                   onClick={() => setShowPass(p => !p)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-300 hover:text-ink-600">
-                  <Icon name={showPass ? 'eye' : 'eye'} className="h-4 w-4" />
+                  <Icon name={showPass ? 'eyeOff' : 'eye'} className="h-4 w-4" />
                 </button>
               </div>
             </div>
