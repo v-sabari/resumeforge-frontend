@@ -1,9 +1,8 @@
 import api from './api';
 
 /**
- * Create a payment intent.
- * Returns { paymentId, paymentLink, razorpayKeyId, ... }
- * The caller should redirect to paymentLink.
+ * Create a Razorpay order via backend.
+ * Returns { orderId, amount, currency, keyId }
  */
 export const createPayment = async (amount) => {
   const { data } = await api.post('/api/payments/create', amount ? { amount } : {});
@@ -11,35 +10,27 @@ export const createPayment = async (amount) => {
 };
 
 /**
- * Verify a Razorpay Payment Link completion.
+ * Verify payment after Razorpay Checkout SDK completes.
  *
- * After the user pays, Razorpay redirects to our callback URL with these
- * query parameters appended:
- *   ?razorpay_payment_id=pay_XXX
- *   &razorpay_payment_link_id=plink_XXX
- *   &razorpay_payment_link_reference_id=our_internal_payment_id
- *   &razorpay_payment_link_status=paid
- *   &razorpay_signature=hmac_hex_string
+ * After the user pays, Razorpay's handler() callback gives us:
+ *   razorpay_order_id
+ *   razorpay_payment_id
+ *   razorpay_signature
  *
- * The frontend must collect them from the URL and pass them here.
- * The backend verifies the HMAC-SHA256 signature before granting premium.
+ * We send all three to backend which verifies the HMAC-SHA256 signature
+ * before granting premium. Never send a status field — backend ignores it.
  *
- * DO NOT add a `status` field or send any other trust signals —
- * the backend ignores them and uses only the verified signature.
- *
- * @param {URLSearchParams} params - The URL search params from the callback URL
- * @returns {Promise<object>} Payment record from backend
+ * @param {string} razorpayOrderId   - from Razorpay handler response
+ * @param {string} razorpayPaymentId - from Razorpay handler response
+ * @param {string} razorpaySignature - from Razorpay handler response
+ * @returns {Promise<object>} ApiResponse from backend
  */
-export const verifyPaymentCallback = async (params) => {
-  const payload = {
-    razorpayPaymentId:                params.get('razorpay_payment_id'),
-    razorpayPaymentLinkId:            params.get('razorpay_payment_link_id'),
-    razorpayPaymentLinkReferenceId:   params.get('razorpay_payment_link_reference_id'),
-    razorpayPaymentLinkStatus:        params.get('razorpay_payment_link_status'),
-    razorpaySignature:                params.get('razorpay_signature'),
-  };
-
-  const { data } = await api.post('/api/payments/verify', payload);
+export const verifyPayment = async (razorpayOrderId, razorpayPaymentId, razorpaySignature) => {
+  const { data } = await api.post('/api/payments/verify', {
+    razorpayOrderId,
+    razorpayPaymentId,
+    razorpaySignature,
+  });
   return data;
 };
 

@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { createPayment } from '../services/paymentService';
+import { initiatePayment } from '../utils/razorpay';
 import { PageHeader } from '../components/common/PageHeader';
 import { Alert } from '../components/common/Alert';
 import { Icon } from '../components/icons/Icon';
 import { formatApiError } from '../utils/helpers';
 import { premiumFeatures } from '../utils/constants';
 
-const freeFeatures  = ['Full resume builder', 'AI writing assistance', '2 PDF exports', 'Classic template', 'Secure cloud storage'];
+const freeFeatures = ['Full resume builder', 'AI writing assistance', '2 PDF exports', 'Classic template', 'Secure cloud storage'];
 
 export const PricingPage = () => {
   const { isAuthenticated, premium } = useAuth();
@@ -18,16 +18,20 @@ export const PricingPage = () => {
 
   const handleUpgrade = async () => {
     if (!isAuthenticated) { navigate('/register'); return; }
-    setLoading(true); setError('');
-    try {
-      const r    = await createPayment();
-      const link = r?.paymentLink || r?.data?.paymentLink;
-      if (!link) throw new Error('Payment link unavailable. Please try again.');
-      window.location.href = link;
-    } catch (e) {
-      setError(formatApiError(e, 'Could not start payment. Please try again.'));
-      setLoading(false);
-    }
+    setLoading(true);
+    setError('');
+
+    initiatePayment(
+      // onSuccess — redirect to callback page
+      () => {
+        window.location.href = '/payment/callback';
+      },
+      // onFailure — show error
+      (errMsg) => {
+        setError(errMsg || 'Payment failed. Please try again.');
+        setLoading(false);
+      }
+    );
   };
 
   return (
@@ -98,7 +102,7 @@ export const PricingPage = () => {
                 onClick={handleUpgrade}
                 disabled={loading}
                 className="btn-primary w-full justify-center">
-                {loading ? 'Redirecting to payment…' : 'Get Premium — $9'}
+                {loading ? 'Opening payment…' : 'Get Premium — $9'}
                 {!loading && <Icon name="arrowRight" className="h-4 w-4" />}
               </button>
             )}
