@@ -7,6 +7,10 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
     chunkSizeWarningLimit: 600,
+    // F1 FIX: target ES2019 so react-snap's Chromium can execute the built JS.
+    // Optional chaining (?.) and nullish coalescing (??) are compiled away,
+    // preventing the "Unexpected token '?'" pageerror during pre-rendering.
+    target: 'es2019',
     rollupOptions: {
       output: {
         manualChunks: {
