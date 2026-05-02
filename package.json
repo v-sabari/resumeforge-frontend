@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && react-snap",
+    "build:csr": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx --max-warnings 0"
   },
@@ -25,7 +26,39 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "postcss": "^8.5.3",
+    "react-snap": "^1.23.0",
     "tailwindcss": "^3.4.17",
     "vite": "^5.4.18"
+  },
+  "reactSnap": {
+    "source": "dist",
+    "destination": "dist",
+    "publicPath": "/",
+    "include": [
+      "/",
+      "/pricing",
+      "/about",
+      "/contact",
+      "/terms",
+      "/privacy",
+      "/refund-policy",
+      "/resources",
+      "/tools",
+      "/tools/linkedin",
+      "/tools/ats-score",
+      "/login",
+      "/register",
+      "/forgot-password",
+      "/reset-password",
+      "/verify-email"
+    ],
+    "puppeteerArgs": [
+      "--no-sandbox",
+      "--disable-setuid-sandbox"
+    ],
+    "puppeteerExecutablePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "inlineCss": false,
+    "minifyHtml": false,
+    "crawl": false
   }
 }
