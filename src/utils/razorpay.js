@@ -1,7 +1,25 @@
 import { createPayment, verifyPayment } from '../services/paymentService';
 
+// Added: dynamically loads Razorpay SDK before use
+function loadRazorpayScript() {
+  return new Promise((resolve, reject) => {
+    if (window.Razorpay) {
+      resolve();
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('Failed to load Razorpay SDK'));
+    document.body.appendChild(script);
+  });
+}
+
 export async function initiatePayment(onSuccess, onFailure) {
   try {
+
+    // Step 0 — Ensure Razorpay SDK is loaded
+    await loadRazorpayScript();
 
     // Step 1 — Create order from backend
     const orderData = await createPayment();

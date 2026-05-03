@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/icons/Icon';
 import { APP_NAME } from '../utils/constants';
@@ -34,8 +34,7 @@ const faqs = [
     a: 'Yes — our referral programme lets you earn days of Premium by inviting friends. 1 friend = 3 days, 3 friends = ATS Pro Scan, 5 friends = 1 month Premium.' },
 ];
 
-/* Hardcoded fallback testimonials (shown while API loads or if API fails) */
-const FALLBACK_TESTIMONIALS = [
+const TESTIMONIALS = [
   { authorName: 'Priya S.',   authorRole: 'Software Engineer, Bengaluru', quote: 'Landed my dream job at a top startup. The AI bullets saved me hours of staring at a blank page.', rating: 5 },
   { authorName: 'James T.',   authorRole: 'Product Manager, London',      quote: "Cleanest resume I've ever had. Recruiters actually comment on the formatting.",                      rating: 5 },
   { authorName: 'Aditi R.',   authorRole: 'UX Designer, Mumbai',          quote: 'I had 5 interviews in 2 weeks after using ResumeForge AI. The ATS optimisation really works.',      rating: 5 },
@@ -140,46 +139,31 @@ const StepsSection = () => (
   </section>
 );
 
-/* ── Testimonials — fetches from API, falls back to hardcoded ── */
-const TestimonialsSection = () => {
-  const [testimonials, setTestimonials] = useState(FALLBACK_TESTIMONIALS);
-
-  useEffect(() => {
-    fetch('/api/testimonials')
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (Array.isArray(data) && data.length > 0) setTestimonials(data);
-      })
-      .catch(() => {}); // keep fallback on error
-  }, []);
-
-  return (
-    <section className="bg-surface-50 py-16 sm:py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <p className="kicker mb-2">Testimonials</p>
-          <h2 className="text-3xl font-display font-semibold text-ink-950">What job seekers say</h2>
-        </div>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {testimonials.map(({ authorName, authorRole, quote, rating }, i) => (
-            <div key={i} className="card p-6 flex flex-col">
-              <StarRating rating={rating} />
-              <blockquote className="flex-1 text-sm text-ink-600 leading-relaxed italic mb-4">
-                "{quote}"
-              </blockquote>
-              <div>
-                <p className="text-sm font-semibold text-ink-950">{authorName}</p>
-                <p className="text-xs text-ink-400 mt-0.5">{authorRole}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+const TestimonialsSection = () => (
+  <section className="bg-surface-50 py-16 sm:py-20">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="text-center mb-12">
+        <p className="kicker mb-2">Testimonials</p>
+        <h2 className="text-3xl font-display font-semibold text-ink-950">What job seekers say</h2>
       </div>
-    </section>
-  );
-};
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {TESTIMONIALS.map(({ authorName, authorRole, quote, rating }, i) => (
+          <div key={i} className="card p-6 flex flex-col">
+            <StarRating rating={rating} />
+            <blockquote className="flex-1 text-sm text-ink-600 leading-relaxed italic mb-4">
+              "{quote}"
+            </blockquote>
+            <div>
+              <p className="text-sm font-semibold text-ink-950">{authorName}</p>
+              <p className="text-xs text-ink-400 mt-0.5">{authorRole}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
 
-/* ── Referral upsell section ── */
 const ReferralSection = () => (
   <section className="bg-brand-600 py-14">
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
