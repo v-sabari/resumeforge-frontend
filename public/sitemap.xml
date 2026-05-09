@@ -52,11 +52,21 @@
     <priority>0.3</priority>
   </url>
 
-  <!-- Free tools (Phase 6 — high SEO value) -->
+  <!-- Free tools -->
   <url>
     <loc>https://www.resumeforgeai.site/tools</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.resumeforgeai.site/tools/linkedin</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.resumeforgeai.site/tools/ats-score</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 
   <!-- Resources hub -->
@@ -66,7 +76,7 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Articles (existing 5) -->
+  <!-- Articles -->
   <url>
     <loc>https://www.resumeforgeai.site/resources/how-to-write-ats-resume</loc>
     <changefreq>monthly</changefreq>
@@ -92,8 +102,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-
-  <!-- New articles (Phase 6) -->
   <url>
     <loc>https://www.resumeforgeai.site/resources/how-to-write-cover-letter</loc>
     <changefreq>monthly</changefreq>
