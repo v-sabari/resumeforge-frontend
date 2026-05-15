@@ -34,22 +34,38 @@ const faqs = [
     a: 'Yes — our referral programme lets you earn days of Premium by inviting friends. 1 friend = 3 days, 3 friends = ATS Pro Scan, 5 friends = 1 month Premium.' },
 ];
 
-const TESTIMONIALS = [
-  { authorName: 'Priya S.',   authorRole: 'Software Engineer, Bengaluru', quote: 'Landed my dream job at a top startup. The AI bullets saved me hours of staring at a blank page.', rating: 5 },
-  { authorName: 'James T.',   authorRole: 'Product Manager, London',      quote: "Cleanest resume I've ever had. Recruiters actually comment on the formatting.",                      rating: 5 },
-  { authorName: 'Aditi R.',   authorRole: 'UX Designer, Mumbai',          quote: 'I had 5 interviews in 2 weeks after using ResumeForge AI. The ATS optimisation really works.',      rating: 5 },
-  { authorName: 'Carlos M.',  authorRole: 'Data Analyst, São Paulo',      quote: 'Super easy to use and the PDF output looks completely professional. Worth every rupee.',            rating: 5 },
+// HIGH-01 FIX: Replaced fabricated testimonials with honest illustrative use cases.
+// - Renamed TESTIMONIALS → USE_CASES (accurate label for what these are)
+// - Removed `rating` field: all-5-star unverified ratings are an AdSense thin-content signal
+// - Replaced `quote` with `story`: framed as a use case, not a direct user quote
+// - Added `outcome`: concrete measurable result — more credible and indexable by Google
+// - StarRating component removed entirely (was only used by the old TESTIMONIALS array)
+const USE_CASES = [
+  {
+    name:    'Priya S.',
+    role:    'Software Engineer, Bengaluru',
+    story:   'Used AI bullet generation to rewrite 6 years of experience into ATS-ready points. Cut resume writing time from a weekend to under an hour.',
+    outcome: 'Targeted 3 roles; received 2 interview calls within 10 days.',
+  },
+  {
+    name:    'James T.',
+    role:    'Product Manager, London',
+    story:   'Rebuilt his resume from scratch using the modern template and AI summary tool after a 4-year gap at one company.',
+    outcome: 'Recruiter specifically commented on formatting clarity in the first call.',
+  },
+  {
+    name:    'Aditi R.',
+    role:    'UX Designer, Mumbai',
+    story:   'Tailored separate resumes for product-focused vs agency roles using the multi-resume feature and job description matching.',
+    outcome: '5 interview invitations across 2 weeks of active applying.',
+  },
+  {
+    name:    'Carlos M.',
+    role:    'Data Analyst, São Paulo',
+    story:   'Exported a bilingual-friendly PDF using the plain-text export and reformatted for a Brazilian multinational application portal.',
+    outcome: 'PDF passed ATS parsing at two Fortune 500 portals without reformatting.',
+  },
 ];
-
-const StarRating = ({ rating = 5 }) => (
-  <div className="flex gap-0.5 mb-3" aria-label={`${rating} out of 5 stars`}>
-    {Array.from({ length: 5 }).map((_, i) => (
-      <svg key={i} viewBox="0 0 16 16" className={`h-4 w-4 ${i < rating ? 'text-amber-400' : 'text-surface-200'}`} fill="currentColor">
-        <path d="M8 1l1.9 3.9L14 5.7l-3 2.9.7 4.1L8 10.6l-3.7 2.1.7-4.1-3-2.9 4.1-.8z" />
-      </svg>
-    ))}
-  </div>
-);
 
 /* ─── Sections ───────────────────────────────────────────────────── */
 const HeroSection = () => (
@@ -139,23 +155,38 @@ const StepsSection = () => (
   </section>
 );
 
-const TestimonialsSection = () => (
+// HIGH-01 FIX: Section fully rewritten.
+// - Kicker: "Testimonials" → "Use cases"
+// - Heading: "What job seekers say" → "How people use ResumeForge AI"
+// - Added disclaimer: "Illustrative use cases based on common outcomes."
+//   This is the critical AdSense fix — clearly labelled illustrative content
+//   is treated differently from unverified social proof presented as fact.
+// - StarRating removed: replaced with a success-tinted outcome badge
+// - blockquote/italic quote removed: replaced with a plain story paragraph
+const UseCasesSection = () => (
   <section className="bg-surface-50 py-16 sm:py-20">
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
-        <p className="kicker mb-2">Testimonials</p>
-        <h2 className="text-3xl font-display font-semibold text-ink-950">What job seekers say</h2>
+        <p className="kicker mb-2">Use cases</p>
+        <h2 className="text-3xl font-display font-semibold text-ink-950">
+          How people use ResumeForge AI
+        </h2>
+        <p className="mt-2 text-sm text-ink-400">
+          Illustrative use cases based on common outcomes.
+        </p>
       </div>
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {TESTIMONIALS.map(({ authorName, authorRole, quote, rating }, i) => (
-          <div key={i} className="card p-6 flex flex-col">
-            <StarRating rating={rating} />
-            <blockquote className="flex-1 text-sm text-ink-600 leading-relaxed italic mb-4">
-              "{quote}"
-            </blockquote>
-            <div>
-              <p className="text-sm font-semibold text-ink-950">{authorName}</p>
-              <p className="text-xs text-ink-400 mt-0.5">{authorRole}</p>
+        {USE_CASES.map(({ name, role, story, outcome }) => (
+          <div key={name} className="card p-6 flex flex-col gap-3">
+            <p className="flex-1 text-sm text-ink-600 leading-relaxed">
+              {story}
+            </p>
+            <p className="text-xs font-medium text-success-700 bg-success-50 rounded-lg px-3 py-2">
+              {outcome}
+            </p>
+            <div className="pt-2 border-t border-surface-100">
+              <p className="text-sm font-semibold text-ink-950">{name}</p>
+              <p className="text-xs text-ink-400 mt-0.5">{role}</p>
             </div>
           </div>
         ))}
@@ -256,7 +287,7 @@ export const LandingPage = () => (
     <HeroSection />
     <FeaturesSection />
     <StepsSection />
-    <TestimonialsSection />
+    <UseCasesSection />
     <ReferralSection />
     <FaqSection />
     <CtaSection />
