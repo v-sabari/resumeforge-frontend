@@ -433,15 +433,44 @@ export const AboutPage = () => (
       </div>
     </div>
 
+    {/*
+      HIGH-02 FIX: Removed fabricated statistics grid.
+
+      The original section displayed:
+        "50,000+ Resumes created" / "120+ Countries served" / "4.8/5 Average user rating"
+
+      These numbers are unverifiable and almost certainly fabricated for a newly launched product.
+      Google's quality raters flag false statistics as a spam / thin-content signal, which directly
+      harms AdSense approval and long-term SEO trust.
+
+      Replaced with three honest, factually defensible product-commitment cards.
+      No numerical claims are made that cannot be independently verified.
+
+      When real metrics are available (tracked via analytics), replace these cards with
+      actual verified numbers sourced from your own dashboard data.
+    */}
     <div className="grid gap-6 sm:grid-cols-3 mb-6">
       {[
-        { number: '50,000+', label: 'Resumes created' },
-        { number: '120+',    label: 'Countries served' },
-        { number: '4.8 / 5', label: 'Average user rating' },
-      ].map(({ number, label }) => (
-        <div key={label} className="card p-6 text-center">
-          <p className="text-3xl font-display font-bold text-ink-950">{number}</p>
-          <p className="mt-1 text-sm text-ink-400">{label}</p>
+        {
+          icon: '🌍',
+          title: 'Available worldwide',
+          desc:  'Built for job seekers everywhere — templates and AI content tuned for global ATS systems.',
+        },
+        {
+          icon: '💸',
+          title: 'Free to start',
+          desc:  'Full resume builder access at no cost. No credit card required. Pay once only if you need more exports.',
+        },
+        {
+          icon: '🛡️',
+          title: 'No data selling, ever',
+          desc:  'Your resume content is never used to train AI models or shared with advertisers.',
+        },
+      ].map(({ icon, title, desc }) => (
+        <div key={title} className="card p-6 text-center">
+          <div className="text-3xl mb-3">{icon}</div>
+          <p className="text-sm font-semibold text-ink-950 mb-1">{title}</p>
+          <p className="text-xs text-ink-400 leading-relaxed">{desc}</p>
         </div>
       ))}
     </div>
