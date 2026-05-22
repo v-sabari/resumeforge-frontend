@@ -33,7 +33,29 @@ const faqs = [
   { q: 'Can I earn Premium for free?',
     a: 'Yes — our referral programme lets you earn days of Premium by inviting friends. 1 friend = 3 days, 3 friends = ATS Pro Scan, 5 friends = 1 month Premium.' },
 ];
+const FaqSchema = () => {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: a,
+      },
+    })),
+  };
 
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(schema),
+      }}
+    />
+  );
+};
 // HIGH-01 FIX: Replaced fabricated testimonials with honest illustrative use cases.
 // - Renamed TESTIMONIALS → USE_CASES (accurate label for what these are)
 // - Removed `rating` field: all-5-star unverified ratings are an AdSense thin-content signal
@@ -284,6 +306,7 @@ const CtaSection = () => (
 /* ── Page ── */
 export const LandingPage = () => (
   <main>
+    <FaqSchema />
     <HeroSection />
     <FeaturesSection />
     <StepsSection />
