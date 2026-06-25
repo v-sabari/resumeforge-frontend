@@ -65,8 +65,11 @@ const ImportModal = ({ open, onClose, onImport }) => {
       if (/^[-=]{4,}/.test(line)) continue;
 
       if (currentSection === 'summary') {
-        parsed.summary = `${parsed.summary ? `${parsed.summary} ` : ''}${line}`;
-      } else if (currentSection === 'skills') {
+  parsed.summary = [parsed.summary, line]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+} else if (currentSection === 'skills') {
         line
           .split(/[,;|]/)
           .map((s) => s.trim())
@@ -169,11 +172,8 @@ export const ResumeBuilderPage = () => {
   const [template, setTemplate] = useState('modern');
   const [showImport, setShowImport] = useState(false);
 
-  const skillsText = useMemo(() => (resume.skills || []).join(', '), [resume.skills]);
-  const achievementsText = useMemo(
-    () => (resume.achievements || []).join('\n'),
-    [resume.achievements]
-  );
+  const skillsText = (resume.skills || []).join(', ');
+  const achievementsText = (resume.achievements || []).join('\n');
 
   useEffect(() => {
     if (!resumeId) return;
@@ -184,13 +184,19 @@ export const ResumeBuilderPage = () => {
     getResumeById(resumeId)
       .then((payload) => {
         const normalised = normaliseResume(payload);
-        const merged = { ...defaultResume, ...normalised, template: normalised?.template || 'modern' };
+        const merged = {
+          ...defaultResume,
+          ...normalised,
+          template: normalised?.template || 'modern',
+        };
 
         setResume(merged);
         setTemplate(merged.template || 'modern');
         setCurrentId(payload.id || resumeId);
       })
-      .catch((err) => setError(formatApiError(err, 'Could not load this resume.')))
+      .catch((err) =>
+        setError(formatApiError(err, 'Could not load this resume.'))
+      )
       .finally(() => setLoading(false));
   }, [resumeId]);
 
@@ -212,6 +218,7 @@ export const ResumeBuilderPage = () => {
       if (currentId) {
         const p = await updateResume(currentId, payloadToSave);
         const n = normaliseResume(p);
+
         setResume((prev) => ({ ...prev, ...n, template: n?.template || template }));
         setTemplate(n?.template || template);
         setSuccess('Resume saved successfully.');
@@ -263,26 +270,32 @@ export const ResumeBuilderPage = () => {
       ...prev,
       [section]: (prev[section] || []).filter((item) => item.id !== id),
     }));
-const addExp = () =>
-  setResume((prev) => ({
-    ...prev,
-    experience: [
-      ...(prev.experience || []),
-      {
-        id: uid('exp'),
-        company: '',
-        role: '',
-        location: '',
-        employmentType: '',
-        startDate: '',
-        endDate: '',
-        summary: '',
-        bullets: [],
-      },
-    ],
-  }));
 
-const addProj = () =>
+  // ============================
+  // ✅ FIX BUILDER-01 HERE
+  // MUST BE INSIDE COMPONENT
+  // ============================
+
+  const addExp = () =>
+    setResume((prev) => ({
+      ...prev,
+      experience: [
+        ...(prev.experience || []),
+        {
+          id: uid('exp'),
+          company: '',
+          role: '',
+          location: '',
+          employmentType: '',
+          startDate: '',
+          endDate: '',
+          summary: '',
+          bullets: [],
+        },
+      ],
+    }));
+
+  const addProj = () =>
   setResume((prev) => ({
     ...prev,
     projects: [
@@ -300,7 +313,7 @@ const addProj = () =>
     ],
   }));
 
-const addEdu = () =>
+  const addEdu = () =>
   setResume((prev) => ({
     ...prev,
     education: [
@@ -318,7 +331,7 @@ const addEdu = () =>
     ],
   }));
 
-const addCert = () =>
+  const addCert = () =>
   setResume((prev) => ({
     ...prev,
     certifications: [
@@ -332,33 +345,8 @@ const addCert = () =>
       },
     ],
   }));
-  const updateCertification = (index, field, value) =>
-    setResume((prev) => ({
-      ...prev,
-      certifications: (prev.certifications || []).map((cert, i) => {
-        if (i !== index) return cert;
 
-        if (typeof cert === 'string') {
-          return {
-            id: uid('cert'),
-            name: field === 'name' ? value : cert,
-            issuer: field === 'issuer' ? value : '',
-            year: field === 'year' ? value : '',
-          };
-        }
-
-        return {
-          ...cert,
-          [field]: value,
-        };
-      }),
-    }));
-
-  const removeCertification = (index) =>
-    setResume((prev) => ({
-      ...prev,
-      certifications: (prev.certifications || []).filter((_, i) => i !== index),
-    }));
+  // ===== rest of your component continues unchanged =====
 
   if (loading) {
     return (
@@ -367,6 +355,8 @@ const addCert = () =>
       </div>
     );
   }
+
+  
 
   return (
     <div className="space-y-5 animate-fade-in">
