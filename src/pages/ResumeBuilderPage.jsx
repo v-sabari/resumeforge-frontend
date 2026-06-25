@@ -537,7 +537,7 @@ export const ResumeBuilderPage = () => {
   eyebrow="Experience"
   title="Work experience"
   description="Add roles in reverse chronological order with measurable impact."
-  action={
+  actions={
     <button type="button" onClick={addExp} className="btn-secondary btn-sm gap-1">
       <Icon name="plus" className="h-3.5 w-3.5" />
       Add role
@@ -663,7 +663,7 @@ export const ResumeBuilderPage = () => {
   eyebrow="Projects"
   title="Projects"
   description="Highlight strong projects with stack, links, and measurable outcomes."
-  action={
+  actions={
     <button type="button" onClick={addProj} className="btn-secondary btn-sm gap-1">
       <Icon name="plus" className="h-3.5 w-3.5" />
       Add project
@@ -777,7 +777,7 @@ export const ResumeBuilderPage = () => {
   eyebrow="Education"
   title="Education"
   description="Add institution, degree, specialization, and academic results if relevant."
-  action={
+  actions={
     <button type="button" onClick={addEdu} className="btn-secondary btn-sm gap-1">
       <Icon name="plus" className="h-3.5 w-3.5" />
       Add education
@@ -890,7 +890,7 @@ export const ResumeBuilderPage = () => {
   eyebrow="Certifications"
   title="Certifications"
   description="Add professional certifications with issuer, year, and credential link."
-  action={
+  actions={
     <button type="button" onClick={addCert} className="btn-secondary btn-sm gap-1">
       <Icon name="plus" className="h-3.5 w-3.5" />
       Add certification
