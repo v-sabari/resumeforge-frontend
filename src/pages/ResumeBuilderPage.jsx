@@ -35,7 +35,13 @@ const ImportModal = ({ open, onClose, onImport }) => {
     if (!text.trim()) return;
 
     const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
-    const parsed = { summary: '', skills: [], achievements: [] };
+    const parsed = {
+  summary: '',
+  skills: [],
+  achievements: [],
+  experience: [],
+  education: []
+};
 
     let currentSection = '';
 
@@ -54,14 +60,14 @@ const ImportModal = ({ open, onClose, onImport }) => {
         currentSection = 'achievements';
         continue;
       }
-      if (/^(EXPERIENCE|WORK EXPERIENCE|EMPLOYMENT)/.test(up)) {
-        currentSection = 'exp';
-        continue;
-      }
-      if (/^(EDUCATION|ACADEMIC)/.test(up)) {
-        currentSection = 'edu';
-        continue;
-      }
+      if (/^(EXPERIENCE|WORK EXPERIENCE|EMPLOYMENT)/.test(up.trim())) {
+  currentSection = 'experience';
+  continue;
+}
+      if (/^(EDUCATION|ACADEMIC)(\b|:|-)/.test(up.trim())) {
+  currentSection = 'education';
+  continue;
+}
       if (/^[-=]{4,}/.test(line)) continue;
 
       if (currentSection === 'summary') {
@@ -576,7 +582,9 @@ export const ResumeBuilderPage = () => {
             <input
               className="input"
               value={exp.role || ''}
-              onChange={(e) => arr('experience', exp.id, 'role', e.target.value)}
+              onChange={(e) =>
+  arr('experience', exp.id, 'role', e.target.value)
+}
               placeholder="Frontend Developer"
             />
           </div>
@@ -931,7 +939,7 @@ export const ResumeBuilderPage = () => {
               <label className="label">Certification name</label>
               <input
                 className="input"
-                value={certObj.name}
+                value={certObj.name || ''}
                 onChange={(e) => arr('certifications', certObj.id, 'name', e.target.value)}
                 placeholder="AWS Certified Solutions Architect – Associate"
               />
