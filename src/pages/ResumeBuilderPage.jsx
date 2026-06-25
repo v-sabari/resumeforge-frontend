@@ -265,11 +265,12 @@ export const ResumeBuilderPage = () => {
       ),
     }));
 
-  const remove = (section, id) =>
-    setResume((prev) => ({
-      ...prev,
-      [section]: (prev[section] || []).filter((item) => item.id !== id),
-    }));
+  const remove = (section, id) => {
+  setResume((prev) => ({
+    ...prev,
+    [section]: (prev[section] || []).filter((item) => item.id !== id),
+  }));
+};
 
   // ============================
   // ✅ FIX BUILDER-01 HERE
@@ -902,16 +903,7 @@ export const ResumeBuilderPage = () => {
     </div>
   ) : (
     (resume.certifications || []).map((cert, index) => {
-      const certObj =
-        typeof cert === 'string'
-          ? { id: uid('cert'), name: cert, issuer: '', year: '', credentialUrl: '' }
-          : {
-              id: cert?.id || uid('cert'),
-              name: cert?.name || '',
-              issuer: cert?.issuer || '',
-              year: cert?.year || '',
-              credentialUrl: cert?.credentialUrl || '',
-            };
+      const certObj = cert;
 
       return (
         <FieldGroup key={certObj.id}>
@@ -926,7 +918,7 @@ export const ResumeBuilderPage = () => {
             </div>
             <button
               type="button"
-              onClick={() => removeCertification(index)}
+              onClick={() => remove('certifications', certObj.id)}
               className="btn-danger btn-sm"
             >
               <Icon name="trash" className="h-3.5 w-3.5" />
@@ -940,7 +932,7 @@ export const ResumeBuilderPage = () => {
               <input
                 className="input"
                 value={certObj.name}
-                onChange={(e) => updateCertification(index, 'name', e.target.value)}
+                onChange={(e) => arr('certifications', certObj.id, 'name', e.target.value)}
                 placeholder="AWS Certified Solutions Architect – Associate"
               />
             </div>
@@ -950,7 +942,7 @@ export const ResumeBuilderPage = () => {
               <input
                 className="input"
                 value={certObj.issuer}
-                onChange={(e) => updateCertification(index, 'issuer', e.target.value)}
+                onChange={(e) => arr('certifications', certObj.id, 'issuer', e.target.value)}
                 placeholder="Amazon Web Services"
               />
             </div>
@@ -960,7 +952,7 @@ export const ResumeBuilderPage = () => {
               <input
                 className="input"
                 value={certObj.year}
-                onChange={(e) => updateCertification(index, 'year', e.target.value)}
+                onChange={(e) => arr('certifications', certObj.id, 'year', e.target.value)}
                 placeholder="2024"
               />
             </div>
@@ -970,7 +962,7 @@ export const ResumeBuilderPage = () => {
               <input
                 className="input"
                 value={certObj.credentialUrl}
-                onChange={(e) => updateCertification(index, 'credentialUrl', e.target.value)}
+                onChange={(e) => arr('certifications', certObj.id, 'credentialUrl', e.target.value)}
                 placeholder="https://www.credly.com/..."
               />
             </div>
