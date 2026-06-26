@@ -1,7 +1,10 @@
 export const APP_NAME          = import.meta.env.VITE_APP_NAME || 'ResumeForge AI';
 export const TOKEN_STORAGE_KEY = 'resumeforge_token';
 export const INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
-export const FREE_EXPORT_LIMIT     = 2;
+// FIX 7b: Backend ExportService allows 3 free exports per day.
+// Previously set to 2 which caused the frontend to show "limit reached" 
+// one export earlier than the backend actually blocks.
+export const FREE_EXPORT_LIMIT     = 3;
 
 // Empty defaults — never pre-fill with sample data
 export const defaultResume = {

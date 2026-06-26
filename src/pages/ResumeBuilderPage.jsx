@@ -27,58 +27,58 @@ const FieldGroup = ({ children }) => (
 
 /* ── Import modal: paste plain text resume ──────────────────────────── */
 const ImportModal = ({ open, onClose, onImport }) => {
-  const [text, setText] = useState('');
+  const [text,       setText]       = useState('');
+  const [parseError, setParseError] = useState('');
 
   if (!open) return null;
 
   const handleImport = () => {
     if (!text.trim()) return;
+    setParseError('');
 
     const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
-    const parsed = {
-  summary: '',
-  skills: [],
-  achievements: [],
-  experience: [],
-  education: []
-};
+    const parsed = { summary: '', skills: [], achievements: [] };
 
     let currentSection = '';
 
     for (const line of lines) {
       const up = line.toUpperCase();
 
-      if (/^(SUMMARY|PROFESSIONAL SUMMARY|PROFILE|OBJECTIVE)/.test(up)) {
-        currentSection = 'summary';
-        continue;
+      if (/^(SUMMARY|PROFESSIONAL SUMMARY|PROFILE SUMMARY|PROFILE|OBJECTIVE|CAREER OBJECTIVE|ABOUT ME)/.test(up)) {
+        currentSection = 'summary'; continue;
       }
-      if (/^(SKILLS|TECHNICAL SKILLS|CORE COMPETENCIES)/.test(up)) {
-        currentSection = 'skills';
-        continue;
+      // BUILDER-05 FIX: "KEY SKILLS" and "CORE COMPETENCIES" variants added.
+      if (/^(SKILLS|TECHNICAL SKILLS|CORE COMPETENCIES|KEY SKILLS|TECHNOLOGIES)/.test(up)) {
+        currentSection = 'skills'; continue;
       }
-      if (/^(ACHIEVEMENT|ACHIEVEMENTS|HONORS|AWARDS)/.test(up)) {
-        currentSection = 'achievements';
-        continue;
+      if (/^(ACHIEVEMENT|ACHIEVEMENTS|HONORS|AWARDS|ACCOMPLISHMENTS)/.test(up)) {
+        currentSection = 'achievements'; continue;
       }
-      if (/^(EXPERIENCE|WORK EXPERIENCE|EMPLOYMENT)/.test(up.trim())) {
-  currentSection = 'experience';
-  continue;
-}
-      if (/^(EDUCATION|ACADEMIC)(\b|:|-)/.test(up.trim())) {
-  currentSection = 'education';
-  continue;
-}
-      if (/^[-=]{4,}/.test(line)) continue;
+      // BUILDER-05 FIX: CERTIFICATIONS and PROJECTS sections were missing.
+      // Without these, lines like "AWS Certified Developer" or "Built a React app"
+      // were being appended to whichever section was previously active (e.g. skills),
+      // corrupting that section's content.
+      if (/^(CERTIFICATIONS|CERTIFICATION|LICENSES|CREDENTIALS)/.test(up)) {
+        currentSection = 'certs'; continue;   // recognised but not parsed — prevents leak
+      }
+      if (/^(PROJECTS|PROJECT WORK|PERSONAL PROJECTS|ACADEMIC PROJECTS)/.test(up)) {
+        currentSection = 'proj'; continue;    // recognised but not parsed — prevents leak
+      }
+      if (/^(EXPERIENCE|WORK EXPERIENCE|EMPLOYMENT|WORK HISTORY|PROFESSIONAL EXPERIENCE)/.test(up)) {
+        currentSection = 'exp'; continue;
+      }
+      if (/^(EDUCATION|ACADEMIC|ACADEMIC BACKGROUND|QUALIFICATIONS)/.test(up)) {
+        currentSection = 'edu'; continue;
+      }
+      // Skip decorative dividers
+      if (/^[-=*_]{3,}$/.test(line)) continue;
 
       if (currentSection === 'summary') {
-  parsed.summary = [parsed.summary, line]
-    .filter(Boolean)
-    .join(' ')
-    .trim();
-} else if (currentSection === 'skills') {
+        parsed.summary = `${parsed.summary ? `${parsed.summary} ` : ''}${line}`;
+      } else if (currentSection === 'skills') {
         line
-          .split(/[,;|]/)
-          .map((s) => s.trim())
+          .split(/[,;|•·]/)
+          .map((s) => s.trim().replace(/^[-*]\s*/, ''))
           .filter(Boolean)
           .forEach((s) => {
             if (!parsed.skills.includes(s)) parsed.skills.push(s);
@@ -87,18 +87,40 @@ const ImportModal = ({ open, onClose, onImport }) => {
         const clean = line.replace(/^[•\-*]\s*/, '').trim();
         if (clean) parsed.achievements.push(clean);
       }
+      // 'exp', 'edu', 'certs', 'proj' sections: intentionally not parsed here.
+      // The user must fill those sections manually via the form.
     }
 
     const firstLine = lines[0];
     if (
       firstLine &&
-      !/^(SUMMARY|SKILLS|EXPERIENCE|EDUCATION|PROFILE|OBJECTIVE)/.test(firstLine.toUpperCase())
+      !/^(SUMMARY|PROFESSIONAL SUMMARY|PROFILE SUMMARY|PROFILE|OBJECTIVE|CAREER OBJECTIVE|SKILLS|TECHNICAL SKILLS|KEY SKILLS|EXPERIENCE|EDUCATION|CERTIFICATIONS|PROJECTS|ACHIEVEMENTS)/.test(firstLine.toUpperCase())
     ) {
-      parsed.fullName = firstLine;
+      // Strip contact details that often appear on the same first line
+      parsed.fullName = firstLine.split(/[|,•·]/)[0].trim();
+    }
+
+    // BUILDER-05 FIX: Validate that at least one useful field was extracted.
+    // Previously, onImport was called even when nothing was parsed, firing a
+    // success toast ("Resume content imported") with no actual change — the user
+    // had no idea the import had silently failed.
+    const hasData =
+      parsed.fullName ||
+      parsed.summary  ||
+      parsed.skills.length > 0 ||
+      parsed.achievements.length > 0;
+
+    if (!hasData) {
+      setParseError(
+        'Could not extract any information from the pasted text. ' +
+        'Make sure it contains section headers like SUMMARY, SKILLS, or ACHIEVEMENTS.'
+      );
+      return;
     }
 
     onImport(parsed);
     setText('');
+    setParseError('');
     onClose();
   };
 
@@ -130,8 +152,15 @@ const ImportModal = ({ open, onClose, onImport }) => {
           className="input min-h-[200px] w-full resize-none font-mono text-sm"
           placeholder="Paste your resume text here…"
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e) => { setText(e.target.value); setParseError(''); }}
         />
+
+        {/* BUILDER-05 FIX: show error when nothing could be extracted */}
+        {parseError && (
+          <p className="text-xs text-danger-600 bg-danger-50 border border-danger-200 rounded-lg px-3 py-2">
+            {parseError}
+          </p>
+        )}
 
         <div className="flex gap-2">
           <button
@@ -178,8 +207,11 @@ export const ResumeBuilderPage = () => {
   const [template, setTemplate] = useState('modern');
   const [showImport, setShowImport] = useState(false);
 
-  const skillsText = (resume.skills || []).join(', ');
-  const achievementsText = (resume.achievements || []).join('\n');
+  const skillsText = useMemo(() => (resume.skills || []).join(', '), [resume.skills]);
+  const achievementsText = useMemo(
+    () => (resume.achievements || []).join('\n'),
+    [resume.achievements]
+  );
 
   useEffect(() => {
     if (!resumeId) return;
@@ -190,19 +222,13 @@ export const ResumeBuilderPage = () => {
     getResumeById(resumeId)
       .then((payload) => {
         const normalised = normaliseResume(payload);
-        const merged = {
-          ...defaultResume,
-          ...normalised,
-          template: normalised?.template || 'modern',
-        };
+        const merged = { ...defaultResume, ...normalised, template: normalised?.template || 'modern' };
 
         setResume(merged);
         setTemplate(merged.template || 'modern');
         setCurrentId(payload.id || resumeId);
       })
-      .catch((err) =>
-        setError(formatApiError(err, 'Could not load this resume.'))
-      )
+      .catch((err) => setError(formatApiError(err, 'Could not load this resume.')))
       .finally(() => setLoading(false));
   }, [resumeId]);
 
@@ -224,7 +250,6 @@ export const ResumeBuilderPage = () => {
       if (currentId) {
         const p = await updateResume(currentId, payloadToSave);
         const n = normaliseResume(p);
-
         setResume((prev) => ({ ...prev, ...n, template: n?.template || template }));
         setTemplate(n?.template || template);
         setSuccess('Resume saved successfully.');
@@ -271,18 +296,15 @@ export const ResumeBuilderPage = () => {
       ),
     }));
 
-  const remove = (section, id) => {
-  setResume((prev) => ({
-    ...prev,
-    [section]: (prev[section] || []).filter((item) => item.id !== id),
-  }));
-};
+  const remove = (section, id) =>
+    setResume((prev) => ({
+      ...prev,
+      [section]: (prev[section] || []).filter((item) => item.id !== id),
+    }));
 
-  // ============================
-  // ✅ FIX BUILDER-01 HERE
-  // MUST BE INSIDE COMPONENT
-  // ============================
-
+  // FIX 2: addExp/addProj/addEdu/addCert moved INSIDE the component so they
+  // have access to setResume via closure. Previously declared at module scope
+  // (no indentation) which caused a ReferenceError at runtime.
   const addExp = () =>
     setResume((prev) => ({
       ...prev,
@@ -303,57 +325,83 @@ export const ResumeBuilderPage = () => {
     }));
 
   const addProj = () =>
-  setResume((prev) => ({
-    ...prev,
-    projects: [
-      ...(prev.projects || []),
-      {
-        id: uid('proj'),
-        name: '',
-        role: '',
-        link: '',
-        github: '',
-        techStack: '',
-        description: '',
-        highlights: [],
-      },
-    ],
-  }));
+    setResume((prev) => ({
+      ...prev,
+      projects: [
+        ...(prev.projects || []),
+        {
+          id: uid('proj'),
+          name: '',
+          role: '',
+          link: '',
+          github: '',
+          techStack: '',
+          description: '',
+          highlights: [],
+        },
+      ],
+    }));
 
   const addEdu = () =>
-  setResume((prev) => ({
-    ...prev,
-    education: [
-      ...(prev.education || []),
-      {
-        id: uid('edu'),
-        institution: '',
-        degree: '',
-        field: '',
-        grade: '',
-        startDate: '',
-        endDate: '',
-        details: '',
-      },
-    ],
-  }));
+    setResume((prev) => ({
+      ...prev,
+      education: [
+        ...(prev.education || []),
+        {
+          id: uid('edu'),
+          institution: '',
+          degree: '',
+          field: '',
+          grade: '',
+          startDate: '',
+          endDate: '',
+          details: '',
+        },
+      ],
+    }));
 
   const addCert = () =>
-  setResume((prev) => ({
-    ...prev,
-    certifications: [
-      ...(prev.certifications || []),
-      {
-        id: uid('cert'),
-        name: '',
-        issuer: '',
-        year: '',
-        credentialUrl: '',
-      },
-    ],
-  }));
+    setResume((prev) => ({
+      ...prev,
+      certifications: [
+        ...(prev.certifications || []),
+        {
+          id: uid('cert'),
+          name: '',
+          issuer: '',
+          year: '',
+          credentialUrl: '',
+        },
+      ],
+    }));
 
-  // ===== rest of your component continues unchanged =====
+  const updateCertification = (index, field, value) =>
+    setResume((prev) => ({
+      ...prev,
+      certifications: (prev.certifications || []).map((cert, i) => {
+        if (i !== index) return cert;
+
+        if (typeof cert === 'string') {
+          return {
+            id: uid('cert'),
+            name: field === 'name' ? value : cert,
+            issuer: field === 'issuer' ? value : '',
+            year: field === 'year' ? value : '',
+          };
+        }
+
+        return {
+          ...cert,
+          [field]: value,
+        };
+      }),
+    }));
+
+  const removeCertification = (index) =>
+    setResume((prev) => ({
+      ...prev,
+      certifications: (prev.certifications || []).filter((_, i) => i !== index),
+    }));
 
   if (loading) {
     return (
@@ -362,8 +410,6 @@ export const ResumeBuilderPage = () => {
       </div>
     );
   }
-
-  
 
   return (
     <div className="space-y-5 animate-fade-in">
@@ -582,9 +628,7 @@ export const ResumeBuilderPage = () => {
             <input
               className="input"
               value={exp.role || ''}
-              onChange={(e) =>
-  arr('experience', exp.id, 'role', e.target.value)
-}
+              onChange={(e) => arr('experience', exp.id, 'role', e.target.value)}
               placeholder="Frontend Developer"
             />
           </div>
@@ -911,7 +955,16 @@ export const ResumeBuilderPage = () => {
     </div>
   ) : (
     (resume.certifications || []).map((cert, index) => {
-      const certObj = cert;
+      const certObj =
+        typeof cert === 'string'
+          ? { id: uid('cert'), name: cert, issuer: '', year: '', credentialUrl: '' }
+          : {
+              id: cert?.id || uid('cert'),
+              name: cert?.name || '',
+              issuer: cert?.issuer || '',
+              year: cert?.year || '',
+              credentialUrl: cert?.credentialUrl || '',
+            };
 
       return (
         <FieldGroup key={certObj.id}>
@@ -926,7 +979,7 @@ export const ResumeBuilderPage = () => {
             </div>
             <button
               type="button"
-              onClick={() => remove('certifications', certObj.id)}
+              onClick={() => removeCertification(index)}
               className="btn-danger btn-sm"
             >
               <Icon name="trash" className="h-3.5 w-3.5" />
@@ -939,8 +992,8 @@ export const ResumeBuilderPage = () => {
               <label className="label">Certification name</label>
               <input
                 className="input"
-                value={certObj.name || ''}
-                onChange={(e) => arr('certifications', certObj.id, 'name', e.target.value)}
+                value={certObj.name}
+                onChange={(e) => updateCertification(index, 'name', e.target.value)}
                 placeholder="AWS Certified Solutions Architect – Associate"
               />
             </div>
@@ -950,7 +1003,7 @@ export const ResumeBuilderPage = () => {
               <input
                 className="input"
                 value={certObj.issuer}
-                onChange={(e) => arr('certifications', certObj.id, 'issuer', e.target.value)}
+                onChange={(e) => updateCertification(index, 'issuer', e.target.value)}
                 placeholder="Amazon Web Services"
               />
             </div>
@@ -960,7 +1013,7 @@ export const ResumeBuilderPage = () => {
               <input
                 className="input"
                 value={certObj.year}
-                onChange={(e) => arr('certifications', certObj.id, 'year', e.target.value)}
+                onChange={(e) => updateCertification(index, 'year', e.target.value)}
                 placeholder="2024"
               />
             </div>
@@ -970,7 +1023,7 @@ export const ResumeBuilderPage = () => {
               <input
                 className="input"
                 value={certObj.credentialUrl}
-                onChange={(e) => arr('certifications', certObj.id, 'credentialUrl', e.target.value)}
+                onChange={(e) => updateCertification(index, 'credentialUrl', e.target.value)}
                 placeholder="https://www.credly.com/..."
               />
             </div>

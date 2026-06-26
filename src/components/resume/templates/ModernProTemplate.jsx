@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const ModernProTemplate = ({ data }) => {
-  const { personalInfo, summary, experience, education, skills } = data;
+  const { personalInfo, summary, experience, education, skills, certifications } = data;
 
   return (
     <div className="resume-template modern-pro max-w-4xl mx-auto bg-white p-8 shadow-lg">
@@ -75,13 +75,29 @@ export const ModernProTemplate = ({ data }) => {
 
       {/* Skills */}
       {skills && (
-        <div>
+        <div className="mb-6">
           <h2 className="text-xl font-bold text-gray-900 mb-3 border-b border-gray-300 pb-1">
             Skills
           </h2>
           <div className="text-gray-700">
             {typeof skills === 'string' ? skills : Array.isArray(skills) ? skills.join(' • ') : ''}
           </div>
+        </div>
+      )}
+
+      {/* Certifications — FIX: section was missing entirely from this template */}
+      {certifications && Array.isArray(certifications) && certifications.length > 0 && (
+        <div>
+          <h2 className="text-xl font-bold text-gray-900 mb-3 border-b border-gray-300 pb-1">
+            Certifications
+          </h2>
+          {certifications.map((cert, idx) => (
+            <div key={idx} className="mb-2 text-gray-700">
+              <span className="font-medium">{cert.name}</span>
+              {cert.issuer && <span className="text-gray-600"> — {cert.issuer}</span>}
+              {cert.year && <span className="text-sm text-gray-500"> ({cert.year})</span>}
+            </div>
+          ))}
         </div>
       )}
     </div>

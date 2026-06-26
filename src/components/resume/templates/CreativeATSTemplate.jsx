@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const CreativeATSTemplate = ({ data }) => {
-  const { personalInfo, summary, experience, education, skills, projects } = data;
+  const { personalInfo, summary, experience, education, skills, projects, certifications } = data;
 
   return (
     <div className="resume-template creative-ats max-w-4xl mx-auto bg-white shadow-lg">
@@ -131,13 +131,32 @@ export const CreativeATSTemplate = ({ data }) => {
 
           {/* Skills */}
           {skills && (
-            <div>
+            <div className="mb-6">
               <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
                 <span className="w-8 h-0.5 bg-primary-500 mr-3"></span>
                 Skills & Expertise
               </h2>
               <div className="ml-11 text-gray-700">
                 {typeof skills === 'string' ? skills : Array.isArray(skills) ? skills.join(' • ') : ''}
+              </div>
+            </div>
+          )}
+
+          {/* Certifications — FIX: section was missing entirely from this template */}
+          {certifications && Array.isArray(certifications) && certifications.length > 0 && (
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                <span className="w-8 h-0.5 bg-primary-500 mr-3"></span>
+                Certifications
+              </h2>
+              <div className="ml-11 space-y-2">
+                {certifications.map((cert, idx) => (
+                  <div key={idx} className="text-gray-700">
+                    <span className="font-medium">{cert.name}</span>
+                    {cert.issuer && <span className="text-gray-600"> · {cert.issuer}</span>}
+                    {cert.year && <span className="text-sm text-gray-500"> ({cert.year})</span>}
+                  </div>
+                ))}
               </div>
             </div>
           )}

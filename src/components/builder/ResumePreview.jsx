@@ -141,7 +141,9 @@ const ClassicTemplate = ({ r }) => (
     {(r.certifications || []).length > 0 && (
       <div>
         <SectionHead>Certifications</SectionHead>
-        <p>{(r.certifications || []).join(' · ')}</p>
+        {/* FIX 8: certifications are objects {name,issuer,year,...}, not plain strings.
+            .join() on objects produces "[object Object]". Extract .name safely. */}
+        <p>{(r.certifications || []).map(c => (typeof c === 'string' ? c : c?.name || '')).filter(Boolean).join(' · ')}</p>
       </div>
     )}
 
@@ -209,8 +211,13 @@ const ModernTemplate = ({ r }) => (
       {(r.certifications || []).length > 0 && (
         <div>
           <SectionHead dark>Certifications</SectionHead>
+          {/* FIX: certifications are objects {id,name,issuer,year,credentialUrl}.
+              Rendering {c} directly produced "[object Object]".
+              Now renders name + issuer + year for each entry. */}
           {(r.certifications || []).map((c, i) => (
-            <div key={i} className="text-slate-300">{c}</div>
+            <div key={c.id || i} className="text-slate-300 text-[9px] leading-relaxed">
+              {typeof c === 'string' ? c : [c.name, c.issuer, c.year].filter(Boolean).join(' · ')}
+            </div>
           ))}
         </div>
       )}
@@ -391,7 +398,14 @@ const MinimalTemplate = ({ r }) => {
       {(r.certifications || []).length > 0 && (
         <>
           <MinHead>Certifications</MinHead>
-          <p className="text-gray-600">{(r.certifications || []).join('  ·  ')}</p>
+          {/* FIX: .join() on objects produces "[object Object] · [object Object]".
+              Map to name strings first, then join. */}
+          <p className="text-gray-600">
+            {(r.certifications || [])
+              .map(c => (typeof c === 'string' ? c : c?.name || ''))
+              .filter(Boolean)
+              .join('  ·  ')}
+          </p>
         </>
       )}
 
@@ -444,7 +458,9 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange })
       company: exp.company,
       duration: exp.duration || `${exp.startDate || ''} - ${exp.endDate || 'Present'}`.trim(),
       location: exp.location,
-      responsibilities: exp.responsibilities || [],
+      // FIX: internal shape uses exp.bullets, not exp.responsibilities.
+      // All 5 ATS templates render exp.responsibilities → was always [] → no bullet points shown.
+      responsibilities: exp.bullets || exp.responsibilities || [],
     })),
     education: (resume.education || []).map(edu => ({
       degree: edu.degree,
@@ -456,7 +472,9 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange })
     projects: (resume.projects || []).map(proj => ({
       name: proj.name,
       description: proj.description,
-      technologies: proj.technologies,
+      // FIX: internal shape uses proj.techStack, not proj.technologies.
+      // ATS templates that render project.technologies always showed nothing.
+      technologies: proj.techStack || proj.technologies,
       highlights: proj.highlights || [],
     })),
     certifications: resume.certifications,

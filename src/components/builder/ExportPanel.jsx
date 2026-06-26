@@ -60,17 +60,34 @@ export const ExportPanel = ({
     setLoading(true);
     setVariant('info');
     setMessage(format === 'pdf' ? 'Generating PDF…' : format === 'docx' ? 'Generating DOCX…' : 'Generating TXT…');
+
+    // UX-02 FIX: If the download fetch hangs (network stall, Render cold-start timeout,
+    // PDF generation taking too long), the "Generating…" toast would stay on screen
+    // forever with loading=true and no way to dismiss it. Add a 30-second hard timeout
+    // that clears the loading state and shows an actionable error message.
+    let timeoutId;
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutId = setTimeout(
+        () => reject(new Error('Export timed out. The server may be busy — please try again.')),
+        30_000
+      );
+    });
+
     try {
       const access = await checkExportAccess();
-      if (!access?.allowed) {
+      // FIX 5: backend returns { canExport: true/false }, not { allowed: true/false }
+      // access?.allowed was always undefined → !undefined = true → upsell always showed
+      if (!access?.canExport) {
         setShowUpsell(true);
         setLoading(false);
         return;
       }
-      await recordExport({ resumeId });
-      if (format === 'pdf')  await downloadResumePdf(resumeId);
-      if (format === 'docx') await downloadResumeDocx(resumeId);
-      if (format === 'txt')  await downloadResumeTxt(resumeId);
+      // FIX 6: recordExport backend requires @NotBlank format field.
+      // Previously sent only { resumeId } causing 400 validation error.
+      await recordExport({ resumeId, format: format.toUpperCase() });
+      if (format === 'pdf')  await Promise.race([downloadResumePdf(resumeId),  timeoutPromise]);
+      if (format === 'docx') await Promise.race([downloadResumeDocx(resumeId), timeoutPromise]);
+      if (format === 'txt')  await Promise.race([downloadResumeTxt(resumeId),  timeoutPromise]);
       await refreshStatuses?.();
       setVariant('success');
       setMessage(`${format.toUpperCase()} downloaded successfully.`);
@@ -79,6 +96,7 @@ export const ExportPanel = ({
       setVariant('error');
       setMessage(formatApiError(e, 'Export failed. Please try again.'));
     } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
     }
   };
@@ -215,7 +233,7 @@ export const ExportPanel = ({
               onClick={() => setShowUpsell(true)}
               className="btn-ghost w-full justify-center text-xs text-brand-600 hover:text-brand-700">
               <Icon name="crown" className="h-3.5 w-3.5" />
-              Upgrade to Premium — $9 one-time
+              Upgrade to Premium — ₹749 one-time
             </button>
           )}
 
@@ -252,21 +270,29 @@ export const ExportPanel = ({
               </p>
             ) : (
               <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-                {history.map((item) => (
-                  <div key={item.snapshotId}
-                    className="flex items-center justify-between gap-2 rounded-xl border border-surface-200 bg-surface-50 p-2.5">
-                    <div className="min-w-0">
-                      <p className="text-xs font-medium text-ink-700 truncate">{item.label}</p>
-                      <p className="text-[10px] text-ink-400 mt-0.5">{prettyDate(item.createdAt)}</p>
+                {history.map((item) => {
+                  // BUILDER-06 FIX: Backend SnapshotResponse uses field 'id', not 'snapshotId'.
+                  // item.snapshotId was always undefined → key={undefined}, restore URL was
+                  // /history/undefined/restore → 404. Also item.label doesn't exist in the DTO —
+                  // derive a human-readable label from createdAt instead.
+                  const snapId = item.id ?? item.snapshotId;
+                  const snapLabel = item.label || prettyDate(item.createdAt) || `Version ${snapId}`;
+                  return (
+                    <div key={snapId}
+                      className="flex items-center justify-between gap-2 rounded-xl border border-surface-200 bg-surface-50 p-2.5">
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium text-ink-700 truncate">{snapLabel}</p>
+                        <p className="text-[10px] text-ink-400 mt-0.5">{prettyDate(item.createdAt)}</p>
+                      </div>
+                      <button type="button"
+                        onClick={() => handleRestore(snapId)}
+                        disabled={restoring === snapId}
+                        className="btn-secondary btn-sm shrink-0 text-xs">
+                        {restoring === snapId ? '…' : 'Restore'}
+                      </button>
                     </div>
-                    <button type="button"
-                      onClick={() => handleRestore(item.snapshotId)}
-                      disabled={restoring === item.snapshotId}
-                      className="btn-secondary btn-sm shrink-0 text-xs">
-                      {restoring === item.snapshotId ? '…' : 'Restore'}
-                    </button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

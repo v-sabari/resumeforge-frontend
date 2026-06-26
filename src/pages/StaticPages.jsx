@@ -173,8 +173,9 @@ export const PrivacyPage = () => (
 export const TermsPage = () => (
   <Wrap title="Terms of Service" lastUpdated="1 April 2025">
     <P>
-      These Terms of Service ("Terms") govern your use of {APP_NAME} ("Service"), operated by the{' '}
-      {APP_NAME} team ("we", "us", "our"). By creating an account or using the Service, you agree
+      These Terms of Service ("Terms") govern your use of {APP_NAME} ("Service"), operated by{' '}
+      <strong>ResumeForge AI (sole proprietorship / registered entity)</strong>{' '}
+      ("we", "us", "our"). By creating an account or using the Service, you agree
       to these Terms. If you do not agree, do not use the Service.
     </P>
 

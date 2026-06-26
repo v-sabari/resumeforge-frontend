@@ -16,7 +16,10 @@ const normaliseExport = (v) => {
   if (!v) return null;
   return {
     ...v,
-    usedExports: v.usedExports ?? v.exportCount ?? 0,
+    // FIX 7: backend ExportStatusResponse uses exportsToday, not usedExports/exportCount.
+    // Previous mapping v.usedExports ?? v.exportCount ?? 0 always resolved to 0,
+    // making the export counter always show 0 regardless of actual usage.
+    usedExports: v.exportsToday ?? v.usedExports ?? v.exportCount ?? 0,
     remainingFreeExports: v.remainingFreeExports ?? v.remaining ?? 0,
     canExport: Boolean(v.canExport ?? v.allowed),
   };

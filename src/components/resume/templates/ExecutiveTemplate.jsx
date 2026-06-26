@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const ExecutiveTemplate = ({ data }) => {
-  const { personalInfo, summary, experience, education, skills, achievements } = data;
+  const { personalInfo, summary, experience, education, skills, achievements, certifications } = data;
 
   return (
     <div className="resume-template executive max-w-4xl mx-auto bg-white shadow-lg">
@@ -102,13 +102,29 @@ export const ExecutiveTemplate = ({ data }) => {
 
         {/* Core Competencies */}
         {skills && (
-          <div>
+          <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-3 pb-2 border-b-2 border-gray-900">
               Core Competencies
             </h2>
             <div className="text-gray-700">
               {typeof skills === 'string' ? skills : Array.isArray(skills) ? skills.join(' • ') : ''}
             </div>
+          </div>
+        )}
+
+        {/* Certifications — FIX: section was missing entirely from this template */}
+        {certifications && Array.isArray(certifications) && certifications.length > 0 && (
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3 pb-2 border-b-2 border-gray-900">
+              Certifications
+            </h2>
+            {certifications.map((cert, idx) => (
+              <div key={idx} className="mb-2">
+                <span className="font-bold text-gray-900">{cert.name}</span>
+                {cert.issuer && <span className="text-gray-700"> — {cert.issuer}</span>}
+                {cert.year && <span className="text-sm text-gray-600"> ({cert.year})</span>}
+              </div>
+            ))}
           </div>
         )}
       </div>
