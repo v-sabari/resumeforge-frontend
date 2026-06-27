@@ -80,7 +80,7 @@ export const PricingPage = () => {
             <div className="mb-6">
               <p className="kicker text-brand-600 mb-2">Premium</p>
               <div className="flex items-end gap-1">
-                <span className="text-5xl font-display font-semibold text-ink-950">$9</span>
+                <span className="text-5xl font-display font-semibold text-ink-950">₹749</span>
                 <span className="text-ink-400 mb-1">/one-time</span>
               </div>
               <p className="mt-2 text-sm text-ink-400">Pay once. Unlimited access forever.</p>
@@ -102,7 +102,7 @@ export const PricingPage = () => {
                 onClick={handleUpgrade}
                 disabled={loading}
                 className="btn-primary w-full justify-center">
-                {loading ? 'Opening payment…' : 'Get Premium — $9'}
+                {loading ? 'Opening payment…' : 'Get Premium — ₹749'}
                 {!loading && <Icon name="arrowRight" className="h-4 w-4" />}
               </button>
             )}

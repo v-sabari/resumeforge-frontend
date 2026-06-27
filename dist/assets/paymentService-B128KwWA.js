@@ -1,0 +1,1 @@
+import{o as s}from"./index-Be_x1-ly.js";const r=async a=>{const{data:t}=await s.post("/api/payments/create",{});return t},y=async(a,t,n)=>{const{data:e}=await s.post("/api/payments/verify",{razorpayOrderId:a,razorpayPaymentId:t,razorpaySignature:n});return e},c=async()=>{const{data:a}=await s.get("/api/payments/history");return a};export{r as c,c as g,y as v};

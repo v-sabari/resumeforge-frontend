@@ -222,7 +222,7 @@ export const TermsPage = () => (
     <H2>5. Payments and Billing</H2>
     <P>
       All payments are processed by Razorpay. By making a purchase, you agree to Razorpay's terms
-      and conditions. All prices are listed in USD or INR as displayed on the pricing page. Prices
+      and conditions. All prices are listed in INR as displayed on the pricing page. Prices
       may change with notice. Your current purchase is billed at the price displayed at checkout.
     </P>
 

@@ -144,7 +144,7 @@ export const DashboardPage = () => {
               <Icon name="crown" className="h-4 w-4" />
             </div>
             <div>
-              <p className="font-semibold text-ink-950 text-sm">Unlock unlimited exports for $9</p>
+              <p className="font-semibold text-ink-950 text-sm">Unlock unlimited exports for ₹749</p>
               <p className="text-xs text-ink-400 mt-0.5">One-time payment. No subscription. Download as many PDFs as you want.</p>
             </div>
           </div>

@@ -85,7 +85,7 @@ export const UpsellModal = ({ open, onClose, onReferral }) => {
           className="btn-primary w-full justify-center mb-3 text-base py-3">
           {loading
             ? <><Loader size="sm" label="" /> Preparing payment…</>
-            : <>Upgrade to Premium — $9 one-time <Icon name="arrowRight" className="h-4 w-4" /></>}
+            : <>Upgrade to Premium — ₹749 one-time <Icon name="arrowRight" className="h-4 w-4" /></>}
         </button>
 
         {/* Referral CTA */}
