@@ -76,6 +76,9 @@ const ClassicTemplate = ({ r }) => (
               <span className="font-semibold">{p.name}</span>
               {p.techStack && <span className="text-gray-500 ml-1 text-[9px] break-words">{p.techStack}</span>}
               {p.description && <p className="text-gray-700 mt-0.5 break-words">{p.description}</p>}
+              {(p.highlights || []).filter(Boolean).length > 0 && (
+                <ul className="mt-0.5 space-y-0.5 pl-1">{(p.highlights || []).filter(Boolean).map((h, j) => <Bullet key={j}>{h}</Bullet>)}</ul>
+              )}
             </div>
           ))}
         </div>
@@ -91,6 +94,7 @@ const ClassicTemplate = ({ r }) => (
                 <span className="font-semibold">{e.degree}</span>
                 {e.field && <span className="text-gray-600"> in {e.field}</span>}
                 {e.institution && <div className="text-gray-500">{e.institution}</div>}
+                {e.grade && <div className="text-gray-400 text-[9px]">{e.grade}</div>}
               </div>
               <span className="text-gray-500 shrink-0">{e.startDate}{e.endDate ? ' \u2013 ' + e.endDate : ''}</span>
             </div>
@@ -137,6 +141,7 @@ const ModernTemplate = ({ r }) => (
               {e.field && <div className="text-slate-300 text-[9px]">{e.field}</div>}
               <div className="text-slate-300 break-words">{e.institution}</div>
               <div className="text-slate-400">{e.startDate}{e.endDate ? '\u2013' + e.endDate : ''}</div>
+              {e.grade && <div className="text-slate-400 text-[9px]">{e.grade}</div>}
             </div>
           ))}
         </div>
@@ -176,6 +181,9 @@ const ModernTemplate = ({ r }) => (
               <span className="font-semibold break-words">{p.name}</span>
               {p.techStack && <span className="text-gray-400 ml-1 text-[9px] break-words">{p.techStack}</span>}
               {p.description && <p className="text-gray-600 mt-0.5 break-words">{p.description}</p>}
+              {(p.highlights || []).filter(Boolean).length > 0 && (
+                <ul className="mt-0.5 pl-1 space-y-0.5">{(p.highlights || []).filter(Boolean).map((h, j) => <ChevronBullet key={j}>{h}</ChevronBullet>)}</ul>
+              )}
             </div>
           ))}
         </div>
@@ -242,6 +250,7 @@ const MinimalTemplate = ({ r }) => {
                 <span className="font-semibold text-gray-900 break-words">{e.degree}</span>
                 {e.field && <span className="text-gray-500"> in {e.field}</span>}
                 {e.institution && <span className="text-gray-400 break-words">, {e.institution}</span>}
+                {e.grade && <div className="text-gray-400 text-[9px]">{e.grade}</div>}
               </div>
               <span className="text-gray-400 text-[9px] shrink-0">{e.startDate}{e.endDate ? ' – ' + e.endDate : ''}</span>
             </div>
@@ -260,11 +269,35 @@ const MinimalTemplate = ({ r }) => {
 
 const PAPER_WIDTH = 794;
 
+/*
+ * ROOT CAUSE FIX 4: innerH was initialised to PAPER_WIDTH * 1.414 (~1123 px)
+ * at scale = 1, meaning the outer wrapper was always 1123 px tall on first
+ * render regardless of the actual column width or content height.  When the
+ * column is, say, 380 px wide the scale becomes ~0.479, so the correctly
+ * scaled height should be ~538 px — but the outer div stayed at 1123 px until
+ * ResizeObserver fired, creating a large blank gap below the content that made
+ * the preview appear cut off at the top and empty below.  Initialising to 0
+ * (with the 'auto' fallback while innerH is 0) means the wrapper collapses to
+ * nothing until the first ResizeObserver callback, at which point it jumps to
+ * the correct scaled height with no intermediate wrong state.
+ *
+ * ROOT CAUSE FIX 5: The absolutely-positioned inner div is 794 px wide in
+ * layout space regardless of scale.  Without overflow:'hidden' on the outer
+ * div, that 794 px box leaked beyond the right edge of the preview column in
+ * the document flow, causing the browser to add a horizontal scrollbar on the
+ * <main> element (which has overflow-y:auto).  That scrollbar reduced the
+ * effective viewport width, causing the grid to reflow and the preview column
+ * to shrink — which in turn caused the scaled content to appear horizontally
+ * clipped.  Because the CSS transform (scale with origin top-left) maps the
+ * inner content to exactly [0, containerWidth] visually before painting,
+ * adding overflow:'hidden' on the outer div clips only in layout space at
+ * containerWidth — no visual content is cut.
+ */
 const ScaledPaper = ({ children }) => {
   const outerRef = useRef(null);
   const innerRef = useRef(null);
   const [scale, setScale] = useState(1);
-  const [innerH, setInnerH] = useState(PAPER_WIDTH * 1.414);
+  const [innerH, setInnerH] = useState(0);
 
   useEffect(() => {
     const outer = outerRef.current;
@@ -289,8 +322,22 @@ const ScaledPaper = ({ children }) => {
   }, []);
 
   return (
-    <div ref={outerRef} style={{ height: innerH, position: 'relative' }}>
-      <div ref={innerRef} style={{ width: PAPER_WIDTH, transformOrigin: 'top left', transform: `scale(${scale})`, position: 'absolute', top: 0, left: 0, backgroundColor: '#ffffff' }}>
+    <div
+      ref={outerRef}
+      style={{ height: innerH || 'auto', position: 'relative', overflow: 'hidden' }}
+    >
+      <div
+        ref={innerRef}
+        style={{
+          width: PAPER_WIDTH,
+          transformOrigin: 'top left',
+          transform: `scale(${scale})`,
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          backgroundColor: '#ffffff',
+        }}
+      >
         {children}
       </div>
     </div>
@@ -331,7 +378,10 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange })
       degree: edu.degree,
       institution: edu.school || edu.institution,
       year: edu.year || `${edu.startDate || ''} – ${edu.endDate || ''}`.trim(),
-      gpa: edu.gpa,
+      // ROOT CAUSE FIX 6: the builder form stores grade/CGPA in edu.grade, not
+      // edu.gpa.  FresherTemplate renders {edu.gpa}, so it was always blank.
+      // Fall back to edu.gpa for any data saved before this fix.
+      gpa: edu.gpa || edu.grade,
     })),
     skills: resume.skills,
     projects: (resume.projects || []).map(proj => ({
@@ -340,7 +390,20 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange })
       technologies: proj.techStack || proj.technologies,
       highlights: proj.highlights || [],
     })),
-    certifications: resume.certifications,
+    // ROOT CAUSE FIX 7: certifications were forwarded as-is.  Legacy string
+    // entries (e.g. "AWS Certified Developer") caused cert.name to be undefined
+    // in every template that destructures the object.  Normalise here so all
+    // templates always receive {name, issuer, year, credentialUrl}.
+    certifications: (resume.certifications || []).map(c =>
+      typeof c === 'string'
+        ? { name: c, issuer: '', year: '', credentialUrl: '' }
+        : {
+            name: c?.name || '',
+            issuer: c?.issuer || '',
+            year: c?.year || '',
+            credentialUrl: c?.credentialUrl || '',
+          }
+    ),
     achievements: resume.achievements,
   };
 
@@ -366,7 +429,6 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange })
         ))}
       </div>
 
-      {/* ↓ NO overflow-hidden here — that was clipping the preview */}
       <div className="rounded-xl border border-surface-200 shadow-md bg-white">
         <ScaledPaper>
           <TemplateComponent />

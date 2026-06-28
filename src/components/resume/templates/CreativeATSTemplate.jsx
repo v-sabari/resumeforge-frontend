@@ -1,7 +1,21 @@
 import React from 'react';
 
+/*
+ * ROOT CAUSE FIX 3: achievements was never destructured from `data` and never
+ * rendered, causing the Achievements section to be invisible in the
+ * "Creative ATS" template regardless of what the user filled in.
+ */
 export const CreativeATSTemplate = ({ data }) => {
-  const { personalInfo, summary, experience, education, skills, projects, certifications } = data;
+  const {
+    personalInfo,
+    summary,
+    experience,
+    education,
+    skills,
+    projects,
+    certifications,
+    achievements,
+  } = data;
 
   return (
     <div className="resume-template creative-ats max-w-4xl mx-auto bg-white shadow-lg">
@@ -38,6 +52,18 @@ export const CreativeATSTemplate = ({ data }) => {
                     {personalInfo.location}
                   </span>
                 )}
+                {personalInfo.linkedin && (
+                  <span className="flex items-center">
+                    <span className="w-1.5 h-1.5 bg-primary-500 rounded-full mr-2"></span>
+                    {personalInfo.linkedin}
+                  </span>
+                )}
+                {personalInfo.github && (
+                  <span className="flex items-center">
+                    <span className="w-1.5 h-1.5 bg-primary-500 rounded-full mr-2"></span>
+                    {personalInfo.github}
+                  </span>
+                )}
               </div>
             </div>
           )}
@@ -68,13 +94,13 @@ export const CreativeATSTemplate = ({ data }) => {
                       <span className="text-sm text-gray-600 whitespace-nowrap ml-4">{exp.duration}</span>
                     </div>
                     <div className="text-gray-700 mb-2">
-                      {exp.company} {exp.location && `• ${exp.location}`}
+                      {exp.company}{exp.location ? ` • ${exp.location}` : ''}
                     </div>
-                    {exp.responsibilities && (
+                    {exp.responsibilities && exp.responsibilities.length > 0 && (
                       <ul className="space-y-1.5">
                         {exp.responsibilities.map((resp, i) => (
                           <li key={i} className="text-gray-700 leading-relaxed flex items-start">
-                            <span className="text-primary-500 mr-2 mt-1.5">▸</span>
+                            <span className="text-primary-500 mr-2 mt-1.5 shrink-0">▸</span>
                             <span>{resp}</span>
                           </li>
                         ))}
@@ -100,6 +126,7 @@ export const CreativeATSTemplate = ({ data }) => {
                       <div>
                         <h3 className="font-bold text-gray-900">{edu.degree}</h3>
                         <div className="text-gray-700">{edu.institution}</div>
+                        {edu.gpa && <div className="text-sm text-gray-600">GPA: {edu.gpa}</div>}
                       </div>
                       <span className="text-sm text-gray-600 whitespace-nowrap ml-4">{edu.year}</span>
                     </div>
@@ -120,8 +147,23 @@ export const CreativeATSTemplate = ({ data }) => {
                 {projects.map((project, idx) => (
                   <div key={idx}>
                     <h3 className="font-bold text-gray-900">{project.name}</h3>
+                    {project.technologies && (
+                      <div className="text-sm text-gray-600 mb-1">
+                        Technologies: {project.technologies}
+                      </div>
+                    )}
                     {project.description && (
                       <p className="text-gray-700 leading-relaxed">{project.description}</p>
+                    )}
+                    {project.highlights && Array.isArray(project.highlights) && project.highlights.length > 0 && (
+                      <ul className="mt-1 space-y-1">
+                        {project.highlights.map((h, i) => (
+                          <li key={i} className="text-gray-700 flex items-start">
+                            <span className="text-primary-500 mr-2 mt-0.5 shrink-0">▸</span>
+                            <span>{h}</span>
+                          </li>
+                        ))}
+                      </ul>
                     )}
                   </div>
                 ))}
@@ -134,7 +176,7 @@ export const CreativeATSTemplate = ({ data }) => {
             <div className="mb-6">
               <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
                 <span className="w-8 h-0.5 bg-primary-500 mr-3"></span>
-                Skills & Expertise
+                Skills &amp; Expertise
               </h2>
               <div className="ml-11 text-gray-700">
                 {typeof skills === 'string' ? skills : Array.isArray(skills) ? skills.join(' • ') : ''}
@@ -142,7 +184,25 @@ export const CreativeATSTemplate = ({ data }) => {
             </div>
           )}
 
-          {/* Certifications — FIX: section was missing entirely from this template */}
+          {/* Achievements */}
+          {achievements && Array.isArray(achievements) && achievements.length > 0 && (
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                <span className="w-8 h-0.5 bg-primary-500 mr-3"></span>
+                Achievements
+              </h2>
+              <ul className="ml-11 space-y-2">
+                {achievements.map((achievement, idx) => (
+                  <li key={idx} className="text-gray-700 flex items-start">
+                    <span className="text-primary-500 mr-2 mt-1 shrink-0">▸</span>
+                    <span className="leading-relaxed">{achievement}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Certifications */}
           {certifications && Array.isArray(certifications) && certifications.length > 0 && (
             <div>
               <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
