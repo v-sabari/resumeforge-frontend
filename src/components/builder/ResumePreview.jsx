@@ -21,7 +21,7 @@ const Bullet = ({ children, className }) => (
 const ChevronBullet = ({ children }) => (
   <li className="flex gap-1.5">
     <span className="text-blue-400 shrink-0 select-none" aria-hidden="true">&#8250;</span>
-    <span className="text-gray-600">{children}</span>
+    <span className="text-gray-600 break-words min-w-0">{children}</span>
   </li>
 );
 
@@ -47,28 +47,28 @@ const ClassicTemplate = ({ r }) => (
         {safe(r.professionalTitle) || safe(r.role)}
       </div>
       <div className="flex flex-wrap justify-center gap-x-3 gap-y-0.5 mt-1 text-gray-500">
-        {r.email    && <span>{r.email}</span>}
+        {r.email    && <span className="break-all">{r.email}</span>}
         {r.phone    && <span>{r.phone}</span>}
         {r.location && <span>{r.location}</span>}
       </div>
       <div className="flex flex-wrap justify-center gap-x-3 gap-y-0.5 mt-0.5 text-gray-500">
-        {r.linkedin  && <span>{r.linkedin}</span>}
-        {r.github    && <span>{r.github}</span>}
-        {r.portfolio && <span>{r.portfolio}</span>}
+        {r.linkedin  && <span className="break-all">{r.linkedin}</span>}
+        {r.github    && <span className="break-all">{r.github}</span>}
+        {r.portfolio && <span className="break-all">{r.portfolio}</span>}
       </div>
     </div>
 
     {r.summary && (
       <div>
         <SectionHead>Professional Summary</SectionHead>
-        <p className="text-gray-700 leading-relaxed">{r.summary}</p>
+        <p className="text-gray-700 leading-relaxed break-words">{r.summary}</p>
       </div>
     )}
 
     {(r.skills || []).length > 0 && (
       <div>
         <SectionHead>Skills</SectionHead>
-        <p>{(r.skills || []).join(', ')}</p>
+        <p className="break-words">{(r.skills || []).join(', ')}</p>
       </div>
     )}
 
@@ -78,11 +78,11 @@ const ClassicTemplate = ({ r }) => (
         <div className="space-y-2">
           {(r.experience || []).map((e, i) => (
             <div key={e.id || i}>
-              <div className="flex justify-between">
-                <span className="font-semibold">
+              <div className="flex justify-between gap-2">
+                <span className="font-semibold break-words min-w-0">
                   {e.role}{e.company ? ' \u2014 ' + e.company : ''}
                 </span>
-                <span className="text-gray-500">
+                <span className="text-gray-500 shrink-0">
                   {e.startDate}{e.endDate ? ' \u2013 ' + e.endDate : ''}
                 </span>
               </div>
@@ -107,8 +107,8 @@ const ClassicTemplate = ({ r }) => (
           {(r.projects || []).map((p, i) => (
             <div key={p.id || i}>
               <span className="font-semibold">{p.name}</span>
-              {p.techStack && <span className="text-gray-500 ml-1 text-[9px]">{p.techStack}</span>}
-              {p.description && <p className="text-gray-700 mt-0.5">{p.description}</p>}
+              {p.techStack && <span className="text-gray-500 ml-1 text-[9px] break-words">{p.techStack}</span>}
+              {p.description && <p className="text-gray-700 mt-0.5 break-words">{p.description}</p>}
             </div>
           ))}
         </div>
@@ -120,13 +120,13 @@ const ClassicTemplate = ({ r }) => (
         <SectionHead>Education</SectionHead>
         <div className="space-y-1">
           {(r.education || []).map((e, i) => (
-            <div key={e.id || i} className="flex justify-between">
-              <div>
+            <div key={e.id || i} className="flex justify-between gap-2">
+              <div className="min-w-0">
                 <span className="font-semibold">{e.degree}</span>
                 {e.field && <span className="text-gray-600"> in {e.field}</span>}
                 {e.institution && <div className="text-gray-500">{e.institution}</div>}
               </div>
-              <span className="text-gray-500 shrink-0 ml-2">
+              <span className="text-gray-500 shrink-0">
                 {e.startDate}{e.endDate ? ' \u2013 ' + e.endDate : ''}
               </span>
             </div>
@@ -138,7 +138,7 @@ const ClassicTemplate = ({ r }) => (
     {(r.certifications || []).length > 0 && (
       <div>
         <SectionHead>Certifications</SectionHead>
-        <p>
+        <p className="break-words">
           {(r.certifications || [])
             .map((c) => (typeof c === 'string' ? c : c?.name || ''))
             .filter(Boolean)
@@ -162,11 +162,11 @@ const ClassicTemplate = ({ r }) => (
 
 /* ─── Modern sidebar inline template ─────────────────────────────── */
 const ModernTemplate = ({ r }) => (
-  <div className="font-sans text-[10px] leading-tight text-gray-900 bg-white flex min-h-full">
-    <div className="w-[36%] bg-slate-800 text-white p-4 space-y-3 shrink-0">
+  <div className="font-sans text-[10px] leading-tight text-gray-900 bg-white flex">
+    <div className="w-[36%] bg-slate-800 text-white p-4 space-y-3 shrink-0 self-stretch">
       <div>
-        <div className="text-sm font-bold leading-tight">{safe(r.fullName) || 'Your Name'}</div>
-        <div className="text-[9px] text-slate-300 mt-0.5">
+        <div className="text-sm font-bold leading-tight break-words">{safe(r.fullName) || 'Your Name'}</div>
+        <div className="text-[9px] text-slate-300 mt-0.5 break-words">
           {safe(r.professionalTitle) || safe(r.role)}
         </div>
       </div>
@@ -187,7 +187,7 @@ const ModernTemplate = ({ r }) => (
           <SectionHead dark>Skills</SectionHead>
           <div className="flex flex-wrap gap-1">
             {(r.skills || []).map((s, i) => (
-              <span key={i} className="rounded bg-slate-700 px-1.5 py-0.5 text-slate-200 text-[9px]">{s}</span>
+              <span key={i} className="rounded bg-slate-700 px-1.5 py-0.5 text-slate-200 text-[9px] break-words">{s}</span>
             ))}
           </div>
         </div>
@@ -198,9 +198,9 @@ const ModernTemplate = ({ r }) => (
           <SectionHead dark>Education</SectionHead>
           {(r.education || []).map((e, i) => (
             <div key={i} className="mb-1.5">
-              <div className="font-semibold text-slate-100">{e.degree}</div>
+              <div className="font-semibold text-slate-100 break-words">{e.degree}</div>
               {e.field && <div className="text-slate-300 text-[9px]">{e.field}</div>}
-              <div className="text-slate-300">{e.institution}</div>
+              <div className="text-slate-300 break-words">{e.institution}</div>
               <div className="text-slate-400">
                 {e.startDate}{e.endDate ? '\u2013' + e.endDate : ''}
               </div>
@@ -213,7 +213,7 @@ const ModernTemplate = ({ r }) => (
         <div>
           <SectionHead dark>Certifications</SectionHead>
           {(r.certifications || []).map((c, i) => (
-            <div key={c.id || i} className="text-slate-300 text-[9px] leading-relaxed">
+            <div key={c.id || i} className="text-slate-300 text-[9px] leading-relaxed break-words">
               {typeof c === 'string' ? c : [c.name, c.issuer, c.year].filter(Boolean).join(' · ')}
             </div>
           ))}
@@ -227,7 +227,7 @@ const ModernTemplate = ({ r }) => (
           <div className="text-[9px] font-bold uppercase tracking-widest text-blue-700 border-b border-blue-100 pb-0.5 mb-1.5">
             Summary
           </div>
-          <p className="text-gray-600 leading-relaxed">{r.summary}</p>
+          <p className="text-gray-600 leading-relaxed break-words">{r.summary}</p>
         </div>
       )}
 
@@ -239,12 +239,12 @@ const ModernTemplate = ({ r }) => (
           {(r.experience || []).map((e, i) => (
             <div key={i} className="mb-2">
               <div className="flex justify-between gap-1">
-                <span className="font-bold">{e.role}</span>
+                <span className="font-bold break-words min-w-0">{e.role}</span>
                 <span className="text-gray-400 text-[9px] shrink-0">
                   {e.startDate}{e.endDate ? '\u2013' + e.endDate : ''}
                 </span>
               </div>
-              <div className="text-blue-600 font-medium">{e.company}</div>
+              <div className="text-blue-600 font-medium break-words">{e.company}</div>
               {(e.bullets || []).filter(Boolean).length > 0 && (
                 <ul className="mt-0.5 pl-1 space-y-0.5">
                   {(e.bullets || []).filter(Boolean).map((b, j) => (
@@ -264,9 +264,9 @@ const ModernTemplate = ({ r }) => (
           </div>
           {(r.projects || []).map((p, i) => (
             <div key={i} className="mb-1.5">
-              <span className="font-semibold">{p.name}</span>
-              {p.techStack && <span className="text-gray-400 ml-1 text-[9px]">{p.techStack}</span>}
-              {p.description && <p className="text-gray-600 mt-0.5">{p.description}</p>}
+              <span className="font-semibold break-words">{p.name}</span>
+              {p.techStack && <span className="text-gray-400 ml-1 text-[9px] break-words">{p.techStack}</span>}
+              {p.description && <p className="text-gray-600 mt-0.5 break-words">{p.description}</p>}
             </div>
           ))}
         </div>
@@ -299,27 +299,27 @@ const MinimalTemplate = ({ r }) => {
   return (
     <div className="font-sans text-[10px] leading-relaxed text-gray-800 bg-white px-8 py-6">
       <div className="mb-4">
-        <div className="text-xl font-light tracking-tight text-gray-900">
+        <div className="text-xl font-light tracking-tight text-gray-900 break-words">
           {safe(r.fullName) || 'Your Name'}
         </div>
         {(safe(r.professionalTitle) || safe(r.role)) && (
-          <div className="text-[10px] text-gray-500 mt-0.5 font-medium">
+          <div className="text-[10px] text-gray-500 mt-0.5 font-medium break-words">
             {safe(r.professionalTitle) || safe(r.role)}
           </div>
         )}
         <div className="flex flex-wrap gap-x-4 mt-1.5 text-gray-400 text-[9px]">
-          {r.email    && <span>{r.email}</span>}
+          {r.email    && <span className="break-all">{r.email}</span>}
           {r.phone    && <span>{r.phone}</span>}
           {r.location && <span>{r.location}</span>}
-          {r.linkedin && <span>{r.linkedin}</span>}
-          {r.github   && <span>{r.github}</span>}
+          {r.linkedin && <span className="break-all">{r.linkedin}</span>}
+          {r.github   && <span className="break-all">{r.github}</span>}
         </div>
       </div>
 
       {r.summary && (
         <>
           <MinHead>Profile</MinHead>
-          <p className="text-gray-600 leading-relaxed">{r.summary}</p>
+          <p className="text-gray-600 leading-relaxed break-words">{r.summary}</p>
         </>
       )}
 
@@ -329,18 +329,18 @@ const MinimalTemplate = ({ r }) => {
           {(r.experience || []).map((e, i) => (
             <div key={i} className="mb-2.5">
               <div className="flex justify-between items-baseline gap-2">
-                <span className="font-semibold text-gray-900">{e.role}</span>
+                <span className="font-semibold text-gray-900 break-words min-w-0">{e.role}</span>
                 <span className="text-gray-400 text-[9px] shrink-0">
                   {e.startDate}{e.endDate ? ' – ' + e.endDate : ''}
                 </span>
               </div>
-              <div className="text-gray-500">{e.company}{e.location ? ', ' + e.location : ''}</div>
+              <div className="text-gray-500 break-words">{e.company}{e.location ? ', ' + e.location : ''}</div>
               {(e.bullets || []).filter(Boolean).length > 0 && (
                 <ul className="mt-0.5 space-y-0.5">
                   {(e.bullets || []).filter(Boolean).map((b, j) => (
                     <li key={j} className="flex gap-2 text-gray-600">
                       <span className="text-gray-300 shrink-0">–</span>
-                      <span>{b}</span>
+                      <span className="break-words min-w-0">{b}</span>
                     </li>
                   ))}
                 </ul>
@@ -353,7 +353,7 @@ const MinimalTemplate = ({ r }) => {
       {(r.skills || []).length > 0 && (
         <>
           <MinHead>Skills</MinHead>
-          <p className="text-gray-600">{(r.skills || []).join('  ·  ')}</p>
+          <p className="text-gray-600 break-words">{(r.skills || []).join('  ·  ')}</p>
         </>
       )}
 
@@ -362,9 +362,9 @@ const MinimalTemplate = ({ r }) => {
           <MinHead>Projects</MinHead>
           {(r.projects || []).map((p, i) => (
             <div key={i} className="mb-1.5">
-              <span className="font-semibold text-gray-900">{p.name}</span>
-              {p.techStack && <span className="text-gray-400 ml-2 text-[9px]">{p.techStack}</span>}
-              {p.description && <p className="text-gray-500 mt-0.5">{p.description}</p>}
+              <span className="font-semibold text-gray-900 break-words">{p.name}</span>
+              {p.techStack && <span className="text-gray-400 ml-2 text-[9px] break-words">{p.techStack}</span>}
+              {p.description && <p className="text-gray-500 mt-0.5 break-words">{p.description}</p>}
             </div>
           ))}
         </>
@@ -375,10 +375,10 @@ const MinimalTemplate = ({ r }) => {
           <MinHead>Education</MinHead>
           {(r.education || []).map((e, i) => (
             <div key={i} className="flex justify-between mb-1 gap-2">
-              <div>
-                <span className="font-semibold text-gray-900">{e.degree}</span>
+              <div className="min-w-0">
+                <span className="font-semibold text-gray-900 break-words">{e.degree}</span>
                 {e.field && <span className="text-gray-500"> in {e.field}</span>}
-                {e.institution && <span className="text-gray-400">, {e.institution}</span>}
+                {e.institution && <span className="text-gray-400 break-words">, {e.institution}</span>}
               </div>
               <span className="text-gray-400 text-[9px] shrink-0">
                 {e.startDate}{e.endDate ? ' – ' + e.endDate : ''}
@@ -391,7 +391,7 @@ const MinimalTemplate = ({ r }) => {
       {(r.certifications || []).length > 0 && (
         <>
           <MinHead>Certifications</MinHead>
-          <p className="text-gray-600">
+          <p className="text-gray-600 break-words">
             {(r.certifications || [])
               .map((c) => (typeof c === 'string' ? c : c?.name || ''))
               .filter(Boolean)
@@ -407,7 +407,7 @@ const MinimalTemplate = ({ r }) => {
             {(r.achievements || []).map((a, i) => (
               <li key={i} className="flex gap-2 text-gray-600">
                 <span className="text-gray-300 shrink-0">–</span>
-                <span>{a}</span>
+                <span className="break-words min-w-0">{a}</span>
               </li>
             ))}
           </ul>
@@ -418,41 +418,48 @@ const MinimalTemplate = ({ r }) => {
 };
 
 /* ─── Scaled paper preview container ─────────────────────────────────
-   All resume templates are designed for a full A4 / Letter page width
-   (794px). We render them at that width inside a div, then use CSS
-   transform: scale() to shrink the entire paper to fit whatever the
-   outer wrapper currently measures. This way every template looks like
-   a real printed page — no clipping, no tiny text.
+   Renders at full A4 width (794px), scales to fit container.
+   Height = actual rendered content height × scale → no clipping ever.
 ──────────────────────────────────────────────────────────────────────── */
-const PAPER_WIDTH = 794; // px — standard A4 / US-Letter at 96 dpi
+const PAPER_WIDTH = 794;
 
 const ScaledPaper = ({ children }) => {
   const outerRef = useRef(null);
-  const [scale, setScale] = useState(1);
+  const innerRef = useRef(null);
+  const [scale,  setScale]  = useState(1);
+  const [innerH, setInnerH] = useState(PAPER_WIDTH * 1.414);
 
   useEffect(() => {
-    const el = outerRef.current;
-    if (!el) return;
+    const outer = outerRef.current;
+    const inner = innerRef.current;
+    if (!outer || !inner) return;
 
-    const ro = new ResizeObserver(([entry]) => {
-      const w = entry.contentRect.width;
-      if (w > 0) setScale(w / PAPER_WIDTH);
-    });
+    const recalc = () => {
+      const w = outer.clientWidth;
+      if (w > 0) {
+        const s = w / PAPER_WIDTH;
+        setScale(s);
+        // Use actual rendered height of content, not a fixed A4 page height
+        setInnerH(inner.scrollHeight * s);
+      }
+    };
 
-    ro.observe(el);
-    // Initial measurement
-    setScale(el.clientWidth / PAPER_WIDTH);
-    return () => ro.disconnect();
+    // Watch container width (column resize / viewport change)
+    const roOuter = new ResizeObserver(recalc);
+    roOuter.observe(outer);
+
+    // Watch inner content height (sections added / removed)
+    const roInner = new ResizeObserver(recalc);
+    roInner.observe(inner);
+
+    recalc();
+    return () => { roOuter.disconnect(); roInner.disconnect(); };
   }, []);
 
-  const scaledHeight = PAPER_WIDTH * 1.414 * scale; // A4 aspect: √2
-
   return (
-    <div
-      ref={outerRef}
-      style={{ height: scaledHeight, position: 'relative', overflow: 'hidden' }}
-    >
+    <div ref={outerRef} style={{ height: innerH, position: 'relative' }}>
       <div
+        ref={innerRef}
         style={{
           width: PAPER_WIDTH,
           transformOrigin: 'top left',
@@ -461,8 +468,6 @@ const ScaledPaper = ({ children }) => {
           top: 0,
           left: 0,
           backgroundColor: '#ffffff',
-          minHeight: PAPER_WIDTH * 1.414,
-          overflowY: 'visible',
         }}
       >
         {children}
@@ -506,10 +511,10 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange })
     },
     summary: resume.summary,
     experience: (resume.experience || []).map((exp) => ({
-      position:        exp.role,
-      company:         exp.company,
-      duration:        exp.duration || `${exp.startDate || ''} – ${exp.endDate || 'Present'}`.trim(),
-      location:        exp.location,
+      position:         exp.role,
+      company:          exp.company,
+      duration:         exp.duration || `${exp.startDate || ''} – ${exp.endDate || 'Present'}`.trim(),
+      location:         exp.location,
       responsibilities: exp.bullets || exp.responsibilities || [],
     })),
     education: (resume.education || []).map((edu) => ({
@@ -529,28 +534,30 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange })
     achievements:   resume.achievements,
   };
 
-  /* Inline templates expect { r } (raw resume); ATS templates expect { data } */
-  const ClassicWrapped  = () => <ClassicTemplate  r={resume} />;
-  const ModernWrapped   = () => <ModernTemplate   r={resume} />;
-  const MinimalWrapped  = () => <MinimalTemplate  r={resume} />;
-
-  /* ATS templates wrapped to pass data */
-  const ModernProWrapped    = () => <ModernProTemplate    data={transformedData} />;
-  const MinimalATSWrapped   = () => <MinimalATSTemplate   data={transformedData} />;
-  const ExecutiveWrapped    = () => <ExecutiveTemplate    data={transformedData} />;
-  const FresherWrapped      = () => <FresherTemplate      data={transformedData} />;
-  const CreativeWrapped     = () => <CreativeATSTemplate  data={transformedData} />;
-
+  /*
+   * templateMap truth table (from the shared file):
+   *
+   * 'modern'    → ModernProTemplate    (ATS, { data })   ✓ correct
+   * 'classic'   → ClassicTemplate      (inline, { r })   ✓ correct
+   * 'minimal'   → MinimalATSTemplate   (ATS, { data })   ✓ correct
+   * 'executive' → ExecutiveTemplate    (ATS, { data })   ✓ correct
+   * 'fresher'   → FresherTemplate      (ATS, { data })   ✓ correct
+   * 'creative'  → CreativeATSTemplate  (ATS, { data })   ✓ correct
+   *
+   * ModernTemplate (inline) and MinimalTemplate (inline) were defined
+   * but not wired into templateMap — they are kept available but not
+   * exposed as separate tabs (no 'modern-inline'/'minimal-inline' ids).
+   */
   const templateMap = {
-    modern:    ModernProWrapped,
-    classic:   ClassicWrapped,
-    minimal:   MinimalATSWrapped,
-    executive: ExecutiveWrapped,
-    fresher:   FresherWrapped,
-    creative:  CreativeWrapped,
+    modern:    (props) => <ModernProTemplate   {...props} data={transformedData} />,
+    classic:   ()      => <ClassicTemplate     r={resume} />,
+    minimal:   (props) => <MinimalATSTemplate  {...props} data={transformedData} />,
+    executive: (props) => <ExecutiveTemplate   {...props} data={transformedData} />,
+    fresher:   (props) => <FresherTemplate     {...props} data={transformedData} />,
+    creative:  (props) => <CreativeATSTemplate {...props} data={transformedData} />,
   };
 
-  const TemplateComponent = templateMap[activeTemplate] || ModernProWrapped;
+  const TemplateComponent = templateMap[activeTemplate] || templateMap.modern;
 
   return (
     <div className="flex flex-col gap-3">
@@ -580,7 +587,6 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange })
         </ScaledPaper>
       </div>
 
-      {/* ── Hint ── */}
       <p className="text-center text-[11px] text-ink-300 select-none">
         Live preview · scales to fit
       </p>
