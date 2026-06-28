@@ -485,7 +485,7 @@ export const ResumeBuilderPage = () => {
         </button>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[180px_1fr_320px] xl:grid-cols-[200px_1fr_340px]">
+      <div className="grid gap-5 lg:grid-cols-[160px_1fr_380px] xl:grid-cols-[180px_1fr_440px] 2xl:grid-cols-[200px_1fr_500px]">
         <aside className="hidden lg:block">
           <div className="card sticky top-6 p-4">
             <p className="kicker mb-3">Sections</p>

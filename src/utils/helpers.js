@@ -67,7 +67,9 @@ export const normaliseResume = (payload) => {
     // fall back to already-mapped top-level fields (from fromApiResponse),
     // then fall back to empty string.
     fullName: personal.fullName || payload.fullName || '',
-    professionalTitle: personal.role || payload.professionalTitle || '',
+    // FIX: backend stores the title as personalInfo.professionalTitle (or .title).
+    // personal.role was only correct for old data; check all variants.
+    professionalTitle: personal.professionalTitle || personal.title || personal.role || payload.professionalTitle || '',
     email: personal.email || payload.email || '',
     phone: personal.phone || payload.phone || '',
     location: personal.location || payload.location || '',
@@ -80,9 +82,10 @@ export const normaliseResume = (payload) => {
     education: safeParse(payload.education, []),
     projects: safeParse(payload.projects, []),
     certifications: safeParse(payload.certifications, []),
-    achievements: safeParse(payload.customSections, {}).achievements
-      || payload.achievements
-      || [],
+    // FIX: achievements live at payload.achievements — do NOT read from
+    // customSections first, which is an unrelated JSONB field and always
+    // returns {} here, masking the real achievements array.
+    achievements: safeParse(payload.achievements, []),
   };
 };
 

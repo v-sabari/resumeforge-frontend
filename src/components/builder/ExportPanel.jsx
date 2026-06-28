@@ -17,9 +17,12 @@ import { formatApiError, prettyDate } from '../../utils/helpers';
 import { FREE_EXPORT_LIMIT } from '../../utils/constants';
 
 const TEMPLATES = [
-  { id: 'classic', label: 'Classic',  desc: 'Single-column — maximum ATS compatibility' },
-  { id: 'modern',  label: 'Modern',   desc: 'Dark sidebar — stands out visually'         },
-  { id: 'minimal', label: 'Minimal',  desc: 'Ultra-clean whitespace — refined look'      },
+  { id: 'modern',    label: 'Modern Pro',    desc: 'Dark sidebar — stands out visually'         },
+  { id: 'classic',   label: 'Classic',       desc: 'Single-column — maximum ATS compatibility'  },
+  { id: 'minimal',   label: 'Minimal ATS',   desc: 'Ultra-clean whitespace — refined look'      },
+  { id: 'executive', label: 'Executive',     desc: 'Bold and authoritative for senior roles'    },
+  { id: 'fresher',   label: 'Fresher',       desc: 'Optimized for entry-level candidates'       },
+  { id: 'creative',  label: 'Creative ATS',  desc: 'Stylish with accent colors, yet ATS-safe'  },
 ];
 
 export const ExportPanel = ({

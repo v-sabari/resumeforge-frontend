@@ -1,20 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { RESUME_TEMPLATES } from '../../utils/constants';
-import { 
-  ModernProTemplate, 
-  MinimalATSTemplate, 
-  ExecutiveTemplate, 
-  FresherTemplate, 
-  CreativeATSTemplate 
+import {
+  ModernProTemplate,
+  MinimalATSTemplate,
+  ExecutiveTemplate,
+  FresherTemplate,
+  CreativeATSTemplate,
 } from '../resume/templates';
 
+/* ─── Helpers shared by inline templates ─────────────────────────── */
 const safe = (v) => v || '';
 
-/* ── Bullet helpers ──────────────────────────────────────────────────
-   Do NOT use Tailwind before:content-['•'] — the bullet character
-   inside a Tailwind class string breaks esbuild's JS parser.
-   Use explicit HTML entity spans instead.
-────────────────────────────────────────────────────────────────────── */
 const Bullet = ({ children, className }) => (
   <li className="flex gap-1.5">
     <span className="text-gray-400 shrink-0 select-none" aria-hidden="true">&#8226;</span>
@@ -30,18 +26,19 @@ const ChevronBullet = ({ children }) => (
 );
 
 const SectionHead = ({ children, dark }) => (
-  <div className={[
-    'text-[9px] font-bold uppercase tracking-widest pb-0.5 mb-1.5 border-b',
-    dark ? 'text-slate-400 border-slate-600' : 'text-gray-500 border-gray-200',
-  ].join(' ')}>
+  <div
+    className={[
+      'text-[9px] font-bold uppercase tracking-widest pb-0.5 mb-1.5 border-b',
+      dark ? 'text-slate-400 border-slate-600' : 'text-gray-500 border-gray-200',
+    ].join(' ')}
+  >
     {children}
   </div>
 );
 
-/* ── Classic template ────────────────────────────────────────────── */
+/* ─── Classic inline template ─────────────────────────────────────── */
 const ClassicTemplate = ({ r }) => (
   <div className="font-sans text-[10px] leading-tight text-gray-900 bg-white p-6 space-y-3">
-
     <div className="text-center border-b border-gray-300 pb-3">
       <div className="text-lg font-bold tracking-wide uppercase">
         {safe(r.fullName) || 'Your Name'}
@@ -110,7 +107,7 @@ const ClassicTemplate = ({ r }) => (
           {(r.projects || []).map((p, i) => (
             <div key={p.id || i}>
               <span className="font-semibold">{p.name}</span>
-              {p.link && <span className="text-gray-500 ml-2">{p.link}</span>}
+              {p.techStack && <span className="text-gray-500 ml-1 text-[9px]">{p.techStack}</span>}
               {p.description && <p className="text-gray-700 mt-0.5">{p.description}</p>}
             </div>
           ))}
@@ -141,9 +138,12 @@ const ClassicTemplate = ({ r }) => (
     {(r.certifications || []).length > 0 && (
       <div>
         <SectionHead>Certifications</SectionHead>
-        {/* FIX 8: certifications are objects {name,issuer,year,...}, not plain strings.
-            .join() on objects produces "[object Object]". Extract .name safely. */}
-        <p>{(r.certifications || []).map(c => (typeof c === 'string' ? c : c?.name || '')).filter(Boolean).join(' · ')}</p>
+        <p>
+          {(r.certifications || [])
+            .map((c) => (typeof c === 'string' ? c : c?.name || ''))
+            .filter(Boolean)
+            .join(' · ')}
+        </p>
       </div>
     )}
 
@@ -151,19 +151,19 @@ const ClassicTemplate = ({ r }) => (
       <div>
         <SectionHead>Achievements</SectionHead>
         <ul className="space-y-0.5 pl-1">
-          {(r.achievements || []).map((a, i) => <Bullet key={i}>{a}</Bullet>)}
+          {(r.achievements || []).map((a, i) => (
+            <Bullet key={i}>{a}</Bullet>
+          ))}
         </ul>
       </div>
     )}
   </div>
 );
 
-/* ── Modern template ─────────────────────────────────────────────── */
+/* ─── Modern sidebar inline template ─────────────────────────────── */
 const ModernTemplate = ({ r }) => (
-  <div className="font-sans text-[10px] leading-tight text-gray-900 bg-white flex">
-
-    {/* Left sidebar */}
-    <div className="w-[38%] bg-slate-800 text-white p-4 space-y-3">
+  <div className="font-sans text-[10px] leading-tight text-gray-900 bg-white flex min-h-full">
+    <div className="w-[36%] bg-slate-800 text-white p-4 space-y-3 shrink-0">
       <div>
         <div className="text-sm font-bold leading-tight">{safe(r.fullName) || 'Your Name'}</div>
         <div className="text-[9px] text-slate-300 mt-0.5">
@@ -174,11 +174,11 @@ const ModernTemplate = ({ r }) => (
       {(r.email || r.phone || r.location) && (
         <div className="space-y-1">
           <SectionHead dark>Contact</SectionHead>
-          {r.email    && <div className="text-slate-300">{r.email}</div>}
+          {r.email    && <div className="text-slate-300 break-all">{r.email}</div>}
           {r.phone    && <div className="text-slate-300">{r.phone}</div>}
           {r.location && <div className="text-slate-300">{r.location}</div>}
-          {r.linkedin && <div className="text-slate-300">{r.linkedin}</div>}
-          {r.github   && <div className="text-slate-300">{r.github}</div>}
+          {r.linkedin && <div className="text-slate-300 break-all">{r.linkedin}</div>}
+          {r.github   && <div className="text-slate-300 break-all">{r.github}</div>}
         </div>
       )}
 
@@ -187,7 +187,7 @@ const ModernTemplate = ({ r }) => (
           <SectionHead dark>Skills</SectionHead>
           <div className="flex flex-wrap gap-1">
             {(r.skills || []).map((s, i) => (
-              <span key={i} className="rounded bg-slate-700 px-1.5 py-0.5 text-slate-200">{s}</span>
+              <span key={i} className="rounded bg-slate-700 px-1.5 py-0.5 text-slate-200 text-[9px]">{s}</span>
             ))}
           </div>
         </div>
@@ -199,6 +199,7 @@ const ModernTemplate = ({ r }) => (
           {(r.education || []).map((e, i) => (
             <div key={i} className="mb-1.5">
               <div className="font-semibold text-slate-100">{e.degree}</div>
+              {e.field && <div className="text-slate-300 text-[9px]">{e.field}</div>}
               <div className="text-slate-300">{e.institution}</div>
               <div className="text-slate-400">
                 {e.startDate}{e.endDate ? '\u2013' + e.endDate : ''}
@@ -211,9 +212,6 @@ const ModernTemplate = ({ r }) => (
       {(r.certifications || []).length > 0 && (
         <div>
           <SectionHead dark>Certifications</SectionHead>
-          {/* FIX: certifications are objects {id,name,issuer,year,credentialUrl}.
-              Rendering {c} directly produced "[object Object]".
-              Now renders name + issuer + year for each entry. */}
           {(r.certifications || []).map((c, i) => (
             <div key={c.id || i} className="text-slate-300 text-[9px] leading-relaxed">
               {typeof c === 'string' ? c : [c.name, c.issuer, c.year].filter(Boolean).join(' · ')}
@@ -223,8 +221,7 @@ const ModernTemplate = ({ r }) => (
       )}
     </div>
 
-    {/* Right main */}
-    <div className="flex-1 p-4 space-y-3">
+    <div className="flex-1 p-4 space-y-3 min-w-0">
       {r.summary && (
         <div>
           <div className="text-[9px] font-bold uppercase tracking-widest text-blue-700 border-b border-blue-100 pb-0.5 mb-1.5">
@@ -241,9 +238,9 @@ const ModernTemplate = ({ r }) => (
           </div>
           {(r.experience || []).map((e, i) => (
             <div key={i} className="mb-2">
-              <div className="flex justify-between">
+              <div className="flex justify-between gap-1">
                 <span className="font-bold">{e.role}</span>
-                <span className="text-gray-400">
+                <span className="text-gray-400 text-[9px] shrink-0">
                   {e.startDate}{e.endDate ? '\u2013' + e.endDate : ''}
                 </span>
               </div>
@@ -268,6 +265,7 @@ const ModernTemplate = ({ r }) => (
           {(r.projects || []).map((p, i) => (
             <div key={i} className="mb-1.5">
               <span className="font-semibold">{p.name}</span>
+              {p.techStack && <span className="text-gray-400 ml-1 text-[9px]">{p.techStack}</span>}
               {p.description && <p className="text-gray-600 mt-0.5">{p.description}</p>}
             </div>
           ))}
@@ -280,7 +278,9 @@ const ModernTemplate = ({ r }) => (
             Achievements
           </div>
           <ul className="space-y-0.5 pl-1">
-            {(r.achievements || []).map((a, i) => <ChevronBullet key={i}>{a}</ChevronBullet>)}
+            {(r.achievements || []).map((a, i) => (
+              <ChevronBullet key={i}>{a}</ChevronBullet>
+            ))}
           </ul>
         </div>
       )}
@@ -288,12 +288,7 @@ const ModernTemplate = ({ r }) => (
   </div>
 );
 
-/* ── Minimal template ────────────────────────────────────────────── */
-/*
- * Design: maximum whitespace, ultra-clean typography, no borders or rules.
- * ATS-safe: single-column, semantic headings, no graphics.
- * Appeals to creative/senior roles where design taste matters.
- */
+/* ─── Minimal inline template ─────────────────────────────────────── */
 const MinimalTemplate = ({ r }) => {
   const MinHead = ({ children }) => (
     <div className="text-[9px] font-bold uppercase tracking-[0.15em] text-gray-400 mt-3 mb-1">
@@ -302,9 +297,7 @@ const MinimalTemplate = ({ r }) => {
   );
 
   return (
-    <div className="font-sans text-[10px] leading-relaxed text-gray-800 bg-white px-8 py-6 space-y-0.5">
-
-      {/* Name + title */}
+    <div className="font-sans text-[10px] leading-relaxed text-gray-800 bg-white px-8 py-6">
       <div className="mb-4">
         <div className="text-xl font-light tracking-tight text-gray-900">
           {safe(r.fullName) || 'Your Name'}
@@ -335,9 +328,9 @@ const MinimalTemplate = ({ r }) => {
           <MinHead>Experience</MinHead>
           {(r.experience || []).map((e, i) => (
             <div key={i} className="mb-2.5">
-              <div className="flex justify-between items-baseline">
+              <div className="flex justify-between items-baseline gap-2">
                 <span className="font-semibold text-gray-900">{e.role}</span>
-                <span className="text-gray-400 text-[9px]">
+                <span className="text-gray-400 text-[9px] shrink-0">
                   {e.startDate}{e.endDate ? ' – ' + e.endDate : ''}
                 </span>
               </div>
@@ -370,7 +363,7 @@ const MinimalTemplate = ({ r }) => {
           {(r.projects || []).map((p, i) => (
             <div key={i} className="mb-1.5">
               <span className="font-semibold text-gray-900">{p.name}</span>
-              {p.link && <span className="text-gray-400 ml-2 text-[9px]">{p.link}</span>}
+              {p.techStack && <span className="text-gray-400 ml-2 text-[9px]">{p.techStack}</span>}
               {p.description && <p className="text-gray-500 mt-0.5">{p.description}</p>}
             </div>
           ))}
@@ -381,13 +374,13 @@ const MinimalTemplate = ({ r }) => {
         <>
           <MinHead>Education</MinHead>
           {(r.education || []).map((e, i) => (
-            <div key={i} className="flex justify-between mb-1">
+            <div key={i} className="flex justify-between mb-1 gap-2">
               <div>
                 <span className="font-semibold text-gray-900">{e.degree}</span>
                 {e.field && <span className="text-gray-500"> in {e.field}</span>}
                 {e.institution && <span className="text-gray-400">, {e.institution}</span>}
               </div>
-              <span className="text-gray-400 text-[9px] shrink-0 ml-2">
+              <span className="text-gray-400 text-[9px] shrink-0">
                 {e.startDate}{e.endDate ? ' – ' + e.endDate : ''}
               </span>
             </div>
@@ -398,11 +391,9 @@ const MinimalTemplate = ({ r }) => {
       {(r.certifications || []).length > 0 && (
         <>
           <MinHead>Certifications</MinHead>
-          {/* FIX: .join() on objects produces "[object Object] · [object Object]".
-              Map to name strings first, then join. */}
           <p className="text-gray-600">
             {(r.certifications || [])
-              .map(c => (typeof c === 'string' ? c : c?.name || ''))
+              .map((c) => (typeof c === 'string' ? c : c?.name || ''))
               .filter(Boolean)
               .join('  ·  ')}
           </p>
@@ -426,18 +417,64 @@ const MinimalTemplate = ({ r }) => {
   );
 };
 
-/* ── ResumePreview wrapper ───────────────────────────────────────── */
-export const ResumePreview = ({ resume, template = 'modern', onTemplateChange }) => {
-  if (!resume) {
+/* ─── Scaled paper preview container ─────────────────────────────────
+   All resume templates are designed for a full A4 / Letter page width
+   (794px). We render them at that width inside a div, then use CSS
+   transform: scale() to shrink the entire paper to fit whatever the
+   outer wrapper currently measures. This way every template looks like
+   a real printed page — no clipping, no tiny text.
+──────────────────────────────────────────────────────────────────────── */
+const PAPER_WIDTH = 794; // px — standard A4 / US-Letter at 96 dpi
+
+const ScaledPaper = ({ children }) => {
+  const outerRef = useRef(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const el = outerRef.current;
+    if (!el) return;
+
+    const ro = new ResizeObserver(([entry]) => {
+      const w = entry.contentRect.width;
+      if (w > 0) setScale(w / PAPER_WIDTH);
+    });
+
+    ro.observe(el);
+    // Initial measurement
+    setScale(el.clientWidth / PAPER_WIDTH);
+    return () => ro.disconnect();
+  }, []);
+
+  const scaledHeight = PAPER_WIDTH * 1.414 * scale; // A4 aspect: √2
+
   return (
-    <div className="rounded-xl border border-surface-200 bg-white p-8 text-center">
-      Loading resume preview...
+    <div
+      ref={outerRef}
+      style={{ height: scaledHeight, position: 'relative', overflow: 'hidden' }}
+    >
+      <div
+        style={{
+          width: PAPER_WIDTH,
+          transformOrigin: 'top left',
+          transform: `scale(${scale})`,
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          backgroundColor: '#ffffff',
+          minHeight: PAPER_WIDTH * 1.414,
+          overflowY: 'visible',
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
-}
+};
+
+/* ─── ResumePreview public component ─────────────────────────────── */
+export const ResumePreview = ({ resume, template = 'modern', onTemplateChange }) => {
   const [activeTemplate, setActiveTemplate] = useState(template);
 
-  // Sync when parent changes template (e.g. from ExportPanel selector)
   useEffect(() => {
     setActiveTemplate(template);
   }, [template]);
@@ -447,81 +484,106 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange })
     onTemplateChange?.(id);
   };
 
-  // Transform resume data to match ATS template structure
+  if (!resume) {
+    return (
+      <div className="rounded-xl border border-surface-200 bg-white p-8 text-center text-sm text-ink-400">
+        Loading resume preview…
+      </div>
+    );
+  }
+
+  /* Transform raw resume state → shape expected by the ATS templates */
   const transformedData = {
     personalInfo: {
-      fullName: resume.fullName || 'Your Name',
-      title: resume.professionalTitle || resume.role,
-      email: resume.email,
-      phone: resume.phone,
-      location: resume.location,
-      linkedin: resume.linkedin,
-      github: resume.github,
+      fullName:  resume.fullName  || 'Your Name',
+      title:     resume.professionalTitle || resume.role,
+      email:     resume.email,
+      phone:     resume.phone,
+      location:  resume.location,
+      linkedin:  resume.linkedin,
+      github:    resume.github,
       portfolio: resume.portfolio,
     },
     summary: resume.summary,
-    experience: (resume.experience || []).map(exp => ({
-      position: exp.role,
-      company: exp.company,
-      duration: exp.duration || `${exp.startDate || ''} - ${exp.endDate || 'Present'}`.trim(),
-      location: exp.location,
-      // FIX: internal shape uses exp.bullets, not exp.responsibilities.
-      // All 5 ATS templates render exp.responsibilities → was always [] → no bullet points shown.
+    experience: (resume.experience || []).map((exp) => ({
+      position:        exp.role,
+      company:         exp.company,
+      duration:        exp.duration || `${exp.startDate || ''} – ${exp.endDate || 'Present'}`.trim(),
+      location:        exp.location,
       responsibilities: exp.bullets || exp.responsibilities || [],
     })),
-    education: (resume.education || []).map(edu => ({
-      degree: edu.degree,
+    education: (resume.education || []).map((edu) => ({
+      degree:      edu.degree,
       institution: edu.school || edu.institution,
-      year: edu.year || `${edu.startDate || ''} - ${edu.endDate || ''}`.trim(),
-      gpa: edu.gpa,
+      year:        edu.year   || `${edu.startDate || ''} – ${edu.endDate || ''}`.trim(),
+      gpa:         edu.gpa,
     })),
-    skills: resume.skills,
-    projects: (resume.projects || []).map(proj => ({
-      name: proj.name,
-      description: proj.description,
-      // FIX: internal shape uses proj.techStack, not proj.technologies.
-      // ATS templates that render project.technologies always showed nothing.
+    skills:         resume.skills,
+    projects: (resume.projects || []).map((proj) => ({
+      name:         proj.name,
+      description:  proj.description,
       technologies: proj.techStack || proj.technologies,
-      highlights: proj.highlights || [],
+      highlights:   proj.highlights || [],
     })),
     certifications: resume.certifications,
-    achievements: resume.achievements,
+    achievements:   resume.achievements,
   };
 
-  const templateMap = {
-  modern: ModernProTemplate,
-  classic: ClassicTemplate,
-  minimal: MinimalATSTemplate,
-  executive: ExecutiveTemplate,
-  fresher: FresherTemplate,
-  creative: CreativeATSTemplate,
-};
+  /* Inline templates expect { r } (raw resume); ATS templates expect { data } */
+  const ClassicWrapped  = () => <ClassicTemplate  r={resume} />;
+  const ModernWrapped   = () => <ModernTemplate   r={resume} />;
+  const MinimalWrapped  = () => <MinimalTemplate  r={resume} />;
 
-  const TemplateComponent = templateMap[activeTemplate] || ModernProTemplate;
+  /* ATS templates wrapped to pass data */
+  const ModernProWrapped    = () => <ModernProTemplate    data={transformedData} />;
+  const MinimalATSWrapped   = () => <MinimalATSTemplate   data={transformedData} />;
+  const ExecutiveWrapped    = () => <ExecutiveTemplate    data={transformedData} />;
+  const FresherWrapped      = () => <FresherTemplate      data={transformedData} />;
+  const CreativeWrapped     = () => <CreativeATSTemplate  data={transformedData} />;
+
+  const templateMap = {
+    modern:    ModernProWrapped,
+    classic:   ClassicWrapped,
+    minimal:   MinimalATSWrapped,
+    executive: ExecutiveWrapped,
+    fresher:   FresherWrapped,
+    creative:  CreativeWrapped,
+  };
+
+  const TemplateComponent = templateMap[activeTemplate] || ModernProWrapped;
 
   return (
-    <div>
-      {/* Template switcher pills */}
-      <div className="flex gap-1 mb-3 rounded-xl bg-surface-100 p-1 w-fit">
+    <div className="flex flex-col gap-3">
+      {/* ── Template switcher ── */}
+      <div className="flex flex-wrap gap-1 rounded-xl bg-surface-100 p-1">
         {RESUME_TEMPLATES.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => handleChange(t.id)}
-            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
+            className={[
+              'flex-1 min-w-fit rounded-lg px-2 py-1.5 text-[11px] font-medium transition-all whitespace-nowrap',
               activeTemplate === t.id
                 ? 'bg-white shadow-sm text-ink-950'
-                : 'text-ink-400 hover:text-ink-700'
-            }`}>
+                : 'text-ink-400 hover:text-ink-700',
+            ].join(' ')}
+          >
             {t.label}
           </button>
         ))}
       </div>
 
-      {/* Resume paper */}
-      <div className="rounded-xl border border-surface-200 overflow-hidden shadow-sm bg-white">
-        <TemplateComponent data={transformedData} />
+      {/* ── Paper preview ── */}
+      <div className="rounded-xl border border-surface-200 overflow-hidden shadow-md bg-white">
+        <ScaledPaper>
+          <TemplateComponent />
+        </ScaledPaper>
       </div>
+
+      {/* ── Hint ── */}
+      <p className="text-center text-[11px] text-ink-300 select-none">
+        Live preview · scales to fit
+      </p>
     </div>
   );
 };

@@ -43,6 +43,11 @@ export const RESUME_TEMPLATES = [
     description: 'Clean and professional for all industries — ATS-optimized',
   },
   {
+    id:          'classic',
+    label:       'Classic',
+    description: 'Single-column traditional layout — maximum ATS compatibility',
+  },
+  {
     id:          'minimal',
     label:       'Minimal ATS',
     description: 'Maximum ATS compatibility with minimal styling',
