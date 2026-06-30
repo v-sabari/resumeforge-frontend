@@ -45,8 +45,10 @@ const ResumeCard = ({ resume, onDelete }) => {
           <h3 className="font-semibold text-ink-950 truncate">
             {resume.fullName || 'Untitled Resume'}
           </h3>
+          {/* FIX: was resume.role (never set); fromApiResponse now populates
+              professionalTitle from the personalInfo JSON column. */}
           <p className="text-sm text-ink-400 truncate mt-0.5">
-            {resume.role || 'No title set'}
+            {resume.professionalTitle || 'No title set'}
           </p>
         </div>
         <button

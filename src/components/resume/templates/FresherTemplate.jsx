@@ -1,52 +1,73 @@
 import React from 'react';
 
 export const FresherTemplate = ({ data }) => {
-  const { personalInfo, summary, education, skills, projects, certifications, achievements } = data;
+  const {
+    personalInfo,
+    summary,
+    experience,
+    education,
+    skills,
+    projects,
+    certifications,
+    achievements,
+  } = data;
+
+  const SectionTitle = ({ children }) => (
+    <h2 className="text-sm font-bold text-blue-700 uppercase tracking-widest border-b border-blue-200 pb-1 mb-3">
+      {children}
+    </h2>
+  );
 
   return (
-    <div className="resume-template fresher max-w-4xl mx-auto bg-white p-8 shadow-lg">
+    <div className="resume-template fresher max-w-4xl mx-auto bg-white p-8 shadow-lg font-sans">
+
       {/* Header */}
       {personalInfo && (
-        <div className="text-center border-b-2 border-primary-500 pb-4 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">{personalInfo.fullName}</h1>
-          <div className="text-sm text-gray-600 space-x-3">
-            {personalInfo.email && <span>{personalInfo.email}</span>}
-            {personalInfo.phone && <span>|</span>}
-            {personalInfo.phone && <span>{personalInfo.phone}</span>}
+        <div className="text-center mb-6 pb-4 border-b border-gray-200">
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">{personalInfo.fullName}</h1>
+          {personalInfo.title && (
+            <div className="text-sm text-blue-600 font-medium mb-2">{personalInfo.title}</div>
+          )}
+          <div className="flex flex-wrap justify-center gap-x-3 gap-y-0.5 text-xs text-gray-600">
+            {personalInfo.email    && <span>{personalInfo.email}</span>}
+            {personalInfo.phone    && <span>|</span>}
+            {personalInfo.phone    && <span>{personalInfo.phone}</span>}
             {personalInfo.location && <span>|</span>}
             {personalInfo.location && <span>{personalInfo.location}</span>}
           </div>
-          {personalInfo.linkedin && (
-            <div className="text-sm text-primary-600 mt-1">{personalInfo.linkedin}</div>
-          )}
+          <div className="flex flex-wrap justify-center gap-x-3 gap-y-0.5 mt-0.5 text-xs text-blue-600">
+            {personalInfo.linkedin  && <span className="break-all">{personalInfo.linkedin}</span>}
+            {/* FIX: github and portfolio were missing from FresherTemplate header */}
+            {personalInfo.github    && <span className="break-all">{personalInfo.github}</span>}
+            {personalInfo.portfolio && <span className="break-all">{personalInfo.portfolio}</span>}
+          </div>
         </div>
       )}
 
-      {/* Objective/Summary */}
+      {/* Career Objective */}
       {summary && (
         <div className="mb-5">
-          <h2 className="text-lg font-bold text-gray-900 mb-2 uppercase tracking-wide">
-            Career Objective
-          </h2>
-          <p className="text-gray-700 leading-relaxed">{summary}</p>
+          <SectionTitle>Career Objective</SectionTitle>
+          <p className="text-gray-700 text-sm leading-relaxed">{summary}</p>
         </div>
       )}
 
-      {/* Education - Priority for freshers */}
-      {education && Array.isArray(education) && education.length > 0 && (
+      {/* Education */}
+      {education && education.length > 0 && (
         <div className="mb-5">
-          <h2 className="text-lg font-bold text-gray-900 mb-2 uppercase tracking-wide">
-            Education
-          </h2>
+          <SectionTitle>Education</SectionTitle>
           {education.map((edu, idx) => (
             <div key={idx} className="mb-3">
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-start flex-wrap gap-1">
                 <div>
-                  <h3 className="font-bold text-gray-900">{edu.degree}</h3>
-                  <div className="text-gray-700">{edu.institution}</div>
-                  {edu.gpa && <div className="text-sm text-gray-600">GPA: {edu.gpa}</div>}
+                  <h3 className="font-bold text-gray-900 text-sm">
+                    {edu.degree}{edu.field ? ` in ${edu.field}` : ''}
+                  </h3>
+                  <div className="text-gray-600 text-sm">{edu.institution}</div>
+                  {edu.gpa     && <div className="text-xs text-gray-500">Grade / CGPA: {edu.gpa}</div>}
+                  {edu.details && <div className="text-xs text-gray-400 mt-0.5 leading-relaxed">{edu.details}</div>}
                 </div>
-                <span className="text-sm text-gray-600">{edu.year}</span>
+                <span className="text-xs text-gray-500 whitespace-nowrap">{edu.year}</span>
               </div>
             </div>
           ))}
@@ -54,26 +75,66 @@ export const FresherTemplate = ({ data }) => {
       )}
 
       {/* Projects */}
-      {projects && Array.isArray(projects) && projects.length > 0 && (
+      {projects && projects.length > 0 && (
         <div className="mb-5">
-          <h2 className="text-lg font-bold text-gray-900 mb-2 uppercase tracking-wide">
-            Projects
-          </h2>
-          {projects.map((project, idx) => (
-            <div key={idx} className="mb-4">
-              <h3 className="font-bold text-gray-900">{project.name}</h3>
-              {project.technologies && (
-                <div className="text-sm text-gray-600 mb-1">
-                  Technologies: {project.technologies}
+          <SectionTitle>Projects</SectionTitle>
+          {projects.map((proj, idx) => (
+            <div key={idx} className="mb-3">
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-0.5">
+                <h3 className="font-bold text-gray-900 text-sm">{proj.name}</h3>
+                {proj.role && <span className="text-xs text-gray-500">({proj.role})</span>}
+              </div>
+              {proj.technologies && (
+                <div className="text-xs text-blue-600 mb-0.5">Tech: {proj.technologies}</div>
+              )}
+              {(proj.link || proj.github) && (
+                <div className="text-xs text-gray-400 mb-0.5 break-all">
+                  {[proj.link, proj.github].filter(Boolean).join('  ·  ')}
                 </div>
               )}
-              {project.description && (
-                <p className="text-gray-700 leading-relaxed">{project.description}</p>
+              {proj.description && (
+                <p className="text-gray-700 text-sm leading-relaxed">{proj.description}</p>
               )}
-              {project.highlights && Array.isArray(project.highlights) && (
-                <ul className="mt-1 space-y-1">
-                  {project.highlights.map((highlight, i) => (
-                    <li key={i} className="text-gray-700 text-sm ml-4">• {highlight}</li>
+              {proj.highlights && proj.highlights.length > 0 && (
+                <ul className="mt-1 space-y-0.5">
+                  {proj.highlights.map((h, i) => (
+                    <li key={i} className="flex items-start text-sm text-gray-700">
+                      <span className="text-blue-400 mr-2 shrink-0">▸</span>
+                      <span className="leading-relaxed">{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Experience — FIX: was completely absent from FresherTemplate */}
+      {experience && experience.length > 0 && (
+        <div className="mb-5">
+          <SectionTitle>Experience</SectionTitle>
+          {experience.map((exp, idx) => (
+            <div key={idx} className="mb-4">
+              <div className="flex justify-between items-start flex-wrap gap-1 mb-0.5">
+                <h3 className="font-bold text-gray-900 text-sm">{exp.position}</h3>
+                <span className="text-xs text-gray-500 whitespace-nowrap">{exp.duration}</span>
+              </div>
+              <div className="text-xs text-gray-600 mb-1">
+                {exp.company}
+                {exp.location       && ` · ${exp.location}`}
+                {exp.employmentType && ` · ${exp.employmentType}`}
+              </div>
+              {exp.summary && (
+                <p className="text-sm text-gray-600 mb-1 leading-relaxed">{exp.summary}</p>
+              )}
+              {exp.responsibilities && exp.responsibilities.length > 0 && (
+                <ul className="space-y-0.5">
+                  {exp.responsibilities.map((r, i) => (
+                    <li key={i} className="flex items-start text-sm text-gray-700">
+                      <span className="text-blue-400 mr-2 shrink-0">▸</span>
+                      <span className="leading-relaxed">{r}</span>
+                    </li>
                   ))}
                 </ul>
               )}
@@ -83,44 +144,48 @@ export const FresherTemplate = ({ data }) => {
       )}
 
       {/* Skills */}
-      {skills && (
+      {skills && (Array.isArray(skills) ? skills.length > 0 : skills) && (
         <div className="mb-5">
-          <h2 className="text-lg font-bold text-gray-900 mb-2 uppercase tracking-wide">
-            Technical Skills
-          </h2>
-          <div className="text-gray-700">
-            {typeof skills === 'string' ? skills : Array.isArray(skills) ? skills.join(' | ') : ''}
+          <SectionTitle>Technical Skills</SectionTitle>
+          <div className="flex flex-wrap gap-2">
+            {(Array.isArray(skills) ? skills : [skills]).map((s, i) => (
+              <span key={i} className="bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded text-xs font-medium">
+                {s}
+              </span>
+            ))}
           </div>
         </div>
       )}
 
-      {/* Certifications */}
-      {certifications && Array.isArray(certifications) && certifications.length > 0 && (
+      {/* Achievements */}
+      {achievements && achievements.length > 0 && (
         <div className="mb-5">
-          <h2 className="text-lg font-bold text-gray-900 mb-2 uppercase tracking-wide">
-            Certifications
-          </h2>
-          {certifications.map((cert, idx) => (
-            <div key={idx} className="mb-2 text-gray-700">
-              <span className="font-medium">{cert.name}</span>
-              {cert.issuer && <span> - {cert.issuer}</span>}
-              {cert.year && <span className="text-sm text-gray-600"> ({cert.year})</span>}
-            </div>
-          ))}
+          <SectionTitle>Achievements &amp; Awards</SectionTitle>
+          <ul className="space-y-1">
+            {achievements.map((a, idx) => (
+              <li key={idx} className="flex items-start text-sm text-gray-700">
+                <span className="text-blue-400 mr-2 shrink-0">▸</span>
+                <span className="leading-relaxed">{a}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
-      {/* Achievements */}
-      {achievements && Array.isArray(achievements) && achievements.length > 0 && (
+      {/* Certifications */}
+      {certifications && certifications.length > 0 && (
         <div>
-          <h2 className="text-lg font-bold text-gray-900 mb-2 uppercase tracking-wide">
-            Achievements
-          </h2>
-          <ul className="space-y-1">
-            {achievements.map((achievement, idx) => (
-              <li key={idx} className="text-gray-700 ml-4">• {achievement}</li>
-            ))}
-          </ul>
+          <SectionTitle>Certifications</SectionTitle>
+          {certifications.map((cert, idx) => (
+            <div key={idx} className="mb-1.5 text-sm text-gray-700">
+              <span className="font-medium">{cert.name}</span>
+              {cert.issuer && <span className="text-gray-500"> — {cert.issuer}</span>}
+              {cert.year   && <span className="text-gray-400"> ({cert.year})</span>}
+              {cert.credentialUrl && (
+                <span className="block text-xs text-gray-400 break-all">{cert.credentialUrl}</span>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>
