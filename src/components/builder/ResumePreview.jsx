@@ -8,39 +8,32 @@ import {
   CreativeATSTemplate,
 } from '../resume/templates';
 
-/* ─── Shared micro-components used only by inline ClassicTemplate ─── */
+/* ─── A4 dimensions at 96 dpi ───────────────────────────────────── */
+const A4_W  = 794;   // 210 mm → px
+const A4_H  = 1123;  // 297 mm → px
 
+/* ─── Inline Classic template (raw resume data) ─────────────────── */
 const safe = (v) => v || '';
 
-const Bullet = ({ children }) => (
+const Bul = ({ c }) => (
   <li className="flex gap-1.5">
-    <span className="text-gray-400 shrink-0 select-none" aria-hidden="true">&#8226;</span>
-    <span className="text-gray-700 break-words min-w-0">{children}</span>
+    <span className="text-gray-400 shrink-0 select-none">•</span>
+    <span className="text-gray-700 break-words min-w-0">{c}</span>
   </li>
 );
 
-const SectionHead = ({ children, dark }) => (
-  <div className={[
-    'text-[9px] font-bold uppercase tracking-widest pb-0.5 mb-1.5 border-b',
-    dark ? 'text-slate-400 border-slate-600' : 'text-gray-500 border-gray-200',
-  ].join(' ')}>
+const SH = ({ children, dark }) => (
+  <div className={`text-[9px] font-bold uppercase tracking-widest pb-0.5 mb-1.5 border-b
+    ${dark ? 'text-slate-400 border-slate-600' : 'text-gray-500 border-gray-200'}`}>
     {children}
   </div>
 );
 
-/* ─── Classic template (inline, raw resume data) ─────────────────────
- *  Uses the `resume` object directly so every field the builder captures
- *  is available without going through transformedData.
- * ─────────────────────────────────────────────────────────────────── */
 const ClassicTemplate = ({ r }) => (
   <div className="font-sans text-[10px] leading-tight text-gray-900 bg-white p-6 space-y-3">
-
-    {/* ── Header ── */}
     <div className="text-center border-b border-gray-300 pb-3">
       <div className="text-lg font-bold tracking-wide uppercase">{safe(r.fullName) || 'Your Name'}</div>
-      {(r.professionalTitle) && (
-        <div className="text-[10px] text-gray-600 mt-0.5">{r.professionalTitle}</div>
-      )}
+      {r.professionalTitle && <div className="text-[10px] text-gray-600 mt-0.5">{r.professionalTitle}</div>}
       <div className="flex flex-wrap justify-center gap-x-3 gap-y-0.5 mt-1 text-gray-500">
         {r.email    && <span className="break-all">{r.email}</span>}
         {r.phone    && <span>{r.phone}</span>}
@@ -52,354 +45,275 @@ const ClassicTemplate = ({ r }) => (
         {r.portfolio && <span className="break-all">{r.portfolio}</span>}
       </div>
     </div>
-
-    {/* ── Summary ── */}
-    {r.summary && (
-      <div>
-        <SectionHead>Professional Summary</SectionHead>
-        <p className="text-gray-700 leading-relaxed break-words">{r.summary}</p>
-      </div>
-    )}
-
-    {/* ── Skills ── */}
-    {(r.skills || []).length > 0 && (
-      <div>
-        <SectionHead>Skills</SectionHead>
-        <p className="break-words">{(r.skills || []).join(', ')}</p>
-      </div>
-    )}
-
-    {/* ── Experience ── */}
-    {(r.experience || []).length > 0 && (
-      <div>
-        <SectionHead>Work Experience</SectionHead>
-        <div className="space-y-2.5">
-          {(r.experience || []).map((e, i) => (
-            <div key={e.id || i}>
-              <div className="flex justify-between gap-2">
-                <span className="font-semibold break-words min-w-0">
-                  {e.role}{e.company ? ' \u2014 ' + e.company : ''}
-                </span>
-                <span className="text-gray-500 shrink-0 whitespace-nowrap">
-                  {e.startDate}{e.endDate ? ' \u2013 ' + e.endDate : ''}
-                </span>
-              </div>
-              {/* FIX: employmentType and location now shown */}
-              {(e.location || e.employmentType) && (
-                <div className="text-gray-500 text-[9px]">
-                  {[e.location, e.employmentType].filter(Boolean).join(' · ')}
-                </div>
-              )}
-              {/* FIX: brief role summary now shown */}
-              {e.summary && (
-                <p className="text-gray-600 mt-0.5 break-words">{e.summary}</p>
-              )}
-              {(e.bullets || []).filter(Boolean).length > 0 && (
-                <ul className="mt-1 space-y-0.5 pl-1">
-                  {(e.bullets || []).filter(Boolean).map((b, j) => (
-                    <Bullet key={j}>{b}</Bullet>
-                  ))}
-                </ul>
-              )}
+    {r.summary && <div><SH>Summary</SH><p className="text-gray-700 leading-relaxed break-words">{r.summary}</p></div>}
+    {(r.skills||[]).length > 0 && <div><SH>Skills</SH><p className="break-words">{(r.skills||[]).join(', ')}</p></div>}
+    {(r.experience||[]).length > 0 && (
+      <div><SH>Experience</SH>
+        {(r.experience||[]).map((e,i) => (
+          <div key={e.id||i} className="mb-2">
+            <div className="flex justify-between gap-2">
+              <span className="font-semibold break-words min-w-0">{e.role}{e.company?` — ${e.company}`:''}</span>
+              <span className="text-gray-500 shrink-0 whitespace-nowrap">{e.startDate}{e.endDate?` – ${e.endDate}`:''}</span>
             </div>
-          ))}
-        </div>
+            {(e.location||e.employmentType)&&<div className="text-gray-500 text-[9px]">{[e.location,e.employmentType].filter(Boolean).join(' · ')}</div>}
+            {e.summary&&<p className="text-gray-600 mt-0.5 break-words">{e.summary}</p>}
+            {(e.bullets||[]).filter(Boolean).length>0&&<ul className="mt-1 space-y-0.5 pl-1">{(e.bullets||[]).filter(Boolean).map((b,j)=><Bul key={j} c={b}/>)}</ul>}
+          </div>
+        ))}
       </div>
     )}
-
-    {/* ── Projects ── */}
-    {(r.projects || []).length > 0 && (
-      <div>
-        <SectionHead>Projects</SectionHead>
-        <div className="space-y-2">
-          {(r.projects || []).map((p, i) => (
-            <div key={p.id || i}>
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                <span className="font-semibold">{p.name}</span>
-                {/* FIX: project role now shown */}
-                {p.role && <span className="text-gray-500 text-[9px]">({p.role})</span>}
-              </div>
-              {p.techStack && (
-                <div className="text-gray-500 text-[9px] mt-0.5 break-words">{p.techStack}</div>
-              )}
-              {/* FIX: live URL and GitHub URL now shown */}
-              {(p.link || p.github) && (
-                <div className="text-gray-400 text-[9px] mt-0.5 break-all">
-                  {[p.link, p.github].filter(Boolean).join(' · ')}
-                </div>
-              )}
-              {p.description && (
-                <p className="text-gray-700 mt-0.5 break-words">{p.description}</p>
-              )}
-              {/* FIX: project highlights now shown */}
-              {(p.highlights || []).filter(Boolean).length > 0 && (
-                <ul className="mt-0.5 space-y-0.5 pl-1">
-                  {(p.highlights || []).filter(Boolean).map((h, j) => (
-                    <Bullet key={j}>{h}</Bullet>
-                  ))}
-                </ul>
-              )}
+    {(r.projects||[]).length > 0 && (
+      <div><SH>Projects</SH>
+        {(r.projects||[]).map((p,i) => (
+          <div key={p.id||i} className="mb-1.5">
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <span className="font-semibold">{p.name}</span>
+              {p.role&&<span className="text-gray-500 text-[9px]">({p.role})</span>}
             </div>
-          ))}
-        </div>
+            {p.techStack&&<div className="text-gray-500 text-[9px]">{p.techStack}</div>}
+            {(p.link||p.github)&&<div className="text-gray-400 text-[9px] break-all">{[p.link,p.github].filter(Boolean).join(' · ')}</div>}
+            {p.description&&<p className="text-gray-700 mt-0.5 break-words">{p.description}</p>}
+            {(p.highlights||[]).filter(Boolean).length>0&&<ul className="mt-0.5 space-y-0.5 pl-1">{(p.highlights||[]).filter(Boolean).map((h,j)=><Bul key={j} c={h}/>)}</ul>}
+          </div>
+        ))}
       </div>
     )}
-
-    {/* ── Education ── */}
-    {(r.education || []).length > 0 && (
-      <div>
-        <SectionHead>Education</SectionHead>
-        <div className="space-y-1.5">
-          {(r.education || []).map((e, i) => (
-            <div key={e.id || i}>
-              <div className="flex justify-between gap-2">
-                <div className="min-w-0">
-                  <span className="font-semibold">{e.degree}</span>
-                  {e.field && <span className="text-gray-600"> in {e.field}</span>}
-                  {e.institution && <div className="text-gray-500">{e.institution}</div>}
-                  {/* FIX: grade/CGPA now shown */}
-                  {e.grade && <div className="text-gray-400 text-[9px]">Grade: {e.grade}</div>}
-                  {/* FIX: additional details now shown */}
-                  {e.details && <p className="text-gray-500 text-[9px] mt-0.5 break-words">{e.details}</p>}
-                </div>
-                <span className="text-gray-500 shrink-0 whitespace-nowrap">
-                  {e.startDate}{e.endDate ? ' \u2013 ' + e.endDate : ''}
-                </span>
+    {(r.education||[]).length > 0 && (
+      <div><SH>Education</SH>
+        {(r.education||[]).map((e,i) => (
+          <div key={e.id||i} className="mb-1.5">
+            <div className="flex justify-between gap-2">
+              <div className="min-w-0">
+                <span className="font-semibold">{e.degree}</span>
+                {e.field&&<span className="text-gray-600"> in {e.field}</span>}
+                {e.institution&&<div className="text-gray-500">{e.institution}</div>}
+                {e.grade&&<div className="text-gray-400 text-[9px]">Grade: {e.grade}</div>}
+                {e.details&&<div className="text-gray-400 text-[9px] mt-0.5">{e.details}</div>}
               </div>
+              <span className="text-gray-500 shrink-0 whitespace-nowrap">{e.startDate}{e.endDate?` – ${e.endDate}`:''}</span>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     )}
-
-    {/* ── Certifications ── */}
-    {(r.certifications || []).length > 0 && (
-      <div>
-        <SectionHead>Certifications</SectionHead>
-        <div className="space-y-0.5">
-          {(r.certifications || []).map((c, i) => {
-            const name   = typeof c === 'string' ? c : (c?.name   || '');
-            const issuer = typeof c === 'string' ? '' : (c?.issuer || '');
-            const year   = typeof c === 'string' ? '' : (c?.year   || '');
-            return (
-              <div key={i} className="break-words">
-                <span className="font-medium">{name}</span>
-                {issuer && <span className="text-gray-500"> — {issuer}</span>}
-                {year   && <span className="text-gray-400"> ({year})</span>}
-              </div>
-            );
-          })}
-        </div>
+    {(r.certifications||[]).length > 0 && (
+      <div><SH>Certifications</SH>
+        {(r.certifications||[]).map((c,i)=>{
+          const name=typeof c==='string'?c:(c?.name||'');
+          const issuer=typeof c==='string'?'':(c?.issuer||'');
+          const year=typeof c==='string'?'':(c?.year||'');
+          return <div key={i} className="break-words"><span className="font-medium">{name}</span>{issuer&&<span className="text-gray-500"> — {issuer}</span>}{year&&<span className="text-gray-400"> ({year})</span>}</div>;
+        })}
       </div>
     )}
-
-    {/* ── Achievements ── */}
-    {(r.achievements || []).length > 0 && (
-      <div>
-        <SectionHead>Achievements</SectionHead>
-        <ul className="space-y-0.5 pl-1">
-          {(r.achievements || []).map((a, i) => <Bullet key={i}>{a}</Bullet>)}
-        </ul>
-      </div>
-    )}
+    {(r.achievements||[]).length > 0 && <div><SH>Achievements</SH><ul className="space-y-0.5 pl-1">{(r.achievements||[]).map((a,i)=><Bul key={i} c={a}/>)}</ul></div>}
   </div>
 );
 
-/* ─── ScaledPaper ────────────────────────────────────────────────────
- *  Renders an 794px-wide inner div (A4 width in px at 96dpi) and scales
- *  it to fill the available column width via a CSS transform.
+/* ─── A4 page-wise viewer ─────────────────────────────────────────
  *
- *  FIX 1 — innerH initialised to 0 (not PAPER_WIDTH*1.414):
- *    The old initialisation (~1123px at scale=1) meant the outer wrapper
- *    was always 1123px tall before ResizeObserver fired.  For a 380px
- *    column the correct height is ~540px; the 1123px initial value created
- *    a blank gap below the preview that looked like the content was cut.
- *    With innerH=0 the wrapper starts collapsed and jumps to the correct
- *    height on the first observer callback with no intermediate wrong state.
- *
- *  FIX 2 — overflow:'hidden' on the outer div:
- *    The inner div is 794px wide in layout space regardless of scale.
- *    Without clipping, that box leaked into the document which could
- *    trigger a horizontal scrollbar on the <main> element.  The scrollbar
- *    reduced viewport width, reflowed the grid, and shrank the preview
- *    column — making the scaled content appear horizontally clipped.
- *    overflow:hidden is safe here because the CSS transform maps the full
- *    794px to exactly [0, containerWidth] before painting, so no visual
- *    content is cut.
- * ─────────────────────────────────────────────────────────────────── */
-const PAPER_WIDTH = 794;
-
-const ScaledPaper = ({ children }) => {
-  const outerRef = useRef(null);
-  const innerRef = useRef(null);
-  const [scale,  setScale]  = useState(1);
-  const [innerH, setInnerH] = useState(0);
+ *  Design:
+ *  • Outer shell = slate PDF-viewer background
+ *  • White A4 paper card with drop-shadow, centred
+ *  • Content rendered at full 794 px then CSS-scaled to fit column
+ *  • ResizeObserver tracks both container width AND inner content height
+ *  • Page-break dashed lines inserted every A4_H scaled pixels
+ *    so the user sees exactly where page 2/3 begin
+ *  • No overflow:hidden on the outer div — the outer div's explicit
+ *    height equals rawH*scale so nothing is clipped
+ * ─────────────────────────────────────────────────────────────────*/
+const A4Viewer = ({ children }) => {
+  const shellRef = useRef(null);
+  const paperRef = useRef(null);
+  const [scale, setScale]   = useState(1);
+  const [rawH,  setRawH]    = useState(A4_H);
 
   useEffect(() => {
-    const outer = outerRef.current;
-    const inner = innerRef.current;
-    if (!outer || !inner) return;
+    const shell = shellRef.current;
+    const paper = paperRef.current;
+    if (!shell || !paper) return;
 
-    const recalc = () => {
-      const w = outer.clientWidth;
-      if (w > 0) {
-        const s = w / PAPER_WIDTH;
-        setScale(s);
-        setInnerH(inner.scrollHeight * s);
-      }
+    const calc = () => {
+      /* available width = shell width minus horizontal padding (32px) */
+      const aw = shell.clientWidth - 32;
+      if (aw <= 0) return;
+      const s = aw / A4_W;
+      setScale(s);
+      setRawH(paper.scrollHeight);
     };
 
-    const roOuter = new ResizeObserver(recalc);
-    const roInner = new ResizeObserver(recalc);
-    roOuter.observe(outer);
-    roInner.observe(inner);
-    recalc();
-    return () => { roOuter.disconnect(); roInner.disconnect(); };
+    const ro1 = new ResizeObserver(calc);
+    const ro2 = new ResizeObserver(calc);
+    ro1.observe(shell);
+    ro2.observe(paper);
+    calc();
+    return () => { ro1.disconnect(); ro2.disconnect(); };
   }, []);
 
+  const scaledW  = A4_W * scale;
+  const scaledH  = rawH  * scale;
+  const numPages = Math.max(1, Math.ceil(rawH / A4_H));
+
   return (
+    /* PDF-viewer shell */
     <div
-      ref={outerRef}
-      style={{ height: innerH || 'auto', position: 'relative', overflow: 'hidden' }}
+      ref={shellRef}
+      className="w-full rounded-xl"
+      style={{ background: '#475569', padding: '16px' }}
     >
+      {/* Page-count badge */}
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-widest">
+          A4 Preview
+        </span>
+        <span className="rounded-full bg-slate-700 px-2.5 py-0.5 text-[10px] font-medium text-slate-300">
+          {numPages} {numPages === 1 ? 'page' : 'pages'}
+        </span>
+      </div>
+
+      {/* A4 paper wrapper — explicit height keeps outer div sized correctly */}
       <div
-        ref={innerRef}
-        style={{
-          width: PAPER_WIDTH,
-          transformOrigin: 'top left',
-          transform: `scale(${scale})`,
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          backgroundColor: '#ffffff',
-        }}
+        className="relative mx-auto"
+        style={{ width: scaledW, height: scaledH }}
       >
-        {children}
+        {/* White paper background + shadow */}
+        <div
+          className="absolute inset-0 bg-white"
+          style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25)' }}
+        />
+
+        {/* Resume content — 794 px wide, CSS-scaled down */}
+        <div
+          ref={paperRef}
+          className="absolute top-0 left-0 bg-white"
+          style={{
+            width:           A4_W,
+            transformOrigin: 'top left',
+            transform:       `scale(${scale})`,
+          }}
+        >
+          {children}
+        </div>
+
+        {/* Page-break markers — one for every page boundary */}
+        {numPages > 1 && Array.from({ length: numPages - 1 }).map((_, i) => {
+          const y = (i + 1) * A4_H * scale;
+          return (
+            <div
+              key={i}
+              className="absolute inset-x-0 flex items-center"
+              style={{ top: y, zIndex: 30, pointerEvents: 'none' }}
+            >
+              <div className="flex-1 border-t-2 border-dashed border-blue-400/70" />
+              <span className="mx-2 rounded-full bg-blue-600 px-2.5 py-0.5
+                               text-[9px] font-bold text-white whitespace-nowrap shadow">
+                ↓ Page {i + 2}
+              </span>
+              <div className="flex-1 border-t-2 border-dashed border-blue-400/70" />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 };
 
-/* ─── ResumePreview ──────────────────────────────────────────────────
- *  Converts the flat `resume` state into the `transformedData` shape
- *  that all external templates expect, then renders the active template
- *  inside ScaledPaper.
- *
- *  transformedData fixes applied here:
- *  • education[].gpa   — was edu.gpa (undefined); now edu.gpa || edu.grade
- *  • education[].field — was absent; field of study now forwarded
- *  • education[].details — was absent; additional details now forwarded
- *  • experience[].employmentType — was absent; now forwarded
- *  • experience[].summary — was absent; brief role summary now forwarded
- *  • projects[].role / .link / .github — were absent; now forwarded
- *  • certifications — normalised from raw string OR object to {name,issuer,year,credentialUrl}
- * ─────────────────────────────────────────────────────────────────── */
+/* ─── Template map helpers ─────────────────────────────────────── */
+const normCerts = (arr = []) =>
+  arr.map((c) =>
+    typeof c === 'string'
+      ? { name: c, issuer: '', year: '', credentialUrl: '' }
+      : { name: c?.name||'', issuer: c?.issuer||'', year: c?.year||'', credentialUrl: c?.credentialUrl||'' }
+  );
+
+const buildTransformed = (resume) => ({
+  personalInfo: {
+    fullName:  resume.fullName          || 'Your Name',
+    title:     resume.professionalTitle || '',
+    email:     resume.email    || '',
+    phone:     resume.phone    || '',
+    location:  resume.location || '',
+    linkedin:  resume.linkedin  || '',
+    github:    resume.github    || '',
+    portfolio: resume.portfolio || '',
+  },
+  summary: resume.summary || '',
+  experience: (resume.experience || []).map((e) => ({
+    position:       e.role           || '',
+    company:        e.company        || '',
+    duration:       e.duration       || `${e.startDate||''} – ${e.endDate||'Present'}`.trim(),
+    location:       e.location       || '',
+    employmentType: e.employmentType || '',
+    summary:        e.summary        || '',
+    responsibilities: e.bullets || e.responsibilities || [],
+  })),
+  education: (resume.education || []).map((e) => ({
+    degree:      e.degree              || '',
+    field:       e.field               || '',
+    institution: e.school || e.institution || '',
+    year:        e.year   || `${e.startDate||''} – ${e.endDate||''}`.trim(),
+    gpa:         e.gpa    || e.grade   || '',
+    details:     e.details             || '',
+  })),
+  skills:         resume.skills        || [],
+  projects: (resume.projects || []).map((p) => ({
+    name:         p.name        || '',
+    role:         p.role        || '',
+    link:         p.link        || '',
+    github:       p.github      || '',
+    description:  p.description || '',
+    technologies: p.techStack   || p.technologies || '',
+    highlights:   p.highlights  || [],
+  })),
+  certifications: normCerts(resume.certifications),
+  achievements:   resume.achievements || [],
+});
+
+/* ─── Public component ─────────────────────────────────────────── */
 export const ResumePreview = ({ resume, template = 'modern', onTemplateChange }) => {
-  const [activeTemplate, setActiveTemplate] = useState(template);
+  const [active, setActive] = useState(template);
 
-  useEffect(() => { setActiveTemplate(template); }, [template]);
+  useEffect(() => { setActive(template); }, [template]);
 
-  const handleChange = (id) => { setActiveTemplate(id); onTemplateChange?.(id); };
+  const change = (id) => { setActive(id); onTemplateChange?.(id); };
 
   if (!resume) {
     return (
-      <div className="rounded-xl border border-surface-200 bg-white p-8 text-center text-sm text-ink-400">
-        Loading resume preview…
+      <div className="flex items-center justify-center rounded-2xl border border-surface-200
+                      bg-white p-12 text-sm text-ink-400">
+        Loading preview…
       </div>
     );
   }
 
-  const transformedData = {
-    personalInfo: {
-      fullName:  resume.fullName          || 'Your Name',
-      title:     resume.professionalTitle || resume.role || '',
-      email:     resume.email    || '',
-      phone:     resume.phone    || '',
-      location:  resume.location || '',
-      linkedin:  resume.linkedin  || '',
-      github:    resume.github    || '',
-      portfolio: resume.portfolio || '',
-    },
+  const td = buildTransformed(resume);
 
-    summary: resume.summary || '',
-
-    experience: (resume.experience || []).map((exp) => ({
-      position:       exp.role           || '',
-      company:        exp.company        || '',
-      duration:       exp.duration       || `${exp.startDate || ''} – ${exp.endDate || 'Present'}`.trim(),
-      location:       exp.location       || '',
-      // FIX: employmentType and per-role summary were not forwarded
-      employmentType: exp.employmentType || '',
-      summary:        exp.summary        || '',
-      responsibilities: exp.bullets || exp.responsibilities || [],
-    })),
-
-    education: (resume.education || []).map((edu) => ({
-      degree:      edu.degree                   || '',
-      // FIX: field of study was not forwarded to external templates
-      field:       edu.field                    || '',
-      institution: edu.school || edu.institution || '',
-      year:        edu.year   || `${edu.startDate || ''} – ${edu.endDate || ''}`.trim(),
-      // FIX: builder form stores grade as edu.grade, not edu.gpa
-      gpa:         edu.gpa   || edu.grade       || '',
-      // FIX: additional details (coursework, honours) were not forwarded
-      details:     edu.details                  || '',
-    })),
-
-    skills: resume.skills || [],
-
-    projects: (resume.projects || []).map((proj) => ({
-      name:         proj.name        || '',
-      // FIX: project role, live URL, and GitHub URL were not forwarded
-      role:         proj.role        || '',
-      link:         proj.link        || '',
-      github:       proj.github      || '',
-      description:  proj.description || '',
-      technologies: proj.techStack || proj.technologies || '',
-      highlights:   proj.highlights || [],
-    })),
-
-    // FIX: normalise certs — legacy string entries caused cert.name to be
-    // undefined in templates that destructure the object.
-    certifications: (resume.certifications || []).map((c) =>
-      typeof c === 'string'
-        ? { name: c, issuer: '', year: '', credentialUrl: '' }
-        : {
-            name:          c?.name          || '',
-            issuer:        c?.issuer        || '',
-            year:          c?.year          || '',
-            credentialUrl: c?.credentialUrl || '',
-          }
-    ),
-
-    achievements: resume.achievements || [],
+  const renders = {
+    modern:    <ModernProTemplate    data={td} />,
+    classic:   <ClassicTemplate      r={resume} />,
+    minimal:   <MinimalATSTemplate   data={td} />,
+    executive: <ExecutiveTemplate    data={td} />,
+    fresher:   <FresherTemplate      data={td} />,
+    creative:  <CreativeATSTemplate  data={td} />,
   };
 
-  const templateMap = {
-    modern:    () => <ModernProTemplate    data={transformedData} />,
-    classic:   () => <ClassicTemplate     r={resume} />,
-    minimal:   () => <MinimalATSTemplate  data={transformedData} />,
-    executive: () => <ExecutiveTemplate   data={transformedData} />,
-    fresher:   () => <FresherTemplate     data={transformedData} />,
-    creative:  () => <CreativeATSTemplate data={transformedData} />,
-  };
-
-  const TemplateComponent = templateMap[activeTemplate] || templateMap.modern;
+  const content = renders[active] || renders.modern;
 
   return (
     <div className="flex flex-col gap-3">
       {/* Template switcher */}
-      <div className="flex flex-wrap gap-1 rounded-xl bg-surface-100 p-1">
+      <div className="flex flex-wrap gap-1 rounded-xl bg-slate-100 p-1 border border-slate-200">
         {RESUME_TEMPLATES.map((t) => (
           <button
             key={t.id}
             type="button"
-            onClick={() => handleChange(t.id)}
+            onClick={() => change(t.id)}
             className={[
-              'flex-1 min-w-fit rounded-lg px-2 py-1.5 text-[11px] font-medium transition-all whitespace-nowrap',
-              activeTemplate === t.id
-                ? 'bg-white shadow-sm text-ink-950'
-                : 'text-ink-400 hover:text-ink-700',
+              'flex-1 min-w-fit rounded-lg px-2 py-1.5 text-[11px] font-semibold',
+              'transition-all duration-150 whitespace-nowrap',
+              active === t.id
+                ? 'bg-white shadow text-slate-900 ring-1 ring-slate-200'
+                : 'text-slate-500 hover:text-slate-800',
             ].join(' ')}
           >
             {t.label}
@@ -407,15 +321,11 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange })
         ))}
       </div>
 
-      {/* Scaled A4 preview */}
-      <div className="rounded-xl border border-surface-200 shadow-md bg-white">
-        <ScaledPaper>
-          <TemplateComponent />
-        </ScaledPaper>
-      </div>
+      {/* A4 page viewer */}
+      <A4Viewer>{content}</A4Viewer>
 
-      <p className="text-center text-[11px] text-ink-300 select-none">
-        Live preview · scales to fit
+      <p className="text-center text-[10px] text-slate-400 select-none tracking-wide">
+        A4 · 210 × 297 mm · Live preview
       </p>
     </div>
   );
