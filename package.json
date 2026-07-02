@@ -3,14 +3,17 @@
   "private": true,
   "version": "2.0.0",
   "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
-  "dev": "vite",
-  "build": "npm run build:pdf-css && vite build",
-  "build:csr": "vite build",
-  "build:pdf-css": "npx tailwindcss -c tailwind.pdf.config.js -i ./src/pdf-input.css -o ./api/_pdf-compiled.css --minify",
-  "preview": "vite preview",
-  "lint": "eslint . --ext js,jsx --max-warnings 0"
-},
+    "dev": "vite",
+    "build": "npm run build:pdf-css && vite build",
+    "build:csr": "vite build",
+    "build:pdf-css": "npx tailwindcss -c tailwind.pdf.config.js -i ./src/pdf-input.css -o ./api/_pdf-compiled.css --minify",
+    "preview": "vite preview",
+    "lint": "eslint . --ext js,jsx --max-warnings 0"
+  },
   "dependencies": {
     "@sparticuz/chromium-min": "^131.0.1",
     "axios": "^1.8.4",
