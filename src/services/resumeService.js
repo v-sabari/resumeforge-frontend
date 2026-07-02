@@ -6,15 +6,11 @@ const safeJsonParse = (value, fallback = null) => {
   try { return JSON.parse(value); } catch { return fallback; }
 };
 
-/* fromApiResponse — flattens personalInfo to top-level AND preserves
-   sectionsConfig / languages / customSections so nothing is lost. */
 export function fromApiResponse(data) {
   const personalInfo = safeJsonParse(data.personalInfo, {});
   return {
-    id:             data.id,
-    userId:         data.userId,
-    title:          data.title    ?? '',
-    template:       data.template ?? 'modern',
+    id: data.id, userId: data.userId,
+    title: data.title ?? '', template: data.template ?? 'modern',
     personalInfo,
     fullName:          personalInfo.fullName          || '',
     professionalTitle: personalInfo.professionalTitle || personalInfo.title || '',
@@ -34,34 +30,22 @@ export function fromApiResponse(data) {
     languages:      safeJsonParse(data.languages,      []),
     customSections: safeJsonParse(data.customSections, {}),
     sectionsConfig: safeJsonParse(data.sectionsConfig, null),
-    createdAt: data.createdAt,
-    updatedAt: data.updatedAt,
+    createdAt: data.createdAt, updatedAt: data.updatedAt,
   };
 }
 
-/* toApiPayload — builds personalInfo JSON from top-level fields
-   and serialises all arrays + sectionsConfig. */
 export function toApiPayload(resume) {
-  const s = (v) => {
-    if (v == null) return null;
-    if (typeof v === 'string') return v;
-    try { return JSON.stringify(v); } catch { return null; }
-  };
+  const s = (v) => { if (v==null) return null; if (typeof v==='string') return v; try{return JSON.stringify(v);}catch{return null;} };
   const personalInfo = {
-    fullName:          resume.fullName          || '',
-    professionalTitle: resume.professionalTitle || '',
-    email:    resume.email    || '',
-    phone:    resume.phone    || '',
-    location: resume.location || '',
-    linkedin: resume.linkedin || '',
-    github:   resume.github   || '',
-    portfolio:resume.portfolio|| '',
+    fullName: resume.fullName||'', professionalTitle: resume.professionalTitle||'',
+    email: resume.email||'', phone: resume.phone||'', location: resume.location||'',
+    linkedin: resume.linkedin||'', github: resume.github||'', portfolio: resume.portfolio||'',
   };
   return {
     title:          resume.title || resume.fullName || 'Untitled Resume',
-    template:       resume.template       ?? 'modern',
+    template:       resume.template ?? 'modern',
     personalInfo:   s(personalInfo),
-    summary:        resume.summary        ?? null,
+    summary:        resume.summary ?? null,
     experience:     s(resume.experience),
     education:      s(resume.education),
     skills:         s(resume.skills),
