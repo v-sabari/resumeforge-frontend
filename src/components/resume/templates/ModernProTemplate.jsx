@@ -1,184 +1,142 @@
 import React from 'react';
 
+/* Custom section block shared by all external templates */
+const CustomBlock = ({ label, content, headingClass, bodyClass, bulletClass }) => {
+  if (!content) return null;
+  const { mode, text, items } = content;
+  if (mode === 'bullets') {
+    if (!items || !items.filter(Boolean).length) return null;
+    return (
+      <div className="mb-6">
+        <h2 className={headingClass}>{label}</h2>
+        <ul className="space-y-1">
+          {items.filter(Boolean).map((it, i) => (
+            <li key={i} className={`flex items-start ${bodyClass}`}>
+              <span className={`mr-2 shrink-0 ${bulletClass}`}>▸</span>
+              <span className="leading-relaxed">{it}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+  if (!text || !text.trim()) return null;
+  return (
+    <div className="mb-6">
+      <h2 className={headingClass}>{label}</h2>
+      <p className={`${bodyClass} leading-relaxed`}>{text}</p>
+    </div>
+  );
+};
+
 export const ModernProTemplate = ({ data }) => {
   const {
-    personalInfo,
-    summary,
-    experience,
-    education,
-    skills,
-    projects,
-    certifications,
-    achievements,
+    sectionsConfig,
+    personalInfo, summary, experience, education, skills,
+    projects, certifications, achievements, languages, customSections,
   } = data;
 
-  return (
-    <div className="resume-template modern-pro max-w-4xl mx-auto bg-white p-8 shadow-lg font-sans">
+  const H = 'text-lg font-bold text-gray-900 mb-2 pb-1 border-b border-gray-300 uppercase tracking-wide';
+  const B = 'text-gray-700 text-sm';
+  const BL = 'text-gray-400';
 
-      {/* ── Header ── */}
-      {personalInfo && (
-        <div className="border-b-2 border-gray-800 pb-4 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">{personalInfo.fullName}</h1>
-          {personalInfo.title && (
-            <div className="text-base text-gray-600 font-medium mb-2">{personalInfo.title}</div>
-          )}
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
-            {personalInfo.email    && <span>{personalInfo.email}</span>}
-            {personalInfo.phone    && <span>{personalInfo.phone}</span>}
-            {personalInfo.location && <span>{personalInfo.location}</span>}
-            {personalInfo.linkedin && <span className="break-all">{personalInfo.linkedin}</span>}
-            {personalInfo.github   && <span className="break-all">{personalInfo.github}</span>}
-            {personalInfo.portfolio && <span className="break-all">{personalInfo.portfolio}</span>}
-          </div>
-        </div>
-      )}
-
-      {/* ── Summary ── */}
-      {summary && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-2 pb-1 border-b border-gray-300 uppercase tracking-wide">
-            Professional Summary
-          </h2>
-          <p className="text-gray-700 leading-relaxed">{summary}</p>
-        </div>
-      )}
-
-      {/* ── Experience ── */}
-      {experience && experience.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-3 pb-1 border-b border-gray-300 uppercase tracking-wide">
-            Professional Experience
-          </h2>
-          {experience.map((exp, idx) => (
-            <div key={idx} className="mb-5">
+  const renderSection = (sec) => {
+    if (sec.type === 'custom') {
+      return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]} headingClass={H} bodyClass={B} bulletClass={BL}/>;
+    }
+    switch (sec.key) {
+      case 'basics': return null;
+      case 'summary': return summary ? (
+        <div key="summary" className="mb-6"><h2 className={H}>Professional Summary</h2><p className={`${B} leading-relaxed`}>{summary}</p></div>
+      ) : null;
+      case 'experience': return experience?.length ? (
+        <div key="experience" className="mb-6">
+          <h2 className={H}>Professional Experience</h2>
+          {experience.map((exp,i)=>(
+            <div key={i} className="mb-5">
               <div className="flex justify-between items-start flex-wrap gap-1 mb-1">
                 <h3 className="font-bold text-gray-900">{exp.position}</h3>
                 <span className="text-sm text-gray-500 whitespace-nowrap">{exp.duration}</span>
               </div>
-              <div className="text-sm text-gray-700 mb-1">
-                {exp.company}
-                {exp.location       && ` · ${exp.location}`}
-                {exp.employmentType && ` · ${exp.employmentType}`}
-              </div>
-              {exp.summary && (
-                <p className="text-sm text-gray-600 mb-1 leading-relaxed">{exp.summary}</p>
-              )}
-              {exp.responsibilities && exp.responsibilities.length > 0 && (
-                <ul className="list-disc list-inside space-y-1 text-gray-700 text-sm">
-                  {exp.responsibilities.map((r, i) => (
-                    <li key={i} className="leading-relaxed">{r}</li>
-                  ))}
-                </ul>
-              )}
+              <div className="text-sm text-gray-700 mb-1">{exp.company}{exp.location?` · ${exp.location}`:''}{exp.employmentType?` · ${exp.employmentType}`:''}</div>
+              {exp.summary&&<p className="text-sm text-gray-600 mb-1 leading-relaxed">{exp.summary}</p>}
+              {exp.responsibilities?.length>0&&<ul className="list-disc list-inside space-y-1 text-gray-700 text-sm">{exp.responsibilities.map((r,j)=><li key={j} className="leading-relaxed">{r}</li>)}</ul>}
             </div>
           ))}
         </div>
-      )}
-
-      {/* ── Projects ── */}
-      {projects && projects.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-3 pb-1 border-b border-gray-300 uppercase tracking-wide">
-            Projects
-          </h2>
-          {projects.map((proj, idx) => (
-            <div key={idx} className="mb-4">
+      ) : null;
+      case 'projects': return projects?.length ? (
+        <div key="projects" className="mb-6">
+          <h2 className={H}>Projects</h2>
+          {projects.map((p,i)=>(
+            <div key={i} className="mb-4">
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-0.5">
-                <h3 className="font-bold text-gray-900">{proj.name}</h3>
-                {proj.role && <span className="text-sm text-gray-500">({proj.role})</span>}
+                <h3 className="font-bold text-gray-900">{p.name}</h3>
+                {p.role&&<span className="text-sm text-gray-500">({p.role})</span>}
               </div>
-              {proj.technologies && (
-                <div className="text-sm text-gray-600 mb-1">Tech: {proj.technologies}</div>
-              )}
-              {(proj.link || proj.github) && (
-                <div className="text-xs text-gray-500 mb-1 break-all">
-                  {[proj.link, proj.github].filter(Boolean).join('  ·  ')}
-                </div>
-              )}
-              {proj.description && (
-                <p className="text-gray-700 text-sm leading-relaxed">{proj.description}</p>
-              )}
-              {proj.highlights && proj.highlights.length > 0 && (
-                <ul className="list-disc list-inside mt-1 space-y-1 text-gray-700 text-sm">
-                  {proj.highlights.map((h, i) => <li key={i}>{h}</li>)}
-                </ul>
-              )}
+              {p.technologies&&<div className="text-sm text-gray-600 mb-0.5">Tech: {p.technologies}</div>}
+              {(p.link||p.github)&&<div className="text-xs text-gray-400 mb-0.5 break-all">{[p.link,p.github].filter(Boolean).join('  ·  ')}</div>}
+              {p.description&&<p className="text-gray-700 text-sm leading-relaxed">{p.description}</p>}
+              {p.highlights?.length>0&&<ul className="list-disc list-inside mt-1 space-y-1 text-gray-700 text-sm">{p.highlights.map((h,j)=><li key={j}>{h}</li>)}</ul>}
             </div>
           ))}
         </div>
-      )}
-
-      {/* ── Education ── */}
-      {education && education.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-3 pb-1 border-b border-gray-300 uppercase tracking-wide">
-            Education
-          </h2>
-          {education.map((edu, idx) => (
-            <div key={idx} className="mb-3">
+      ) : null;
+      case 'education': return education?.length ? (
+        <div key="education" className="mb-6">
+          <h2 className={H}>Education</h2>
+          {education.map((e,i)=>(
+            <div key={i} className="mb-3">
               <div className="flex justify-between items-start flex-wrap gap-1">
                 <div>
-                  <h3 className="font-bold text-gray-900">
-                    {edu.degree}{edu.field ? ` in ${edu.field}` : ''}
-                  </h3>
-                  <div className="text-gray-700 text-sm">{edu.institution}</div>
-                  {edu.gpa     && <div className="text-xs text-gray-500">Grade: {edu.gpa}</div>}
-                  {edu.details && <div className="text-xs text-gray-500 mt-0.5">{edu.details}</div>}
+                  <h3 className="font-bold text-gray-900">{e.degree}{e.field?` in ${e.field}`:''}</h3>
+                  <div className="text-gray-700 text-sm">{e.institution}</div>
+                  {e.gpa&&<div className="text-xs text-gray-500">Grade: {e.gpa}</div>}
+                  {e.details&&<div className="text-xs text-gray-500 mt-0.5">{e.details}</div>}
                 </div>
-                <span className="text-sm text-gray-500 whitespace-nowrap">{edu.year}</span>
+                <span className="text-sm text-gray-500 whitespace-nowrap">{e.year}</span>
               </div>
             </div>
           ))}
         </div>
-      )}
+      ) : null;
+      case 'skills': return skills?.length ? (
+        <div key="skills" className="mb-6"><h2 className={H}>Skills</h2><div className="text-gray-700 text-sm">{Array.isArray(skills)?skills.join(' · '):skills}</div></div>
+      ) : null;
+      case 'achievements': return achievements?.length ? (
+        <div key="achievements" className="mb-6"><h2 className={H}>Achievements</h2><ul className="space-y-1.5">{achievements.map((a,i)=><li key={i} className={`flex items-start ${B}`}><span className={`font-bold mr-2 shrink-0 ${BL}`}>▸</span><span className="leading-relaxed">{a}</span></li>)}</ul></div>
+      ) : null;
+      case 'languages': return languages?.length ? (
+        <div key="languages" className="mb-6"><h2 className={H}>Languages</h2><div className="text-gray-700 text-sm">{languages.join(' · ')}</div></div>
+      ) : null;
+      case 'certifications': return certifications?.length ? (
+        <div key="certifications" className="mb-6"><h2 className={H}>Certifications</h2>{certifications.map((c,i)=><div key={i} className="mb-1.5 text-sm text-gray-700"><span className="font-medium">{c.name}</span>{c.issuer&&<span className="text-gray-600"> — {c.issuer}</span>}{c.year&&<span className="text-gray-500"> ({c.year})</span>}{c.credentialUrl&&<span className="block text-xs text-gray-400 break-all">{c.credentialUrl}</span>}</div>)}</div>
+      ) : null;
+      default:
+        return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]} headingClass={H} bodyClass={B} bulletClass={BL}/>;
+    }
+  };
 
-      {/* ── Skills ── */}
-      {skills && (Array.isArray(skills) ? skills.length > 0 : skills) && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-2 pb-1 border-b border-gray-300 uppercase tracking-wide">
-            Skills
-          </h2>
-          <div className="text-gray-700 text-sm">
-            {Array.isArray(skills) ? skills.join(' · ') : skills}
+  const activeSections = (sectionsConfig||[]).filter((s)=>s.visible);
+
+  return (
+    <div className="resume-template modern-pro max-w-4xl mx-auto bg-white p-8 shadow-lg font-sans">
+      {/* Header always first */}
+      {personalInfo && (
+        <div className="border-b-2 border-gray-800 pb-4 mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">{personalInfo.fullName}</h1>
+          {personalInfo.title&&<div className="text-base text-gray-600 font-medium mb-2">{personalInfo.title}</div>}
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+            {personalInfo.email&&<span>{personalInfo.email}</span>}
+            {personalInfo.phone&&<span>{personalInfo.phone}</span>}
+            {personalInfo.location&&<span>{personalInfo.location}</span>}
+            {personalInfo.linkedin&&<span className="break-all">{personalInfo.linkedin}</span>}
+            {personalInfo.github&&<span className="break-all">{personalInfo.github}</span>}
+            {personalInfo.portfolio&&<span className="break-all">{personalInfo.portfolio}</span>}
           </div>
         </div>
       )}
-
-      {/* ── Achievements ── */}
-      {achievements && achievements.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-2 pb-1 border-b border-gray-300 uppercase tracking-wide">
-            Achievements
-          </h2>
-          <ul className="space-y-1.5">
-            {achievements.map((a, idx) => (
-              <li key={idx} className="flex items-start text-gray-700 text-sm">
-                <span className="font-bold mr-2 shrink-0 text-gray-400">▸</span>
-                <span className="leading-relaxed">{a}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* ── Certifications ── */}
-      {certifications && certifications.length > 0 && (
-        <div>
-          <h2 className="text-lg font-bold text-gray-900 mb-2 pb-1 border-b border-gray-300 uppercase tracking-wide">
-            Certifications
-          </h2>
-          {certifications.map((cert, idx) => (
-            <div key={idx} className="mb-1.5 text-sm text-gray-700">
-              <span className="font-medium">{cert.name}</span>
-              {cert.issuer && <span className="text-gray-600"> — {cert.issuer}</span>}
-              {cert.year   && <span className="text-gray-500"> ({cert.year})</span>}
-              {cert.credentialUrl && (
-                <span className="text-gray-400 text-xs block break-all">{cert.credentialUrl}</span>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+      {activeSections.filter((s)=>s.key!=='basics').map((sec)=>renderSection(sec))}
     </div>
   );
 };

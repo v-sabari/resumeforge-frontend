@@ -31,18 +31,25 @@ export const truncate = (str, len = 60) =>
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// Safely normalise resume payload from API → internal shape.
-// Handles two input shapes:
-//   A) Raw API response where JSON fields are still strings (direct Spring response)
-//   B) Already-processed fromApiResponse output where JSON fields are already arrays
-// In case B, JSON.parse(array) would throw. We guard with Array.isArray checks.
+/**
+ * Safely normalise resume payload from API → internal shape.
+ *
+ * Handles two input shapes:
+ *   A) Raw API response where JSON fields are still strings (direct Spring response)
+ *   B) Already-processed fromApiResponse output where JSON fields are already arrays/objects
+ *
+ * FIX (re-audit): normaliseResume previously did NOT preserve `sectionsConfig`,
+ * `languages`, or `customSections`. After every save the API response was passed
+ * through normaliseResume, which only returned a fixed set of fields — so all three
+ * were silently dropped from React state. The next render showed no custom sections,
+ * no languages, and the section order reverted to the default. Now all three are
+ * forwarded via `...payload` plus explicit safe-parses so they always survive the
+ * save/load cycle.
+ */
 export const normaliseResume = (payload) => {
   if (!payload) return null;
 
   const safeParse = (value, fallback) => {
-    // FIX 3: If value is already an array/object (fromApiResponse already parsed it),
-    // return it directly. Do NOT try JSON.parse on an already-parsed value —
-    // that causes JSON.parse([...]) to throw, and safeParse silently returns [].
     if (Array.isArray(value)) return value;
     if (value !== null && typeof value === 'object') return value;
     try {
@@ -52,46 +59,49 @@ export const normaliseResume = (payload) => {
     }
   };
 
-  // FIX 4: Only parse personalInfo if it's a raw string. If the payload already
-  // has top-level fullName (from fromApiResponse), use those directly so we don't
-  // overwrite them with empty strings from an already-consumed personalInfo field.
   const personalRaw = payload.personalInfo;
   const personal = (personalRaw && typeof personalRaw === 'string')
     ? safeParse(personalRaw, {})
     : (personalRaw && typeof personalRaw === 'object' ? personalRaw : {});
 
   return {
+    // Spread everything first so no field from the API is silently dropped.
+    // Individual overrides below correct specific fields that need normalisation.
     ...payload,
 
-    // Use personal fields from parsed personalInfo if available,
-    // fall back to already-mapped top-level fields (from fromApiResponse),
-    // then fall back to empty string.
-    fullName: personal.fullName || payload.fullName || '',
-    // FIX: backend stores the title as personalInfo.professionalTitle (or .title).
-    // personal.role was only correct for old data; check all variants.
-    professionalTitle: personal.professionalTitle || personal.title || personal.role || payload.professionalTitle || '',
-    email: personal.email || payload.email || '',
-    phone: personal.phone || payload.phone || '',
-    location: personal.location || payload.location || '',
-    linkedin: personal.linkedin || payload.linkedin || '',
-    github: personal.github || payload.github || '',
+    // Contact fields — prefer parsed personalInfo, then top-level (from fromApiResponse)
+    fullName:          personal.fullName          || payload.fullName          || '',
+    professionalTitle: personal.professionalTitle || personal.title || personal.role
+                       || payload.professionalTitle || '',
+    email:     personal.email     || payload.email     || '',
+    phone:     personal.phone     || payload.phone     || '',
+    location:  personal.location  || payload.location  || '',
+    linkedin:  personal.linkedin  || payload.linkedin  || '',
+    github:    personal.github    || payload.github    || '',
     portfolio: personal.portfolio || payload.portfolio || '',
 
-    skills: safeParse(payload.skills, []),
-    experience: safeParse(payload.experience, []),
-    education: safeParse(payload.education, []),
-    projects: safeParse(payload.projects, []),
+    // Array fields — safe-parse handles both string (raw API) and array (already parsed)
+    skills:         safeParse(payload.skills,         []),
+    experience:     safeParse(payload.experience,     []),
+    education:      safeParse(payload.education,      []),
+    projects:       safeParse(payload.projects,       []),
     certifications: safeParse(payload.certifications, []),
-    // FIX: achievements live at payload.achievements — do NOT read from
-    // customSections first, which is an unrelated JSONB field and always
-    // returns {} here, masking the real achievements array.
-    achievements: safeParse(payload.achievements, []),
+    achievements:   safeParse(payload.achievements,   []),
+
+    // FIX: languages was not preserved — now explicitly normalised
+    languages:      safeParse(payload.languages,      []),
+
+    // FIX: customSections was not preserved — now explicitly normalised
+    // customSections is a keyed object {sectionId: {mode,text,items}}
+    customSections: safeParse(payload.customSections, {}),
+
+    // FIX: sectionsConfig was not preserved — now explicitly normalised
+    // null is a valid value (means "use DEFAULT_SECTIONS_CONFIG")
+    sectionsConfig: safeParse(payload.sectionsConfig, null),
   };
 };
 
-// Individual normalisation helpers — exported for use anywhere that processes
-// raw API entries. Each one ensures every field the builder form reads is present
-// with a safe default, preventing undefined access on form inputs.
+// Individual normalisation helpers
 export const normExp = (e) => ({
   id:             e.id             || uid('exp'),
   company:        e.company        || '',
@@ -126,8 +136,6 @@ export const normProj = (p) => ({
   highlights:  Array.isArray(p.highlights) ? p.highlights : [],
 });
 
-// FIX: normCert now handles both legacy string format and full object format,
-// and includes the credentialUrl field.
 export const normCert = (c) => {
   if (typeof c === 'string') {
     return { id: uid('cert'), name: c, issuer: '', year: '', credentialUrl: '' };
