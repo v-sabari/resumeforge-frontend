@@ -1,6 +1,6 @@
-export { ModernProTemplate }    from './ModernProTemplate';
-export { MinimalATSTemplate }   from './MinimalATSTemplate';
-export { ExecutiveTemplate }    from './ExecutiveTemplate';
-export { FresherTemplate }      from './FresherTemplate';
-export { CreativeATSTemplate }  from './CreativeATSTemplate';
-export { ClassicTemplate }      from './ClassicTemplate';
+export { ModernProTemplate }    from './ModernProTemplate.jsx';
+export { MinimalATSTemplate }   from './MinimalATSTemplate.jsx';
+export { ExecutiveTemplate }    from './ExecutiveTemplate.jsx';
+export { FresherTemplate }      from './FresherTemplate.jsx';
+export { CreativeATSTemplate }  from './CreativeATSTemplate.jsx';
+export { ClassicTemplate }      from './ClassicTemplate.jsx';
