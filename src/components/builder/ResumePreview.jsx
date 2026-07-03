@@ -55,7 +55,7 @@ const A4Viewer = ({ children }) => {
       <div className="relative mx-auto" style={{ width: scaledW, height: scaledH }}>
         <div className="absolute inset-0 bg-white"
              style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25)' }} />
-        <div ref={paperRef} className="absolute top-0 left-0 bg-white"
+        <div ref={paperRef} className="absolute top-0 left-0 bg-white overflow-hidden"
              style={{ width: A4_W, transformOrigin: 'top left', transform: `scale(${scale})` }}>
           {children}
         </div>

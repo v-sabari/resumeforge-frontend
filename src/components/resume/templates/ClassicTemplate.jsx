@@ -97,10 +97,10 @@ export const ClassicTemplate = ({ data }) => {
             {(projects || []).map((p, i) => (
               <div key={i} className="mb-1.5">
                 <div className="flex flex-wrap items-baseline gap-x-2">
-                  <span className="font-semibold">{p.name}</span>
-                  {p.role && <span className="text-gray-500 text-[9px]">({p.role})</span>}
+                  <span className="font-semibold break-words min-w-0">{p.name}</span>
+                  {p.role && <span className="text-gray-500 text-[9px] break-words">({p.role})</span>}
                 </div>
-                {p.technologies && <div className="text-gray-500 text-[9px]">{p.technologies}</div>}
+                {p.technologies && <div className="text-gray-500 text-[9px] break-words">{p.technologies}</div>}
                 {(p.link || p.github) && <div className="text-gray-400 text-[9px] break-all">{[p.link, p.github].filter(Boolean).join(' · ')}</div>}
                 {p.description && <p className="text-gray-700 mt-0.5 break-words">{p.description}</p>}
                 {(p.highlights || []).filter(Boolean).length > 0 && <ul className="mt-0.5 space-y-0.5 pl-1">{(p.highlights || []).filter(Boolean).map((h, j) => <Bul key={j} c={h} />)}</ul>}
@@ -135,7 +135,7 @@ export const ClassicTemplate = ({ data }) => {
         return (
           <div key="certifications"><SH>Certifications</SH>
             {(certifications || []).map((c, i) => (
-              <div key={i} className="break-words"><span className="font-medium">{c.name}</span>{c.issuer && <span className="text-gray-500"> — {c.issuer}</span>}{c.year && <span className="text-gray-400"> ({c.year})</span>}</div>
+              <div key={i} className="break-words"><span className="font-medium break-words">{c.name}</span>{c.issuer && <span className="text-gray-500"> — {c.issuer}</span>}{c.year && <span className="text-gray-400"> ({c.year})</span>}</div>
             ))}
           </div>
         );
@@ -154,15 +154,15 @@ export const ClassicTemplate = ({ data }) => {
   };
 
   return (
-    <div className="font-sans text-[10px] leading-tight text-gray-900 bg-white p-6 space-y-3">
+    <div className="font-sans text-[10px] leading-tight text-gray-900 bg-white p-6 space-y-3 overflow-hidden">
       {/* Header always first */}
       <div className="text-center border-b border-gray-300 pb-3">
-        <div className="text-lg font-bold tracking-wide uppercase">{personalInfo?.fullName || 'Your Name'}</div>
-        {personalInfo?.title && <div className="text-[10px] text-gray-600 mt-0.5">{personalInfo.title}</div>}
+        <div className="text-lg font-bold tracking-wide uppercase break-words">{personalInfo?.fullName || 'Your Name'}</div>
+        {personalInfo?.title && <div className="text-[10px] text-gray-600 mt-0.5 break-words">{personalInfo.title}</div>}
         <div className="flex flex-wrap justify-center gap-x-3 gap-y-0.5 mt-1 text-gray-500">
           {personalInfo?.email && <span className="break-all">{personalInfo.email}</span>}
-          {personalInfo?.phone && <span>{personalInfo.phone}</span>}
-          {personalInfo?.location && <span>{personalInfo.location}</span>}
+          {personalInfo?.phone && <span className="break-words">{personalInfo.phone}</span>}
+          {personalInfo?.location && <span className="break-words">{personalInfo.location}</span>}
         </div>
         <div className="flex flex-wrap justify-center gap-x-3 gap-y-0.5 mt-0.5 text-gray-500">
           {personalInfo?.linkedin && <span className="break-all">{personalInfo.linkedin}</span>}
