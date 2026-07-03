@@ -37,27 +37,22 @@ import {
   ClassicTemplate,
 } from '../src/components/resume/templates/index.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Single shared source for the default sections config — also used by
+// src/utils/constants.js. sectionsCatalog.js deliberately has no
+// import.meta.env (or any other Vite-only) reference, unlike constants.js
+// itself, so it's safe to import here in a plain Node serverless function.
+// This replaces a previously hand-duplicated copy of this array that had
+// to be manually kept in sync with constants.js on every edit.
+import { DEFAULT_SECTIONS_CONFIG } from '../src/utils/sectionsCatalog.js';
 
-/*
- * Inlined default sections config — deliberately NOT imported from
- * src/utils/constants.js, because that file's first line reads
- * `import.meta.env.VITE_APP_NAME`, a Vite-only global that doesn't exist
- * when this file runs as a plain Node serverless function outside Vite's
- * build pipeline. Importing constants.js here would throw at cold start.
- *
- * SYNC NOTE: if you ever reorder/rename/add a STANDARD_SECTIONS entry in
- * src/utils/constants.js, mirror the same change in this array. This is the
- * one remaining manually-synced piece (down from 4 whole files in the old
- * separate render-service).
- */
-const STANDARD_SECTION_KEYS = [
-  'basics', 'summary', 'skills', 'experience', 'projects',
-  'education', 'certifications', 'achievements', 'languages',
-];
-const DEFAULT_SECTIONS_CONFIG = STANDARD_SECTION_KEYS.map((key, i) => ({
-  id: key, type: 'standard', key, label: key, visible: true, order: i,
-}));
+// Self-hosted Inter font (base64 woff2, one entry per weight actually used
+// by the templates). See _pdf-fonts.js for why this is required: headless
+// Chromium via @sparticuz/chromium-min ships with no bundled fonts, so
+// without this, 'Inter' silently fails to resolve on the server and the
+// PDF is laid out with different text metrics than the browser preview.
+import { INTER_FONT_FACES } from './_pdf-fonts.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // A4 @ 96dpi — identical constants to A4_W/A4_H in ResumePreview.jsx, so the
 // printed page is dimensionally the same box the person previewed.
@@ -79,6 +74,19 @@ const TEMPLATE_MAP = {
 // bundle stays small.
 const compiledCss = readFileSync(path.join(__dirname, '_pdf-compiled.css'), 'utf8');
 
+// Build @font-face declarations for every self-hosted Inter weight. Using
+// base64 data URIs (rather than fetching from Google Fonts at render time)
+// means font loading has no external network dependency and can't be
+// slowed down or broken by a font CDN hiccup during PDF generation.
+const fontFaceCss = INTER_FONT_FACES.map(({ weight, base64 }) => `
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: ${weight};
+    font-display: block;
+    src: url(data:font/woff2;charset=utf-8;base64,${base64}) format('woff2');
+  }`).join('\n');
+
 function wrapHtml(bodyHtml) {
   return `<!doctype html>
 <html>
@@ -88,6 +96,7 @@ function wrapHtml(bodyHtml) {
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { margin: 0; padding: 0; background: #fff; }
   body { width: ${A4_W}px; }
+  ${fontFaceCss}
   ${compiledCss}
   h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
   li { break-inside: avoid; page-break-inside: avoid; }
@@ -142,6 +151,7 @@ export default async function handler(req, res) {
     const page = await browser.newPage();
     await page.setViewport({ width: A4_W, height: A4_H });
     await page.setContent(html, { waitUntil: 'networkidle0' });
+    await page.evaluate(() => document.fonts.ready);
 
     const pdfBuffer = await page.pdf({
       width: `${A4_W}px`,

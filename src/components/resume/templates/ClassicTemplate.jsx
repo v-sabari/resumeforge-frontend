@@ -14,14 +14,14 @@ import React from 'react';
  */
 
 const Bul = ({ c }) => (
-  <li className="flex gap-1.5">
+  <li className="flex gap-1.5 break-inside-avoid">
     <span className="text-gray-400 shrink-0 select-none">•</span>
     <span className="text-gray-700 break-words min-w-0">{c}</span>
   </li>
 );
 
 const SH = ({ children }) => (
-  <div className="text-[9px] font-bold uppercase tracking-widest pb-0.5 mb-1.5 border-b border-gray-200 text-gray-500">
+  <div className="text-[9px] font-bold uppercase tracking-widest pb-0.5 mb-1.5 border-b border-gray-200 text-gray-500 break-after-avoid">
     {children}
   </div>
 );
@@ -77,7 +77,7 @@ export const ClassicTemplate = ({ data }) => {
         return (
           <div key="experience"><SH>Work Experience</SH>
             {(experience || []).map((e, i) => (
-              <div key={i} className="mb-2">
+              <div key={i} className="mb-2 break-inside-avoid">
                 <div className="flex justify-between gap-2">
                   <span className="font-semibold break-words min-w-0">{e.position}{e.company ? ` — ${e.company}` : ''}</span>
                   <span className="text-gray-500 shrink-0 whitespace-nowrap">{e.duration}</span>
@@ -95,7 +95,7 @@ export const ClassicTemplate = ({ data }) => {
         return (
           <div key="projects"><SH>Projects</SH>
             {(projects || []).map((p, i) => (
-              <div key={i} className="mb-1.5">
+              <div key={i} className="mb-1.5 break-inside-avoid">
                 <div className="flex flex-wrap items-baseline gap-x-2">
                   <span className="font-semibold break-words min-w-0">{p.name}</span>
                   {p.role && <span className="text-gray-500 text-[9px] break-words">({p.role})</span>}
@@ -114,7 +114,7 @@ export const ClassicTemplate = ({ data }) => {
         return (
           <div key="education"><SH>Education</SH>
             {(education || []).map((e, i) => (
-              <div key={i} className="mb-1.5">
+              <div key={i} className="mb-1.5 break-inside-avoid">
                 <div className="flex justify-between gap-2">
                   <div className="min-w-0">
                     <span className="font-semibold">{e.degree}</span>
@@ -135,7 +135,7 @@ export const ClassicTemplate = ({ data }) => {
         return (
           <div key="certifications"><SH>Certifications</SH>
             {(certifications || []).map((c, i) => (
-              <div key={i} className="break-words"><span className="font-medium break-words">{c.name}</span>{c.issuer && <span className="text-gray-500"> — {c.issuer}</span>}{c.year && <span className="text-gray-400"> ({c.year})</span>}</div>
+              <div key={i} className="break-words break-inside-avoid"><span className="font-medium break-words">{c.name}</span>{c.issuer && <span className="text-gray-500"> — {c.issuer}</span>}{c.year && <span className="text-gray-400"> ({c.year})</span>}</div>
             ))}
           </div>
         );

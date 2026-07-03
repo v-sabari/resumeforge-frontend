@@ -3,10 +3,10 @@ import React from 'react';
 const CustomBlock = ({ label, content }) => {
   if (!content) return null;
   const { mode, text, items } = content;
-  const H = <div className="text-xs font-bold uppercase tracking-[0.18em] text-gray-500 border-b border-gray-200 pb-0.5 mb-2 mt-5">{label}</div>;
+  const H = <div className="text-xs font-bold uppercase tracking-[0.18em] text-gray-500 border-b border-gray-200 pb-0.5 mb-2 mt-5 break-after-avoid">{label}</div>;
   if (mode === 'bullets') {
     if (!items?.filter(Boolean).length) return null;
-    return <>{H}<ul className="space-y-1">{items.filter(Boolean).map((it,i)=><li key={i} className="flex gap-2 text-xs text-gray-600"><span className="text-gray-300 shrink-0 mt-0.5">–</span><span className="break-words min-w-0">{it}</span></li>)}</ul></>;
+    return <>{H}<ul className="space-y-1">{items.filter(Boolean).map((it,i)=><li key={i} className="flex gap-2 text-xs text-gray-600 break-inside-avoid"><span className="text-gray-300 shrink-0 mt-0.5">–</span><span className="break-words min-w-0">{it}</span></li>)}</ul></>;
   }
   if (!text?.trim()) return null;
   return <>{H}<p className="text-xs text-gray-600 leading-relaxed break-words">{text}</p></>;
@@ -15,7 +15,7 @@ const CustomBlock = ({ label, content }) => {
 export const MinimalATSTemplate = ({ data }) => {
   const { sectionsConfig, personalInfo, summary, experience, education, skills, projects, certifications, achievements, languages, customSections } = data;
 
-  const SH = ({ children }) => <div className="text-xs font-bold uppercase tracking-[0.18em] text-gray-500 border-b border-gray-200 pb-0.5 mb-2 mt-5 first:mt-0">{children}</div>;
+  const SH = ({ children }) => <div className="text-xs font-bold uppercase tracking-[0.18em] text-gray-500 border-b border-gray-200 pb-0.5 mb-2 mt-5 first:mt-0 break-after-avoid">{children}</div>;
 
   const renderSection = (sec) => {
     if (sec.type === 'custom') return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]}/>;
@@ -25,14 +25,14 @@ export const MinimalATSTemplate = ({ data }) => {
       case 'experience': return experience?.length ? (
         <React.Fragment key="experience"><SH>Experience</SH>
           <div className="space-y-4">{experience.map((e,i)=>(
-            <div key={i}>
+            <div key={i} className="break-inside-avoid">
               <div className="flex justify-between items-baseline flex-wrap gap-1">
                 <span className="font-semibold text-gray-900 text-sm break-words min-w-0">{e.position}</span>
                 <span className="text-xs text-gray-400 whitespace-nowrap shrink-0">{e.duration}</span>
               </div>
               <div className="text-xs text-gray-500 mb-1 break-words">{e.company}{e.location?`, ${e.location}`:''}{e.employmentType?` · ${e.employmentType}`:''}</div>
               {e.summary&&<p className="text-xs text-gray-600 mb-1 leading-relaxed break-words">{e.summary}</p>}
-              {e.responsibilities?.length>0&&<ul className="space-y-0.5">{e.responsibilities.map((r,j)=><li key={j} className="flex gap-2 text-gray-600 text-xs"><span className="text-gray-300 shrink-0 mt-0.5">–</span><span className="break-words min-w-0">{r}</span></li>)}</ul>}
+              {e.responsibilities?.length>0&&<ul className="space-y-0.5">{e.responsibilities.map((r,j)=><li key={j} className="flex gap-2 text-gray-600 text-xs break-inside-avoid"><span className="text-gray-300 shrink-0 mt-0.5">–</span><span className="break-words min-w-0">{r}</span></li>)}</ul>}
             </div>
           ))}</div>
         </React.Fragment>) : null;
@@ -40,7 +40,7 @@ export const MinimalATSTemplate = ({ data }) => {
       case 'projects': return projects?.length ? (
         <React.Fragment key="projects"><SH>Projects</SH>
           <div className="space-y-3">{projects.map((p,i)=>(
-            <div key={i}>
+            <div key={i} className="break-inside-avoid">
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-0.5">
                 <span className="font-semibold text-gray-900 text-sm break-words min-w-0">{p.name}</span>
                 {p.role&&<span className="text-xs text-gray-400 break-words">({p.role})</span>}
@@ -48,14 +48,14 @@ export const MinimalATSTemplate = ({ data }) => {
               {p.technologies&&<div className="text-xs text-gray-500 mb-0.5 break-words">Tech: {p.technologies}</div>}
               {(p.link||p.github)&&<div className="text-xs text-gray-400 mb-0.5 break-all">{[p.link,p.github].filter(Boolean).join('  ·  ')}</div>}
               {p.description&&<p className="text-xs text-gray-600 leading-relaxed break-words">{p.description}</p>}
-              {p.highlights?.length>0&&<ul className="mt-0.5 space-y-0.5">{p.highlights.map((h,j)=><li key={j} className="flex gap-2 text-xs text-gray-600"><span className="text-gray-300 shrink-0 mt-0.5">–</span><span className="break-words min-w-0">{h}</span></li>)}</ul>}
+              {p.highlights?.length>0&&<ul className="mt-0.5 space-y-0.5">{p.highlights.map((h,j)=><li key={j} className="flex gap-2 text-xs text-gray-600 break-inside-avoid"><span className="text-gray-300 shrink-0 mt-0.5">–</span><span className="break-words min-w-0">{h}</span></li>)}</ul>}
             </div>
           ))}</div>
         </React.Fragment>) : null;
       case 'education': return education?.length ? (
         <React.Fragment key="education"><SH>Education</SH>
           <div className="space-y-2">{education.map((e,i)=>(
-            <div key={i}>
+            <div key={i} className="break-inside-avoid">
               <div className="flex justify-between items-baseline flex-wrap gap-1">
                 <div className="min-w-0"><span className="font-semibold text-gray-900 text-sm break-words">{e.degree}</span>{e.field&&<span className="text-gray-500 text-sm break-words"> in {e.field}</span>}</div>
                 <span className="text-xs text-gray-400 whitespace-nowrap shrink-0">{e.year}</span>
@@ -66,9 +66,9 @@ export const MinimalATSTemplate = ({ data }) => {
             </div>
           ))}</div>
         </React.Fragment>) : null;
-      case 'achievements': return achievements?.length ? (<React.Fragment key="achievements"><SH>Achievements</SH><ul className="space-y-1">{achievements.map((a,i)=><li key={i} className="flex gap-2 text-xs text-gray-600"><span className="text-gray-300 shrink-0 mt-0.5">–</span><span className="break-words min-w-0">{a}</span></li>)}</ul></React.Fragment>) : null;
+      case 'achievements': return achievements?.length ? (<React.Fragment key="achievements"><SH>Achievements</SH><ul className="space-y-1">{achievements.map((a,i)=><li key={i} className="flex gap-2 text-xs text-gray-600 break-inside-avoid"><span className="text-gray-300 shrink-0 mt-0.5">–</span><span className="break-words min-w-0">{a}</span></li>)}</ul></React.Fragment>) : null;
       case 'languages': return languages?.length ? (<React.Fragment key="languages"><SH>Languages</SH><p className="text-xs text-gray-600 break-words">{languages.join('  ·  ')}</p></React.Fragment>) : null;
-      case 'certifications': return certifications?.length ? (<React.Fragment key="certifications"><SH>Certifications</SH><div className="space-y-1">{certifications.map((c,i)=><div key={i} className="text-xs text-gray-600 break-words"><span className="font-medium">{c.name}</span>{c.issuer&&<span className="text-gray-500"> — {c.issuer}</span>}{c.year&&<span className="text-gray-400"> ({c.year})</span>}</div>)}</div></React.Fragment>) : null;
+      case 'certifications': return certifications?.length ? (<React.Fragment key="certifications"><SH>Certifications</SH><div className="space-y-1">{certifications.map((c,i)=><div key={i} className="text-xs text-gray-600 break-words break-inside-avoid"><span className="font-medium">{c.name}</span>{c.issuer&&<span className="text-gray-500"> — {c.issuer}</span>}{c.year&&<span className="text-gray-400"> ({c.year})</span>}</div>)}</div></React.Fragment>) : null;
       default: return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]}/>;
     }
   };
