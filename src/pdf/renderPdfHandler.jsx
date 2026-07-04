@@ -1,22 +1,36 @@
 /**
- * api/render-pdf.js
+ * src/pdf/renderPdfHandler.jsx
  *
- * Vercel serverless function. Replaces the standalone `resume-render-service`
- * (Node/Playwright, deployed separately) so PDF rendering lives inside this
- * same frontend repo/deployment instead of a third repo.
+ * THIS is the real, editable source for the PDF render endpoint.
+ * It is NOT deployed directly — api/render-pdf.js is a GENERATED file,
+ * produced from this one by `npm run build:api` (esbuild), which compiles
+ * away all JSX syntax before Vercel ever sees it.
  *
- * Why this is safe to co-locate here: it imports the EXACT SAME
- * `buildTransformed` function and the EXACT SAME 6 template components used
- * by the live browser preview (src/components/builder/ResumePreview.jsx).
- * There is no copy of these files anymore — this function and the preview
- * both import directly from src/, so they can never drift apart.
+ * WHY THIS FILE MOVED OUT OF api/:
+ * Root cause of the July 2026 export outage: Vercel's Node Functions use
+ * Node File Trace to copy an entrypoint's imported files as-is into the
+ * deployed function — it does NOT transpile .jsx syntax (only .ts/.tsx get
+ * any build-time transform). When api/render-pdf.js imported
+ * ModernProTemplate.jsx etc. directly, Node File Trace copied the raw,
+ * untranspiled .jsx file into the deployed function, and Node's native ESM
+ * loader crashed at runtime with:
+ *   TypeError [ERR_UNKNOWN_FILE_EXTENSION]: Unknown file extension ".jsx"
+ * because Node has no built-in rule for parsing ".jsx" — ever, regardless
+ * of Node version. Every export attempt failed 100% of the time.
  *
- * Auth: this endpoint is public at the URL level (Vercel serverless
- * functions have no "private service" mode), so it's protected by a shared
- * secret header instead. Only the Java backend, which holds the same
- * secret via an env var, can successfully call it.
+ * THE FIX: esbuild now bundles this file — and everything it imports,
+ * including all 6 .jsx templates — into a single, dependency-free (except
+ * declared node_modules externals) plain-JavaScript file at api/render-pdf.js
+ * as part of the Vercel build step, before Node File Trace ever runs. By the
+ * time Vercel packages the function, zero .jsx files remain in the import
+ * graph — the JSX was already compiled away by esbuild.
  *
- * Called by: ExportService.java -> POST https://<your-vercel-domain>/api/render-pdf
+ * This is the exact same technique the original standalone render-service
+ * used successfully (esbuild --loader:.jsx=jsx --jsx=automatic), just now
+ * run as part of this repo's own build instead of a separate service's.
+ *
+ * DO NOT edit api/render-pdf.js directly — it is regenerated on every build
+ * and any manual edits there will be silently overwritten and lost.
  */
 
 import { readFileSync } from 'node:fs';
@@ -27,7 +41,7 @@ import ReactDOMServer from 'react-dom/server';
 import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium-min';
 
-import { buildTransformed } from '../src/utils/transformResume.js';
+import { buildTransformed } from '../utils/transformResume.js';
 import {
   ModernProTemplate,
   MinimalATSTemplate,
@@ -35,24 +49,33 @@ import {
   FresherTemplate,
   CreativeATSTemplate,
   ClassicTemplate,
-} from '../src/components/resume/templates/index.js';
+} from '../components/resume/templates/index.js';
 
-// Single shared source for the default sections config — also used by
-// src/utils/constants.js. sectionsCatalog.js deliberately has no
-// import.meta.env (or any other Vite-only) reference, unlike constants.js
-// itself, so it's safe to import here in a plain Node serverless function.
-// This replaces a previously hand-duplicated copy of this array that had
-// to be manually kept in sync with constants.js on every edit.
-import { DEFAULT_SECTIONS_CONFIG } from '../src/utils/sectionsCatalog.js';
-
-// Self-hosted Inter font (base64 woff2, one entry per weight actually used
-// by the templates). See _pdf-fonts.js for why this is required: headless
-// Chromium via @sparticuz/chromium-min ships with no bundled fonts, so
-// without this, 'Inter' silently fails to resolve on the server and the
-// PDF is laid out with different text metrics than the browser preview.
-import { INTER_FONT_FACES } from './_pdf-fonts.js';
-
+// NOTE: __dirname here resolves relative to the FINAL BUNDLED file's
+// location at runtime (api/render-pdf.js), not this source file's location
+// — esbuild preserves import.meta.url semantics correctly through bundling,
+// so this correctly points at api/ where _pdf-compiled.css also lives.
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+/*
+ * Inlined default sections config — deliberately NOT imported from
+ * src/utils/constants.js, because that file's first line reads
+ * `import.meta.env.VITE_APP_NAME`, a Vite-only global that doesn't exist
+ * when this file runs as a plain Node serverless function outside Vite's
+ * build pipeline. Importing constants.js here would throw at cold start.
+ *
+ * SYNC NOTE: if you ever reorder/rename/add a STANDARD_SECTIONS entry in
+ * src/utils/constants.js, mirror the same change in this array. This is the
+ * one remaining manually-synced piece (down from 4 whole files in the old
+ * separate render-service).
+ */
+const STANDARD_SECTION_KEYS = [
+  'basics', 'summary', 'skills', 'experience', 'projects',
+  'education', 'certifications', 'achievements', 'languages',
+];
+const DEFAULT_SECTIONS_CONFIG = STANDARD_SECTION_KEYS.map((key, i) => ({
+  id: key, type: 'standard', key, label: key, visible: true, order: i,
+}));
 
 // A4 @ 96dpi — identical constants to A4_W/A4_H in ResumePreview.jsx, so the
 // printed page is dimensionally the same box the person previewed.
@@ -74,19 +97,6 @@ const TEMPLATE_MAP = {
 // bundle stays small.
 const compiledCss = readFileSync(path.join(__dirname, '_pdf-compiled.css'), 'utf8');
 
-// Build @font-face declarations for every self-hosted Inter weight. Using
-// base64 data URIs (rather than fetching from Google Fonts at render time)
-// means font loading has no external network dependency and can't be
-// slowed down or broken by a font CDN hiccup during PDF generation.
-const fontFaceCss = INTER_FONT_FACES.map(({ weight, base64 }) => `
-  @font-face {
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: ${weight};
-    font-display: block;
-    src: url(data:font/woff2;charset=utf-8;base64,${base64}) format('woff2');
-  }`).join('\n');
-
 function wrapHtml(bodyHtml) {
   return `<!doctype html>
 <html>
@@ -96,7 +106,6 @@ function wrapHtml(bodyHtml) {
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { margin: 0; padding: 0; background: #fff; }
   body { width: ${A4_W}px; }
-  ${fontFaceCss}
   ${compiledCss}
   h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
   li { break-inside: avoid; page-break-inside: avoid; }
@@ -113,7 +122,7 @@ async function getBrowser() {
       args: chromium.args,
       defaultViewport: { width: A4_W, height: A4_H },
       executablePath: await chromium.executablePath(
-        process.env.CHROMIUM_PACK_URL // see README note below for how to set this
+        process.env.CHROMIUM_PACK_URL // see README note for how to set this
       ),
       headless: chromium.headless,
     });
@@ -151,7 +160,6 @@ export default async function handler(req, res) {
     const page = await browser.newPage();
     await page.setViewport({ width: A4_W, height: A4_H });
     await page.setContent(html, { waitUntil: 'networkidle0' });
-    await page.evaluate(() => document.fonts.ready);
 
     const pdfBuffer = await page.pdf({
       width: `${A4_W}px`,

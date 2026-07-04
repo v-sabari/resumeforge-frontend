@@ -27,3 +27,9 @@ dist-ssr
 .env
 .env.local
 .env.production
+
+# Generated at build time by `npm run build:api` / `npm run build:pdf-css`
+# (see src/pdf/renderPdfHandler.jsx for the real, editable source).
+# Never edit these directly — they are overwritten on every build.
+api/render-pdf.js
+api/_pdf-compiled.css
