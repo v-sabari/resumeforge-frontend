@@ -64,7 +64,7 @@ export const CreativeATSTemplate = ({ data }) => {
   const activeSections = (sectionsConfig||[]).filter((s)=>s.visible);
 
   return (
-    <div className="resume-template creative-ats max-w-4xl mx-auto bg-white shadow-lg font-sans flex overflow-hidden">
+    <div className="resume-template creative-ats max-w-4xl mx-auto bg-white font-sans flex overflow-hidden">
       <div className="w-2 bg-gradient-to-b from-blue-500 to-blue-700 shrink-0"></div>
       {/* Vertical padding lives outside this component — see
           utils/pageLayout.js; it is re-applied on every page by the preview

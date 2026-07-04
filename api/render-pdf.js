@@ -205,7 +205,7 @@ var ModernProTemplate = ({ data }) => {
     }
   };
   const activeSections = (sectionsConfig || []).filter((s) => s.visible);
-  return /* @__PURE__ */ jsxs("div", { className: "resume-template modern-pro max-w-4xl mx-auto bg-white p-8 shadow-lg font-sans overflow-hidden", children: [
+  return /* @__PURE__ */ jsxs("div", { className: "resume-template modern-pro max-w-4xl mx-auto bg-white p-8 -lg font-sans overflow-hidden", children: [
     personalInfo && /* @__PURE__ */ jsxs("div", { className: "border-b-2 border-gray-800 pb-4 mb-6", children: [
       /* @__PURE__ */ jsx("h1", { className: "text-3xl font-bold text-gray-900 mb-1 break-words", children: personalInfo.fullName }),
       personalInfo.title && /* @__PURE__ */ jsx("div", { className: "text-base text-gray-600 font-medium mb-2 break-words", children: personalInfo.title }),
@@ -363,7 +363,7 @@ var MinimalATSTemplate = ({ data }) => {
     }
   };
   const activeSections = (sectionsConfig || []).filter((s) => s.visible);
-  return /* @__PURE__ */ jsxs2("div", { className: "resume-template minimal-ats max-w-4xl mx-auto bg-white px-10 py-8 shadow-lg font-sans text-sm text-gray-800 overflow-hidden", children: [
+  return /* @__PURE__ */ jsxs2("div", { className: "resume-template minimal-ats max-w-4xl mx-auto bg-white px-10 py-8  font-sans text-sm text-gray-800 overflow-hidden", children: [
     personalInfo && /* @__PURE__ */ jsxs2("div", { className: "mb-5", children: [
       /* @__PURE__ */ jsx2("h1", { className: "text-2xl font-light tracking-tight text-gray-900 mb-0.5 break-words", children: personalInfo.fullName }),
       personalInfo.title && /* @__PURE__ */ jsx2("div", { className: "text-sm text-gray-600 mb-1.5 break-words", children: personalInfo.title }),
@@ -518,7 +518,7 @@ var ExecutiveTemplate = ({ data }) => {
     }
   };
   const activeSections = (sectionsConfig || []).filter((s) => s.visible);
-  return /* @__PURE__ */ jsxs3("div", { className: "resume-template executive max-w-4xl mx-auto bg-white p-8 shadow-lg font-sans overflow-hidden", children: [
+  return /* @__PURE__ */ jsxs3("div", { className: "resume-template executive max-w-4xl mx-auto bg-white p-8  font-sans overflow-hidden", children: [
     personalInfo && /* @__PURE__ */ jsxs3("div", { className: "text-center border-b-2 border-gray-800 pb-5 mb-6", children: [
       /* @__PURE__ */ jsx3("h1", { className: "text-3xl font-bold tracking-wide uppercase text-gray-900 mb-1 break-words", children: personalInfo.fullName }),
       personalInfo.title && /* @__PURE__ */ jsx3("div", { className: "text-sm font-medium text-gray-600 uppercase tracking-widest mb-2 break-words", children: personalInfo.title }),
@@ -673,7 +673,7 @@ var FresherTemplate = ({ data }) => {
     }
   };
   const activeSections = (sectionsConfig || []).filter((s) => s.visible);
-  return /* @__PURE__ */ jsxs4("div", { className: "resume-template fresher max-w-4xl mx-auto bg-white p-8 shadow-lg font-sans overflow-hidden", children: [
+  return /* @__PURE__ */ jsxs4("div", { className: "resume-template fresher max-w-4xl mx-auto bg-white p-8  font-sans overflow-hidden", children: [
     personalInfo && /* @__PURE__ */ jsxs4("div", { className: "text-center mb-6 pb-4 border-b border-gray-200", children: [
       /* @__PURE__ */ jsx4("h1", { className: "text-2xl font-bold text-gray-900 mb-1 break-words", children: personalInfo.fullName }),
       personalInfo.title && /* @__PURE__ */ jsx4("div", { className: "text-sm text-blue-600 font-medium mb-2 break-words", children: personalInfo.title }),
@@ -842,7 +842,7 @@ var CreativeATSTemplate = ({ data }) => {
     }
   };
   const activeSections = (sectionsConfig || []).filter((s) => s.visible);
-  return /* @__PURE__ */ jsxs5("div", { className: "resume-template creative-ats max-w-4xl mx-auto bg-white shadow-lg font-sans flex overflow-hidden", children: [
+  return /* @__PURE__ */ jsxs5("div", { className: "resume-template creative-ats max-w-4xl mx-auto bg-white  font-sans flex overflow-hidden", children: [
     /* @__PURE__ */ jsx5("div", { className: "w-2 bg-gradient-to-b from-blue-500 to-blue-700 shrink-0" }),
     /* @__PURE__ */ jsxs5("div", { className: "flex-1 p-8 min-w-0", children: [
       personalInfo && /* @__PURE__ */ jsxs5("div", { className: "mb-6", children: [

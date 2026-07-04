@@ -64,7 +64,7 @@ export const ExecutiveTemplate = ({ data }) => {
   // Vertical padding lives outside this component — see utils/pageLayout.js;
   // it is re-applied on every page by the preview and the PDF export.
   return (
-    <div className="resume-template executive max-w-4xl mx-auto bg-white px-8 shadow-lg font-sans overflow-hidden">
+    <div className="resume-template executive max-w-4xl mx-auto bg-white px-8 font-sans overflow-hidden">
       {personalInfo&&(
         <div className="text-center border-b-2 border-gray-800 pb-5 mb-6">
           <h1 className="text-3xl font-bold tracking-wide uppercase text-gray-900 mb-1 break-words">{personalInfo.fullName}</h1>

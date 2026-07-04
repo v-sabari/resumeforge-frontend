@@ -126,7 +126,7 @@ export const ModernProTemplate = ({ data }) => {
   // padding stays here since it's constant down the whole page and needs no
   // special per-page handling.
   return (
-    <div className="resume-template modern-pro max-w-4xl mx-auto bg-white px-8 shadow-lg font-sans overflow-hidden">
+    <div className="resume-template modern-pro max-w-4xl mx-auto bg-white px-8 font-sans overflow-hidden">
       {/* Header always first */}
       {personalInfo && (
         <div className="border-b-2 border-gray-800 pb-4 mb-6">
