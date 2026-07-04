@@ -63,8 +63,10 @@ export const FresherTemplate = ({ data }) => {
 
   const activeSections = (sectionsConfig||[]).filter((s)=>s.visible);
 
+  // Vertical padding lives outside this component — see utils/pageLayout.js;
+  // it is re-applied on every page by the preview and the PDF export.
   return (
-    <div className="resume-template fresher max-w-4xl mx-auto bg-white p-8 shadow-lg font-sans overflow-hidden">
+    <div className="resume-template fresher max-w-4xl mx-auto bg-white px-8 shadow-lg font-sans overflow-hidden">
       {personalInfo&&(
         <div className="text-center mb-6 pb-4 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-900 mb-1 break-words">{personalInfo.fullName}</h1>

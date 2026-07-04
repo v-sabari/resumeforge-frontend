@@ -153,8 +153,10 @@ export const ClassicTemplate = ({ data }) => {
     }
   };
 
+  // Vertical padding lives outside this component — see utils/pageLayout.js;
+  // it is re-applied on every page by the preview and the PDF export.
   return (
-    <div className="font-sans text-[10px] leading-tight text-gray-900 bg-white p-6 space-y-3 overflow-hidden">
+    <div className="resume-template classic font-sans text-[10px] leading-tight text-gray-900 bg-white px-6 space-y-3 overflow-hidden">
       {/* Header always first */}
       <div className="text-center border-b border-gray-300 pb-3">
         <div className="text-lg font-bold tracking-wide uppercase break-words">{personalInfo?.fullName || 'Your Name'}</div>

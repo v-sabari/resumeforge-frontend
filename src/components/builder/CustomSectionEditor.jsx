@@ -1,6 +1,4 @@
-import { useState } from 'react';
-
-const fromLines = (v = '') => v.split('\n').map((s) => s.trim()).filter(Boolean);
+import ListField from './ListField';
 
 export const CustomSectionEditor = ({ section, content, onChange }) => {
   // content shape: { mode: 'text'|'bullets', text: '', items: [] }
@@ -43,11 +41,11 @@ export const CustomSectionEditor = ({ section, content, onChange }) => {
         />
       ) : (
         <div className="space-y-2">
-          <textarea
+          <ListField
             className="input min-h-[100px] resize-none text-sm"
             placeholder="One bullet per line…"
-            value={items.join('\n')}
-            onChange={(e) => onChange({ ...content, mode: 'bullets', items: fromLines(e.target.value) })}
+            value={items}
+            onChange={(v) => onChange({ ...content, mode: 'bullets', items: v })}
           />
           <p className="text-xs text-ink-400">Each line becomes a separate bullet point in the preview and export.</p>
         </div>

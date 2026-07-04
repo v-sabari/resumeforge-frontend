@@ -11,6 +11,7 @@ import { AIActionPanel } from '../components/builder/AIActionPanel';
 import { ExportPanel } from '../components/builder/ExportPanel';
 import { SectionsManager } from '../components/builder/SectionsManager';
 import { CustomSectionEditor } from '../components/builder/CustomSectionEditor';
+import ListField from '../components/builder/ListField';
 import { Icon } from '../components/icons/Icon';
 import {
   defaultResume,
@@ -20,7 +21,6 @@ import {
 import { formatApiError, normaliseResume, uid } from '../utils/helpers';
 
 /* ── helpers ──────────────────────────────────────────────────────── */
-const fromLines = (v = '') => v.split('\n').map((s) => s.trim()).filter(Boolean);
 const jumpTo = (id) =>
   document.getElementById(`section-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -137,11 +137,6 @@ export const ResumeBuilderPage = () => {
     (cfg) => setResume((p) => ({ ...p, sectionsConfig: cfg })),
     []
   );
-
-  /* ── Derived text values ────────────────────────────────────────── */
-  const skillsText       = useMemo(() => (resume.skills       || []).join(', '),  [resume.skills]);
-  const achievementsText = useMemo(() => (resume.achievements || []).join('\n'),   [resume.achievements]);
-  const languagesText    = useMemo(() => (resume.languages    || []).join('\n'),   [resume.languages]);
 
   /* ── Load resume ──────────────────────────────────────────────── */
   useEffect(() => {
@@ -295,10 +290,10 @@ export const ResumeBuilderPage = () => {
       /* Skills */
       case 'skills': return (
         <SectionCard key={sec.id} id={`section-${sec.id}`} eyebrow="Skills" title={sec.label}
-          description="Comma-separated. Tools, frameworks, methodologies.">
-          <textarea className="input min-h-[80px] resize-none" value={skillsText}
-            onChange={(e) => top('skills', e.target.value.split(',').map((s) => s.trim()).filter(Boolean))}
-            placeholder="React, Node.js, PostgreSQL, Figma, Agile…" />
+          description="One skill per line. Tools, frameworks, methodologies.">
+          <ListField className="input min-h-[100px] resize-none" value={resume.skills}
+            onChange={(v) => top('skills', v)}
+            placeholder={"React\nNode.js\nPostgreSQL\nFigma\nAgile"} />
         </SectionCard>
       );
 
@@ -329,9 +324,9 @@ export const ResumeBuilderPage = () => {
                 <textarea className="input min-h-[72px] resize-none text-sm" value={exp.summary||''}
                   onChange={(e)=>arr('experience',exp.id,'summary',e.target.value)} placeholder="Responsibility scope in 1–2 lines."/></div>
               <div><label className="label">Achievement bullets (one per line)</label>
-                <textarea className="input min-h-[120px] resize-none text-sm"
-                  value={(exp.bullets||[]).join('\n')}
-                  onChange={(e)=>arr('experience',exp.id,'bullets',fromLines(e.target.value))}
+                <ListField className="input min-h-[120px] resize-none text-sm"
+                  value={exp.bullets}
+                  onChange={(v)=>arr('experience',exp.id,'bullets',v)}
                   placeholder={"Built responsive UI for 20+ pages\nImproved page speed by 35%\nIntegrated REST APIs"}/>
                 <p className="mt-1 text-xs text-ink-400">Action + result + metric per bullet.</p></div>
             </FieldGroup>
@@ -366,9 +361,9 @@ export const ResumeBuilderPage = () => {
                   onChange={(e)=>arr('projects',proj.id,'description',e.target.value)}
                   placeholder="What it does, your contribution, and why it matters."/></div>
               <div><label className="label">Key highlights (one per line)</label>
-                <textarea className="input min-h-[100px] resize-none text-sm"
-                  value={(proj.highlights||[]).join('\n')}
-                  onChange={(e)=>arr('projects',proj.id,'highlights',fromLines(e.target.value))}
+                <ListField className="input min-h-[100px] resize-none text-sm"
+                  value={proj.highlights}
+                  onChange={(v)=>arr('projects',proj.id,'highlights',v)}
                   placeholder={"Implemented JWT auth\nBuilt ATS scoring workflow\nDeployed on AWS"}/></div>
             </FieldGroup>
           ))}
@@ -441,9 +436,9 @@ export const ResumeBuilderPage = () => {
       /* Achievements */
       case 'achievements': return (
         <SectionCard key={sec.id} id={`section-${sec.id}`} eyebrow="Achievements" title={sec.label}
-          description="Awards, recognition, and notable accomplishments.">
-          <textarea className="input min-h-[80px] resize-none" value={achievementsText}
-            onChange={(e) => top('achievements', fromLines(e.target.value))}
+          description="One achievement per line. Awards, recognition, and notable accomplishments.">
+          <ListField className="input min-h-[100px] resize-none" value={resume.achievements}
+            onChange={(v) => top('achievements', v)}
             placeholder={"Won company hackathon 2024\nLed migration reducing costs by 40%"} />
         </SectionCard>
       );
@@ -451,9 +446,9 @@ export const ResumeBuilderPage = () => {
       /* Languages */
       case 'languages': return (
         <SectionCard key={sec.id} id={`section-${sec.id}`} eyebrow="Languages" title={sec.label}
-          description="Languages and proficiency levels.">
-          <textarea className="input min-h-[80px] resize-none" value={languagesText}
-            onChange={(e) => top('languages', fromLines(e.target.value))}
+          description="One language per line. Include proficiency levels.">
+          <ListField className="input min-h-[80px] resize-none" value={resume.languages}
+            onChange={(v) => top('languages', v)}
             placeholder={"English — Fluent\nTamil — Native\nHindi — Intermediate"} />
         </SectionCard>
       );

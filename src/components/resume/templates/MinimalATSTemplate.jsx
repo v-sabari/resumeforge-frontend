@@ -75,8 +75,10 @@ export const MinimalATSTemplate = ({ data }) => {
 
   const activeSections = (sectionsConfig||[]).filter((s)=>s.visible);
 
+  // Vertical padding lives outside this component — see utils/pageLayout.js;
+  // it is re-applied on every page by the preview and the PDF export.
   return (
-    <div className="resume-template minimal-ats max-w-4xl mx-auto bg-white px-10 py-8 shadow-lg font-sans text-sm text-gray-800 overflow-hidden">
+    <div className="resume-template minimal-ats max-w-4xl mx-auto bg-white px-10 shadow-lg font-sans text-sm text-gray-800 overflow-hidden">
       {personalInfo&&(
         <div className="mb-5">
           <h1 className="text-2xl font-light tracking-tight text-gray-900 mb-0.5 break-words">{personalInfo.fullName}</h1>

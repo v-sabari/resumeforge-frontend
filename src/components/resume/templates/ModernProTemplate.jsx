@@ -119,8 +119,14 @@ export const ModernProTemplate = ({ data }) => {
 
   const activeSections = (sectionsConfig||[]).filter((s)=>s.visible);
 
+  // Vertical padding intentionally lives outside this component now — both
+  // the live preview and the PDF export re-apply this template's top/bottom
+  // margin on EVERY page (see utils/pageLayout.js), which a one-time padding
+  // class here cannot do once content spans more than one page. Horizontal
+  // padding stays here since it's constant down the whole page and needs no
+  // special per-page handling.
   return (
-    <div className="resume-template modern-pro max-w-4xl mx-auto bg-white p-8 shadow-lg font-sans overflow-hidden">
+    <div className="resume-template modern-pro max-w-4xl mx-auto bg-white px-8 shadow-lg font-sans overflow-hidden">
       {/* Header always first */}
       {personalInfo && (
         <div className="border-b-2 border-gray-800 pb-4 mb-6">

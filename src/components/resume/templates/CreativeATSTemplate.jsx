@@ -66,7 +66,12 @@ export const CreativeATSTemplate = ({ data }) => {
   return (
     <div className="resume-template creative-ats max-w-4xl mx-auto bg-white shadow-lg font-sans flex overflow-hidden">
       <div className="w-2 bg-gradient-to-b from-blue-500 to-blue-700 shrink-0"></div>
-      <div className="flex-1 p-8 min-w-0">
+      {/* Vertical padding lives outside this component — see
+          utils/pageLayout.js; it is re-applied on every page by the preview
+          and the PDF export, around the whole flex row (accent bar +
+          content) so the bar keeps bleeding to the left page edge while
+          text still gets a top/bottom margin like every other template. */}
+      <div className="flex-1 px-8 min-w-0">
         {personalInfo&&(
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-1 break-words">{personalInfo.fullName}</h1>

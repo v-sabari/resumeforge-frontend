@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { RESUME_TEMPLATES, DEFAULT_SECTIONS_CONFIG } from '../../utils/constants';
 import { buildTransformed } from '../../utils/transformResume';
+import { A4_W, A4_H, getPageMargin } from '../../utils/pageLayout';
 import {
   ModernProTemplate,
   MinimalATSTemplate,
@@ -10,39 +11,51 @@ import {
   ClassicTemplate,
 } from '../resume/templates';
 
-/* ─── A4 constants ─────────────────────────────────────────────── */
-const A4_W = 794;
-const A4_H = 1123;
+const PAGE_GAP = 16; // px between simulated sheets, at true (unscaled) size
 
-/* ─── A4 page-wise viewer ─────────────────────────────────────── */
-const A4Viewer = ({ children }) => {
-  const shellRef = useRef(null);
-  const paperRef = useRef(null);
-  const [scale,  setScale]  = useState(1);
-  const [rawH,   setRawH]   = useState(A4_H);
+/* ─── A4 page-wise viewer ─────────────────────────────────────────
+ * Renders the resume as one or more true, margin-accurate A4 sheets
+ * instead of one continuous strip with a line drawn over it.
+ *
+ * How it works: the content is rendered once, off-screen, purely to
+ * measure its total flowed height. It is then rendered again inside each
+ * page "window" — a fixed-height, clipped box sized to that template's
+ * visible content area (A4 height minus its own top/bottom margin) —
+ * shifted up by however much of the content earlier pages already showed.
+ * This mirrors what a print engine actually does: one continuous flow,
+ * sliced into equal, margined pages — so every page (not just the first
+ * and last) gets a proper top and bottom margin, matching the exported PDF.
+ * ────────────────────────────────────────────────────────────────── */
+const A4Viewer = ({ children, margin }) => {
+  const shellRef   = useRef(null);
+  const measureRef = useRef(null);
+  const [scale, setScale] = useState(1);
+  const [rawH,  setRawH]  = useState(A4_H);
+
+  const { top: mTop, bottom: mBottom } = margin;
+  const visibleH = Math.max(1, A4_H - mTop - mBottom);
 
   useEffect(() => {
-    const shell = shellRef.current;
-    const paper = paperRef.current;
-    if (!shell || !paper) return;
+    const shell   = shellRef.current;
+    const measure = measureRef.current;
+    if (!shell || !measure) return;
     const calc = () => {
       const aw = shell.clientWidth - 32;
       if (aw <= 0) return;
-      const s = aw / A4_W;
-      setScale(s);
-      setRawH(paper.scrollHeight);
+      setScale(aw / A4_W);
+      setRawH(measure.scrollHeight);
     };
     const ro1 = new ResizeObserver(calc);
     const ro2 = new ResizeObserver(calc);
     ro1.observe(shell);
-    ro2.observe(paper);
+    ro2.observe(measure);
     calc();
     return () => { ro1.disconnect(); ro2.disconnect(); };
   }, []);
 
-  const scaledW  = A4_W * scale;
-  const scaledH  = rawH  * scale;
-  const numPages = Math.max(1, Math.ceil(rawH / A4_H));
+  const numPages   = Math.max(1, Math.ceil(rawH / visibleH));
+  const scaledW    = A4_W * scale;
+  const scaledPageH = A4_H * scale;
 
   return (
     <div ref={shellRef} className="w-full rounded-xl" style={{ background: '#475569', padding: '16px' }}>
@@ -52,26 +65,37 @@ const A4Viewer = ({ children }) => {
           {numPages} {numPages === 1 ? 'page' : 'pages'}
         </span>
       </div>
-      <div className="relative mx-auto" style={{ width: scaledW, height: scaledH }}>
-        <div className="absolute inset-0 bg-white"
-             style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25)' }} />
-        <div ref={paperRef} className="absolute top-0 left-0 bg-white overflow-hidden"
-             style={{ width: A4_W, transformOrigin: 'top left', transform: `scale(${scale})` }}>
-          {children}
-        </div>
-        {numPages > 1 && Array.from({ length: numPages - 1 }).map((_, i) => {
-          const y = (i + 1) * A4_H * scale;
-          return (
-            <div key={i} className="absolute inset-x-0 flex items-center"
-                 style={{ top: y, zIndex: 30, pointerEvents: 'none' }}>
-              <div className="flex-1 border-t-2 border-dashed border-blue-400/70" />
-              <span className="mx-2 rounded-full bg-blue-600 px-2.5 py-0.5 text-[9px] font-bold text-white whitespace-nowrap shadow">
-                ↓ Page {i + 2}
-              </span>
-              <div className="flex-1 border-t-2 border-dashed border-blue-400/70" />
+
+      {/* Hidden measurement copy — full, unsliced content at true width.
+          Never shown; exists only so we know the total flowed height. */}
+      <div style={{ position: 'absolute', top: 0, left: -99999, width: A4_W, visibility: 'hidden' }} aria-hidden="true">
+        <div ref={measureRef}>{children}</div>
+      </div>
+
+      <div className="mx-auto flex flex-col items-center" style={{ width: scaledW, gap: PAGE_GAP * scale }}>
+        {Array.from({ length: numPages }).map((_, i) => (
+          <div key={i} className="relative overflow-hidden bg-white shrink-0"
+               style={{ width: scaledW, height: scaledPageH,
+                        boxShadow: '0 8px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25)' }}>
+            {/* Everything below is laid out in TRUE A4 pixel units, then
+                scaled down once as a whole — keeps the margin/offset math
+                simple and exactly mirrors how the single-page version used
+                to scale itself. */}
+            <div style={{ width: A4_W, height: A4_H, transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+              {/* Top margin — always blank, exactly like a print margin */}
+              <div style={{ height: mTop }} />
+              {/* This page's visible slice of the continuous content */}
+              <div style={{ height: visibleH, overflow: 'hidden' }}>
+                <div style={{ marginTop: -(i * visibleH) }}>{children}</div>
+              </div>
+              {/* Bottom margin — always blank, exactly like a print margin */}
+              <div style={{ height: mBottom }} />
             </div>
-          );
-        })}
+            <span className="absolute bottom-1.5 right-2.5 text-[9px] font-semibold text-slate-300 select-none">
+              {i + 1} / {numPages}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -124,7 +148,7 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange })
           </button>
         ))}
       </div>
-      <A4Viewer>{content}</A4Viewer>
+      <A4Viewer margin={getPageMargin(active)}>{content}</A4Viewer>
       <p className="text-center text-[10px] text-slate-400 select-none tracking-wide">
         A4 · 210 × 297 mm · Live preview
       </p>

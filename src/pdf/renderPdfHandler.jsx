@@ -42,6 +42,7 @@ import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium-min';
 
 import { buildTransformed } from '../utils/transformResume.js';
+import { A4_W, A4_H, getPageMargin } from '../utils/pageLayout.js';
 import {
   ModernProTemplate,
   MinimalATSTemplate,
@@ -76,11 +77,6 @@ const STANDARD_SECTION_KEYS = [
 const DEFAULT_SECTIONS_CONFIG = STANDARD_SECTION_KEYS.map((key, i) => ({
   id: key, type: 'standard', key, label: key, visible: true, order: i,
 }));
-
-// A4 @ 96dpi — identical constants to A4_W/A4_H in ResumePreview.jsx, so the
-// printed page is dimensionally the same box the person previewed.
-const A4_W = 794;
-const A4_H = 1123;
 
 const TEMPLATE_MAP = {
   modern: ModernProTemplate,
@@ -149,7 +145,13 @@ export default async function handler(req, res) {
       : DEFAULT_SECTIONS_CONFIG;
 
     const data = buildTransformed(resume, sectionsConfig);
-    const Template = TEMPLATE_MAP[template] || TEMPLATE_MAP.modern;
+    // Resolve to the SAME key used to look up the margin config, so a
+    // resume with an unknown/missing template falls back to 'modern' in
+    // both the rendered markup and the margin applied to it — never one
+    // without the other.
+    const templateKey = TEMPLATE_MAP[template] ? template : 'modern';
+    const Template = TEMPLATE_MAP[templateKey];
+    const { top: marginTop, bottom: marginBottom } = getPageMargin(templateKey);
 
     const bodyHtml = ReactDOMServer.renderToStaticMarkup(
       React.createElement(Template, { data })
@@ -165,7 +167,14 @@ export default async function handler(req, res) {
       width: `${A4_W}px`,
       height: `${A4_H}px`,
       printBackground: true,
-      margin: { top: '0px', bottom: '0px', left: '0px', right: '0px' },
+      // Real top/bottom margin, per template, applied by Chrome's print
+      // engine to EVERY page it paginates — this is what actually fixes
+      // "content touching the page edge": Puppeteer re-applies this margin
+      // at each page break automatically, not just at the very start/end
+      // of the document. Left/right stay at 0 because each template's own
+      // horizontal padding already runs continuously down the whole page
+      // and needs no per-page repetition (see utils/pageLayout.js).
+      margin: { top: `${marginTop}px`, bottom: `${marginBottom}px`, left: '0px', right: '0px' },
       preferCSSPageSize: false,
     });
 
