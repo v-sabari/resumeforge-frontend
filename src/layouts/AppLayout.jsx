@@ -19,7 +19,7 @@ export const AppLayout = () => {
     { to: '/app/referral',  icon: 'sparkles', label: 'Referral hub' },
     { to: '/app/profile',   icon: 'user',     label: 'Profile'    },
     ...(!premium?.isPremium ? [{ to: '/pricing', icon: 'crown', label: 'Upgrade' }] : []),
-    ...(user?.role === 'ADMIN' ? [{ to: '/admin', icon: 'star', label: 'Admin panel' }] : []),
+    ...(user?.role === 'ADMIN' ? [{ to: '/app/admin', icon: 'star', label: 'Admin panel' }] : []),
   ];
 
   return (

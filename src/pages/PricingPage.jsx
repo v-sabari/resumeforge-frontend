@@ -53,7 +53,7 @@ export const PricingPage = () => {
             <div className="mb-6">
               <p className="kicker mb-2">Free</p>
               <div className="flex items-end gap-1">
-                <span className="text-5xl font-display font-semibold text-ink-950">$0</span>
+                <span className="text-5xl font-display font-semibold text-ink-950">₹0</span>
                 <span className="text-ink-400 mb-1">/forever</span>
               </div>
               <p className="mt-2 text-sm text-ink-400">Get started without a credit card.</p>
