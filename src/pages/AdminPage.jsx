@@ -331,9 +331,9 @@ const PaymentsTab = () => {
                     <td className="px-4 py-3 font-mono text-ink-600">{p.userEmail}</td>
                     <td className="px-4 py-3 font-semibold text-ink-800">{fmt(p.amount)}</td>
                     <td className="px-4 py-3">
-                      <Badge color={p.status === 'PAID' ? 'success' : p.status === 'FAILED' ? 'danger' : 'neutral'}>
-                        {p.status}
-                      </Badge>
+                      <Badge color={p.status === 'COMPLETED' ? 'success' : p.status === 'FAILED' ? 'danger' : 'neutral'}>
+  {p.status}
+</Badge>
                     </td>
                     <td className="px-4 py-3 font-mono text-ink-400">{p.razorpayPaymentId || p.internalPaymentId}</td>
                     <td className="px-4 py-3 text-ink-400">{prettyDate(p.createdAt)}</td>
