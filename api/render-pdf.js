@@ -57,6 +57,22 @@ var buildTransformed = (resume, sectionsConfig) => ({
   customSections: resume.customSections || {}
 });
 
+// src/utils/pageLayout.js
+var A4_W = 794;
+var A4_H = 1123;
+var TEMPLATE_PAGE_MARGINS = {
+  modern: { top: 32, bottom: 32 },
+  executive: { top: 32, bottom: 32 },
+  fresher: { top: 32, bottom: 32 },
+  minimal: { top: 32, bottom: 32 },
+  classic: { top: 24, bottom: 24 },
+  creative: { top: 32, bottom: 32 }
+};
+var DEFAULT_PAGE_MARGIN = { top: 32, bottom: 32 };
+function getPageMargin(templateId) {
+  return TEMPLATE_PAGE_MARGINS[templateId] || DEFAULT_PAGE_MARGIN;
+}
+
 // src/components/resume/templates/ModernProTemplate.jsx
 import React from "react";
 import { jsx, jsxs } from "react/jsx-runtime";
@@ -205,7 +221,7 @@ var ModernProTemplate = ({ data }) => {
     }
   };
   const activeSections = (sectionsConfig || []).filter((s) => s.visible);
-  return /* @__PURE__ */ jsxs("div", { className: "resume-template modern-pro max-w-4xl mx-auto bg-white p-8 -lg font-sans overflow-hidden", children: [
+  return /* @__PURE__ */ jsxs("div", { className: "resume-template modern-pro max-w-4xl mx-auto bg-white px-8 font-sans overflow-hidden", children: [
     personalInfo && /* @__PURE__ */ jsxs("div", { className: "border-b-2 border-gray-800 pb-4 mb-6", children: [
       /* @__PURE__ */ jsx("h1", { className: "text-3xl font-bold text-gray-900 mb-1 break-words", children: personalInfo.fullName }),
       personalInfo.title && /* @__PURE__ */ jsx("div", { className: "text-base text-gray-600 font-medium mb-2 break-words", children: personalInfo.title }),
@@ -363,7 +379,7 @@ var MinimalATSTemplate = ({ data }) => {
     }
   };
   const activeSections = (sectionsConfig || []).filter((s) => s.visible);
-  return /* @__PURE__ */ jsxs2("div", { className: "resume-template minimal-ats max-w-4xl mx-auto bg-white px-10 py-8  font-sans text-sm text-gray-800 overflow-hidden", children: [
+  return /* @__PURE__ */ jsxs2("div", { className: "resume-template minimal-ats max-w-4xl mx-auto bg-white px-10 font-sans text-sm text-gray-800 overflow-hidden", children: [
     personalInfo && /* @__PURE__ */ jsxs2("div", { className: "mb-5", children: [
       /* @__PURE__ */ jsx2("h1", { className: "text-2xl font-light tracking-tight text-gray-900 mb-0.5 break-words", children: personalInfo.fullName }),
       personalInfo.title && /* @__PURE__ */ jsx2("div", { className: "text-sm text-gray-600 mb-1.5 break-words", children: personalInfo.title }),
@@ -518,7 +534,7 @@ var ExecutiveTemplate = ({ data }) => {
     }
   };
   const activeSections = (sectionsConfig || []).filter((s) => s.visible);
-  return /* @__PURE__ */ jsxs3("div", { className: "resume-template executive max-w-4xl mx-auto bg-white p-8  font-sans overflow-hidden", children: [
+  return /* @__PURE__ */ jsxs3("div", { className: "resume-template executive max-w-4xl mx-auto bg-white px-8 font-sans overflow-hidden", children: [
     personalInfo && /* @__PURE__ */ jsxs3("div", { className: "text-center border-b-2 border-gray-800 pb-5 mb-6", children: [
       /* @__PURE__ */ jsx3("h1", { className: "text-3xl font-bold tracking-wide uppercase text-gray-900 mb-1 break-words", children: personalInfo.fullName }),
       personalInfo.title && /* @__PURE__ */ jsx3("div", { className: "text-sm font-medium text-gray-600 uppercase tracking-widest mb-2 break-words", children: personalInfo.title }),
@@ -673,7 +689,7 @@ var FresherTemplate = ({ data }) => {
     }
   };
   const activeSections = (sectionsConfig || []).filter((s) => s.visible);
-  return /* @__PURE__ */ jsxs4("div", { className: "resume-template fresher max-w-4xl mx-auto bg-white p-8  font-sans overflow-hidden", children: [
+  return /* @__PURE__ */ jsxs4("div", { className: "resume-template fresher max-w-4xl mx-auto bg-white px-8 font-sans overflow-hidden", children: [
     personalInfo && /* @__PURE__ */ jsxs4("div", { className: "text-center mb-6 pb-4 border-b border-gray-200", children: [
       /* @__PURE__ */ jsx4("h1", { className: "text-2xl font-bold text-gray-900 mb-1 break-words", children: personalInfo.fullName }),
       personalInfo.title && /* @__PURE__ */ jsx4("div", { className: "text-sm text-blue-600 font-medium mb-2 break-words", children: personalInfo.title }),
@@ -842,9 +858,9 @@ var CreativeATSTemplate = ({ data }) => {
     }
   };
   const activeSections = (sectionsConfig || []).filter((s) => s.visible);
-  return /* @__PURE__ */ jsxs5("div", { className: "resume-template creative-ats max-w-4xl mx-auto bg-white  font-sans flex overflow-hidden", children: [
+  return /* @__PURE__ */ jsxs5("div", { className: "resume-template creative-ats max-w-4xl mx-auto bg-white font-sans flex overflow-hidden", children: [
     /* @__PURE__ */ jsx5("div", { className: "w-2 bg-gradient-to-b from-blue-500 to-blue-700 shrink-0" }),
-    /* @__PURE__ */ jsxs5("div", { className: "flex-1 p-8 min-w-0", children: [
+    /* @__PURE__ */ jsxs5("div", { className: "flex-1 px-8 min-w-0", children: [
       personalInfo && /* @__PURE__ */ jsxs5("div", { className: "mb-6", children: [
         /* @__PURE__ */ jsx5("h1", { className: "text-3xl font-bold text-gray-900 mb-1 break-words", children: personalInfo.fullName }),
         personalInfo.title && /* @__PURE__ */ jsx5("div", { className: "text-base text-blue-600 font-medium mb-2 break-words", children: personalInfo.title }),
@@ -1011,7 +1027,7 @@ var ClassicTemplate = ({ data }) => {
         return /* @__PURE__ */ jsx6(CustomBlock6, { label: sec.label, content: (customSections || {})[sec.id] }, sec.id);
     }
   };
-  return /* @__PURE__ */ jsxs6("div", { className: "font-sans text-[10px] leading-tight text-gray-900 bg-white p-6 space-y-3 overflow-hidden", children: [
+  return /* @__PURE__ */ jsxs6("div", { className: "resume-template classic font-sans text-[10px] leading-tight text-gray-900 bg-white px-6 space-y-3 overflow-hidden", children: [
     /* @__PURE__ */ jsxs6("div", { className: "text-center border-b border-gray-300 pb-3", children: [
       /* @__PURE__ */ jsx6("div", { className: "text-lg font-bold tracking-wide uppercase break-words", children: personalInfo?.fullName || "Your Name" }),
       personalInfo?.title && /* @__PURE__ */ jsx6("div", { className: "text-[10px] text-gray-600 mt-0.5 break-words", children: personalInfo.title }),
@@ -1051,8 +1067,6 @@ var DEFAULT_SECTIONS_CONFIG = STANDARD_SECTION_KEYS.map((key, i) => ({
   visible: true,
   order: i
 }));
-var A4_W = 794;
-var A4_H = 1123;
 var TEMPLATE_MAP = {
   modern: ModernProTemplate,
   classic: ClassicTemplate,
@@ -1107,7 +1121,9 @@ async function handler(req, res) {
     if (!resume) return res.status(400).json({ error: "resume is required" });
     const sectionsConfig = resume.sectionsConfig && resume.sectionsConfig.length > 0 ? resume.sectionsConfig : DEFAULT_SECTIONS_CONFIG;
     const data = buildTransformed(resume, sectionsConfig);
-    const Template = TEMPLATE_MAP[template] || TEMPLATE_MAP.modern;
+    const templateKey = TEMPLATE_MAP[template] ? template : "modern";
+    const Template = TEMPLATE_MAP[templateKey];
+    const { top: marginTop, bottom: marginBottom } = getPageMargin(templateKey);
     const bodyHtml = ReactDOMServer.renderToStaticMarkup(
       React7.createElement(Template, { data })
     );
@@ -1120,7 +1136,14 @@ async function handler(req, res) {
       width: `${A4_W}px`,
       height: `${A4_H}px`,
       printBackground: true,
-      margin: { top: "0px", bottom: "0px", left: "0px", right: "0px" },
+      // Real top/bottom margin, per template, applied by Chrome's print
+      // engine to EVERY page it paginates — this is what actually fixes
+      // "content touching the page edge": Puppeteer re-applies this margin
+      // at each page break automatically, not just at the very start/end
+      // of the document. Left/right stay at 0 because each template's own
+      // horizontal padding already runs continuously down the whole page
+      // and needs no per-page repetition (see utils/pageLayout.js).
+      margin: { top: `${marginTop}px`, bottom: `${marginBottom}px`, left: "0px", right: "0px" },
       preferCSSPageSize: false
     });
     await page.close();

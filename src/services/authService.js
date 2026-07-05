@@ -30,6 +30,13 @@ export const loginUser = async (payload) => {
   return data;
 };
 
+// BUG-004 FIX: httpOnly cookies can't be cleared by client-side JS, so
+// logout has to call the backend, which clears it via Set-Cookie (maxAge=0).
+export const logoutUser = async () => {
+  const { data } = await api.post('/api/auth/logout');
+  return data;
+};
+
 export const getCurrentUser = async () => {
   const { data } = await api.get('/api/auth/me');
   return data;

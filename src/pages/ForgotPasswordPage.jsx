@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Logo } from '../components/common/Logo';
 import { Alert } from '../components/common/Alert';
 import { Loader } from '../components/common/Loader';
@@ -7,13 +7,20 @@ import { Icon } from '../components/icons/Icon';
 import { forgotPassword } from '../services/authService';
 import { formatApiError } from '../utils/helpers';
 
+// BUG-001 FIX: This page previously navigated straight to /reset-password
+// and asked the user to type a 6-digit "OTP" after submitting their email.
+// The backend never generates or checks an OTP for password reset — it
+// emails a one-time link containing a reset token
+// (see AuthService.forgotPassword / EmailService.sendPasswordResetEmail),
+// and the user is expected to click that link, which lands on
+// /reset-password?token=XXXX. There is nothing for the user to type here,
+// so we now just confirm the email was sent and let them check their inbox.
 export const ForgotPasswordPage = () => {
-  const navigate = useNavigate();
-
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,15 +43,9 @@ export const ForgotPasswordPage = () => {
       });
 
       setSuccess(
-        response?.message || 'If an account exists with this email, a password reset OTP has been sent.'
+        response?.message || 'If an account exists with this email, a password reset link has been sent.'
       );
-
-      setTimeout(() => {
-        navigate('/reset-password', {
-          replace: true,
-          state: { email: normalizedEmail },
-        });
-      }, 1000);
+      setSubmitted(true);
     } catch (err) {
       setError(formatApiError(err, 'Could not process your request. Please try again.'));
     } finally {
@@ -61,7 +62,7 @@ export const ForgotPasswordPage = () => {
             Forgot password
           </h1>
           <p className="mt-1.5 text-sm text-ink-400">
-            Enter your registered email to receive a password reset OTP
+            Enter your registered email to receive a password reset link
           </p>
         </div>
 
@@ -73,30 +74,38 @@ export const ForgotPasswordPage = () => {
             {success}
           </Alert>
 
-          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            <div>
-              <label className="label">Email address</label>
-              <div className="relative">
-                <Icon
-                  name="mail"
-                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none"
-                />
-                <input
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="input pl-9"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
+          {submitted ? (
+            <p className="text-sm text-ink-400">
+              Check your inbox for an email from ResumeForge AI and click the
+              reset link in it to choose a new password. The link expires in
+              1 hour.
+            </p>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+              <div>
+                <label className="label">Email address</label>
+                <div className="relative">
+                  <Icon
+                    name="mail"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none"
+                  />
+                  <input
+                    type="email"
+                    autoComplete="email"
+                    required
+                    className="input pl-9"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
               </div>
-            </div>
 
-            <button type="submit" className="btn-primary w-full justify-center" disabled={loading}>
-              {loading ? <Loader label="Sending OTP…" size="sm" /> : 'Send reset OTP'}
-            </button>
-          </form>
+              <button type="submit" className="btn-primary w-full justify-center" disabled={loading}>
+                {loading ? <Loader label="Sending link…" size="sm" /> : 'Send reset link'}
+              </button>
+            </form>
+          )}
         </div>
 
         <p className="text-center mt-5 text-sm text-ink-400">

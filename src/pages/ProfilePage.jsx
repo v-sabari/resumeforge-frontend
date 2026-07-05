@@ -167,7 +167,14 @@ export const ProfilePage = () => {
               <tbody className="divide-y divide-surface-100">
                 {payments.map(p => (
                   <tr key={p.id}>
-                    <td className="py-3 font-mono text-xs text-ink-500">{p.paymentId}</td>
+                    {/* BUG-009 FIX: PaymentResponse (backend) never had a `paymentId`
+                        field — only `razorpayPaymentId` (null until a payment actually
+                        completes), `razorpayOrderId`, and `id`. Referencing p.paymentId
+                        rendered blank for every row. Now falls back to whichever
+                        identifier is actually available. */}
+                    <td className="py-3 font-mono text-xs text-ink-500">
+                      {p.razorpayPaymentId || p.razorpayOrderId || `#${p.id}`}
+                    </td>
                     <td className="py-3 font-semibold text-ink-800">₹{Number(p.amount).toFixed(2)}</td>
                     <td className="py-3">
                       <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase ${

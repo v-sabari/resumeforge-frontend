@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { MarketingLayout }  from '../layouts/MarketingLayout';
 import { AppLayout }        from '../layouts/AppLayout';
 import { ProtectedRoute }   from '../components/common/ProtectedRoute';
+import { PublicOnlyRoute }  from '../components/common/PublicOnlyRoute';
 import { FeaturesRedirect } from '../components/common/FeaturesRedirect';
 import { useSeoMeta }       from '../hooks/useSeoMeta';
 
@@ -71,14 +72,14 @@ export const AppRoutes = () => (
           <Route path="tools/ats-score" element={<ATSScorePage />} />
         </Route>
 
-        {/* ── Auth (public) ─────────────────────────────────── */}
-        <Route path="login"           element={<LoginPage />} />
+        {/* ── Auth (public-only — redirects away if already logged in) ─ */}
+        <Route path="login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
         {/*
           /register?ref=CODE
           RegisterPage reads the ?ref= param and pre-fills the referral code field.
           This is the primary referral entry point.
         */}
-        <Route path="register"        element={<RegisterPage />} />
+        <Route path="register" element={<PublicOnlyRoute><RegisterPage /></PublicOnlyRoute>} />
         <Route path="verify-email"    element={<VerifyEmailPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
         <Route path="reset-password"  element={<ResetPasswordPage />} />

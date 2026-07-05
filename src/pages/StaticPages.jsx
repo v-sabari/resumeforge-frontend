@@ -126,9 +126,10 @@ export const PrivacyPage = () => (
 
     <H2>6. Cookies and Local Storage</H2>
     <P>
-      We use browser localStorage to store your authentication token locally on your device. This
-      is required for you to stay logged in. We do not use advertising cookies or third-party
-      tracking cookies. If you opt into analytics, an analytics cookie may be set.
+      We use a secure, essential (httpOnly) cookie to keep your session signed in — it cannot be
+      read by JavaScript and is required for you to stay logged in. We do not use advertising
+      cookies or third-party tracking cookies. If you opt into analytics, an analytics cookie may
+      be set.
     </P>
 
     <H2>7. Your Rights</H2>

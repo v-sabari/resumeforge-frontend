@@ -1,5 +1,7 @@
 export const APP_NAME          = import.meta.env.VITE_APP_NAME || 'ResumeForge AI';
-export const TOKEN_STORAGE_KEY = 'resumeforge_token';
+// BUG-004 FIX: TOKEN_STORAGE_KEY removed — the JWT is now delivered as an
+// httpOnly cookie (see AuthController.setAuthCookie / api.js withCredentials)
+// instead of being stored in localStorage, so there's no client-side key left.
 export const INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000;
 export const FREE_EXPORT_LIMIT     = 3;
 

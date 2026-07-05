@@ -1,8 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { getCurrentUser, loginUser, registerUser } from '../services/authService';
+import { getCurrentUser, loginUser, logoutUser, registerUser } from '../services/authService';
 import { getPremiumStatus } from '../services/premiumService';
 import { getExportStatus } from '../services/exportService';
-import { TOKEN_STORAGE_KEY, INACTIVITY_TIMEOUT_MS } from '../utils/constants';
+import { INACTIVITY_TIMEOUT_MS } from '../utils/constants';
 import { formatApiError } from '../utils/helpers';
 
 const AuthContext = createContext(null);
@@ -38,22 +38,27 @@ export const AuthProvider = ({ children }) => {
   const inactivityTimer = useRef(null);
   const warningTimer = useRef(null);
 
-  const setSession = (token) => {
-    if (token) {
-      localStorage.setItem(TOKEN_STORAGE_KEY, token);
-    } else {
-      localStorage.removeItem(TOKEN_STORAGE_KEY);
-    }
-  };
-
+  // BUG-004 FIX: the JWT is no longer stored in localStorage — it lives only
+  // in an httpOnly cookie the browser manages automatically (see api.js's
+  // withCredentials:true and AuthController.setAuthCookie on the backend).
+  // logout() clears local React state immediately (so existing callers that
+  // call logout() then navigate() right away keep working unchanged) and
+  // fires the cookie-clearing API call in the background, since client-side
+  // JS has no way to delete an httpOnly cookie itself.
   const logout = useCallback(() => {
-    setSession(null);
     setUser(null);
     setPremium(null);
     setExportStatus(null);
     setShowInactivityWarning(false);
     clearTimeout(inactivityTimer.current);
     clearTimeout(warningTimer.current);
+
+    logoutUser().catch(() => {
+      // Best-effort: local state is already cleared. If this fails (e.g.
+      // a network blip), the cookie will simply expire on its own — worst
+      // case is a stale cookie with nothing server-side to authenticate
+      // (any 401 from a subsequent request already redirects to /login).
+    });
   }, []);
 
   const resetInactivityTimer = useCallback(() => {
@@ -118,20 +123,17 @@ setPremium({
   }, []);
 
   useEffect(() => {
+    // BUG-004 FIX: previously gated on localStorage.getItem(TOKEN_STORAGE_KEY)
+    // before even trying getCurrentUser(). There's no client-readable token
+    // to check anymore — the httpOnly cookie (if any) is sent automatically
+    // by the browser, so we just attempt the call and treat failure as
+    // logged-out, same as the existing catch block already did.
     const hydrate = async () => {
-      const token = localStorage.getItem(TOKEN_STORAGE_KEY);
-
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
       try {
         const me = await getCurrentUser();
         setUser(me.user || me.data || me);
         await Promise.all([refreshPremiumStatus(), refreshExportStatus()]);
       } catch {
-        setSession(null);
         setUser(null);
       } finally {
         setLoading(false);
@@ -142,21 +144,18 @@ setPremium({
   }, [refreshPremiumStatus, refreshExportStatus]);
 
   const login = async (payload) => {
-    const res = await loginUser(payload);
-    const token = res?.token || res?.data?.token;
-
-    if (!token) {
-      throw new Error('Login response did not include a token.');
-    }
-
-    setSession(token);
+    // BUG-004 FIX: the backend now sets the httpOnly cookie directly on the
+    // login response (see AuthController.login) — there's no token in the
+    // body anymore for the frontend to store. getCurrentUser() picks up the
+    // freshly-set cookie automatically via withCredentials.
+    await loginUser(payload);
 
     const me = await getCurrentUser();
     setUser(me.user || me.data || me);
 
     await Promise.all([refreshPremiumStatus(), refreshExportStatus()]);
 
-    return res;
+    return me;
   };
 
   const register = async (payload) => {

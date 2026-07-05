@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   checkExportAccess,
@@ -37,13 +37,42 @@ export const ExportPanel = ({
   const navigate = useNavigate();
 
   const [loading,    setLoading]    = useState(false);
-  const [variant,    setVariant]    = useState('info');
-  const [message,    setMessage]    = useState('Save your resume first, then download it.');
+  // BUG-006 FIX: This was previously a hardcoded literal —
+  // useState('Save your resume first, then download it.') — regardless of
+  // whether `resumeId` already existed. That meant: (a) opening an
+  // already-saved resume showed the "save first" warning on load even
+  // though nothing needed saving, and (b) saving a brand-new resume never
+  // updated this panel, so the top-level "Resume created" success banner
+  // and this "save first" warning were shown at the same time. Export
+  // actually worked fine underneath in both cases — the message was just
+  // wrong. Initial value now reflects the actual resumeId, and the effect
+  // below updates it the moment resumeId changes from empty to a real id.
+  const [variant,    setVariant]    = useState(resumeId ? 'info' : 'warning');
+  const [message,    setMessage]    = useState(
+    resumeId ? 'Ready to export.' : 'Save your resume first, then download it.'
+  );
   const [showUpsell, setShowUpsell] = useState(false);
   const [showHistory,setShowHistory] = useState(false);
   const [history,    setHistory]    = useState([]);
   const [histLoading,setHistLoading] = useState(false);
   const [restoring,  setRestoring]  = useState(null);
+
+  // BUG-006 FIX: when the parent saves a new resume, resumeId flips from
+  // falsy to a real id. If we're still showing the original "save first"
+  // warning at that moment, replace it with a confirmation instead of
+  // leaving it stuck — but don't clobber any more specific message that's
+  // already appeared (e.g. an in-progress export or an error).
+  useEffect(() => {
+    if (resumeId) {
+      setVariant((v) => (v === 'warning' ? 'info' : v));
+      setMessage((m) =>
+        m === 'Save your resume first, then download it.'
+          ? 'Resume saved. Ready to export.'
+          : m
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resumeId]);
 
   const exportsUsed      = exportStatus?.usedExports || 0;
   const exportsRemaining = premium?.isPremium ? '∞' : Math.max(0, FREE_EXPORT_LIMIT - exportsUsed);

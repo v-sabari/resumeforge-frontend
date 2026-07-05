@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Logo } from '../components/common/Logo';
 import { Alert } from '../components/common/Alert';
 import { Loader } from '../components/common/Loader';
@@ -7,15 +7,21 @@ import { Icon } from '../components/icons/Icon';
 import { resetPassword } from '../services/authService';
 import { formatApiError } from '../utils/helpers';
 
+// BUG-001 FIX: The backend's /api/auth/reset-password endpoint (see
+// ResetPasswordRequest.java) has always expected { token, newPassword } —
+// the "token" is the random reset token emailed as a link
+// (https://www.resumeforgeai.site/reset-password?token=XXXX), not a
+// user-typed OTP. This page previously asked the user to manually type a
+// 6-digit "OTP" and never sent a token at all, so every reset request was
+// rejected with "Token is required" regardless of what was entered.
+// Fix: read the token from the URL query string (where the emailed link
+// puts it) and drop the email/OTP fields entirely.
 export const ResetPasswordPage = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-
-  const initialEmail = location.state?.email || '';
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token') || '';
 
   const [form, setForm] = useState({
-    email: initialEmail,
-    otp: '',
     newPassword: '',
     confirmPassword: '',
   });
@@ -31,7 +37,13 @@ export const ResetPasswordPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.email || !form.otp || !form.newPassword || !form.confirmPassword) {
+    if (!token) {
+      setError('This reset link is invalid or incomplete. Please request a new one.');
+      setSuccess('');
+      return;
+    }
+
+    if (!form.newPassword || !form.confirmPassword) {
       setError('Please fill in all fields.');
       setSuccess('');
       return;
@@ -55,10 +67,8 @@ export const ResetPasswordPage = () => {
 
     try {
       const response = await resetPassword({
-        email: form.email.trim().toLowerCase(),
-        otp: form.otp.trim(),
+        token,
         newPassword: form.newPassword,
-        confirmPassword: form.confirmPassword,
       });
 
       setSuccess(response?.message || 'Password reset successfully');
@@ -82,7 +92,9 @@ export const ResetPasswordPage = () => {
             Reset password
           </h1>
           <p className="mt-1.5 text-sm text-ink-400">
-            Enter the OTP sent to your email and choose a new password
+            {token
+              ? 'Choose a new password for your account'
+              : 'Open the reset link from your email to continue'}
           </p>
         </div>
 
@@ -90,98 +102,77 @@ export const ResetPasswordPage = () => {
           <Alert variant="error" className="mb-4">{error}</Alert>
           <Alert variant="success" className="mb-4">{success}</Alert>
 
-          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            <div>
-              <label className="label">Email address</label>
-              <div className="relative">
-                <Icon
-                  name="mail"
-                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none"
-                />
-                <input
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="input pl-9"
-                  placeholder="you@example.com"
-                  value={form.email}
-                  onChange={set('email')}
-                />
+          {!token ? (
+            <div className="space-y-4">
+              <p className="text-sm text-ink-400">
+                We couldn't find a reset token in this link. Please request a
+                new password reset email and click the link it contains.
+              </p>
+              <Link to="/forgot-password" className="btn-primary w-full justify-center inline-flex">
+                Request a new reset link
+              </Link>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+              <div>
+                <label className="label">New password</label>
+                <div className="relative">
+                  <Icon
+                    name="lock"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none"
+                  />
+                  <input
+                    type={showNewPass ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    required
+                    className="input pl-9 pr-10"
+                    placeholder="••••••••"
+                    value={form.newPassword}
+                    onChange={set('newPassword')}
+                  />
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-300 hover:text-ink-500"
+                    onClick={() => setShowNewPass((v) => !v)}
+                  >
+                    <Icon name={showNewPass ? 'eyeOff' : 'eye'} className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label className="label">OTP</label>
-              <input
-                type="text"
-                inputMode="numeric"
-                maxLength={6}
-                required
-                className="input"
-                placeholder="Enter 6-digit OTP"
-                value={form.otp}
-                onChange={set('otp')}
-              />
-            </div>
-
-            <div>
-              <label className="label">New password</label>
-              <div className="relative">
-                <Icon
-                  name="lock"
-                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none"
-                />
-                <input
-                  type={showNewPass ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  required
-                  className="input pl-9 pr-10"
-                  placeholder="••••••••"
-                  value={form.newPassword}
-                  onChange={set('newPassword')}
-                />
-                <button
-                  type="button"
-                  tabIndex={-1}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-300 hover:text-ink-500"
-                  onClick={() => setShowNewPass((v) => !v)}
-                >
-                  <Icon name={showNewPass ? 'eyeOff' : 'eye'} className="h-4 w-4" />
-                </button>
+              <div>
+                <label className="label">Confirm new password</label>
+                <div className="relative">
+                  <Icon
+                    name="lock"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none"
+                  />
+                  <input
+                    type={showConfirmPass ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    required
+                    className="input pl-9 pr-10"
+                    placeholder="••••••••"
+                    value={form.confirmPassword}
+                    onChange={set('confirmPassword')}
+                  />
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-300 hover:text-ink-500"
+                    onClick={() => setShowConfirmPass((v) => !v)}
+                  >
+                    <Icon name={showConfirmPass ? 'eyeOff' : 'eye'} className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label className="label">Confirm new password</label>
-              <div className="relative">
-                <Icon
-                  name="lock"
-                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none"
-                />
-                <input
-                  type={showConfirmPass ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  required
-                  className="input pl-9 pr-10"
-                  placeholder="••••••••"
-                  value={form.confirmPassword}
-                  onChange={set('confirmPassword')}
-                />
-                <button
-                  type="button"
-                  tabIndex={-1}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-300 hover:text-ink-500"
-                  onClick={() => setShowConfirmPass((v) => !v)}
-                >
-                  <Icon name={showConfirmPass ? 'eyeOff' : 'eye'} className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-
-            <button type="submit" className="btn-primary w-full justify-center" disabled={loading}>
-              {loading ? <Loader label="Resetting..." size="sm" /> : 'Reset password'}
-            </button>
-          </form>
+              <button type="submit" className="btn-primary w-full justify-center" disabled={loading}>
+                {loading ? <Loader label="Resetting..." size="sm" /> : 'Reset password'}
+              </button>
+            </form>
+          )}
         </div>
 
         <p className="text-center mt-5 text-sm text-ink-400">

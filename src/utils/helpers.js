@@ -1,8 +1,22 @@
 export const cn = (...classes) => classes.filter(Boolean).join(' ');
 
+// BUG-002 FIX: For validation failures, GlobalExceptionHandler.handleValidationErrors
+// (backend) returns { success:false, message:"Validation failed", errors:{field:msg} }.
+// This function previously returned only the generic top-level `message`
+// ("Validation failed") and silently dropped the specific per-field messages
+// in `errors`, so users never learned which field was wrong or why. Now, when
+// a field-level `errors` object is present, its messages are surfaced instead
+// of the generic banner text.
 export const formatApiError = (error, fallback = 'Something went wrong. Please try again.') => {
-  if (error?.response?.data?.message) return error.response.data.message;
-  if (error?.response?.data?.error)   return error.response.data.error;
+  const data = error?.response?.data;
+
+  if (data?.errors && typeof data.errors === 'object' && !Array.isArray(data.errors)) {
+    const messages = Object.values(data.errors).filter(Boolean);
+    if (messages.length) return messages.join(' ');
+  }
+
+  if (data?.message) return data.message;
+  if (data?.error)   return data.error;
   if (typeof error?.message === 'string') return error.message;
   return fallback;
 };
