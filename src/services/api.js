@@ -22,15 +22,16 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      const path = window.location.pathname;
-      if (
-        !path.startsWith('/login') &&
-        !path.startsWith('/register') &&
-        !path.startsWith('/verify-email')
-      ) {
-        window.location.href = '/login';
-      }
+    // REGRESSION FIX: AuthContext now calls getCurrentUser() unconditionally
+    // on every mount (there's no client-readable token left to gate on with
+    // httpOnly cookies) — so an anonymous visitor on the homepage, pricing
+    // page, etc. now legitimately gets a 401 back from /api/auth/me. That's
+    // normal and expected, not an error. This redirect previously only
+    // excluded /login, /register, /verify-email, so every other public page
+    // (including the homepage) was forcing anonymous visitors to /login.
+    // The redirect should only fire for the actual protected app area.
+    if (error.response?.status === 401 && window.location.pathname.startsWith('/app')) {
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }
