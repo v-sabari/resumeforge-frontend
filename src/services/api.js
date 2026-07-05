@@ -1,15 +1,30 @@
 import axios from 'axios';
 
-const API_BASE_URL =
-  (import.meta.env.VITE_API_BASE_URL || '').trim() ||
-  'https://resumeforge-backend-9uj6.onrender.com';
+// COOKIE FIX: previously called the Render backend directly
+// (https://resumeforge-backend-9uj6.onrender.com) from the browser. Since
+// that's a different registrable domain from the frontend, the auth cookie
+// was a third-party cookie — browsers/users with third-party cookie
+// blocking enabled (Safari by default, Firefox strict mode, or anyone who's
+// turned it on in Chrome) rejected it outright and prompted to disable that
+// protection just to use the site, which isn't an acceptable ask for a
+// production app.
+//
+// Fix: call a same-origin path instead. vercel.json rewrites /api/:path* to
+// the Render backend server-side (edge-to-origin, not subject to CORS or
+// third-party cookie rules at all). The browser only ever sees requests to
+// its own origin, so any Set-Cookie the backend returns arrives without an
+// explicit Domain attribute and is scoped by the browser to the site it
+// actually thinks it talked to — the frontend's own origin. That makes it a
+// normal first-party cookie, and the prompt goes away entirely.
+//
+// If VITE_API_BASE_URL is set in your Vercel project's environment
+// variables, remove it (or leave it unset) — this relative path only works
+// if requests stay same-origin and get proxied through vercel.json. Left
+// empty (not '/api') because every call site already includes the '/api/'
+// prefix in its path, e.g. api.post('/api/auth/login', ...) — baseURL
+// '/api' would double it up into '/api/api/auth/login'.
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').trim();
 
-// BUG-004 FIX: the JWT is now delivered as an httpOnly cookie set by the
-// backend (see AuthController.setAuthCookie) instead of being stored in
-// localStorage and attached manually here. `withCredentials: true` makes
-// the browser send/receive that cookie on every cross-origin request to
-// the API. There is nothing left for JS to read or attach — the browser
-// handles it, and it's not reachable from JS even if a future XSS occurred.
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
