@@ -4,5 +4,6 @@
       "source": "/api/:path*",
       "destination": "https://resumeforge-backend-9uj6.onrender.com/api/:path*"
     }
-  ]
+  ],
+  "cleanUrls": true
 }
