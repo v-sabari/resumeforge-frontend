@@ -108,7 +108,14 @@ export const AppRoutes = () => (
           {/* Phase 3: referral hub */}
           <Route path="referral"          element={<ReferralPage />} />
           {/* Admin panel - requires ADMIN role */}
-          <Route path="admin"             element={<AdminPage />} />
+          <Route
+    path="admin"
+    element={
+        <ProtectedRoute roles={["ADMIN"]}>
+            <AdminPage />
+        </ProtectedRoute>
+    }
+/>
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />

@@ -38,7 +38,7 @@ export const AppSidebar = () => {
 
         {/* Admin link — only visible to ADMIN role */}
         {user?.role === 'ADMIN' && (
-          <NavLink to="/admin"
+          <NavLink to="/app/admin"
             className={({ isActive }) =>
               `flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-all mt-2
                ${isActive
