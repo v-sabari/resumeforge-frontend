@@ -48,3 +48,42 @@ export const DEFAULT_PAGE_MARGIN = { top: 32, bottom: 32 };
 export function getPageMargin(templateId) {
   return TEMPLATE_PAGE_MARGINS[templateId] || DEFAULT_PAGE_MARGIN;
 }
+
+/**
+ * "Compress to N pages" support — shared by BOTH the live preview
+ * (ResumePreview.jsx) and the PDF export handler (renderPdfHandler.jsx),
+ * for the exact same reason the margin constants above are shared: so the
+ * exported file can never silently drift from what the user approved on
+ * screen.
+ *
+ * HOW IT WORKS: `scale` (0 < scale <= 1) is applied via the CSS `zoom`
+ * property, not `transform: scale()`. This distinction matters:
+ *   - `transform` is a paint-only effect — it does NOT change the box's
+ *     layout size, so scrollHeight/offsetHeight (what both the preview's
+ *     page-count math and Puppeteer's PDF paginator read) stay unchanged.
+ *     Using transform here would visually shrink text while leaving the
+ *     measured/paginated height exactly as before — pages would not
+ *     actually reduce.
+ *   - `zoom` genuinely reflows the box at the smaller size — fonts,
+ *     line-heights, gaps, and padding all shrink together, and
+ *     scrollHeight/offsetHeight (and Puppeteer's own page-break
+ *     measurements) report the SMALLER, already-zoomed value. That's what
+ *     lets fewer physical pages result from a lower scale, and it's why
+ *     this technique — not transform — is what real "shrink to fit" PDF
+ *     tools use.
+ *
+ * The wrapping div's `width` is set to A4_W / scale so that after zoom is
+ * applied, the effective on-page width is exactly A4_W again — content
+ * keeps filling the full page width at every scale, with no leftover
+ * blank margin and no horizontal overflow. Only vertical density changes.
+ *
+ * This function does not decide the number by itself — see
+ * utils/compression.js for the closed-loop, re-measured search that picks
+ * `scale`. This is purely the CSS side of applying a scale once one has
+ * been found.
+ */
+export function scaleStyle(scale) {
+  const s = (typeof scale === 'number' && scale > 0 && scale < 1) ? scale : 1;
+  if (s === 1) return undefined;
+  return { width: `${A4_W / s}px`, zoom: s };
+}

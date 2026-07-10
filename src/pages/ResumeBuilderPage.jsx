@@ -487,6 +487,7 @@ export const ResumeBuilderPage = () => {
       resume={{ ...resume, sectionsConfig }}
       template={template}
       onTemplateChange={setTemplate}
+      onScaleChange={(scale) => { top('layoutScale', scale); setSuccess(''); }}
     />
   );
   const aiPanel     = <AIActionPanel resume={resume} setResume={setResume} />;

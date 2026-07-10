@@ -30,6 +30,12 @@ export function fromApiResponse(data) {
     languages:      safeJsonParse(data.languages,      []),
     customSections: safeJsonParse(data.customSections, {}),
     sectionsConfig: safeJsonParse(data.sectionsConfig, null),
+    // Compress feature (see utils/compression.js) — the zoom-style density
+    // scale applied to fit the resume into a chosen page count. Falls back
+    // to 1 (full size) for resumes saved before this field existed.
+    layoutScale: typeof data.layoutScale === 'number' && data.layoutScale > 0 && data.layoutScale <= 1
+      ? data.layoutScale
+      : 1,
     createdAt: data.createdAt, updatedAt: data.updatedAt,
   };
 }
@@ -55,6 +61,10 @@ export function toApiPayload(resume) {
     languages:      s(resume.languages),
     customSections: s(resume.customSections),
     sectionsConfig: s(resume.sectionsConfig),
+    // Compress feature — see utils/compression.js / pageLayout.js.
+    layoutScale: typeof resume.layoutScale === 'number' && resume.layoutScale > 0 && resume.layoutScale <= 1
+      ? resume.layoutScale
+      : 1,
   };
 }
 

@@ -42,7 +42,7 @@ import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium-min';
 
 import { buildTransformed } from '../utils/transformResume.js';
-import { A4_W, A4_H, getPageMargin } from '../utils/pageLayout.js';
+import { A4_W, A4_H, getPageMargin, scaleStyle } from '../utils/pageLayout.js';
 import {
   ModernProTemplate,
   MinimalATSTemplate,
@@ -153,8 +153,18 @@ export default async function handler(req, res) {
     const Template = TEMPLATE_MAP[templateKey];
     const { top: marginTop, bottom: marginBottom } = getPageMargin(templateKey);
 
+    // COMPRESS FEATURE: apply the exact density scale the user verified in
+    // the live preview (see utils/pageLayout.js:scaleStyle and
+    // utils/compression.js for how it was derived and re-measured client
+    // side). Wrapping here — rather than inside each template — means the
+    // PDF's real layout height shrinks by the identical CSS mechanism
+    // (`zoom`) the preview used, so Puppeteer's native pagination below
+    // produces the SAME page count the user already confirmed on screen.
+    const layoutScale = typeof resume.layoutScale === 'number' ? resume.layoutScale : 1;
+    const wrapStyle = scaleStyle(layoutScale);
+    const templateEl = React.createElement(Template, { data });
     const bodyHtml = ReactDOMServer.renderToStaticMarkup(
-      React.createElement(Template, { data })
+      wrapStyle ? React.createElement('div', { style: wrapStyle }, templateEl) : templateEl
     );
     const html = wrapHtml(bodyHtml);
 
