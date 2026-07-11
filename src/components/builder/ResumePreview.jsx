@@ -50,7 +50,14 @@ const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange
     const aw = shell.clientWidth - 32;
     if (aw <= 0) return;
     setScale(aw / A4_W);
-    setRawH(measure.scrollHeight);
+    // NOTE: intentionally getBoundingClientRect().height, NOT scrollHeight.
+    // Verified directly: Chromium's `scrollHeight`/`offsetHeight` report an
+    // element's box size in its PRE-zoom local coordinate space and do not
+    // change when `zoom` is applied — only the actually-painted box
+    // (getBoundingClientRect) reflects the zoomed size. Reading
+    // scrollHeight here would silently ignore every compression/enlarge
+    // scale and always report the same, wrong height.
+    setRawH(measure.getBoundingClientRect().height);
   }, []);
 
   useEffect(() => {
@@ -77,8 +84,11 @@ const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange
    * candidate scales and read back the REAL rendered height for each one
    * before deciding anything. It does that through this single hidden
    * node, applying a candidate scale, forcing a synchronous layout read
-   * via scrollHeight, then restoring whatever scale is actually active —
-   * so the visible preview never flickers during a search. */
+   * via a real rendered measurement, then restoring whatever scale is
+   * actually active — so the visible preview never flickers during a
+   * search. Uses getBoundingClientRect().height rather than scrollHeight —
+   * see the note above recalc() for why that distinction is essential
+   * once `zoom` is involved. */
   useImperativeHandle(ref, () => ({
     measureAtScale(candidateScale) {
       const measure = measureRef.current;
@@ -88,8 +98,8 @@ const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange
       Object.assign(measure.style, { width: `${A4_W}px`, zoom: '' }); // reset first
       if (style) Object.assign(measure.style, style);
       // eslint-disable-next-line no-unused-expressions
-      measure.offsetHeight; // force synchronous layout
-      const h = measure.scrollHeight;
+      measure.offsetHeight; // force synchronous layout before reading rect
+      const h = measure.getBoundingClientRect().height;
       measure.setAttribute('style', prevStyle);
       return h;
     },
