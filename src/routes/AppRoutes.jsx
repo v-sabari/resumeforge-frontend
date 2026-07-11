@@ -15,7 +15,9 @@ const VerifyEmailPage     = lazy(() => import('../pages/VerifyEmailPage').then(m
 const ForgotPasswordPage  = lazy(() => import('../pages/ForgotPasswordPage').then(m => ({ default: m.ForgotPasswordPage })));
 const ResetPasswordPage   = lazy(() => import('../pages/ResetPasswordPage').then(m => ({ default: m.ResetPasswordPage })));
 const DashboardPage       = lazy(() => import('../pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
-const ResumeBuilderPage   = lazy(() => import('../pages/ResumeBuilderPage').then(m => ({ default: m.ResumeBuilderPage })));
+const ResumeEditorPage    = lazy(() => import('../pages/ResumeEditorPage').then(m => ({ default: m.ResumeEditorPage })));
+const ResumeSectionsPage  = lazy(() => import('../pages/ResumeSectionsPage').then(m => ({ default: m.ResumeSectionsPage })));
+const BuilderLayout       = lazy(() => import('../layouts/BuilderLayout').then(m => ({ default: m.BuilderLayout })));
 const PricingPage         = lazy(() => import('../pages/PricingPage').then(m => ({ default: m.PricingPage })));
 const ProfilePage         = lazy(() => import('../pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
 const ResourcesPage       = lazy(() => import('../pages/ResourcesPages').then(m => ({ default: m.ResourcesPage })));
@@ -102,8 +104,18 @@ export const AppRoutes = () => (
         >
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard"         element={<DashboardPage />} />
-          <Route path="builder"           element={<ResumeBuilderPage />} />
-          <Route path="builder/:resumeId" element={<ResumeBuilderPage />} />
+          {/* Resume builder — BuilderLayout mounts ONE shared editor state
+              (ResumeEditorProvider) around both nested pages below, so
+              switching between Editor and Sections never re-fetches or
+              re-creates the resume — see layouts/BuilderLayout.jsx. */}
+          <Route path="builder" element={<BuilderLayout />}>
+            <Route index            element={<ResumeEditorPage />} />
+            <Route path="sections"  element={<ResumeSectionsPage />} />
+          </Route>
+          <Route path="builder/:resumeId" element={<BuilderLayout />}>
+            <Route index            element={<ResumeEditorPage />} />
+            <Route path="sections"  element={<ResumeSectionsPage />} />
+          </Route>
           <Route path="profile"           element={<ProfilePage />} />
           {/* Phase 3: referral hub */}
           <Route path="referral"          element={<ReferralPage />} />

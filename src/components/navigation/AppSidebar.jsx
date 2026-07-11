@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Logo } from '../common/Logo';
 import { Icon } from '../icons/Icon';
@@ -6,12 +6,24 @@ import { Icon } from '../icons/Icon';
 export const AppSidebar = () => {
   const { user, premium, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => { logout(); navigate('/'); };
+
+  // "Sections" only makes sense in the context of a specific, SAVED
+  // resume (its content lives inside that resume's builder session).
+  // Since this sidebar is rendered above the nested /app/builder/:id
+  // routes (not inside their <Outlet/>), it can't read useParams() for
+  // that id directly — so it derives it from the current URL instead.
+  // The link only appears while you're actually inside a saved resume's
+  // builder pages, and points at that exact resume's Sections page.
+  const builderMatch = location.pathname.match(/^\/app\/builder\/([^/]+)/);
+  const activeResumeId = builderMatch ? builderMatch[1] : null;
 
   const navItems = [
     { to: '/app/dashboard', icon: 'grid',     label: 'Dashboard' },
     { to: '/app/builder',   icon: 'text',     label: 'New Resume' },
+    ...(activeResumeId ? [{ to: `/app/builder/${activeResumeId}/sections`, icon: 'grid', label: 'Sections' }] : []),
     { to: '/app/referral',  icon: 'sparkles', label: 'Referral hub' },
     { to: '/app/profile',   icon: 'user',     label: 'Profile'    },
     { to: '/pricing',       icon: 'crown',    label: 'Upgrade',   hideIfPremium: true },
@@ -25,7 +37,7 @@ export const AppSidebar = () => {
 
       <nav className="flex-1 p-3 space-y-0.5">
         {navItems.map(({ to, icon, label }) => (
-          <NavLink key={to} to={to} end={to === '/app/dashboard'}
+          <NavLink key={to} to={to} end={to === '/app/dashboard' || to === '/app/builder'}
             className={({ isActive }) =>
               `flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-all
                ${isActive

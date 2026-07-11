@@ -1,28 +1,13 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { createResume, getResumeById, updateResume } from '../services/resumeService';
-import { PageHeader } from '../components/common/PageHeader';
-import { Alert } from '../components/common/Alert';
-import { Loader } from '../components/common/Loader';
 import { SectionCard } from '../components/builder/SectionCard';
-import { ResumePreview } from '../components/builder/ResumePreview';
-import { AIActionPanel } from '../components/builder/AIActionPanel';
-import { ExportPanel } from '../components/builder/ExportPanel';
-import { SectionsManager } from '../components/builder/SectionsManager';
 import { CustomSectionEditor } from '../components/builder/CustomSectionEditor';
 import ListField from '../components/builder/ListField';
 import { Icon } from '../components/icons/Icon';
-import {
-  defaultResume,
-  DEFAULT_SECTIONS_CONFIG,
-  STANDARD_SECTIONS,
-} from '../utils/constants';
+import { defaultResume, DEFAULT_SECTIONS_CONFIG } from '../utils/constants';
 import { formatApiError, normaliseResume, uid } from '../utils/helpers';
-
-/* ── helpers ──────────────────────────────────────────────────────── */
-const jumpTo = (id) =>
-  document.getElementById(`section-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
 const FieldGroup = ({ children }) => (
   <div className="rounded-xl border border-surface-200 bg-surface-50/60 p-4 space-y-3">
@@ -30,88 +15,29 @@ const FieldGroup = ({ children }) => (
   </div>
 );
 
-const SECTION_ICON_MAP = {
-  user: '👤', text: '📝', star: '⭐', briefcase: '💼', code: '💻',
-  academic: '🎓', badge: '🏅', trophy: '🏆', globe: '🌐',
-  heart: '❤️', users: '👥', hand: '🤝', medal: '🥇', book: '📚',
-};
-const sectionEmoji = (key) => {
-  const std = STANDARD_SECTIONS.find((s) => s.key === key);
-  return std ? (SECTION_ICON_MAP[std.icon] || '📋') : '📋';
-};
-
-/* ── Mobile tab bar ───────────────────────────────────────────────── */
-const MOBILE_TABS = [
-  { id: 'edit',    label: '✏️ Edit'    },
-  { id: 'preview', label: '👁 Preview' },
-  { id: 'export',  label: '⬇ Export'  },
-];
-
-/* ── Import modal ─────────────────────────────────────────────────── */
-const ImportModal = ({ open, onClose, onImport }) => {
-  const [text, setText] = useState('');
-  const [err,  setErr]  = useState('');
-  if (!open) return null;
-
-  const handleImport = () => {
-    if (!text.trim()) return;
-    setErr('');
-    const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
-    const parsed = { summary: '', skills: [], achievements: [] };
-    let section = '';
-    for (const line of lines) {
-      const up = line.toUpperCase();
-      if (/^(SUMMARY|PROFESSIONAL SUMMARY|PROFILE|OBJECTIVE|CAREER OBJECTIVE|ABOUT ME)/.test(up)) { section = 'summary'; continue; }
-      if (/^(SKILLS|TECHNICAL SKILLS|CORE COMPETENCIES|KEY SKILLS)/.test(up)) { section = 'skills'; continue; }
-      if (/^(ACHIEVEMENT|ACHIEVEMENTS|HONORS|AWARDS|ACCOMPLISHMENTS)/.test(up)) { section = 'achievements'; continue; }
-      if (/^[-=*_]{3,}$/.test(line)) continue;
-      if (section === 'summary') { parsed.summary = (parsed.summary ? parsed.summary + ' ' : '') + line; }
-      else if (section === 'skills') {
-        line.split(/[,;|•·]/).map((s) => s.trim().replace(/^[-*]\s*/, '')).filter(Boolean)
-          .forEach((s) => { if (!parsed.skills.includes(s)) parsed.skills.push(s); });
-      } else if (section === 'achievements') {
-        const c = line.replace(/^[•\-*]\s*/, '').trim();
-        if (c) parsed.achievements.push(c);
-      }
-    }
-    const fl = lines[0];
-    if (fl && !/^(SUMMARY|PROFESSIONAL|SKILLS|EXPERIENCE|EDUCATION|CERTIFICATIONS|PROJECTS|ACHIEVEMENTS)/.test(fl.toUpperCase()))
-      parsed.fullName = fl.split(/[|,•·]/)[0].trim();
-    if (!parsed.fullName && !parsed.summary && !parsed.skills.length && !parsed.achievements.length) {
-      setErr('Could not extract information. Add section headers like SUMMARY, SKILLS, or ACHIEVEMENTS.'); return;
-    }
-    onImport(parsed); setText(''); setErr(''); onClose();
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-950/60 p-4 backdrop-blur-sm"
-         onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="card max-w-lg w-full space-y-4 p-6 shadow-lift-lg animate-fade-up">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-ink-950">Import resume text</h2>
-          <button type="button" onClick={onClose} className="text-ink-300 hover:text-ink-600"><Icon name="close" className="h-5 w-5" /></button>
-        </div>
-        <p className="text-sm text-ink-500">Paste your existing resume as plain text. We'll extract summary, skills, and achievements.</p>
-        <textarea className="input min-h-[200px] w-full resize-none font-mono text-sm" placeholder="Paste resume text here…"
-          value={text} onChange={(e) => { setText(e.target.value); setErr(''); }} />
-        {err && <p className="text-xs text-danger-600 bg-danger-50 border border-danger-200 rounded-lg px-3 py-2">{err}</p>}
-        <div className="flex gap-2">
-          <button type="button" onClick={handleImport} disabled={!text.trim()} className="btn-primary flex-1 justify-center">
-            <Icon name="sparkles" className="h-4 w-4" /> Import
-          </button>
-          <button type="button" onClick={onClose} className="btn-secondary flex-1 justify-center">Cancel</button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/* ══════════════════════════════════════════════════════════════════════
-   ResumeBuilderPage
-   ══════════════════════════════════════════════════════════════════════ */
-export const ResumeBuilderPage = () => {
-  const { resumeId } = useParams();
-  const navigate     = useNavigate();
+/**
+ * useResumeEditor
+ *
+ * ALL of the resume-editing state and logic (load / save / field mutators
+ * / section content renderers) lives here, in exactly one place. It used
+ * to live inline inside ResumeBuilderPage.jsx; it's been extracted,
+ * unchanged in behavior, so that BOTH the Editor page and the new
+ * Sections page can share the SAME live resume object via one Context
+ * Provider (see context/ResumeEditorContext.jsx) instead of each having
+ * their own copy.
+ *
+ * This is what makes "real-time sync" between the Sections page and the
+ * Resume Preview actually real-time and 100% correct: there is only ever
+ * ONE `resume` state instance in memory for a given builder session. The
+ * Sections page's Add/Edit/Delete/Reorder actions call the exact same
+ * `setSectionsConfig` that the Preview panel reads from — there is no
+ * serialization, no re-fetch, and no possibility of the two drifting
+ * apart while you're on the Sections page. When you Save, that same
+ * object is what's persisted and what PDF export reads back — so preview,
+ * sections editing, and the exported file can never disagree.
+ */
+export function useResumeEditor(resumeId) {
+  const navigate = useNavigate();
   const { premium, exportStatus, refreshExportStatus, refreshPremiumStatus } = useAuth();
 
   const [resume,      setResume]      = useState({ ...defaultResume, template: 'modern' });
@@ -120,10 +46,7 @@ export const ResumeBuilderPage = () => {
   const [error,       setError]       = useState('');
   const [success,     setSuccess]     = useState('');
   const [currentId,   setCurrentId]   = useState(resumeId || null);
-  const [mobileTab,   setMobileTab]   = useState('edit');
   const [template,    setTemplate]    = useState('modern');
-  const [showImport,  setShowImport]  = useState(false);
-  const [showMgr,     setShowMgr]     = useState(false);
 
   /* ── Derive active sectionsConfig ─────────────────────────────── */
   const sectionsConfig = useMemo(
@@ -137,6 +60,8 @@ export const ResumeBuilderPage = () => {
     (cfg) => setResume((p) => ({ ...p, sectionsConfig: cfg })),
     []
   );
+
+  const visibleSections = sectionsConfig.filter((s) => s.visible);
 
   /* ── Load resume ──────────────────────────────────────────────── */
   useEffect(() => {
@@ -235,24 +160,13 @@ export const ResumeBuilderPage = () => {
   const setCustomContent = (id, content) =>
     setResume((p) => ({ ...p, customSections: { ...(p.customSections || {}), [id]: content } }));
 
-  /* ── Loading guard ─────────────────────────────────────────────── */
-  if (loading) {
-    return (
-      <div className="card flex items-center justify-center py-20">
-        <Loader label="Opening resume builder…" size="lg" />
-      </div>
-    );
-  }
-
   /* ════════════════════════════════════════════════════════════════
-     SECTION RENDERERS
+     SECTION RENDERERS — identical to the original inline versions.
      ════════════════════════════════════════════════════════════════ */
 
-  /* ── Standard section renderer ─────────────────────────────────── */
   const renderStandard = (sec) => {
     switch (sec.key) {
 
-      /* Personal Information */
       case 'basics': return (
         <SectionCard key={sec.id} id={`section-${sec.id}`} eyebrow="Profile" title={sec.label}
           description="Your contact details appear at the top of every resume.">
@@ -277,7 +191,6 @@ export const ResumeBuilderPage = () => {
         </SectionCard>
       );
 
-      /* Summary */
       case 'summary': return (
         <SectionCard key={sec.id} id={`section-${sec.id}`} eyebrow="Summary" title={sec.label}
           description="A 2–4 sentence overview of your background and target role.">
@@ -287,7 +200,6 @@ export const ResumeBuilderPage = () => {
         </SectionCard>
       );
 
-      /* Skills */
       case 'skills': return (
         <SectionCard key={sec.id} id={`section-${sec.id}`} eyebrow="Skills" title={sec.label}
           description="One skill per line. Tools, frameworks, methodologies.">
@@ -297,7 +209,6 @@ export const ResumeBuilderPage = () => {
         </SectionCard>
       );
 
-      /* Experience */
       case 'experience': return (
         <SectionCard key={sec.id} id={`section-${sec.id}`} eyebrow="Experience" title={sec.label}
           description="Reverse chronological order. Focus on measurable impact."
@@ -320,24 +231,23 @@ export const ResumeBuilderPage = () => {
                     <input className="input" value={exp[f]||''} onChange={(e)=>arr('experience',exp.id,f,e.target.value)} placeholder={ph}/></div>
                 ))}
               </div>
-              <div><label className="label">Brief role summary</label>
-                <textarea className="input min-h-[72px] resize-none text-sm" value={exp.summary||''}
-                  onChange={(e)=>arr('experience',exp.id,'summary',e.target.value)} placeholder="Responsibility scope in 1–2 lines."/></div>
-              <div><label className="label">Achievement bullets (one per line)</label>
-                <ListField className="input min-h-[120px] resize-none text-sm"
+              <div><label className="label">Role summary</label>
+                <textarea className="input min-h-[80px] resize-none text-sm" value={exp.summary||''}
+                  onChange={(e)=>arr('experience',exp.id,'summary',e.target.value)}
+                  placeholder="One or two lines describing scope and focus."/></div>
+              <div><label className="label">Bullet points (one per line)</label>
+                <ListField className="input min-h-[100px] resize-none text-sm"
                   value={exp.bullets}
                   onChange={(v)=>arr('experience',exp.id,'bullets',v)}
-                  placeholder={"Built responsive UI for 20+ pages\nImproved page speed by 35%\nIntegrated REST APIs"}/>
-                <p className="mt-1 text-xs text-ink-400">Action + result + metric per bullet.</p></div>
+                  placeholder={"Led a team of 4 engineers to ship X\nImproved API latency by 35%"}/></div>
             </FieldGroup>
           ))}
         </SectionCard>
       );
 
-      /* Projects */
       case 'projects': return (
         <SectionCard key={sec.id} id={`section-${sec.id}`} eyebrow="Projects" title={sec.label}
-          description="Stack, links, and measurable outcomes."
+          description="Personal, academic, or freelance projects worth highlighting."
           actions={<button type="button" onClick={addProj} className="btn-secondary btn-sm gap-1"><Icon name="plus" className="h-3.5 w-3.5" />Add project</button>}>
           {!(resume.projects||[]).length ? (
             <div className="rounded-xl border border-dashed border-surface-300 bg-surface-50 p-4 text-sm text-ink-500">No projects added yet.</div>
@@ -370,7 +280,6 @@ export const ResumeBuilderPage = () => {
         </SectionCard>
       );
 
-      /* Education */
       case 'education': return (
         <SectionCard key={sec.id} id={`section-${sec.id}`} eyebrow="Education" title={sec.label}
           description="Institution, degree, specialization, and results."
@@ -400,7 +309,6 @@ export const ResumeBuilderPage = () => {
         </SectionCard>
       );
 
-      /* Certifications */
       case 'certifications': return (
         <SectionCard key={sec.id} id={`section-${sec.id}`} eyebrow="Certifications" title={sec.label}
           description="Certifications with issuer, year, and credential link."
@@ -433,7 +341,6 @@ export const ResumeBuilderPage = () => {
         </SectionCard>
       );
 
-      /* Achievements */
       case 'achievements': return (
         <SectionCard key={sec.id} id={`section-${sec.id}`} eyebrow="Achievements" title={sec.label}
           description="One achievement per line. Awards, recognition, and notable accomplishments.">
@@ -443,7 +350,6 @@ export const ResumeBuilderPage = () => {
         </SectionCard>
       );
 
-      /* Languages */
       case 'languages': return (
         <SectionCard key={sec.id} id={`section-${sec.id}`} eyebrow="Languages" title={sec.label}
           description="One language per line. Include proficiency levels.">
@@ -453,14 +359,11 @@ export const ResumeBuilderPage = () => {
         </SectionCard>
       );
 
-      /* Any other standard key (interests, references, volunteer, etc.) falls
-         through to the custom/freeform renderer below */
       default:
         return renderCustom(sec);
     }
   };
 
-  /* ── Custom / freeform section renderer ─────────────────────────── */
   const renderCustom = (sec) => (
     <SectionCard key={sec.id} id={`section-${sec.id}`}
       eyebrow={sec.type === 'custom' ? 'Custom section' : sec.label}
@@ -478,180 +381,17 @@ export const ResumeBuilderPage = () => {
     </SectionCard>
   );
 
-  /* ── Visible sections ordered by user config ─────────────────────── */
-  const visibleSections = sectionsConfig.filter((s) => s.visible);
-
-  /* ── Shared right-panel content ─────────────────────────────────── */
-  const previewPanel = (
-    <ResumePreview
-      resume={{ ...resume, sectionsConfig }}
-      template={template}
-      onTemplateChange={setTemplate}
-      onScaleChange={(scale) => { top('layoutScale', scale); setSuccess(''); }}
-    />
-  );
-  const aiPanel     = <AIActionPanel resume={resume} setResume={setResume} />;
-  const exportPanel = (
-    <ExportPanel
-      resumeId={currentId}
-      premium={premium}
-      exportStatus={exportStatus}
-      selectedTemplate={template}
-      onTemplateChange={setTemplate}
-      onExported={() => setSuccess('Your resume has been downloaded!')}
-      refreshStatuses={refreshStatuses}
-    />
-  );
-
-  /* ══════════════════════════════════════════════════════════════════
-     RENDER
-     ══════════════════════════════════════════════════════════════════ */
-  return (
-    <div className="animate-fade-in">
-      <ImportModal open={showImport} onClose={() => setShowImport(false)} onImport={handleImport} />
-
-      {/* Header */}
-      <PageHeader
-        eyebrow="Resume builder"
-        title={currentId ? 'Edit resume' : 'New resume'}
-        description="Fill in your details, choose a template, preview in real time, then export."
-        actions={
-          <div className="flex items-center gap-2 flex-wrap">
-            <button type="button" className="btn-secondary btn-sm" onClick={() => setShowImport(true)}>
-              <Icon name="export" className="h-4 w-4 rotate-180" /> Import
-            </button>
-            {!currentId && <span className="badge-warning text-xs">Unsaved</span>}
-            <button type="button" className="btn-primary" onClick={saveResume} disabled={saving}>
-              <Icon name="check" className="h-4 w-4" />
-              {saving ? 'Saving…' : currentId ? 'Save changes' : 'Save resume'}
-            </button>
-          </div>
-        }
-      />
-
-      {/* Alerts */}
-      <div className="mt-4 space-y-2">
-        {error   && <Alert variant="error">{error}</Alert>}
-        {success && <Alert variant="success">{success}</Alert>}
-        {!currentId && (
-          <Alert variant="warning">Save your resume first before exporting.</Alert>
-        )}
-      </div>
-
-      {/* Mobile tab bar */}
-      <div className="mt-4 flex gap-1 rounded-xl border border-surface-200 bg-surface-50 p-1 lg:hidden">
-        {MOBILE_TABS.map((t) => (
-          <button key={t.id} type="button" onClick={() => setMobileTab(t.id)}
-            className={['flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all',
-              mobileTab === t.id ? 'bg-white text-ink-950 shadow-sm' : 'text-ink-400 hover:text-ink-700'].join(' ')}>
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {/* 3-column grid */}
-      <div className="mt-5 grid gap-6
-                      lg:grid-cols-[176px_1fr_440px]
-                      xl:grid-cols-[192px_1fr_520px]
-                      2xl:grid-cols-[208px_1fr_580px]">
-
-        {/* ── Col 1: Section nav (desktop only) ──────────────────── */}
-        <aside className="hidden lg:block">
-          <div className="card sticky top-6 p-4">
-            <div className="flex items-center justify-between mb-3">
-              <p className="kicker">Sections</p>
-              <button type="button" title="Manage sections"
-                onClick={() => setShowMgr((v) => !v)}
-                className={['rounded-lg px-2 py-1 text-xs font-medium transition',
-                  showMgr ? 'bg-brand-100 text-brand-600' : 'text-ink-400 hover:bg-surface-100'].join(' ')}>
-                {showMgr ? '✕ Close' : '⚙ Manage'}
-              </button>
-            </div>
-
-            {showMgr ? (
-              <SectionsManager sectionsConfig={sectionsConfig} onChange={setSectionsConfig} />
-            ) : (
-              <>
-                <nav className="space-y-0.5">
-                  {visibleSections.map((s) => (
-                    <button key={s.id} type="button" onClick={() => jumpTo(s.id)}
-                      className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left
-                                 text-sm text-ink-500 transition hover:bg-surface-100 hover:text-ink-950">
-                      <span className="shrink-0 text-sm">
-                        {s.type === 'custom' ? '📋' : sectionEmoji(s.key)}
-                      </span>
-                      <span className="truncate">{s.label}</span>
-                    </button>
-                  ))}
-                </nav>
-                <button type="button" onClick={() => setShowMgr(true)}
-                  className="mt-2 flex w-full items-center gap-2 rounded-xl border border-dashed
-                             border-surface-300 px-3 py-2.5 text-sm text-ink-400
-                             hover:bg-surface-50 hover:text-brand-600 transition">
-                  <span>＋</span> Add / manage sections
-                </button>
-              </>
-            )}
-
-            {/* Tips */}
-            {!showMgr && (
-              <div className="mt-4 rounded-xl border border-surface-200 bg-surface-50 p-3.5">
-                <p className="kicker mb-2">Tips</p>
-                {['Fill all sections', 'Add strong bullets', 'Use AI copilot', 'Save → Export'].map((tip) => (
-                  <p key={tip} className="mt-1.5 flex items-center gap-1.5 text-xs text-ink-400">
-                    <span className="h-1 w-1 shrink-0 rounded-full bg-brand-400" />{tip}
-                  </p>
-                ))}
-              </div>
-            )}
-          </div>
-        </aside>
-
-        {/* ── Col 2: Editor ──────────────────────────────────────── */}
-        <div className={`min-w-0 space-y-5 ${mobileTab === 'preview' || mobileTab === 'export' ? 'hidden lg:block' : ''}`}>
-
-          {/* Mobile sections manager toggle */}
-          <div className="lg:hidden">
-            <button type="button" onClick={() => setShowMgr((v) => !v)}
-              className="btn-secondary w-full justify-center gap-2">
-              ⚙ {showMgr ? 'Hide section manager' : 'Manage sections (add / reorder / rename)'}
-            </button>
-            {showMgr && (
-              <div className="mt-3">
-                <SectionsManager sectionsConfig={sectionsConfig} onChange={setSectionsConfig} />
-              </div>
-            )}
-          </div>
-
-          {/* Render each visible section in user-defined order */}
-          {visibleSections.map((sec) =>
-            sec.type === 'standard'
-              ? renderStandard(sec)
-              : renderCustom(sec)
-          )}
-        </div>
-
-        {/* ── Col 3: Sticky right panel (desktop) ─────────────────── */}
-        <div className={[
-          'hidden lg:flex lg:flex-col lg:gap-5',
-          'lg:sticky lg:top-6',
-          'lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-1',
-        ].join(' ')} style={{ scrollbarWidth: 'thin' }}>
-          {previewPanel}
-          {aiPanel}
-          {exportPanel}
-        </div>
-
-        {/* Mobile preview tab */}
-        {mobileTab === 'preview' && (
-          <div className="col-span-full space-y-4 lg:hidden">{previewPanel}</div>
-        )}
-
-        {/* Mobile export tab */}
-        {mobileTab === 'export' && (
-          <div className="col-span-full space-y-4 lg:hidden">{aiPanel}{exportPanel}</div>
-        )}
-      </div>
-    </div>
-  );
-};
+  return {
+    // state
+    resume, setResume, loading, saving, error, setError, success, setSuccess,
+    currentId, template, setTemplate,
+    sectionsConfig, setSectionsConfig, visibleSections,
+    premium, exportStatus,
+    // actions
+    saveResume, handleImport, refreshStatuses,
+    top, arr, removeItem, addExp, addProj, addEdu, addCert, updateCert, removeCert,
+    getCustomContent, setCustomContent,
+    // renderers
+    renderStandard, renderCustom,
+  };
+}

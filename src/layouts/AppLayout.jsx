@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { AppSidebar } from '../components/navigation/AppSidebar';
 import { Logo } from '../components/common/Logo';
@@ -8,14 +8,21 @@ import { Icon } from '../components/icons/Icon';
 export const AppLayout = () => {
   const { user, premium, showInactivityWarning, dismissInactivityWarning, logout } = useAuth();
   const navigate  = useNavigate();
+  const location  = useLocation();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const close = () => setMobileNavOpen(false);
 
   const handleLogoutFromWarning = () => { logout(); navigate('/login'); };
 
+  // Same contextual detection as AppSidebar.jsx — see that file for why
+  // this is derived from the URL rather than useParams().
+  const builderMatch = location.pathname.match(/^\/app\/builder\/([^/]+)/);
+  const activeResumeId = builderMatch ? builderMatch[1] : null;
+
   const mobileNavItems = [
     { to: '/app/dashboard', icon: 'grid',     label: 'Dashboard' },
     { to: '/app/builder',   icon: 'text',     label: 'New Resume' },
+    ...(activeResumeId ? [{ to: `/app/builder/${activeResumeId}/sections`, icon: 'grid', label: 'Sections' }] : []),
     { to: '/app/referral',  icon: 'sparkles', label: 'Referral hub' },
     { to: '/app/profile',   icon: 'user',     label: 'Profile'    },
     ...(!premium?.isPremium ? [{ to: '/pricing', icon: 'crown', label: 'Upgrade' }] : []),
@@ -49,7 +56,7 @@ export const AppLayout = () => {
 
               <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
                 {mobileNavItems.map(({ to, icon, label }) => (
-                  <NavLink key={to} to={to} end={to === '/app/dashboard'}
+                  <NavLink key={to} to={to} end={to === '/app/dashboard' || to === '/app/builder'}
                     onClick={close}
                     className={({ isActive }) =>
                       `flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-all
