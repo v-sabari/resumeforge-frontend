@@ -1,4 +1,18 @@
-# Logs
+# ── Dependencies ──────────────────────────────────────
+node_modules
+.pnp
+.pnp.js
+
+# ── Build output ──────────────────────────────────────
+dist
+dist-ssr
+build
+*.local
+
+# ── Generated at build time ───────────────────────────
+api/_pdf-compiled.css
+
+# ── Logs ──────────────────────────────────────────────
 logs
 *.log
 npm-debug.log*
@@ -7,26 +21,31 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# ── Environment files ─────────────────────────────────
+.env
+.env.local
+.env.development
+.env.production
+.env.*.local
 
-# Editor directories and files
+# ── Editor / IDE ──────────────────────────────────────
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# Environment files
-.env
-.env.local
-.env.production
+# ── OS files ────────────────────────────────────────────
+.DS_Store
+Thumbs.db
 
+# ── Testing / coverage ──────────────────────────────────
+coverage
+*.lcov
 
-
+# ── Misc ─────────────────────────────────────────────────
+*.tsbuildinfo
+.cache
