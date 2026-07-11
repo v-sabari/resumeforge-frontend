@@ -52,7 +52,7 @@ export const FresherTemplate = ({ data }) => {
           ))}
         </div>) : null;
       case 'skills': return skills?.length ? (
-        <div key="skills" className="mb-5"><SH>Technical Skills</SH><div className="flex flex-wrap gap-2">{(Array.isArray(skills)?skills:[skills]).map((s,i)=><span key={i} className="bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded text-xs font-medium break-words max-w-full">{s}</span>)}</div></div>
+        <div key="skills" className="mb-5"><SH>Technical Skills</SH><div className="flex flex-col items-start gap-1.5">{(Array.isArray(skills)?skills:[skills]).map((s,i)=><span key={i} className="bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded text-xs font-medium break-words max-w-full">{s}</span>)}</div></div>
       ) : null;
       case 'achievements': return achievements?.length ? (<div key="achievements" className="mb-5"><SH>Achievements &amp; Awards</SH><ul className="space-y-1">{achievements.map((a,i)=><li key={i} className="flex items-start text-sm text-gray-700 break-inside-avoid"><span className="text-blue-400 mr-2 shrink-0">▸</span><span className="break-words min-w-0">{a}</span></li>)}</ul></div>) : null;
       case 'languages': return languages?.length ? (<div key="languages" className="mb-5"><SH>Languages</SH><div className="text-gray-700 text-sm break-words">{languages.join(' · ')}</div></div>) : null;

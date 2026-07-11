@@ -70,7 +70,17 @@ export const ClassicTemplate = ({ data }) => {
 
       case 'skills':
         if (!(skills || []).length) return null;
-        return <div key="skills"><SH>Skills</SH><p className="break-words">{(skills || []).join(', ')}</p></div>;
+        // Each entry gets its own line — the editor stores skills as one
+        // array item per Enter press, so preserving that means rendering
+        // one block per item, not re-joining them into a single string.
+        return (
+          <div key="skills">
+            <SH>Skills</SH>
+            <div className="space-y-0.5">
+              {(skills || []).map((s, i) => <p key={i} className="break-words text-gray-700">{s}</p>)}
+            </div>
+          </div>
+        );
 
       case 'experience':
         if (!(experience || []).length) return null;

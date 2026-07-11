@@ -36,7 +36,16 @@ export const MinimalATSTemplate = ({ data }) => {
             </div>
           ))}</div>
         </React.Fragment>) : null;
-      case 'skills': return skills?.length ? (<React.Fragment key="skills"><SH>Skills</SH><p className="text-gray-600 text-xs leading-relaxed break-words">{Array.isArray(skills)?skills.join('  ·  '):skills}</p></React.Fragment>) : null;
+      case 'skills': return skills?.length ? (
+        <React.Fragment key="skills">
+          <SH>Skills</SH>
+          <div className="space-y-0.5">
+            {(Array.isArray(skills) ? skills : [skills]).map((s, i) => (
+              <p key={i} className="text-gray-600 text-xs leading-relaxed break-words">{s}</p>
+            ))}
+          </div>
+        </React.Fragment>
+      ) : null;
       case 'projects': return projects?.length ? (
         <React.Fragment key="projects"><SH>Projects</SH>
           <div className="space-y-3">{projects.map((p,i)=>(

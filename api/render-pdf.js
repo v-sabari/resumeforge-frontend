@@ -72,6 +72,11 @@ var DEFAULT_PAGE_MARGIN = { top: 32, bottom: 32 };
 function getPageMargin(templateId) {
   return TEMPLATE_PAGE_MARGINS[templateId] || DEFAULT_PAGE_MARGIN;
 }
+function scaleStyle(scale) {
+  const s = typeof scale === "number" && scale > 0 && scale !== 1 ? scale : 1;
+  if (s === 1) return void 0;
+  return { width: `${A4_W / s}px`, zoom: s };
+}
 
 // src/components/resume/templates/ModernProTemplate.jsx
 import React from "react";
@@ -1124,8 +1129,11 @@ async function handler(req, res) {
     const templateKey = TEMPLATE_MAP[template] ? template : "modern";
     const Template = TEMPLATE_MAP[templateKey];
     const { top: marginTop, bottom: marginBottom } = getPageMargin(templateKey);
+    const layoutScale = typeof resume.layoutScale === "number" ? resume.layoutScale : 1;
+    const wrapStyle = scaleStyle(layoutScale);
+    const templateEl = React7.createElement(Template, { data });
     const bodyHtml = ReactDOMServer.renderToStaticMarkup(
-      React7.createElement(Template, { data })
+      wrapStyle ? React7.createElement("div", { style: wrapStyle }, templateEl) : templateEl
     );
     const html = wrapHtml(bodyHtml);
     const browser = await getBrowser();

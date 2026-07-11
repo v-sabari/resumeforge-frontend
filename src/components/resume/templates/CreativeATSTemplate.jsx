@@ -53,7 +53,16 @@ export const CreativeATSTemplate = ({ data }) => {
             </div>
           ))}</div>
         </div>) : null;
-      case 'skills': return skills?.length ? (<div key="skills" className="mb-6"><ST>Skills &amp; Expertise</ST><div className="ml-11 text-gray-700 text-sm break-words">{Array.isArray(skills)?skills.join(' · '):skills}</div></div>) : null;
+      case 'skills': return skills?.length ? (
+        <div key="skills" className="mb-6">
+          <ST>Skills &amp; Expertise</ST>
+          <div className="ml-11 space-y-1">
+            {(Array.isArray(skills) ? skills : [skills]).map((s, i) => (
+              <p key={i} className="text-gray-700 text-sm break-words">{s}</p>
+            ))}
+          </div>
+        </div>
+      ) : null;
       case 'achievements': return achievements?.length ? (<div key="achievements" className="mb-6"><ST>Achievements</ST><ul className="ml-11 space-y-1.5">{achievements.map((a,i)=><li key={i} className="text-gray-700 text-sm flex items-start break-inside-avoid"><span className="text-blue-400 mr-2 shrink-0">▸</span><span className="break-words min-w-0">{a}</span></li>)}</ul></div>) : null;
       case 'languages': return languages?.length ? (<div key="languages" className="mb-6"><ST>Languages</ST><div className="ml-11 text-gray-700 text-sm break-words">{languages.join(' · ')}</div></div>) : null;
       case 'certifications': return certifications?.length ? (<div key="certifications" className="mb-6"><ST>Certifications</ST><div className="ml-11 space-y-1.5">{certifications.map((c,i)=><div key={i} className="text-sm text-gray-700 break-words break-inside-avoid"><span className="font-medium">{c.name}</span>{c.issuer&&<span className="text-gray-500"> · {c.issuer}</span>}{c.year&&<span className="text-gray-400"> ({c.year})</span>}</div>)}</div></div>) : null;

@@ -101,7 +101,14 @@ export const ModernProTemplate = ({ data }) => {
         </div>
       ) : null;
       case 'skills': return skills?.length ? (
-        <div key="skills" className="mb-6"><h2 className={H}>Skills</h2><div className="text-gray-700 text-sm break-words">{Array.isArray(skills)?skills.join(' · '):skills}</div></div>
+        <div key="skills" className="mb-6">
+          <h2 className={H}>Skills</h2>
+          <div className="space-y-0.5">
+            {(Array.isArray(skills) ? skills : [skills]).map((s, i) => (
+              <p key={i} className={`${B} break-words`}>{s}</p>
+            ))}
+          </div>
+        </div>
       ) : null;
       case 'achievements': return achievements?.length ? (
         <div key="achievements" className="mb-6"><h2 className={H}>Achievements</h2><ul className="space-y-1.5">{achievements.map((a,i)=><li key={i} className={`flex items-start break-inside-avoid ${B}`}><span className={`font-bold mr-2 shrink-0 ${BL}`}>▸</span><span className="leading-relaxed break-words min-w-0">{a}</span></li>)}</ul></div>
