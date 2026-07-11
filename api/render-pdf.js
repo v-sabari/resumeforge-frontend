@@ -189,7 +189,7 @@ var ModernProTemplate = ({ data }) => {
       case "skills":
         return skills?.length ? /* @__PURE__ */ jsxs("div", { className: "mb-6", children: [
           /* @__PURE__ */ jsx("h2", { className: H, children: "Skills" }),
-          /* @__PURE__ */ jsx("div", { className: "text-gray-700 text-sm break-words", children: Array.isArray(skills) ? skills.join(" \xB7 ") : skills })
+          /* @__PURE__ */ jsx("div", { className: "space-y-0.5", children: (Array.isArray(skills) ? skills : [skills]).map((s, i) => /* @__PURE__ */ jsx("p", { className: `${B} break-words`, children: s }, i)) })
         ] }, "skills") : null;
       case "achievements":
         return achievements?.length ? /* @__PURE__ */ jsxs("div", { className: "mb-6", children: [
@@ -302,7 +302,7 @@ var MinimalATSTemplate = ({ data }) => {
       case "skills":
         return skills?.length ? /* @__PURE__ */ jsxs2(React2.Fragment, { children: [
           /* @__PURE__ */ jsx2(SH2, { children: "Skills" }),
-          /* @__PURE__ */ jsx2("p", { className: "text-gray-600 text-xs leading-relaxed break-words", children: Array.isArray(skills) ? skills.join("  \xB7  ") : skills })
+          /* @__PURE__ */ jsx2("div", { className: "space-y-0.5", children: (Array.isArray(skills) ? skills : [skills]).map((s, i) => /* @__PURE__ */ jsx2("p", { className: "text-gray-600 text-xs leading-relaxed break-words", children: s }, i)) })
         ] }, "skills") : null;
       case "projects":
         return projects?.length ? /* @__PURE__ */ jsxs2(React2.Fragment, { children: [
@@ -511,7 +511,7 @@ var ExecutiveTemplate = ({ data }) => {
       case "skills":
         return skills?.length ? /* @__PURE__ */ jsxs3("div", { className: "mb-6", children: [
           /* @__PURE__ */ jsx3(SH2, { children: "Core Competencies" }),
-          /* @__PURE__ */ jsx3("div", { className: "flex flex-wrap gap-2", children: (Array.isArray(skills) ? skills : [skills]).map((s, i) => /* @__PURE__ */ jsx3("span", { className: "bg-gray-100 text-gray-700 px-3 py-1 text-sm rounded-sm break-words max-w-full", children: s }, i)) })
+          /* @__PURE__ */ jsx3("div", { className: "flex flex-col items-start gap-1.5", children: (Array.isArray(skills) ? skills : [skills]).map((s, i) => /* @__PURE__ */ jsx3("span", { className: "bg-gray-100 text-gray-700 px-3 py-1 text-sm rounded-sm break-words max-w-full", children: s }, i)) })
         ] }, "skills") : null;
       case "languages":
         return languages?.length ? /* @__PURE__ */ jsxs3("div", { className: "mb-6", children: [
@@ -658,7 +658,7 @@ var FresherTemplate = ({ data }) => {
       case "skills":
         return skills?.length ? /* @__PURE__ */ jsxs4("div", { className: "mb-5", children: [
           /* @__PURE__ */ jsx4(SH2, { children: "Technical Skills" }),
-          /* @__PURE__ */ jsx4("div", { className: "flex flex-wrap gap-2", children: (Array.isArray(skills) ? skills : [skills]).map((s, i) => /* @__PURE__ */ jsx4("span", { className: "bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded text-xs font-medium break-words max-w-full", children: s }, i)) })
+          /* @__PURE__ */ jsx4("div", { className: "flex flex-col items-start gap-1.5", children: (Array.isArray(skills) ? skills : [skills]).map((s, i) => /* @__PURE__ */ jsx4("span", { className: "bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded text-xs font-medium break-words max-w-full", children: s }, i)) })
         ] }, "skills") : null;
       case "achievements":
         return achievements?.length ? /* @__PURE__ */ jsxs4("div", { className: "mb-5", children: [
@@ -827,7 +827,7 @@ var CreativeATSTemplate = ({ data }) => {
       case "skills":
         return skills?.length ? /* @__PURE__ */ jsxs5("div", { className: "mb-6", children: [
           /* @__PURE__ */ jsx5(ST, { children: "Skills & Expertise" }),
-          /* @__PURE__ */ jsx5("div", { className: "ml-11 text-gray-700 text-sm break-words", children: Array.isArray(skills) ? skills.join(" \xB7 ") : skills })
+          /* @__PURE__ */ jsx5("div", { className: "ml-11 space-y-1", children: (Array.isArray(skills) ? skills : [skills]).map((s, i) => /* @__PURE__ */ jsx5("p", { className: "text-gray-700 text-sm break-words", children: s }, i)) })
         ] }, "skills") : null;
       case "achievements":
         return achievements?.length ? /* @__PURE__ */ jsxs5("div", { className: "mb-6", children: [
@@ -940,7 +940,7 @@ var ClassicTemplate = ({ data }) => {
         if (!(skills || []).length) return null;
         return /* @__PURE__ */ jsxs6("div", { children: [
           /* @__PURE__ */ jsx6(SH, { children: "Skills" }),
-          /* @__PURE__ */ jsx6("p", { className: "break-words", children: (skills || []).join(", ") })
+          /* @__PURE__ */ jsx6("div", { className: "space-y-0.5", children: (skills || []).map((s, i) => /* @__PURE__ */ jsx6("p", { className: "break-words text-gray-700", children: s }, i)) })
         ] }, "skills");
       case "experience":
         if (!(experience || []).length) return null;
