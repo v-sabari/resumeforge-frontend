@@ -56,26 +56,37 @@ export function getPageMargin(templateId) {
  * exported file can never silently drift from what the user approved on
  * screen.
  *
- * HOW IT WORKS: `scale` (0 < scale <= 1) is applied via the CSS `zoom`
- * property, not `transform: scale()`. This distinction matters:
+ * `scale` can go BOTH directions:
+ *   - scale < 1 shrinks (used when the content overflows the chosen page
+ *     count, e.g. 1.5 pages of writing squeezed into 1 page).
+ *   - scale > 1 enlarges (used when the content is short of the chosen
+ *     page count, e.g. 1.5 pages of writing stretched to fully occupy 2).
+ * Both are the exact same mechanism in opposite directions — see
+ * utils/compression.js for the closed-loop, re-measured search that picks
+ * which one and by how much.
+ *
+ * HOW IT WORKS: `scale` is applied via the CSS `zoom` property, not
+ * `transform: scale()`. This distinction matters:
  *   - `transform` is a paint-only effect — it does NOT change the box's
  *     layout size, so scrollHeight/offsetHeight (what both the preview's
  *     page-count math and Puppeteer's PDF paginator read) stay unchanged.
- *     Using transform here would visually shrink text while leaving the
- *     measured/paginated height exactly as before — pages would not
- *     actually reduce.
- *   - `zoom` genuinely reflows the box at the smaller size — fonts,
- *     line-heights, gaps, and padding all shrink together, and
+ *     Using transform here would visually resize text while leaving the
+ *     measured/paginated height exactly as before — the page count would
+ *     not actually change.
+ *   - `zoom` genuinely reflows the box at the new size — fonts,
+ *     line-heights, gaps, and padding all resize together, and
  *     scrollHeight/offsetHeight (and Puppeteer's own page-break
- *     measurements) report the SMALLER, already-zoomed value. That's what
- *     lets fewer physical pages result from a lower scale, and it's why
- *     this technique — not transform — is what real "shrink to fit" PDF
- *     tools use.
+ *     measurements) report the RESIZED, already-zoomed value. That's what
+ *     lets the page count actually change from a scale change, and it's
+ *     why this technique — not transform — is what real "shrink/grow to
+ *     fit" document tools use.
  *
  * The wrapping div's `width` is set to A4_W / scale so that after zoom is
  * applied, the effective on-page width is exactly A4_W again — content
  * keeps filling the full page width at every scale, with no leftover
- * blank margin and no horizontal overflow. Only vertical density changes.
+ * blank margin and no horizontal overflow. Only vertical density changes,
+ * and the template's own alignment/layout structure is completely
+ * untouched — every element just scales together, uniformly.
  *
  * This function does not decide the number by itself — see
  * utils/compression.js for the closed-loop, re-measured search that picks
@@ -83,7 +94,7 @@ export function getPageMargin(templateId) {
  * been found.
  */
 export function scaleStyle(scale) {
-  const s = (typeof scale === 'number' && scale > 0 && scale < 1) ? scale : 1;
+  const s = (typeof scale === 'number' && scale > 0 && scale !== 1) ? scale : 1;
   if (s === 1) return undefined;
   return { width: `${A4_W / s}px`, zoom: s };
 }

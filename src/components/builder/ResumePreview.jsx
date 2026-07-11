@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useImperativeHandle, forwardRef, useCallba
 import { RESUME_TEMPLATES, DEFAULT_SECTIONS_CONFIG } from '../../utils/constants';
 import { buildTransformed } from '../../utils/transformResume';
 import { A4_W, A4_H, getPageMargin, scaleStyle } from '../../utils/pageLayout';
-import { findCompressionScale, MIN_SCALE } from '../../utils/compression';
+import { findCompressionScale, MIN_SCALE, MAX_SCALE } from '../../utils/compression';
 import { CompressModal } from './CompressModal';
 import {
   ModernProTemplate,
@@ -163,7 +163,7 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange, o
   // see pageLayout.js and renderPdfHandler.jsx for the export-side half
   // of this. Default to fully uncompressed (1) for resumes that have
   // never been compressed.
-  const contentScale = typeof resume?.layoutScale === 'number' && resume.layoutScale > 0 && resume.layoutScale <= 1
+  const contentScale = typeof resume?.layoutScale === 'number' && resume.layoutScale >= MIN_SCALE && resume.layoutScale <= MAX_SCALE
     ? resume.layoutScale
     : 1;
 
@@ -187,14 +187,26 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange, o
         visibleH,
       });
 
-      if (result.fits) {
+      if (result.mode === 'unchanged') {
+        setCompressMsg({ variant: 'info', text: `Already exactly ${result.pages} page${result.pages === 1 ? '' : 's'} — no change needed.` });
+      } else if (result.fits) {
         applyScale(result.scale);
-        setCompressMsg({
-          variant: 'success',
-          text: result.scale >= 1
-            ? `Already fits in ${result.pages} page${result.pages === 1 ? '' : 's'} — no compression needed.`
-            : `Compressed to fit ${result.pages} page${result.pages === 1 ? '' : 's'}, verified by re-measuring the actual layout. Save to keep this in your exported PDF.`,
-        });
+        if (result.mode === 'shrink') {
+          setCompressMsg({
+            variant: 'success',
+            text: `Shrunk to fit ${result.pages} page${result.pages === 1 ? '' : 's'}, verified by re-measuring the actual layout. Alignment and template are unchanged. Save to keep this in your exported PDF.`,
+          });
+        } else if (result.shortOfTarget) {
+          setCompressMsg({
+            variant: 'info',
+            text: `Grown as much as it can while staying professional — there isn't enough content to fully reach ${targetPages} pages, so it settled at ${result.pages}. Save to keep this, or add more content and compress again.`,
+          });
+        } else {
+          setCompressMsg({
+            variant: 'success',
+            text: `Grown to fill ${result.pages} page${result.pages === 1 ? '' : 's'}, verified by re-measuring the actual layout. Alignment and template are unchanged. Save to keep this in your exported PDF.`,
+          });
+        }
       } else {
         // Honest failure: we do NOT apply a partial/guessed result. The
         // floor scale is the smallest we'll ever go without text becoming
@@ -269,7 +281,9 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange, o
       <div className="flex items-center justify-between gap-2 rounded-xl border border-surface-200 bg-white px-3 py-2">
         <div className="min-w-0">
           <p className="text-xs font-semibold text-ink-700">
-            {contentScale < 1 ? `Compressed · ${Math.round(contentScale * 100)}% density` : 'Full size'}
+            {contentScale < 1 ? `Compressed · ${Math.round(contentScale * 100)}% density`
+              : contentScale > 1 ? `Enlarged · ${Math.round(contentScale * 100)}% density`
+              : 'Full size'}
           </p>
           {compressMsg && (
             <p className={[
@@ -282,15 +296,15 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange, o
           )}
         </div>
         <div className="flex shrink-0 gap-1.5">
-          {contentScale < 1 && (
+          {contentScale !== 1 && (
             <button type="button" onClick={resetCompression}
               className="btn-secondary btn-sm text-xs" disabled={compressing}>
               Reset
             </button>
           )}
           <button type="button" onClick={() => setShowCompress(true)}
-            className="btn-secondary btn-sm text-xs" disabled={compressing || pages <= 1}>
-            {compressing ? 'Compressing…' : 'Compress'}
+            className="btn-secondary btn-sm text-xs" disabled={compressing}>
+            {compressing ? 'Working…' : 'Compress'}
           </button>
         </div>
       </div>
