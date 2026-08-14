@@ -11,7 +11,18 @@ export const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || '/app/dashboard';
+  // Prefer the react-router destination (ProtectedRoute navigate), then fall
+  // back to the path stashed by the api.js 401 interceptor, then dashboard.
+  const storedFrom = (() => {
+    try {
+      const v = sessionStorage.getItem('auth_redirect');
+      sessionStorage.removeItem('auth_redirect');
+      return v;
+    } catch (e) {
+      return null;
+    }
+  })();
+  const from = location.state?.from?.pathname || storedFrom || '/app/dashboard';
 
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');

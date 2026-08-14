@@ -8,9 +8,12 @@
     "build": "npm run build:pdf-css && npm run build:api && node node_modules/vite/bin/vite.js build",
     "build:csr": "node node_modules/vite/bin/vite.js build",
     "build:pdf-css": "tailwindcss -c tailwind.pdf.config.js -i ./src/pdf-input.css -o ./api/_pdf-compiled.css --minify",
-    "build:api": "esbuild src/pdf/renderPdfHandler.jsx --bundle --platform=node --format=esm --target=node20 --outfile=api/render-pdf.js --external:puppeteer-core --external:@sparticuz/chromium-min --external:react --external:react-dom --external:react-dom/server --loader:.jsx=jsx --jsx=automatic",
+    "build:api": "esbuild src/pdf/renderPdfHandler.jsx --bundle --platform=node --format=esm --target=node22 --outfile=api/render-pdf.js --external:puppeteer-core --external:@sparticuz/chromium-min --external:react --external:react-dom --external:react-dom/server --loader:.jsx=jsx --jsx=automatic",
     "preview": "node node_modules/vite/bin/vite.js preview",
-    "lint": "eslint . --ext js,jsx --max-warnings 0"
+    "lint": "eslint . --max-warnings 0"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "dependencies": {
     "@sparticuz/chromium-min": "^131.0.1",

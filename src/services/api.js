@@ -46,6 +46,11 @@ api.interceptors.response.use(
     // (including the homepage) was forcing anonymous visitors to /login.
     // The redirect should only fire for the actual protected app area.
     if (error.response?.status === 401 && window.location.pathname.startsWith('/app')) {
+      // Remember where the user was heading so /login can bounce them back
+      // after they sign in (LoginPage reads this via sessionStorage).
+      try {
+        sessionStorage.setItem('auth_redirect', window.location.pathname + window.location.search);
+      } catch (e) { /* sessionStorage unavailable — proceed without */ }
       window.location.href = '/login';
     }
     return Promise.reject(error);
