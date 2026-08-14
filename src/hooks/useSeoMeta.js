@@ -76,7 +76,7 @@ const PAGE_META = {
   '/app/builder':   { title: `Resume Builder – ${APP_NAME}`, description: 'Build your resume.',              noIndex: true },
   '/app/profile':   { title: `Profile – ${APP_NAME}`,        description: 'Manage your account.',            noIndex: true },
   '/app/referral':  { title: `Referral Hub – ${APP_NAME}`,   description: 'Refer friends and earn Premium.', noIndex: true },
-  '/admin':         { title: `Admin Panel – ${APP_NAME}`,    description: 'Admin dashboard.',                noIndex: true },
+  '/app/admin':     { title: `Admin Panel – ${APP_NAME}`,    description: 'Admin dashboard.',                noIndex: true },
   '/verify-email':  { title: `Verify Email – ${APP_NAME}`,   description: 'Verify your email.',              noIndex: true },
   '/payment/callback': { title: `Payment Confirmation – ${APP_NAME}`, description: 'Confirming your payment.',         noIndex: true },
   '/payment/success':  { title: `Payment Successful – ${APP_NAME}`,   description: 'Payment successful.',              noIndex: true },

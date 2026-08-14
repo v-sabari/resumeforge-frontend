@@ -11,6 +11,16 @@ export const Modal = ({ open, onClose, title, children, size = 'md' }) => {
     return () => { document.body.style.overflow = ''; };
   }, [open]);
 
+  // Close on Escape, matching the backdrop-click and X-button behavior.
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape' && onClose) onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   const widths = { sm: 'max-w-sm', md: 'max-w-lg', lg: 'max-w-2xl', xl: 'max-w-3xl' };

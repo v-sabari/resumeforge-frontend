@@ -43,6 +43,7 @@ import chromium from '@sparticuz/chromium-min';
 
 import { buildTransformed } from '../utils/transformResume.js';
 import { A4_W, A4_H, getPageMargin, scaleStyle } from '../utils/pageLayout.js';
+import { DEFAULT_SECTIONS_CONFIG } from '../utils/sectionsCatalog.js';
 import {
   ModernProTemplate,
   MinimalATSTemplate,
@@ -57,26 +58,6 @@ import {
 // — esbuild preserves import.meta.url semantics correctly through bundling,
 // so this correctly points at api/ where _pdf-compiled.css also lives.
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-/*
- * Inlined default sections config — deliberately NOT imported from
- * src/utils/constants.js, because that file's first line reads
- * `import.meta.env.VITE_APP_NAME`, a Vite-only global that doesn't exist
- * when this file runs as a plain Node serverless function outside Vite's
- * build pipeline. Importing constants.js here would throw at cold start.
- *
- * SYNC NOTE: if you ever reorder/rename/add a STANDARD_SECTIONS entry in
- * src/utils/constants.js, mirror the same change in this array. This is the
- * one remaining manually-synced piece (down from 4 whole files in the old
- * separate render-service).
- */
-const STANDARD_SECTION_KEYS = [
-  'basics', 'summary', 'skills', 'experience', 'projects',
-  'education', 'certifications', 'achievements', 'languages',
-];
-const DEFAULT_SECTIONS_CONFIG = STANDARD_SECTION_KEYS.map((key, i) => ({
-  id: key, type: 'standard', key, label: key, visible: true, order: i,
-}));
 
 const TEMPLATE_MAP = {
   modern: ModernProTemplate,

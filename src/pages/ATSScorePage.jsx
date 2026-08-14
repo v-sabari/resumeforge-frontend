@@ -23,16 +23,34 @@ export const ATSScorePage = () => {
     setScoreData(null);
 
     try {
+      // Backend /api/ai/ats-score expects structured fields (see
+      // AiService.buildAtsScorePrompt): { targetRole, summary, skills[],
+      // experienceBullets[], achievements[], jobDescription }. The public
+      // tool collects the whole resume as free text, so we send it as the
+      // summary field. The response is the model's parsed JSON:
+      // { score, grade, matchedKeywords[], missingKeywords[], topFixes[],
+      //   summary }.
       const request = {
-        content: resumeText,
+        targetRole: '',
+        summary: resumeText,
+        skills: [],
+        experienceBullets: [],
+        achievements: [],
         jobDescription: jobDescription || undefined,
       };
 
       const response = await aiService.getATSScore(request);
-      
-      // Parse the AI response to extract structured data
-      const parsedScore = parseATSResponse(response.result);
-      setScoreData(parsedScore);
+      const data = response && typeof response === 'object' ? (response.data || response) : {};
+
+      const rawScore = Number(data.score);
+      setScoreData({
+        overallScore: Number.isFinite(rawScore) ? Math.max(0, Math.min(100, Math.round(rawScore))) : null,
+        grade: typeof data.grade === 'string' ? data.grade : '',
+        matchedKeywords: Array.isArray(data.matchedKeywords) ? data.matchedKeywords : [],
+        missingKeywords: Array.isArray(data.missingKeywords) ? data.missingKeywords : [],
+        topFixes: Array.isArray(data.topFixes) ? data.topFixes : [],
+        analysis: typeof data.summary === 'string' ? data.summary : '',
+      });
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to analyze. Please try again.');
     } finally {
@@ -40,63 +58,18 @@ export const ATSScorePage = () => {
     }
   };
 
-  const parseATSResponse = (aiResponse) => {
-    // Extract score from response
-    const scoreMatch = aiResponse.match(/score[:\s]*(\d+)/i);
-    const overallScore = scoreMatch ? parseInt(scoreMatch[1]) : 75;
-
-    return {
-      overallScore,
-      fullAnalysis: aiResponse,
-      sections: extractSections(aiResponse),
-    };
-  };
-
-  const extractSections = (text) => {
-    return [
-      {
-        name: 'Format & Structure',
-        score: 85,
-        status: 'good',
-        feedback: 'Well-structured with clear sections',
-      },
-      {
-        name: 'Keywords & Skills',
-        score: 72,
-        status: 'moderate',
-        feedback: 'Some relevant keywords present, but could be improved',
-      },
-      {
-        name: 'Content Quality',
-        score: 78,
-        status: 'good',
-        feedback: 'Clear and professional content',
-      },
-      {
-        name: 'ATS Compatibility',
-        score: 90,
-        status: 'excellent',
-        feedback: 'Format is ATS-friendly',
-      },
-    ];
-  };
-
   const getScoreColor = (score) => {
+    if (score == null) return 'text-gray-400';
     if (score >= 80) return 'text-green-600';
     if (score >= 60) return 'text-yellow-600';
     return 'text-red-600';
   };
 
   const getScoreBg = (score) => {
+    if (score == null) return 'bg-gray-300';
     if (score >= 80) return 'bg-green-500';
     if (score >= 60) return 'bg-yellow-500';
     return 'bg-red-500';
-  };
-
-  const getStatusColor = (status) => {
-    if (status === 'excellent' || status === 'good') return 'text-green-700 bg-green-100';
-    if (status === 'moderate') return 'text-yellow-700 bg-yellow-100';
-    return 'text-red-700 bg-red-100';
   };
 
   return (
@@ -113,7 +86,7 @@ export const ATSScorePage = () => {
         </div>
 
         {error && (
-          <Alert type="error" message={error} onClose={() => setError('')} className="mb-6" />
+          <Alert variant="error" className="mb-6">{error}</Alert>
         )}
 
         {/* Input Section */}
@@ -176,20 +149,29 @@ export const ATSScorePage = () => {
               <div className="text-center">
                 <div className="mb-4">
                   <div className={`text-7xl font-bold ${getScoreColor(scoreData.overallScore)}`}>
-                    {scoreData.overallScore}
+                    {scoreData.overallScore ?? '—'}
                   </div>
                   <div className="text-gray-500 text-lg">out of 100</div>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  {scoreData.overallScore >= 80 ? 'Excellent!' : scoreData.overallScore >= 60 ? 'Good, but can be improved' : 'Needs Improvement'}
-                </h2>
-                <p className="text-gray-600">
-                  {scoreData.overallScore >= 80
-                    ? 'Your resume is well-optimized for ATS systems'
-                    : scoreData.overallScore >= 60
-                    ? 'Your resume has potential, follow the recommendations below'
-                    : 'Follow our recommendations to significantly improve your ATS score'}
-                </p>
+                {scoreData.overallScore != null && (
+                  <>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                      {scoreData.overallScore >= 80 ? 'Excellent!' : scoreData.overallScore >= 60 ? 'Good, but can be improved' : 'Needs Improvement'}
+                    </h2>
+                    <p className="text-gray-600">
+                      {scoreData.overallScore >= 80
+                        ? 'Your resume is well-optimized for ATS systems'
+                        : scoreData.overallScore >= 60
+                        ? 'Your resume has potential, follow the recommendations below'
+                        : 'Follow our recommendations to significantly improve your ATS score'}
+                    </p>
+                    {scoreData.grade && (
+                      <p className="mt-2 inline-block rounded-full px-3 py-1 text-sm font-semibold bg-gray-100 text-gray-700">
+                        Grade: {scoreData.grade}
+                      </p>
+                    )}
+                  </>
+                )}
               </div>
 
               {/* Score Bar */}
@@ -197,44 +179,77 @@ export const ATSScorePage = () => {
                 <div className="h-4 w-full bg-gray-200 rounded-full overflow-hidden">
                   <div
                     className={`h-full ${getScoreBg(scoreData.overallScore)} transition-all duration-1000`}
-                    style={{ width: `${scoreData.overallScore}%` }}
+                    style={{ width: `${scoreData.overallScore ?? 0}%` }}
                   ></div>
                 </div>
               </div>
             </div>
 
-            {/* Section Breakdown */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Score Breakdown</h3>
-              <div className="space-y-4">
-                {scoreData.sections.map((section, idx) => (
-                  <div key={idx} className="border-b border-gray-200 pb-4 last:border-0">
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="flex items-center gap-3">
-                        <h4 className="font-semibold text-gray-900">{section.name}</h4>
-                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusColor(section.status)}`}>
-                          {section.status}
-                        </span>
+            {/* Matched & Missing Keywords */}
+            {(scoreData.matchedKeywords.length > 0 || scoreData.missingKeywords.length > 0) && (
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Keyword Analysis</h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold text-green-700 mb-2">
+                      ✓ Matched Keywords ({scoreData.matchedKeywords.length})
+                    </h4>
+                    {scoreData.matchedKeywords.length > 0 ? (
+                      <div className="flex flex-wrap gap-1.5">
+                        {scoreData.matchedKeywords.map(kw => (
+                          <span key={kw} className="rounded-full bg-green-50 border border-green-200 px-2 py-0.5 text-[11px] text-green-700">
+                            {kw}
+                          </span>
+                        ))}
                       </div>
-                      <div className={`text-lg font-bold ${getScoreColor(section.score)}`}>
-                        {section.score}/100
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-600">{section.feedback}</p>
+                    ) : (
+                      <p className="text-sm text-gray-500">No matched keywords were reported.</p>
+                    )}
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Detailed Analysis */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Detailed Analysis</h3>
-              <div className="prose max-w-none">
-                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                  <div className="whitespace-pre-wrap text-gray-800">{scoreData.fullAnalysis}</div>
+                  <div>
+                    <h4 className="font-semibold text-red-700 mb-2">
+                      ✗ Missing Keywords ({scoreData.missingKeywords.length})
+                    </h4>
+                    {scoreData.missingKeywords.length > 0 ? (
+                      <div className="flex flex-wrap gap-1.5">
+                        {scoreData.missingKeywords.map(kw => (
+                          <span key={kw} className="rounded-full bg-red-50 border border-red-200 px-2 py-0.5 text-[11px] text-red-700">
+                            {kw}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500">No missing keywords were reported.</p>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* Top Fixes */}
+            {scoreData.topFixes.length > 0 && (
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Top Fixes</h3>
+                <ol className="space-y-2">
+                  {scoreData.topFixes.map((fix, idx) => (
+                    <li key={idx} className="flex gap-3 text-sm text-gray-700">
+                      <span className="font-bold text-gray-400 shrink-0">{idx + 1}.</span>
+                      <span>{fix}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
+            {/* Summary */}
+            {scoreData.analysis && (
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Detailed Analysis</h3>
+                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                  <div className="whitespace-pre-wrap text-gray-800">{scoreData.analysis}</div>
+                </div>
+              </div>
+            )}
 
             {/* Actions */}
             <div className="flex gap-4">

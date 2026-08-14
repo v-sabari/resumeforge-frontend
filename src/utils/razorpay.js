@@ -54,7 +54,10 @@ export async function initiatePayment(onSuccess, onFailure) {
 
       modal: {
         ondismiss: function () {
-          console.log('Payment popup closed by user');
+          // FIX: previously this only logged — PricingPage kept its "Opening
+          // payment…" loading state forever because onFailure (which resets
+          // loading) was never called when the checkout modal was dismissed.
+          if (onFailure) onFailure('Payment window closed. No charges were made.');
         }
       }
     };

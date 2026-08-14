@@ -61,12 +61,15 @@ export const AdminPage = () => {
     if (user && user.role !== 'ADMIN') navigate('/app/dashboard', { replace: true });
   }, [user, navigate]);
 
-  // Load overview stats on mount
+  // Load overview stats on mount (admin only — avoid calling admin APIs from
+  // a non-admin session even though the backend rejects it anyway)
+  const isAdmin = Boolean(user?.role === 'ADMIN');
   useEffect(() => {
+    if (!isAdmin) return;
     getAdminStats()
       .then(setStats)
       .catch(e => setStatsErr(formatApiError(e, 'Could not load stats.')));
-  }, []);
+  }, [isAdmin]);
 
   if (!user) return null;
 

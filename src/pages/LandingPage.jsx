@@ -23,7 +23,7 @@ const steps = [
 const faqs = [
   {
     q: 'Is ResumeForge AI free to use?',
-    a: 'Yes. You can create a full resume and export it free. Free accounts include 2 PDF downloads. Upgrade to Premium once for unlimited exports.',
+    a: 'Yes. You can create a full resume and export it free. Free accounts include 3 PDF downloads. Upgrade to Premium once for unlimited exports.',
   },
   {
     q: 'What makes ResumeForge AI different?',
@@ -143,7 +143,7 @@ const HeroSection = () => (
           </Link>
         </div>
         <div className="mt-8 flex flex-wrap items-center gap-5 text-sm text-ink-400">
-          {['Free to start', 'No credit card', 'ATS optimised', '2 free exports'].map((t) => (
+          {['Free to start', 'No credit card', 'ATS optimised', '3 free exports'].map((t) => (
             <span key={t} className="flex items-center gap-1.5">
               <Icon name="check" className="h-4 w-4 text-success-600" />
               {t}
@@ -337,7 +337,7 @@ const CtaSection = () => (
         </Link>
       </div>
       <p className="mt-4 text-xs text-ink-400">
-        No credit card required · 2 free PDF exports · Cancel anytime
+        No credit card required · 3 free PDF exports · Cancel anytime
       </p>
     </div>
   </section>

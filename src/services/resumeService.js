@@ -30,10 +30,12 @@ export function fromApiResponse(data) {
     languages:      safeJsonParse(data.languages,      []),
     customSections: safeJsonParse(data.customSections, {}),
     sectionsConfig: safeJsonParse(data.sectionsConfig, null),
-    // Compress feature (see utils/compression.js) — the zoom-style density
-    // scale applied to fit the resume into a chosen page count. Falls back
-    // to 1 (full size) for resumes saved before this field existed.
-    layoutScale: typeof data.layoutScale === 'number' && data.layoutScale > 0 && data.layoutScale <= 1
+    // Compress/Grow feature (see utils/compression.js) — the zoom-style
+    // density scale used to fit the resume into a chosen page count. The
+    // backend clamps layoutScale to [0.5, 1.35] (see Resume.java), so the
+    // frontend must accept the same range — previously capped at 1, which
+    // silently reset any "grown" resume (>1) back to full size on load.
+    layoutScale: typeof data.layoutScale === 'number' && data.layoutScale >= 0.5 && data.layoutScale <= 1.35
       ? data.layoutScale
       : 1,
     createdAt: data.createdAt, updatedAt: data.updatedAt,
@@ -61,8 +63,9 @@ export function toApiPayload(resume) {
     languages:      s(resume.languages),
     customSections: s(resume.customSections),
     sectionsConfig: s(resume.sectionsConfig),
-    // Compress feature — see utils/compression.js / pageLayout.js.
-    layoutScale: typeof resume.layoutScale === 'number' && resume.layoutScale > 0 && resume.layoutScale <= 1
+    // Compress/Grow feature — see utils/compression.js / pageLayout.js.
+    // Range matches the backend clamp [0.5, 1.35].
+    layoutScale: typeof resume.layoutScale === 'number' && resume.layoutScale >= 0.5 && resume.layoutScale <= 1.35
       ? resume.layoutScale
       : 1,
   };

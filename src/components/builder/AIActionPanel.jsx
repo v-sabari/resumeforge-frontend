@@ -427,7 +427,9 @@ const ResultContent = ({ result, active }) => {
       );
 
     case 'grammar': {
-      const { correctedText, issuesFound, issueCount, clean } = result.data;
+      const data = result.data && typeof result.data === 'object' ? result.data : {};
+      const { correctedText, issueCount, clean } = data;
+      const issuesFound = Array.isArray(data.issuesFound) ? data.issuesFound : [];
       return (
         <div className="space-y-3">
           {clean ? (

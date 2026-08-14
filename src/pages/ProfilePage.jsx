@@ -132,7 +132,7 @@ export const ProfilePage = () => {
             {[
               ['Exports used',      exportStatus?.usedExports ?? 0],
               ['Exports remaining', premium?.isPremium ? 'Unlimited' : Math.max(0, 2 - (exportStatus?.usedExports ?? 0))],
-              ['Plan type',         premium?.isPremium ? 'Premium (unlimited)' : 'Free (2 exports)'],
+              ['Plan type',         premium?.isPremium ? 'Premium (unlimited)' : 'Free (3 exports)'],
             ].map(([label, value]) => (
               <div key={label} className="flex items-center justify-between py-2 border-b border-surface-100 last:border-0">
                 <span className="text-sm text-ink-400">{label}</span>

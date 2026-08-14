@@ -51,13 +51,26 @@ export const LinkedInToolsPage = () => {
     setResult('');
 
     try {
+      // Backend /api/ai/linkedin expects structured fields (see
+      // AiService.buildLinkedInPrompt): { currentRole, targetRole,
+      // currentHeadline, currentAbout, topSkills[], achievements[] } and
+      // returns { optimizedHeadline, optimizedAbout, headlineTips }.
       const request = {
-        content: input,
-        context: jobDescription || undefined,
+        currentRole: '',
+        targetRole: '',
+        currentHeadline: activeTab === 'headline' ? input : '',
+        currentAbout: input,
+        topSkills: [],
+        achievements: [],
       };
 
       const response = await aiService.optimizeLinkedIn(request);
-      setResult(response.result);
+      const data = response && typeof response === 'object' ? (response.data || response) : {};
+      setResult({
+        headline: typeof data.optimizedHeadline === 'string' ? data.optimizedHeadline : '',
+        about: typeof data.optimizedAbout === 'string' ? data.optimizedAbout : '',
+        tips: typeof data.headlineTips === 'string' ? data.headlineTips : '',
+      });
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to generate. Please try again.');
     } finally {
@@ -66,7 +79,12 @@ export const LinkedInToolsPage = () => {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(result);
+    const text = [
+      result.headline ? `Headline:\n${result.headline}` : '',
+      result.about ? `About:\n${result.about}` : '',
+      result.tips ? `Tip: ${result.tips}` : '',
+    ].filter(Boolean).join('\n\n');
+    navigator.clipboard.writeText(text);
     // Could add a toast notification here
   };
 
@@ -122,7 +140,7 @@ export const LinkedInToolsPage = () => {
             </div>
 
             {error && (
-              <Alert type="error" message={error} onClose={() => setError('')} />
+              <Alert variant="error">{error}</Alert>
             )}
 
             {/* Input Area */}
@@ -167,11 +185,11 @@ export const LinkedInToolsPage = () => {
         </div>
 
         {/* Result */}
-        {(loading || result) && (
+        {(loading || result.headline || result.about) && (
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Generated Content</h3>
-              {result && (
+              {(result.headline || result.about) && (
                 <button
                   onClick={handleCopy}
                   className="text-sm text-primary-600 hover:text-primary-700 font-medium"
@@ -186,10 +204,28 @@ export const LinkedInToolsPage = () => {
                 <Loader />
               </div>
             ) : (
-              <div className="prose max-w-none">
-                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                  <div className="whitespace-pre-wrap text-gray-800">{result}</div>
-                </div>
+              <div className="space-y-4">
+                {result.headline && (
+                  <div className="prose max-w-none">
+                    <h4 className="font-semibold text-gray-900">Optimized Headline</h4>
+                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                      <div className="whitespace-pre-wrap text-gray-800">{result.headline}</div>
+                    </div>
+                  </div>
+                )}
+                {result.about && (
+                  <div className="prose max-w-none">
+                    <h4 className="font-semibold text-gray-900">Optimized About Section</h4>
+                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                      <div className="whitespace-pre-wrap text-gray-800">{result.about}</div>
+                    </div>
+                  </div>
+                )}
+                {result.tips && (
+                  <p className="text-sm text-gray-600 italic bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                    Tip: {result.tips}
+                  </p>
+                )}
               </div>
             )}
           </div>

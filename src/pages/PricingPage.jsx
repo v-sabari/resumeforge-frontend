@@ -8,7 +8,7 @@ import { Icon } from '../components/icons/Icon';
 import { formatApiError } from '../utils/helpers';
 import { premiumFeatures } from '../utils/constants';
 
-const freeFeatures = ['Full resume builder', 'AI writing assistance', '2 PDF exports', 'Classic template', 'Secure cloud storage'];
+const freeFeatures = ['Full resume builder', 'AI writing assistance', '3 PDF exports', 'Classic template', 'Secure cloud storage'];
 
 export const PricingPage = () => {
   const { isAuthenticated, premium } = useAuth();

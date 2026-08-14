@@ -145,6 +145,20 @@ const WordCountTool = () => {
 
   const status = lengthStatus();
 
+  // Tailwind needs complete, static class names — dynamic strings like
+  // `border-${color}-200` are never generated. Map them explicitly:
+  const statusPanelClass = {
+    danger:  'border-danger-200 bg-danger-50/50',
+    warning: 'border-warning-200 bg-warning-50/50',
+    success: 'border-success-200 bg-success-50/50',
+  }[status?.color] || '';
+
+  const statusTitleClass = {
+    danger:  'text-danger-800',
+    warning: 'text-warning-800',
+    success: 'text-success-800',
+  }[status?.color] || 'text-ink-800';
+
   return (
     <div className="space-y-4">
       <textarea
@@ -168,8 +182,8 @@ const WordCountTool = () => {
           </div>
 
           {status && (
-            <div className={`card p-4 border-${status.color}-200 bg-${status.color}-50/50`}>
-              <p className={`text-sm font-semibold text-${status.color}-800 mb-1`}>
+            <div className={`card p-4 ${statusPanelClass}`}>
+              <p className={`text-sm font-semibold ${statusTitleClass} mb-1`}>
                 {status.label}
               </p>
               <p className="text-xs text-ink-600">{status.tip}</p>

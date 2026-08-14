@@ -20,18 +20,15 @@ export const PaymentCallbackPage = () => {
   const [stage, setStage]   = useState('polling');
   const pollCount           = useRef(0);
   const MAX_POLLS           = 14; // 14 × 2.5 s = 35 s max
-  const hasRan              = useRef(false);
 
   useEffect(() => {
-    // Strict Mode double-invoke guard
-    if (hasRan.current) return;
-    hasRan.current = true;
+    // Starts polling on mount and cancels cleanly on unmount (Strict Mode
+    // remounts in dev — the cleanup handles that correctly).
+    let cancelled = false;
+    let timer = null;
 
-    startPolling();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const startPolling = () => {
     const poll = async () => {
+      if (cancelled) return;
       pollCount.current += 1;
       try {
         const result = await refreshPremiumStatus();
@@ -46,10 +43,15 @@ export const PaymentCallbackPage = () => {
         setStage('timeout');
         return;
       }
-      setTimeout(poll, 2500);
+      timer = setTimeout(poll, 2500);
     };
     poll();
-  };
+
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
+  }, [refreshPremiumStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* ── Polling ── */
   if (stage === 'polling') return (

@@ -1,8 +1,6 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { APP_NAME } from '../utils/constants';
 import { Icon } from '../components/icons/Icon';
-import { sendContactMessage } from '../services/contactService';
 
 // ─── Email Constants ───────────────────────────────────────────────────────────
 const SUPPORT_EMAIL = 'support@resumeforgeai.site';
@@ -207,7 +205,7 @@ export const TermsPage = () => (
 
     <H2>3. Free Plan</H2>
     <P>
-      Free accounts include access to the resume builder, AI writing assistance, and up to 2 PDF
+      Free accounts include access to the resume builder, AI writing assistance, and up to 3 PDF
       exports. No credit card is required. We reserve the right to adjust free plan limits with
       reasonable notice.
     </P>
@@ -502,188 +500,6 @@ export const AboutPage = () => (
     </div>
   </div>
 );
-
-// ─── Contact Page ──────────────────────────────────────────────────────────────
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-export const ContactPage = () => {
-  const [status, setStatus]   = React.useState('idle'); // idle | sending | success | error
-  const [errorMsg, setErrorMsg] = React.useState('');
-  const [fieldErrors, setFieldErrors] = React.useState({});
-
-  const formRef = React.useRef(null);
-
-  const validate = (data) => {
-    const errors = {};
-    if (!data.name.trim())                       errors.name    = 'Full name is required.';
-    if (!data.email.trim())                      errors.email   = 'Email address is required.';
-    else if (!EMAIL_REGEX.test(data.email))      errors.email   = 'Please enter a valid email address.';
-    if (!data.subject.trim())                    errors.subject = 'Subject is required.';
-    if (!data.message.trim())                    errors.message = 'Message is required.';
-    else if (data.message.trim().length < 10)    errors.message = 'Message must be at least 10 characters.';
-    return errors;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFieldErrors({});
-    setErrorMsg('');
-
-    const form = formRef.current;
-    const data = {
-      name:    form.querySelector('[name=name]').value,
-      email:   form.querySelector('[name=email]').value,
-      subject: form.querySelector('[name=subject]').value,
-      message: form.querySelector('[name=message]').value,
-    };
-
-    const errors = validate(data);
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
-
-    setStatus('sending');
-
-    try {
-      await sendContactMessage(data);
-      setStatus('success');
-      form.reset();
-    } catch (err) {
-      setStatus('error');
-      setErrorMsg(
-        err?.message || 'Something went wrong. Please try again or email us directly.'
-      );
-    }
-  };
-
-  const handleReset = () => {
-    setStatus('idle');
-    setErrorMsg('');
-    setFieldErrors({});
-  };
-
-  return (
-    <div className="mx-auto max-w-2xl px-4 sm:px-6 py-14">
-      <div className="text-center mb-10">
-        <p className="kicker mb-2">Support</p>
-        <h1 className="text-3xl font-display font-semibold text-ink-950">Contact us</h1>
-        <p className="mt-3 text-ink-400 text-sm">
-          We respond within 24 hours on business days.
-        </p>
-      </div>
-
-      <div className="card p-8">
-        {status === 'success' ? (
-          <div className="py-10 text-center space-y-3">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-success-50">
-              <Icon name="check" className="h-7 w-7 text-success-600" />
-            </div>
-            <h2 className="text-lg font-semibold text-ink-950">Message sent!</h2>
-            <p className="text-sm text-ink-400">We'll get back to you within 24 hours.</p>
-            <button onClick={handleReset} className="btn-secondary mt-2">
-              Send another message
-            </button>
-          </div>
-        ) : (
-          <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-4">
-            {status === 'error' && (
-              <div className="rounded-xl bg-danger-50 border border-danger-200 px-4 py-3 text-sm text-danger-700">
-                {errorMsg || 'Something went wrong.'} Please email us directly at{' '}
-                <MailLink email={SUPPORT_EMAIL} className="font-semibold underline text-danger-700" />.
-              </div>
-            )}
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="label" htmlFor="contact-name">Full Name</label>
-                <input
-                  id="contact-name"
-                  name="name"
-                  type="text"
-                  className={`input${fieldErrors.name ? ' border-danger-400 focus:ring-danger-400' : ''}`}
-                  placeholder="Your full name"
-                  autoComplete="name"
-                />
-                {fieldErrors.name && (
-                  <p className="mt-1 text-xs text-danger-600">{fieldErrors.name}</p>
-                )}
-              </div>
-              <div>
-                <label className="label" htmlFor="contact-email">Email Address</label>
-                <input
-                  id="contact-email"
-                  name="email"
-                  type="email"
-                  className={`input${fieldErrors.email ? ' border-danger-400 focus:ring-danger-400' : ''}`}
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                />
-                {fieldErrors.email && (
-                  <p className="mt-1 text-xs text-danger-600">{fieldErrors.email}</p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label className="label" htmlFor="contact-subject">Subject</label>
-              <input
-                id="contact-subject"
-                name="subject"
-                type="text"
-                className={`input${fieldErrors.subject ? ' border-danger-400 focus:ring-danger-400' : ''}`}
-                placeholder="How can we help?"
-              />
-              {fieldErrors.subject && (
-                <p className="mt-1 text-xs text-danger-600">{fieldErrors.subject}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="label" htmlFor="contact-message">Message</label>
-              <textarea
-                id="contact-message"
-                name="message"
-                className={`input min-h-36 resize-y${fieldErrors.message ? ' border-danger-400 focus:ring-danger-400' : ''}`}
-                placeholder="Describe your question or issue in detail (minimum 10 characters)…"
-              />
-              {fieldErrors.message && (
-                <p className="mt-1 text-xs text-danger-600">{fieldErrors.message}</p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              className="btn-primary w-full justify-center"
-              disabled={status === 'sending'}
-            >
-              {status === 'sending' ? 'Sending…' : 'Send message'}
-            </button>
-          </form>
-        )}
-
-        <div className="mt-6 pt-5 border-t border-surface-200">
-          <p className="text-sm text-ink-400 text-center">
-            Or email us directly at{' '}
-            <MailLink email={SUPPORT_EMAIL} />
-          </p>
-          <div className="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-ink-400">
-            <span>
-              Billing: <MailLink email={BILLING_EMAIL} className="text-brand-600 hover:underline" />
-            </span>
-            <span>
-              Privacy: <MailLink email={PRIVACY_EMAIL} className="text-brand-600 hover:underline" />
-            </span>
-            <span>
-              Legal: <MailLink email={LEGAL_EMAIL} className="text-brand-600 hover:underline" />
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 // ─── 404 Not Found ─────────────────────────────────────────────────────────────
 

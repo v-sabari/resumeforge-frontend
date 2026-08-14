@@ -28,13 +28,22 @@ const StatCard = ({ icon, label, value, sub, accent }) => (
 const ResumeCard = ({ resume, onDelete }) => {
   const navigate   = useNavigate();
   const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   const handleDelete = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (!window.confirm('Delete this resume? This action cannot be undone.')) return;
     setDeleting(true);
-    try { await onDelete(resume.id); } catch { setDeleting(false); }
+    setDeleteError('');
+    try {
+      await onDelete(resume.id);
+    } catch (err) {
+      // FIX: the delete failure was swallowed — the card just re-enabled its
+      // button with no explanation. Show the actual error now.
+      setDeleteError(formatApiError(err, 'Could not delete resume. Please try again.'));
+      setDeleting(false);
+    }
   };
 
   return (
@@ -60,6 +69,12 @@ const ResumeCard = ({ resume, onDelete }) => {
           {deleting ? <Loader size="sm" label="" /> : <Icon name="trash" className="h-3.5 w-3.5" />}
         </button>
       </div>
+
+      {deleteError && (
+        <div className="mt-3 rounded-lg bg-danger-50 border border-danger-200 px-3 py-2 text-xs text-danger-700">
+          {deleteError}
+        </div>
+      )}
 
       {resume.summary && (
         <p className="mt-3 text-xs text-ink-400 line-clamp-2 leading-relaxed">
