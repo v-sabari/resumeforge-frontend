@@ -1,5 +1,3 @@
-import React from 'react';
-
 /*
  * ClassicTemplate — extracted from ResumePreview.jsx.
  *

@@ -27,7 +27,6 @@ export const CompressModal = ({ open, currentPages, busy, onClose, onConfirm }) 
 
   useEffect(() => {
     if (open) setTarget(currentPages);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, currentPages]);
 
   if (!open) return null;

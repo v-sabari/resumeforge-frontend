@@ -232,8 +232,6 @@ export const AIActionPanel = ({ resume, setResume }) => {
   const needsJdInput      = ['ats', 'cover', 'tailor', 'interview'].includes(active) && !loading && !result;
   const needsCompanyInput = ['cover', 'interview'].includes(active) && !loading && !result;
 
-  const allActions = [...FREE_ACTIONS, ...PREMIUM_ACTIONS];
-
   return (
     <div className="card p-5 space-y-4">
 
@@ -407,7 +405,7 @@ const ResultPanel = ({ result, active, onApply, onCopy, onReset, canApply }) => 
   </div>
 );
 
-const ResultContent = ({ result, active }) => {
+const ResultContent = ({ result }) => {
   switch (result.type) {
 
     case 'text':

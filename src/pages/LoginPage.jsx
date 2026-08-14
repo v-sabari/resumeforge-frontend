@@ -18,7 +18,7 @@ export const LoginPage = () => {
       const v = sessionStorage.getItem('auth_redirect');
       sessionStorage.removeItem('auth_redirect');
       return v;
-    } catch (e) {
+    } catch {
       return null;
     }
   })();

@@ -12,7 +12,7 @@ const navLinks = [
 ];
 
 export const Navbar = memo(() => {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const location = useLocation();
   const navigate  = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);

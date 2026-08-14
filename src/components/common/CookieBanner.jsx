@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Icon } from '../icons/Icon';
 
 const COOKIE_KEY = 'rf_cookie_consent';
 

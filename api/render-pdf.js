@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import React7 from "react";
+import React2 from "react";
 import ReactDOMServer from "react-dom/server";
 import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium-min";
@@ -78,8 +78,28 @@ function scaleStyle(scale) {
   return { width: `${A4_W / s}px`, zoom: s };
 }
 
+// src/utils/sectionsCatalog.js
+var STANDARD_SECTIONS = [
+  { key: "basics", label: "Personal Info", icon: "user", removable: false },
+  { key: "summary", label: "Summary", icon: "text", removable: true },
+  { key: "skills", label: "Skills", icon: "star", removable: true },
+  { key: "experience", label: "Experience", icon: "briefcase", removable: true },
+  { key: "projects", label: "Projects", icon: "code", removable: true },
+  { key: "education", label: "Education", icon: "academic", removable: true },
+  { key: "certifications", label: "Certifications", icon: "badge", removable: true },
+  { key: "achievements", label: "Achievements", icon: "trophy", removable: true },
+  { key: "languages", label: "Languages", icon: "globe", removable: true }
+];
+var DEFAULT_SECTIONS_CONFIG = STANDARD_SECTIONS.map((s, i) => ({
+  id: s.key,
+  type: "standard",
+  key: s.key,
+  label: s.label,
+  visible: true,
+  order: i
+}));
+
 // src/components/resume/templates/ModernProTemplate.jsx
-import React from "react";
 import { jsx, jsxs } from "react/jsx-runtime";
 var CustomBlock = ({ label, content, headingClass, bodyClass, bulletClass }) => {
   if (!content) return null;
@@ -244,7 +264,7 @@ var ModernProTemplate = ({ data }) => {
 };
 
 // src/components/resume/templates/MinimalATSTemplate.jsx
-import React2 from "react";
+import React from "react";
 import { Fragment, jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
 var CustomBlock2 = ({ label, content }) => {
   if (!content) return null;
@@ -275,12 +295,12 @@ var MinimalATSTemplate = ({ data }) => {
       case "basics":
         return null;
       case "summary":
-        return summary ? /* @__PURE__ */ jsxs2(React2.Fragment, { children: [
+        return summary ? /* @__PURE__ */ jsxs2(React.Fragment, { children: [
           /* @__PURE__ */ jsx2(SH2, { children: "Profile" }),
           /* @__PURE__ */ jsx2("p", { className: "text-gray-600 leading-relaxed text-xs break-words", children: summary })
         ] }, "summary") : null;
       case "experience":
-        return experience?.length ? /* @__PURE__ */ jsxs2(React2.Fragment, { children: [
+        return experience?.length ? /* @__PURE__ */ jsxs2(React.Fragment, { children: [
           /* @__PURE__ */ jsx2(SH2, { children: "Experience" }),
           /* @__PURE__ */ jsx2("div", { className: "space-y-4", children: experience.map((e, i) => /* @__PURE__ */ jsxs2("div", { className: "break-inside-avoid", children: [
             /* @__PURE__ */ jsxs2("div", { className: "flex justify-between items-baseline flex-wrap gap-1", children: [
@@ -300,12 +320,12 @@ var MinimalATSTemplate = ({ data }) => {
           ] }, i)) })
         ] }, "experience") : null;
       case "skills":
-        return skills?.length ? /* @__PURE__ */ jsxs2(React2.Fragment, { children: [
+        return skills?.length ? /* @__PURE__ */ jsxs2(React.Fragment, { children: [
           /* @__PURE__ */ jsx2(SH2, { children: "Skills" }),
           /* @__PURE__ */ jsx2("div", { className: "space-y-0.5", children: (Array.isArray(skills) ? skills : [skills]).map((s, i) => /* @__PURE__ */ jsx2("p", { className: "text-gray-600 text-xs leading-relaxed break-words", children: s }, i)) })
         ] }, "skills") : null;
       case "projects":
-        return projects?.length ? /* @__PURE__ */ jsxs2(React2.Fragment, { children: [
+        return projects?.length ? /* @__PURE__ */ jsxs2(React.Fragment, { children: [
           /* @__PURE__ */ jsx2(SH2, { children: "Projects" }),
           /* @__PURE__ */ jsx2("div", { className: "space-y-3", children: projects.map((p, i) => /* @__PURE__ */ jsxs2("div", { className: "break-inside-avoid", children: [
             /* @__PURE__ */ jsxs2("div", { className: "flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-0.5", children: [
@@ -329,7 +349,7 @@ var MinimalATSTemplate = ({ data }) => {
           ] }, i)) })
         ] }, "projects") : null;
       case "education":
-        return education?.length ? /* @__PURE__ */ jsxs2(React2.Fragment, { children: [
+        return education?.length ? /* @__PURE__ */ jsxs2(React.Fragment, { children: [
           /* @__PURE__ */ jsx2(SH2, { children: "Education" }),
           /* @__PURE__ */ jsx2("div", { className: "space-y-2", children: education.map((e, i) => /* @__PURE__ */ jsxs2("div", { className: "break-inside-avoid", children: [
             /* @__PURE__ */ jsxs2("div", { className: "flex justify-between items-baseline flex-wrap gap-1", children: [
@@ -351,7 +371,7 @@ var MinimalATSTemplate = ({ data }) => {
           ] }, i)) })
         ] }, "education") : null;
       case "achievements":
-        return achievements?.length ? /* @__PURE__ */ jsxs2(React2.Fragment, { children: [
+        return achievements?.length ? /* @__PURE__ */ jsxs2(React.Fragment, { children: [
           /* @__PURE__ */ jsx2(SH2, { children: "Achievements" }),
           /* @__PURE__ */ jsx2("ul", { className: "space-y-1", children: achievements.map((a, i) => /* @__PURE__ */ jsxs2("li", { className: "flex gap-2 text-xs text-gray-600 break-inside-avoid", children: [
             /* @__PURE__ */ jsx2("span", { className: "text-gray-300 shrink-0 mt-0.5", children: "\u2013" }),
@@ -359,12 +379,12 @@ var MinimalATSTemplate = ({ data }) => {
           ] }, i)) })
         ] }, "achievements") : null;
       case "languages":
-        return languages?.length ? /* @__PURE__ */ jsxs2(React2.Fragment, { children: [
+        return languages?.length ? /* @__PURE__ */ jsxs2(React.Fragment, { children: [
           /* @__PURE__ */ jsx2(SH2, { children: "Languages" }),
           /* @__PURE__ */ jsx2("p", { className: "text-xs text-gray-600 break-words", children: languages.join("  \xB7  ") })
         ] }, "languages") : null;
       case "certifications":
-        return certifications?.length ? /* @__PURE__ */ jsxs2(React2.Fragment, { children: [
+        return certifications?.length ? /* @__PURE__ */ jsxs2(React.Fragment, { children: [
           /* @__PURE__ */ jsx2(SH2, { children: "Certifications" }),
           /* @__PURE__ */ jsx2("div", { className: "space-y-1", children: certifications.map((c, i) => /* @__PURE__ */ jsxs2("div", { className: "text-xs text-gray-600 break-words break-inside-avoid", children: [
             /* @__PURE__ */ jsx2("span", { className: "font-medium", children: c.name }),
@@ -402,7 +422,6 @@ var MinimalATSTemplate = ({ data }) => {
 };
 
 // src/components/resume/templates/ExecutiveTemplate.jsx
-import React3 from "react";
 import { jsx as jsx3, jsxs as jsxs3 } from "react/jsx-runtime";
 var CustomBlock3 = ({ label, content }) => {
   if (!content) return null;
@@ -557,7 +576,6 @@ var ExecutiveTemplate = ({ data }) => {
 };
 
 // src/components/resume/templates/FresherTemplate.jsx
-import React4 from "react";
 import { Fragment as Fragment2, jsx as jsx4, jsxs as jsxs4 } from "react/jsx-runtime";
 var CustomBlock4 = ({ label, content }) => {
   if (!content) return null;
@@ -720,7 +738,6 @@ var FresherTemplate = ({ data }) => {
 };
 
 // src/components/resume/templates/CreativeATSTemplate.jsx
-import React5 from "react";
 import { jsx as jsx5, jsxs as jsxs5 } from "react/jsx-runtime";
 var CustomBlock5 = ({ label, content }) => {
   if (!content) return null;
@@ -884,7 +901,6 @@ var CreativeATSTemplate = ({ data }) => {
 };
 
 // src/components/resume/templates/ClassicTemplate.jsx
-import React6 from "react";
 import { jsx as jsx6, jsxs as jsxs6 } from "react/jsx-runtime";
 var Bul = ({ c }) => /* @__PURE__ */ jsxs6("li", { className: "flex gap-1.5 break-inside-avoid", children: [
   /* @__PURE__ */ jsx6("span", { className: "text-gray-400 shrink-0 select-none", children: "\u2022" }),
@@ -1053,25 +1069,6 @@ var ClassicTemplate = ({ data }) => {
 
 // src/pdf/renderPdfHandler.jsx
 var __dirname = path.dirname(fileURLToPath(import.meta.url));
-var STANDARD_SECTION_KEYS = [
-  "basics",
-  "summary",
-  "skills",
-  "experience",
-  "projects",
-  "education",
-  "certifications",
-  "achievements",
-  "languages"
-];
-var DEFAULT_SECTIONS_CONFIG = STANDARD_SECTION_KEYS.map((key, i) => ({
-  id: key,
-  type: "standard",
-  key,
-  label: key,
-  visible: true,
-  order: i
-}));
 var TEMPLATE_MAP = {
   modern: ModernProTemplate,
   classic: ClassicTemplate,
@@ -1131,9 +1128,9 @@ async function handler(req, res) {
     const { top: marginTop, bottom: marginBottom } = getPageMargin(templateKey);
     const layoutScale = typeof resume.layoutScale === "number" ? resume.layoutScale : 1;
     const wrapStyle = scaleStyle(layoutScale);
-    const templateEl = React7.createElement(Template, { data });
+    const templateEl = React2.createElement(Template, { data });
     const bodyHtml = ReactDOMServer.renderToStaticMarkup(
-      wrapStyle ? React7.createElement("div", { style: wrapStyle }, templateEl) : templateEl
+      wrapStyle ? React2.createElement("div", { style: wrapStyle }, templateEl) : templateEl
     );
     const html = wrapHtml(bodyHtml);
     const browser = await getBrowser();

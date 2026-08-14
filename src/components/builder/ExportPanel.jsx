@@ -8,7 +8,6 @@ import {
   recordExport,
 } from '../../services/exportService';
 import { getResumeHistory, restoreResumeSnapshot } from '../../services/resumeService';
-import { createPayment } from '../../services/paymentService';
 import { UpsellModal } from '../icons/UpsellModal';
 import { Alert } from '../common/Alert';
 import { Loader } from '../common/Loader';
@@ -71,7 +70,6 @@ export const ExportPanel = ({
           : m
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeId]);
 
   const exportsUsed      = exportStatus?.usedExports || 0;
@@ -129,21 +127,6 @@ export const ExportPanel = ({
       setMessage(formatApiError(e, 'Export failed. Please try again.'));
     } finally {
       clearTimeout(timeoutId);
-      setLoading(false);
-    }
-  };
-
-  // ── Upgrade ──────────────────────────────────────────────────────────
-  const handleUpgrade = async () => {
-    setLoading(true); setVariant('info'); setMessage('Preparing payment…');
-    try {
-      const r    = await createPayment();
-      const link = r?.paymentLink || r?.data?.paymentLink;
-      if (!link) throw new Error('Payment link unavailable.');
-      window.location.href = link;
-    } catch (e) {
-      setVariant('error');
-      setMessage(formatApiError(e, 'Could not start upgrade.'));
       setLoading(false);
     }
   };

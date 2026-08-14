@@ -51,7 +51,7 @@ export const PaymentCallbackPage = () => {
       cancelled = true;
       if (timer) clearTimeout(timer);
     };
-  }, [refreshPremiumStatus]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [refreshPremiumStatus]);
 
   /* ── Polling ── */
   if (stage === 'polling') return (

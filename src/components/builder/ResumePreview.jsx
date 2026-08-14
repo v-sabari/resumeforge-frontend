@@ -97,8 +97,7 @@ const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange
       const style = scaleStyle(candidateScale);
       Object.assign(measure.style, { width: `${A4_W}px`, zoom: '' }); // reset first
       if (style) Object.assign(measure.style, style);
-      // eslint-disable-next-line no-unused-expressions
-      measure.offsetHeight; // force synchronous layout before reading rect
+      void measure.offsetHeight; // force synchronous layout before reading rect
       const h = measure.getBoundingClientRect().height;
       measure.setAttribute('style', prevStyle);
       return h;

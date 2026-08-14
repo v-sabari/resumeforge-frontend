@@ -1,4 +1,3 @@
-import React from 'react';
 
 const CustomBlock = ({ label, content }) => {
   if (!content) return null;

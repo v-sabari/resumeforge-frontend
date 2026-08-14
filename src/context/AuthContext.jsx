@@ -143,7 +143,7 @@ setPremium({
     hydrate();
   }, [refreshPremiumStatus, refreshExportStatus]);
 
-  const login = async (payload) => {
+  const login = useCallback(async (payload) => {
     // BUG-004 FIX: the backend now sets the httpOnly cookie directly on the
     // login response (see AuthController.login) — there's no token in the
     // body anymore for the frontend to store. getCurrentUser() picks up the
@@ -156,13 +156,13 @@ setPremium({
     await Promise.all([refreshPremiumStatus(), refreshExportStatus()]);
 
     return me;
-  };
+  }, [refreshPremiumStatus, refreshExportStatus]);
 
-  const register = async (payload) => {
+  const register = useCallback(async (payload) => {
     // OTP flow: register should NOT auto-login
     const res = await registerUser(payload);
     return res;
-  };
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -191,6 +191,8 @@ setPremium({
       exportStatus,
       loading,
       showInactivityWarning,
+      login,
+      register,
       logout,
       refreshPremiumStatus,
       refreshExportStatus,

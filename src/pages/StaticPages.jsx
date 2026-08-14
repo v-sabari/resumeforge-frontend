@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { APP_NAME } from '../utils/constants';
-import { Icon } from '../components/icons/Icon';
 
 // ─── Email Constants ───────────────────────────────────────────────────────────
 const SUPPORT_EMAIL = 'support@resumeforgeai.site';

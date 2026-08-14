@@ -37,6 +37,10 @@ export default [
     rules: {
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
+      // Project convention: no PropTypes/Flow used, and JSX copy intentionally
+      // uses raw apostrophes/quotes. Both rules are stylistic, not correctness.
+      'react/prop-types': 'off',
+      'react/no-unescaped-entities': 'off',
     },
   },
 ];

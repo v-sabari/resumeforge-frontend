@@ -1,4 +1,3 @@
-import React from 'react';
 
 /* Custom section block shared by all external templates */
 const CustomBlock = ({ label, content, headingClass, bodyClass, bulletClass }) => {

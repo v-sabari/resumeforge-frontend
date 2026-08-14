@@ -2,10 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { initiatePayment } from '../utils/razorpay';
-import { PageHeader } from '../components/common/PageHeader';
 import { Alert } from '../components/common/Alert';
 import { Icon } from '../components/icons/Icon';
-import { formatApiError } from '../utils/helpers';
 import { premiumFeatures } from '../utils/constants';
 
 const freeFeatures = ['Full resume builder', 'AI writing assistance', '3 PDF exports', 'Classic template', 'Secure cloud storage'];
