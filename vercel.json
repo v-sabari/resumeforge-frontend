@@ -4,7 +4,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://resumeforge-prod.eba-p26kymbn.eu-north-1.elasticbeanstalk.com/api/:path*"
+      "destination": "https://resumeforge-backend-9uj6.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",
