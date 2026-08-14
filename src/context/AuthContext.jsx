@@ -130,9 +130,20 @@ setPremium({
     // logged-out, same as the existing catch block already did.
     const hydrate = async () => {
       try {
+        // PROBE FIX: /api/auth/me now returns 200 with an all-null body for
+        // anonymous visitors (no more console 401 noise on public pages), so
+        // "logged out" is detected by a missing user id instead of a thrown
+        // 401. Never fall through to the response object itself as the user —
+        // the anonymous body is a truthy object and would fake a login.
         const me = await getCurrentUser();
-        setUser(me.user || me.data || me);
-        await Promise.all([refreshPremiumStatus(), refreshExportStatus()]);
+        const currentUser = me?.id ? me : null;
+        setUser(currentUser);
+        // Premium/export status are authenticated endpoints, so only poll them
+        // for a real user — firing them for anonymous visitors would produce
+        // two more 401s on every public page load.
+        if (currentUser) {
+          await Promise.all([refreshPremiumStatus(), refreshExportStatus()]);
+        }
       } catch {
         setUser(null);
       } finally {
@@ -151,7 +162,7 @@ setPremium({
     await loginUser(payload);
 
     const me = await getCurrentUser();
-    setUser(me.user || me.data || me);
+    setUser(me?.id ? me : null);
 
     await Promise.all([refreshPremiumStatus(), refreshExportStatus()]);
 
