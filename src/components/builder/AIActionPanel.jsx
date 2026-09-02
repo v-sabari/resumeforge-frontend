@@ -69,7 +69,6 @@ export const AIActionPanel = ({ resume, setResume }) => {
   const [loading,  setLoading] = useState(false);
   const [result,   setResult]  = useState(null);   // typed result object
   const [error,    setError]   = useState('');
-<<<<<<< HEAD
   const [input,    setInput]   = useState('');      // free-text fields (rewrite/grammar)
   const [jd,       setJd]      = useState('');      // job description
   const [company,  setCompany] = useState('');
@@ -83,25 +82,18 @@ export const AIActionPanel = ({ resume, setResume }) => {
   const [summaryContribute, setSummaryContribute] = useState(''); // What you can contribute
   const [summaryProjects, setSummaryProjects] = useState(''); // Relevant experience/projects
 
-  const reset = () => { 
-  setResult(null); 
-  setError(''); 
-  setInput(''); 
-  setSummaryWho(''); 
-  setSummaryRole(''); 
-  setSummarySkills(''); 
-  setSummaryStrengths(''); 
-  setSummaryTarget(''); 
-  setSummaryContribute(''); 
-  setSummaryProjects(''); 
-};
-=======
-  const [input,    setInput]   = useState('');      // free-text fields
-  const [jd,       setJd]      = useState('');      // job description
-  const [company,  setCompany] = useState('');
-
-  const reset = () => { setResult(null); setError(''); setInput(''); };
->>>>>>> 7663596af4bbf3ba3dfee3ae8545982ccd6928e1
+  const reset = () => {
+    setResult(null);
+    setError('');
+    setInput('');
+    setSummaryWho('');
+    setSummaryRole('');
+    setSummarySkills('');
+    setSummaryStrengths('');
+    setSummaryTarget('');
+    setSummaryContribute('');
+    setSummaryProjects('');
+  };
 
   const run = async (id) => {
     setActive(id); setLoading(true); setResult(null); setError('');
@@ -110,7 +102,6 @@ export const AIActionPanel = ({ resume, setResume }) => {
       switch (id) {
 
         /* ── Summary ─────────────────────────────────────── */
-<<<<<<< HEAD
         case 'summary': {
           const effectiveTargetRole = summaryTarget.trim() || resume.professionalTitle || '';
           const effectiveSkills = summarySkills.trim()
@@ -143,18 +134,6 @@ export const AIActionPanel = ({ resume, setResume }) => {
           setResult({ type: 'text', text: res?.text || '' });
           break;
         }
-=======
-        case 'summary':
-          res = await generateSummary({
-            targetRole:     resume.professionalTitle || '',
-            skills:         resume.skills            || [],
-            achievements:   resume.achievements      || [],
-            highlights:     [],
-            currentSummary: resume.summary           || '',
-          });
-          setResult({ type: 'text', text: res?.text || '' });
-          break;
->>>>>>> 7663596af4bbf3ba3dfee3ae8545982ccd6928e1
 
         /* ── Bullets ─────────────────────────────────────── */
         case 'bullets': {
@@ -382,7 +361,6 @@ export const AIActionPanel = ({ resume, setResume }) => {
             </>
           )}
 
-<<<<<<< HEAD
           {/* Summary form */}
           {active === 'summary' && !loading && !result && (
             <>
@@ -459,8 +437,6 @@ export const AIActionPanel = ({ resume, setResume }) => {
             </>
           )}
 
-=======
->>>>>>> 7663596af4bbf3ba3dfee3ae8545982ccd6928e1
           <button type="button" onClick={() => run(active)}
             className="btn-primary btn-sm w-full justify-center">
             <Icon name="sparkles" className="h-3.5 w-3.5" />
@@ -764,8 +740,4 @@ function getResultText(result) {
                              .join('\n\n---\n\n');
     default:          return '';
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 7663596af4bbf3ba3dfee3ae8545982ccd6928e1
