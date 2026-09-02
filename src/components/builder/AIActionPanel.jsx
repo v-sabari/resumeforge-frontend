@@ -241,7 +241,11 @@ export const AIActionPanel = ({ resume, setResume }) => {
               existingSkills:   normalizeSkills(skillPick(res, ['existingSkills'])),
               demonstratedSkills: normalizeSkills(skillPick(res, ['demonstratedSkills'])),
               jobRelevantSkills:  normalizeSkills(skillPick(res, ['jobRelevantSkills', 'jobRelevantSkillsNotDemonstrated'])),
-              recommendedSkills:  normalizeSkills(flatStrings(skillPick(res, ['recommendedSkills', 'recommendedResumeSkills']))),
+              // recommendedSkills must stay a flat string array (used directly as
+              // chips and written into resume.skills on Apply). Wrapping it in
+              // normalizeSkills turned it into [{name,reason}] objects, which the
+              // editor/preview then tried to render as React children → error #31.
+              recommendedSkills:  flatStrings(skillPick(res, ['recommendedSkills', 'recommendedResumeSkills'])),
             },
           });
           break;
