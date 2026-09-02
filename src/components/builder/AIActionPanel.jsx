@@ -92,6 +92,13 @@ export const AIActionPanel = ({ resume, setResume }) => {
   const [bulletMetrics,      setBulletMetrics]      = useState('');
   const [bulletCount,        setBulletCount]        = useState(3);
 
+  /* ── Suggest Skills form state (SKILLS-02) ─────────────────── */
+  const [skillCurrent,       setSkillCurrent]       = useState('');  // current skills (comma)
+  const [skillResumeInfo,    setSkillResumeInfo]    = useState('');  // resume info textarea
+  const [skillRole,          setSkillRole]          = useState('');  // target job role
+  const [skillJobDesc,       setSkillJobDesc]       = useState('');  // job description textarea
+  const [skillCategory,      setSkillCategory]      = useState('All Relevant Skills');
+
   const reset = () => {
     setResult(null);
     setError('');
@@ -111,6 +118,11 @@ export const AIActionPanel = ({ resume, setResume }) => {
     setBulletOutcome('');
     setBulletMetrics('');
     setBulletCount(3);
+    setSkillCurrent('');
+    setSkillResumeInfo('');
+    setSkillRole('');
+    setSkillJobDesc('');
+    setSkillCategory('All Relevant Skills');
   };
 
   const run = async (id) => {
@@ -195,16 +207,41 @@ export const AIActionPanel = ({ resume, setResume }) => {
           break;
         }
 
-        /* ── Skills ──────────────────────────────────────── */
-        case 'skills':
+        /* ── Suggest Skills (SKILLS-02) ───────────────────────── */
+        case 'skills': {
+          const effSkills = skillCurrent.trim()
+            ? skillCurrent.split(',').map(s => s.trim()).filter(Boolean)
+            : (resume.skills || []);
+
+          if (effSkills.length === 0 && !skillResumeInfo.trim()) {
+            setError('Please enter at least one current skill or paste some resume information so the AI can analyze your background.');
+            setLoading(false); return;
+          }
+
           res = await suggestSkills({
-            targetRole:         resume.professionalTitle || '',
-            currentSkills:      resume.skills            || [],
-            experienceKeywords: (resume.experience || []).flatMap(e => [e.role, e.company]).filter(Boolean),
-            projectKeywords:    (resume.projects   || []).map(p => p.name).filter(Boolean),
+            targetRole:        skillRole.trim() || resume.professionalTitle || '',
+            currentSkills:     effSkills,
+            resumeInformation: skillResumeInfo.trim(),
+            jobDescription:    skillJobDesc.trim() || undefined,
+            skillCategory:     skillCategory,
           });
-          setResult({ type: 'skills', items: res?.items || [] });
+
+          // Response shape (SKILLS-02):
+          // { existingSkills:[{name,reason}], demonstratedSkills:[{name,reason}],
+          //   jobRelevantSkillsNotDemonstrated:[{name,reason}], recommendedResumeSkills:[...] }
+          setResult({
+            type: 'skills',
+            data: {
+              existingSkills:            Array.isArray(res?.existingSkills)            ? res.existingSkills            : [],
+              demonstratedSkills:        Array.isArray(res?.demonstratedSkills)        ? res.demonstratedSkills        : [],
+              jobRelevantSkillsNotDemo:  Array.isArray(res?.jobRelevantSkillsNotDemonstrated)
+                                           ? res.jobRelevantSkillsNotDemonstrated       : [],
+              recommendedResumeSkills:   Array.isArray(res?.recommendedResumeSkills)
+                                           ? res.recommendedResumeSkills                : [],
+            },
+          });
           break;
+        }
 
         /* ── Rewrite ─────────────────────────────────────── */
         case 'rewrite':
@@ -300,7 +337,15 @@ export const AIActionPanel = ({ resume, setResume }) => {
   const applyToResume = () => {
     if (!result) return;
     if (result.type === 'text'   && active === 'summary') setResume(p => ({ ...p, summary: result.text }));
-    if (result.type === 'skills')                         setResume(p => ({ ...p, skills: result.items }));
+    // SKILLS-02: apply only the skills the user's information actually supports
+    // (existing + demonstrated), never the job-relevant-but-not-demonstrated ones.
+    if (result.type === 'skills' && result.data) {
+      const supported = result.data.recommendedResumeSkills
+        && result.data.recommendedResumeSkills.length
+        ? result.data.recommendedResumeSkills
+        : (result.data.existingSkills || []).map(s => (typeof s === 'string' ? s : s?.name)).filter(Boolean);
+      setResume(p => ({ ...p, skills: supported }));
+    }
     if (result.type === 'tailor' && result.data) {
       const d = result.data;
       setResume(p => ({
@@ -586,6 +631,79 @@ export const AIActionPanel = ({ resume, setResume }) => {
             </>
           )}
 
+          {/* Suggest Skills form (SKILLS-02) */}
+          {active === 'skills' && !loading && !result && (
+            <>
+              <p className="label text-xs font-medium text-ink-600 uppercase tracking-wide mb-2">
+                Analyze your skills
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <label className="label text-xs">
+                    Current skills {!(resume.skills || []).length
+                      ? <span className="text-danger-600">*</span> : null}
+                  </label>
+                  <input
+                    className="input text-xs"
+                    type="text"
+                    value={skillCurrent}
+                    onChange={e => setSkillCurrent(e.target.value)}
+                    placeholder={resume.skills && resume.skills.length
+                      ? `Optional — defaults to your resume skills (${resume.skills.join(', ')})`
+                      : 'Comma separated, only skills you actually know. e.g. Java, SQL, React'}
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">Resume information (optional)</label>
+                  <textarea
+                    className="input min-h-[80px] resize-none text-xs"
+                    value={skillResumeInfo}
+                    onChange={e => setSkillResumeInfo(e.target.value)}
+                    placeholder="Paste your summary, education, experience, internships, projects or certifications so the AI can detect demonstrated skills…"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">Target job role (optional)</label>
+                  <input
+                    className="input text-xs"
+                    type="text"
+                    value={skillRole}
+                    onChange={e => setSkillRole(e.target.value)}
+                    placeholder={resume.professionalTitle
+                      ? `Optional — defaults to "${resume.professionalTitle}"`
+                      : 'e.g. Java Developer, Full Stack Developer'}
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">Skill category (optional)</label>
+                  <select
+                    className="input text-xs"
+                    value={skillCategory}
+                    onChange={e => setSkillCategory(e.target.value)}
+                  >
+                    <option>All Relevant Skills</option>
+                    <option>Technical Skills</option>
+                    <option>Programming Languages</option>
+                    <option>Frameworks/Libraries</option>
+                    <option>Databases</option>
+                    <option>Tools</option>
+                    <option>Cloud/DevOps</option>
+                    <option>Soft Skills</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="label text-xs">Target job description (optional, recommended)</label>
+                  <textarea
+                    className="input min-h-[90px] resize-none text-xs"
+                    value={skillJobDesc}
+                    onChange={e => setSkillJobDesc(e.target.value)}
+                    placeholder="Paste the job description to see which missing skills are relevant…"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
           <button type="button" onClick={() => run(active)}
             className="btn-primary btn-sm w-full justify-center">
             <Icon name="sparkles" className="h-3.5 w-3.5" />
@@ -714,7 +832,6 @@ const ResultContent = ({ result }) => {
       );
 
     case 'list':
-    case 'skills':
       return (
         <ul className="space-y-1.5">
           {result.items.map((item, i) => (
@@ -725,6 +842,52 @@ const ResultContent = ({ result }) => {
           ))}
         </ul>
       );
+
+    // SKILLS-02: categorized skills result.
+    case 'skills': {
+      const d = result.data || {};
+      const existing = Array.isArray(d.existingSkills) ? d.existingSkills : [];
+      const demonstrated = Array.isArray(d.demonstratedSkills) ? d.demonstratedSkills : [];
+      const jobRelevant = Array.isArray(d.jobRelevantSkillsNotDemo) ? d.jobRelevantSkillsNotDemo : [];
+      const recommended = Array.isArray(d.recommendedResumeSkills) ? d.recommendedResumeSkills : [];
+      if (!existing.length && !demonstrated.length && !jobRelevant.length && !recommended.length) {
+        return <p className="text-xs text-ink-400">No skills could be identified.</p>;
+      }
+      return (
+        <div className="space-y-3">
+          {recommended.length > 0 && (
+            <SkillGroup
+              title="Recommended resume skills"
+              tone="brand"
+              chips={recommended}
+            />
+          )}
+          {existing.length > 0 && (
+            <SkillGroup
+              title="My existing skills"
+              tone="success"
+              items={existing}
+            />
+          )}
+          {demonstrated.length > 0 && (
+            <SkillGroup
+              title="Skills demonstrated"
+              tone="ink"
+              items={demonstrated}
+            />
+          )}
+          {jobRelevant.length > 0 && (
+            <div className="rounded-lg border border-warning-200 bg-warning-50 p-2.5 space-y-1.5">
+              <p className="text-xs font-semibold text-warning-700">Job-relevant skills</p>
+              <p className="text-[10px] text-warning-700/80 leading-relaxed">
+                Do not add to your resume unless you actually have this skill.
+              </p>
+              <SkillsItemList items={jobRelevant} />
+            </div>
+          )}
+        </div>
+      );
+    }
 
     case 'grammar': {
       const data = result.data && typeof result.data === 'object' ? result.data : {};
@@ -911,11 +1074,18 @@ function getResultText(result) {
   if (!result) return '';
   switch (result.type) {
     case 'text':      return result.text;
-    case 'list':
-    case 'skills':    return result.items.join('\n');
+    case 'list':      return result.items.join('\n');
     case 'bullets':   return (result.items || [])
                              .map(b => `• ${typeof b === 'string' ? b : b?.text || ''}`)
                              .join('\n');
+    // SKILLS-02: copy-all includes only the recommended resume skills.
+    case 'skills': {
+      const d = result.data || {};
+      return (Array.isArray(d.recommendedResumeSkills) && d.recommendedResumeSkills.length
+        ? d.recommendedResumeSkills
+        : (Array.isArray(d.existingSkills) ? d.existingSkills.map(s => s?.name || s) : [])
+      ).join('\n');
+    }
     case 'grammar':   return result.data?.correctedText || '';
     case 'ats':       return `Score: ${result.data?.score}/100 (${result.data?.grade})\n\n` +
                              `${result.data?.summary}\n\nTop fixes:\n` +
@@ -928,3 +1098,42 @@ function getResultText(result) {
     default:          return '';
   }
 }
+
+/* ─── Suggest Skills helper components (SKILLS-02) ──────────────────── */
+
+const skillName = (s) => (typeof s === 'string' ? s : s?.name || '');
+
+const SkillChip = ({ label }) => (
+  <span className="inline-flex items-center rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-medium text-ink-700 border border-surface-200">
+    {label}
+  </span>
+);
+
+const SkillsItemList = ({ items }) => (
+  <ul className="space-y-1">
+    {(items || []).map((s, i) => (
+      <li key={i} className="text-xs text-ink-700 leading-relaxed">
+        <span className="font-medium">{skillName(s)}</span>
+        {s?.reason && <span className="text-ink-400"> — {s.reason}</span>}
+      </li>
+    ))}
+  </ul>
+);
+
+const SkillGroup = ({ title, chips, items, tone }) => {
+  const border = tone === 'success' ? 'border-success-200 bg-success-50'
+               : tone === 'brand'   ? 'border-brand-200 bg-brand-50'
+               : 'border-surface-200 bg-surface-50';
+  return (
+    <div className={`rounded-lg border p-2.5 space-y-1.5 ${border}`}>
+      <p className="text-[11px] font-semibold text-ink-700 uppercase tracking-wide">{title}</p>
+      {chips ? (
+        <div className="flex flex-wrap gap-1">
+          {(chips || []).map((c, i) => <SkillChip key={i} label={typeof c === 'string' ? c : c?.name || c} />)}
+        </div>
+      ) : (
+        <SkillsItemList items={items} />
+      )}
+    </div>
+  );
+};
