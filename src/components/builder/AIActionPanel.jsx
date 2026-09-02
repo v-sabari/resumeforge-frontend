@@ -285,10 +285,30 @@ export const AIActionPanel = ({ resume, setResume }) => {
           setResult({ type: 'grammar', data: res });
           break;
 
-        /* ── ATS Score ───────────────────────────────────── */
-        case 'ats':
+        /* ── ATS Score (ATS-01) ───────────────────────────── */
+        case 'ats': {
+          // ATS-01: compose the FULL resume content (all sections) so the backend
+          // can procure an accurate factor-level analysis against the job
+          // description. The backend computes the weighted final score — the AI
+          // only returns the six factor scores and advisory data.
+          const resumeText = [
+            `Full Name: ${resume.fullName || ''}`,
+            `Professional Title: ${resume.professionalTitle || ''}`,
+            `Summary: ${resume.summary || ''}`,
+            `Skills: ${(resume.skills || []).join(', ')}`,
+            `Experience: ${(resume.experience || []).map(e =>
+              `${e.role || ''}${e.company ? ' at ' + e.company : ''}${e.summary ? ' — ' + e.summary : ''}${(e.bullets || []).length ? ':\n  - ' + (e.bullets || []).join('\n  - ') : ''}`
+            ).filter(Boolean).join('\n')}`,
+            `Projects: ${(resume.projects || []).map(p =>
+              `${p.name || ''}${p.techStack ? ' (' + p.techStack + ')' : ''}${p.description ? ' — ' + p.description : ''}${(p.highlights || []).length ? ':\n  - ' + (p.highlights || []).join('\n  - ') : ''}`
+            ).filter(Boolean).join('\n')}`,
+            `Education: ${(resume.education || []).map(e => `${e.school || ''}${e.degree ? ' — ' + e.degree : ''}`).filter(Boolean).join(' | ')}`,
+            `Achievements: ${(resume.achievements || []).join(', ')}`,
+          ].filter(Boolean).join('\n');
+
           res = await getAtsScore({
             targetRole:       resume.professionalTitle || '',
+            resumeText,
             summary:          resume.summary           || '',
             skills:           resume.skills            || [],
             experienceBullets:(resume.experience || []).flatMap(e => e.bullets || []),
@@ -297,6 +317,7 @@ export const AIActionPanel = ({ resume, setResume }) => {
           });
           setResult({ type: 'ats', data: res });
           break;
+        }
 
         /* ── LinkedIn ────────────────────────────────────── */
         case 'linkedin':
@@ -1007,18 +1028,73 @@ const ResultContent = ({ result }) => {
     }
 
     case 'ats': {
-      const { score, grade, matchedKeywords, missingKeywords, topFixes, summary } = result.data;
+      // ATS-01: final weighted score + grade are computed on the backend. The
+      // six factor scores (weight + value 0-100), matched/missing keywords,
+      // strengths, and improvements come from the structured AI analysis.
+      const d = result.data || {};
+      const fs = d.factorScores || {};
+      const factors = [
+        { key: 'keywordMatch',        label: 'Keyword Match',             weight: '30%', value: fs.keywordMatch ?? d.keywordMatch },
+        { key: 'skillsMatch',         label: 'Required Skills Match',     weight: '25%', value: fs.skillsMatch ?? d.skillsMatch },
+        { key: 'experienceRelevance', label: 'Experience / Role Relevance', weight: '15%', value: fs.experienceRelevance ?? d.experienceRelevance },
+        { key: 'educationMatch',      label: 'Education / Qualification', weight: '10%', value: fs.educationMatch ?? d.educationMatch },
+        { key: 'structureReadability',label: 'Structure & Readability',   weight: '10%', value: fs.structureReadability ?? d.structureReadability },
+        { key: 'jobAlignment',        label: 'Overall JD Alignment',      weight: '10%', value: fs.jobAlignment ?? d.jobAlignment },
+      ].filter(f => typeof f.value === 'number');
+
+      const matched = (d.matchingKeywords ?? d.matchedKeywords) || [];
+      const missing = d.missingKeywords || [];
+      const strengths = d.strengths || [];
+      const improvements = d.improvements || d.topFixes || [];
+
       return (
         <div className="space-y-3">
-          <ScoreBar score={score} />
-          <p className="text-xs font-semibold text-ink-700">Grade: {grade}</p>
-          <p className="text-xs text-ink-500 leading-relaxed">{summary}</p>
+          <ScoreBar score={d.score} />
 
-          {topFixes?.length > 0 && (
+          {typeof d.score === 'number' && d.grade && (
+            <p className="text-xs font-semibold text-ink-700">Overall grade: {d.grade}</p>
+          )}
+
+          {factors.length > 0 && (
             <div>
-              <p className="text-xs font-medium text-ink-700 mb-1">Top fixes:</p>
+              <p className="text-xs font-medium text-ink-700 mb-1">Factor breakdown:</p>
+              <div className="space-y-1.5">
+                {factors.map((f) => (
+                  <div key={f.key} className="flex items-center gap-2">
+                    <span className="w-40 shrink-0 text-[10px] text-ink-500">{f.label}</span>
+                    <div className="h-1.5 flex-1 rounded-full bg-surface-200 overflow-hidden">
+                      <div
+                        className={`h-1.5 rounded-full ${f.value >= 60 ? 'bg-brand-500' : 'bg-danger-500'}`}
+                        style={{ width: `${f.value}%` }}
+                      />
+                    </div>
+                    <span className="w-14 shrink-0 text-right text-[10px] font-semibold text-ink-600">
+                      {f.value}/100 <span className="text-ink-400 font-normal">({f.weight})</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {strengths.length > 0 && (
+            <div>
+              <p className="text-xs font-medium text-ink-700 mb-1">Strengths:</p>
+              <ul className="space-y-1">
+                {strengths.map((s, i) => (
+                  <li key={i} className="text-xs text-ink-600 flex gap-1.5">
+                    <span className="font-semibold text-success-500 shrink-0">✓</span>{s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {improvements.length > 0 && (
+            <div>
+              <p className="text-xs font-medium text-ink-700 mb-1">Improvements:</p>
               <ol className="space-y-1">
-                {topFixes.map((fix, i) => (
+                {improvements.map((fix, i) => (
                   <li key={i} className="text-xs text-ink-600 flex gap-1.5">
                     <span className="font-semibold text-danger-500 shrink-0">{i + 1}.</span>{fix}
                   </li>
@@ -1026,23 +1102,28 @@ const ResultContent = ({ result }) => {
               </ol>
             </div>
           )}
-          {missingKeywords?.length > 0 && (
+
+          {missing.length > 0 && (
             <div>
               <p className="text-xs font-medium text-ink-700 mb-1">Missing keywords:</p>
               <div className="flex flex-wrap gap-1">
-                {missingKeywords.map((kw, i) => (
+                {missing.map((kw, i) => (
                   <span key={i} className="rounded-full bg-danger-50 px-2 py-0.5 text-[10px] text-danger-700 border border-danger-100">
                     {kw}
                   </span>
                 ))}
               </div>
+              <p className="text-xs text-ink-400 mt-1">
+                Missing from resume – add only if you actually have this skill.
+              </p>
             </div>
           )}
-          {matchedKeywords?.length > 0 && (
+
+          {matched.length > 0 && (
             <div>
               <p className="text-xs font-medium text-ink-700 mb-1">Matched keywords:</p>
               <div className="flex flex-wrap gap-1">
-                {matchedKeywords.map((kw, i) => (
+                {matched.map((kw, i) => (
                   <span key={i} className="rounded-full bg-success-50 px-2 py-0.5 text-[10px] text-success-700 border border-success-100">
                     {kw}
                   </span>
@@ -1172,9 +1253,35 @@ function getResultText(result) {
       ).join('\n');
     }
     case 'grammar':   return result.data?.correctedText || '';
-    case 'ats':       return `Score: ${result.data?.score}/100 (${result.data?.grade})\n\n` +
-                             `${result.data?.summary}\n\nTop fixes:\n` +
-                             (result.data?.topFixes || []).map((f, i) => `${i + 1}. ${f}`).join('\n');
+    case 'ats': {
+      const d = result.data || {};
+      const fs = d.factorScores || {};
+      const factors = [
+        ['Keyword Match', fs.keywordMatch ?? d.keywordMatch],
+        ['Required Skills Match', fs.skillsMatch ?? d.skillsMatch],
+        ['Experience / Role Relevance', fs.experienceRelevance ?? d.experienceRelevance],
+        ['Education / Qualification', fs.educationMatch ?? d.educationMatch],
+        ['Structure & Readability', fs.structureReadability ?? d.structureReadability],
+        ['Overall JD Alignment', fs.jobAlignment ?? d.jobAlignment],
+      ].filter(([, v]) => typeof v === 'number');
+      const matched = (d.matchingKeywords ?? d.matchedKeywords) || [];
+      const missing = d.missingKeywords || [];
+      const strengths = d.strengths || [];
+      const improvements = d.improvements || d.topFixes || [];
+
+      const lines = [];
+      lines.push(`ATS Score: ${d.score}/100 (${d.grade || ''})`);
+      if (factors.length) {
+        lines.push('', 'Factor breakdown:');
+        factors.forEach(([label, v]) => lines.push(`- ${label}: ${v}/100`));
+      }
+      if (matched.length) lines.push('', `Matched keywords: ${matched.join(', ')}`);
+      if (missing.length) lines.push('', `Missing keywords: ${missing.join(', ')}\n(missing from resume - add only if you actually have this skill)`);
+      if (strengths.length) lines.push('', 'Strengths:\n' + strengths.map((s, i) => `${i + 1}. ${s}`).join('\n'));
+      if (improvements.length) lines.push('', 'Improvements:\n' + improvements.map((f, i) => `${i + 1}. ${f}`).join('\n'));
+      return lines.join('\n');
+    }
+
     case 'linkedin':  return `Headline:\n${result.data?.optimizedHeadline}\n\nAbout:\n${result.data?.optimizedAbout}`;
     case 'tailor':    return result.data?.tailoredSummary || '';
     case 'interview': return (result.data?.questions || [])
