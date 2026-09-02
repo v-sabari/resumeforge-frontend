@@ -82,6 +82,16 @@ export const AIActionPanel = ({ resume, setResume }) => {
   const [summaryContribute, setSummaryContribute] = useState(''); // What you can contribute
   const [summaryProjects, setSummaryProjects] = useState(''); // Relevant experience/projects
 
+  /* ── Bullets form state (BULLETS-01) ─────────────────────────── */
+  const [bulletSectionType,  setBulletSectionType]  = useState('Work Experience');
+  const [bulletRole,         setBulletRole]         = useState('');
+  const [bulletCompany,      setBulletCompany]      = useState('');
+  const [bulletDescription,  setBulletDescription]  = useState('');
+  const [bulletTech,         setBulletTech]         = useState('');
+  const [bulletOutcome,      setBulletOutcome]      = useState('');
+  const [bulletMetrics,      setBulletMetrics]      = useState('');
+  const [bulletCount,        setBulletCount]        = useState(3);
+
   const reset = () => {
     setResult(null);
     setError('');
@@ -93,6 +103,14 @@ export const AIActionPanel = ({ resume, setResume }) => {
     setSummaryTarget('');
     setSummaryContribute('');
     setSummaryProjects('');
+    setBulletSectionType('Work Experience');
+    setBulletRole('');
+    setBulletCompany('');
+    setBulletDescription('');
+    setBulletTech('');
+    setBulletOutcome('');
+    setBulletMetrics('');
+    setBulletCount(3);
   };
 
   const run = async (id) => {
@@ -135,17 +153,45 @@ export const AIActionPanel = ({ resume, setResume }) => {
           break;
         }
 
-        /* ── Bullets ─────────────────────────────────────── */
+        /* ── Bullets (BULLETS-01) ─────────────────────────────── */
         case 'bullets': {
-          const exp = (resume.experience || [])[0] || {};
+          // Validate the fields the AI actually needs before calling.
+          const effRole = bulletRole.trim() || resume.professionalTitle || '';
+          const effTech = bulletTech.trim()
+            ? bulletTech.split(',').map(s => s.trim()).filter(Boolean)
+            : [];
+
+          if (!bulletDescription.trim()) {
+            setError('Please describe what you did. This is required to write meaningful bullet points.');
+            setLoading(false); return;
+          }
+          if (!effRole) {
+            setError('Please enter your role / position (or set your professional title).');
+            setLoading(false); return;
+          }
+          if (bulletDescription.trim().length < 10) {
+            setError('Please provide a bit more detail about what you did (at least a sentence).');
+            setLoading(false); return;
+          }
+
           res = await generateBullets({
-            role:             exp.role    || resume.professionalTitle || '',
-            company:          exp.company || '',
-            responsibilities: exp.bullets || [],
-            technologies:     resume.skills || [],
-            currentText:      '',
+            sectionType:  bulletSectionType,
+            role:         effRole,
+            company:      bulletCompany.trim(),
+            description:  bulletDescription.trim(),
+            technologies: effTech,
+            outcome:      bulletOutcome.trim(),
+            metrics:      bulletMetrics.trim(),
+            numBullets:   bulletCount,
           });
-          setResult({ type: 'list', items: res?.items || [] });
+
+          // Response shape: { bullets: [{ text, keywords }] } (BULLETS-01).
+          const bullets = Array.isArray(res?.bullets)
+            ? res.bullets
+            : (Array.isArray(res?.items)
+                ? res.items.map(t => (typeof t === 'string' ? { text: t, keywords: [] } : t))
+                : []);
+          setResult({ type: 'bullets', items: bullets });
           break;
         }
 
@@ -437,6 +483,109 @@ export const AIActionPanel = ({ resume, setResume }) => {
             </>
           )}
 
+          {/* Bullets form (BULLETS-01) */}
+          {active === 'bullets' && !loading && !result && (
+            <>
+              <p className="label text-xs font-medium text-ink-600 uppercase tracking-wide mb-2">
+                Describe your experience
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <label className="label text-xs">
+                    Section type <span className="text-danger-600">*</span>
+                  </label>
+                  <select
+                    className="input text-xs"
+                    value={bulletSectionType}
+                    onChange={e => setBulletSectionType(e.target.value)}
+                  >
+                    <option>Work Experience</option>
+                    <option>Internship</option>
+                    <option>Project</option>
+                    <option>Achievement</option>
+                    <option>Leadership / Responsibility</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="label text-xs">
+                    Role / Position
+                    {!resume.professionalTitle && <span className="text-danger-600 ml-1">*</span>}
+                  </label>
+                  <input
+                    className="input text-xs"
+                    type="text"
+                    value={bulletRole}
+                    onChange={e => setBulletRole(e.target.value)}
+                    placeholder={resume.professionalTitle
+                      ? `Optional — defaults to "${resume.professionalTitle}"`
+                      : 'e.g. Java Developer Intern'}
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">Organization / Company (optional)</label>
+                  <input
+                    className="input text-xs"
+                    type="text"
+                    value={bulletCompany}
+                    onChange={e => setBulletCompany(e.target.value)}
+                    placeholder="e.g. ABC Tech Solutions"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">
+                    What did you do? <span className="text-danger-600">*</span>
+                  </label>
+                  <textarea
+                    className="input min-h-[70px] resize-none text-xs"
+                    value={bulletDescription}
+                    onChange={e => setBulletDescription(e.target.value)}
+                    placeholder="Describe your actual work or responsibility. e.g. Built a student management application using Java and MySQL to manage student records."
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">Technologies / Tools Used</label>
+                  <input
+                    className="input text-xs"
+                    type="text"
+                    value={bulletTech}
+                    onChange={e => setBulletTech(e.target.value)}
+                    placeholder="Only the ones you actually used — comma separated. e.g. Java, MySQL"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">Result / Outcome (optional)</label>
+                  <textarea
+                    className="input min-h-[50px] resize-none text-xs"
+                    value={bulletOutcome}
+                    onChange={e => setBulletOutcome(e.target.value)}
+                    placeholder="What was achieved, improved, built, fixed, or delivered?"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">Metrics (optional)</label>
+                  <input
+                    className="input text-xs"
+                    type="text"
+                    value={bulletMetrics}
+                    onChange={e => setBulletMetrics(e.target.value)}
+                    placeholder="Only real numbers you can back up. e.g. reduced response time from 2s to 800ms"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">Number of bullet points</label>
+                  <select
+                    className="input text-xs"
+                    value={bulletCount}
+                    onChange={e => setBulletCount(Number(e.target.value))}
+                  >
+                    {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}</option>)}
+                  </select>
+                </div>
+              </div>
+            </>
+          )}
+
           <button type="button" onClick={() => run(active)}
             className="btn-primary btn-sm w-full justify-center">
             <Icon name="sparkles" className="h-3.5 w-3.5" />
@@ -513,7 +662,7 @@ const ResultPanel = ({ result, active, onApply, onCopy, onReset, canApply }) => 
       )}
       <button type="button" onClick={onCopy}
         className="btn-secondary btn-sm flex-1 justify-center">
-        Copy
+        {result.type === 'bullets' ? 'Copy all' : 'Copy'}
       </button>
       <button type="button" onClick={onReset}
         className="btn-secondary btn-sm flex-1 justify-center">
@@ -528,6 +677,41 @@ const ResultContent = ({ result }) => {
 
     case 'text':
       return <p className="text-xs text-ink-700 leading-relaxed whitespace-pre-wrap">{result.text}</p>;
+
+    // BULLETS-01: each bullet has { text, keywords }. Renders with a
+    // copy-per-bullet button and inline keyword chips.
+    case 'bullets':
+      return (
+        <div className="space-y-2.5">
+          {(result.items || []).map((b, i) => {
+            const text = typeof b === 'string' ? b : b?.text || '';
+            const keywords = typeof b === 'object' && Array.isArray(b?.keywords) ? b.keywords : [];
+            return (
+              <div key={i} className="group rounded-lg border border-surface-200 bg-white p-2.5 space-y-1.5">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-xs text-ink-700 leading-relaxed">{text}</p>
+                  <button
+                    type="button"
+                    onClick={() => navigator.clipboard.writeText(text)}
+                    className="shrink-0 rounded-lg border border-surface-200 px-2 py-1 text-[10px] font-medium text-ink-500 hover:border-brand-300 hover:text-brand-600"
+                  >
+                    Copy
+                  </button>
+                </div>
+                {keywords.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {keywords.map((k, ki) => (
+                      <span key={ki} className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] text-brand-700 border border-brand-100">
+                        {k}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      );
 
     case 'list':
     case 'skills':
@@ -729,6 +913,9 @@ function getResultText(result) {
     case 'text':      return result.text;
     case 'list':
     case 'skills':    return result.items.join('\n');
+    case 'bullets':   return (result.items || [])
+                             .map(b => `• ${typeof b === 'string' ? b : b?.text || ''}`)
+                             .join('\n');
     case 'grammar':   return result.data?.correctedText || '';
     case 'ats':       return `Score: ${result.data?.score}/100 (${result.data?.grade})\n\n` +
                              `${result.data?.summary}\n\nTop fixes:\n` +
