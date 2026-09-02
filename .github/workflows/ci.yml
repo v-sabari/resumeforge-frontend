@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: http://localhost:8080
+          VITE_APP_NAME: ResumeForge AI
+          VITE_RAZORPAY_KEY_ID: rzp_test_placeholder
+          VITE_RAZORPAY_LINK: https://rzp.io/rzp/placeholder
+          VITE_GA4_ID: G-XXXXXXXXXX
+          VITE_ADSENSE_CLIENT: ca-pub-0000000000000000
+          VITE_ADSENSE_SLOT_CONTENT: '0000000000'
