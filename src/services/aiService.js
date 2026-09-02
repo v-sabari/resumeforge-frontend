@@ -1,117 +1,62 @@
 import api from './api';
 
-// ── Original features ─────────────────────────────────────────────────────────
-
-/**
- * Professional resume summary generation.
- *
- * @param {object} payload - {
- *   whoYouAre,          // required: brief "who you are" (e.g. background/student status)
- *   educationOrRole,     // optional: education / current role
- *   targetRole,          // required: target job role
- *   skills,               // required: string[] of strongest technical skills
- *   strengths,           // optional: relevant strengths
- *   contribution,        // optional: what the candidate can contribute
- *   relevantProjects,    // optional: relevant experience/projects
- *   achievements,        // optional: string[] of known achievements
- * }
- * @returns {{ text: "..." }}
- */
+// Professional resume summary generation
 export const generateSummary = async (payload) => {
   const { data } = await api.post('/api/ai/summary', payload);
-  return data; // { text: "..." }
+  return data;
 };
 
 export const generateBullets = async (payload) => {
   const { data } = await api.post('/api/ai/bullets', payload);
-  return data; // { items: [...] }
+  return data;
 };
 
 export const suggestSkills = async (payload) => {
   const { data } = await api.post('/api/ai/skills', payload);
-  return data; // { items: [...] }
+  return data;
 };
 
 export const rewriteText = async (payload) => {
   const { data } = await api.post('/api/ai/rewrite', payload);
-  return data; // { text: "..." }
+  return data;
 };
 
-// ── New Phase 2 features ──────────────────────────────────────────────────────
-
-/**
- * ATS score analysis.
- * Free: 3/day. Premium: unlimited.
- *
- * @param {object} payload - { targetRole, summary, skills[], experienceBullets[], achievements[], jobDescription? }
- * @returns {{ score, grade, matchedKeywords[], missingKeywords[], topFixes[], summary }}
- */
+// ATS score analysis
 export const getAtsScore = async (payload) => {
   const { data } = await api.post('/api/ai/ats-score', payload);
   return data;
 };
 
-/**
- * Cover letter generation.
- * Premium only.
- *
- * @param {object} payload - { candidateName, targetRole, companyName, summary, topAchievements[], skills[], jobDescription?, tone? }
- * @returns {{ text: "..." }}
- */
+// Cover letter generation
 export const generateCoverLetter = async (payload) => {
   const { data } = await api.post('/api/ai/cover-letter', payload);
   return data;
 };
 
-/**
- * Job-specific resume tailoring.
- * Premium only.
- *
- * @param {object} payload - { targetRole, currentSummary, skills[], experienceBulletGroups[][], jobDescription }
- * @returns {{ tailoredSummary, tailoredBulletGroups[][], suggestedSkillsToAdd[], keywordsMissing[] }}
- */
+// Job-specific resume tailoring
 export const tailorResume = async (payload) => {
   const { data } = await api.post('/api/ai/tailor', payload);
   return data;
 };
 
-/**
- * LinkedIn headline and About section optimizer.
- * Free: 1/day. Premium: unlimited.
- *
- * @param {object} payload - { currentRole, targetRole, currentHeadline, currentAbout, topSkills[], achievements[] }
- * @returns {{ optimizedHeadline, optimizedAbout, headlineTips }}
- */
+// LinkedIn headline and About section optimizer
 export const optimizeLinkedIn = async (payload) => {
   const { data } = await api.post('/api/ai/linkedin', payload);
   return data;
 };
 
-/**
- * Interview preparation: 5 questions with model answers.
- * Premium only.
- *
- * @param {object} payload - { targetRole, companyName, summary, skills[], topAchievements[], jobDescription? }
- * @returns {{ questions: [{ question, modelAnswer, category }], generalTips }}
- */
+// Interview preparation
 export const generateInterviewPrep = async (payload) => {
   const { data } = await api.post('/api/ai/interview-prep', payload);
   return data;
 };
 
-/**
- * Grammar and clarity check.
- * Free for all users.
- *
- * @param {object} payload - { text, context? }
- * @returns {{ correctedText, issuesFound[], issueCount, clean }}
- */
+// Grammar and clarity check
 export const checkGrammar = async (payload) => {
   const { data } = await api.post('/api/ai/grammar-check', payload);
   return data;
 };
 
-// Default export with all methods
 export const aiService = {
   generateSummary,
   generateBullets,
