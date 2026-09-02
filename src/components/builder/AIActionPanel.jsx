@@ -92,6 +92,10 @@ export const AIActionPanel = ({ resume, setResume }) => {
   const [bulletMetrics,      setBulletMetrics]      = useState('');
   const [bulletCount,        setBulletCount]        = useState(3);
 
+  /* ── Rewrite Text form state (REWRITE-01) ─────────────────────── */
+  const [rewriteSection, setRewriteSection] = useState('Summary');   // Summary / Experience / Project / Education / Skills / Other
+  const [rewriteStyle,   setRewriteStyle]   = useState('Professional'); // Professional / Concise / ATS-Friendly / Stronger wording
+
   /* ── Suggest Skills form state (SKILLS-02) ─────────────────── */
   const [skillCurrent,       setSkillCurrent]       = useState('');  // current skills (comma)
   const [skillResumeInfo,    setSkillResumeInfo]    = useState('');  // resume info textarea
@@ -123,6 +127,8 @@ export const AIActionPanel = ({ resume, setResume }) => {
     setBulletOutcome('');
     setBulletMetrics('');
     setBulletCount(3);
+    setRewriteSection('Summary');
+    setRewriteStyle('Professional');
     setSkillCurrent('');
     setSkillResumeInfo('');
     setSkillRole('');
@@ -252,11 +258,25 @@ export const AIActionPanel = ({ resume, setResume }) => {
         }
 
         /* ── Rewrite ─────────────────────────────────────── */
-        case 'rewrite':
+        case 'rewrite': {
           if (!input.trim()) { setError('Please enter some text to rewrite.'); setLoading(false); return; }
-          res = await rewriteText({ text: input, targetRole: resume.professionalTitle || '', tone: 'professional' });
-          setResult({ type: 'text', text: res?.text || '' });
+          // REWRITE-01: send the original text together with the chosen resume
+          // section and rewrite style. The backend rewrites only this text with
+          // strict no-invention rules.
+          res = await rewriteText({
+            text:          input,
+            resumeSection: rewriteSection,
+            rewriteStyle:  rewriteStyle,
+          });
+          const rewritten = (typeof res?.rewrittenText === 'string' && res.rewrittenText.trim())
+            ? res.rewrittenText
+            : (typeof res?.text === 'string' && res.text.trim() ? res.text : '');
+          setResult({
+            type: 'rewrite',
+            data: { originalText: input, rewrittenText: rewritten },
+          });
           break;
+        }
 
         /* ── Grammar check ───────────────────────────────── */
         case 'grammar':
@@ -375,7 +395,7 @@ export const AIActionPanel = ({ resume, setResume }) => {
   };
 
   /* ── Input fields for certain actions ──────────────────────────── */
-  const needsTextInput    = ['rewrite', 'grammar'].includes(active) && !loading && !result;
+  const needsTextInput    = ['grammar'].includes(active) && !loading && !result;
   const needsJdInput      = ['ats', 'cover', 'tailor', 'interview'].includes(active) && !loading && !result;
   const needsCompanyInput = ['cover', 'interview'].includes(active) && !loading && !result;
 
@@ -429,16 +449,59 @@ export const AIActionPanel = ({ resume, setResume }) => {
         <div className="space-y-2">
           {needsTextInput && (
             <>
-              <label className="label">
-                {active === 'rewrite' ? 'Text to rewrite' : 'Text to check'}
-              </label>
+              <label className="label">Text to check</label>
               <textarea className="input min-h-[80px] resize-none text-xs"
                 value={input} onChange={e => setInput(e.target.value)}
-                placeholder={active === 'rewrite'
-                  ? 'Paste the text you want to improve…'
-                  : 'Paste any resume text to check for errors…'
-                }
+                placeholder="Paste any resume text to check for errors…"
               />
+            </>
+          )}
+
+          {/* Rewrite Text form (REWRITE-01) */}
+          {active === 'rewrite' && !loading && !result && (
+            <>
+              <p className="label text-xs font-medium text-ink-600 uppercase tracking-wide mb-2">
+                What would you like to rewrite?
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <label className="label text-xs">
+                    Original text <span className="text-danger-600">*</span>
+                  </label>
+                  <textarea className="input min-h-[80px] resize-none text-xs"
+                    value={input} onChange={e => setInput(e.target.value)}
+                    placeholder="Paste the resume text you want rewritten, e.g. Created a website using React."
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">Resume section</label>
+                  <select
+                    className="input text-xs"
+                    value={rewriteSection}
+                    onChange={e => setRewriteSection(e.target.value)}
+                  >
+                    <option>Summary</option>
+                    <option>Experience</option>
+                    <option>Project</option>
+                    <option>Education</option>
+                    <option>Skills</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="label text-xs">Rewrite style</label>
+                  <select
+                    className="input text-xs"
+                    value={rewriteStyle}
+                    onChange={e => setRewriteStyle(e.target.value)}
+                  >
+                    <option>Professional</option>
+                    <option>Concise</option>
+                    <option>ATS-Friendly</option>
+                    <option>Stronger wording</option>
+                  </select>
+                </div>
+              </div>
             </>
           )}
 
@@ -793,6 +856,28 @@ const ResultContent = ({ result }) => {
     case 'text':
       return <p className="text-xs text-ink-700 leading-relaxed whitespace-pre-wrap">{result.text}</p>;
 
+    // REWRITE-01: shows the original text alongside the rewritten result so
+    // the user can compare them. Copy-button copies only the rewritten text.
+    case 'rewrite': {
+      const d = result.data || {};
+      return (
+        <div className="space-y-2">
+          {d.originalText && (
+            <div>
+              <p className="text-[11px] font-semibold text-ink-400 uppercase tracking-wide mb-1">Original text</p>
+              <p className="text-xs text-ink-500 leading-relaxed whitespace-pre-wrap border-l-2 border-surface-200 pl-2">
+                {d.originalText}
+              </p>
+            </div>
+          )}
+          <div>
+            <p className="text-[11px] font-semibold text-ink-400 uppercase tracking-wide mb-1">Rewritten text</p>
+            <p className="text-xs text-ink-700 leading-relaxed whitespace-pre-wrap">{d.rewrittenText || ''}</p>
+          </div>
+        </div>
+      );
+    }
+
     // BULLETS-01: each bullet has { text, keywords }. Renders with a
     // copy-per-bullet button and inline keyword chips.
     case 'bullets':
@@ -1072,6 +1157,7 @@ function getResultText(result) {
   switch (result.type) {
     case 'text':      return result.text;
     case 'list':      return result.items.join('\n');
+    case 'rewrite':   return result.data?.rewrittenText || '';
     case 'bullets':   return (result.items || [])
                              .map(b => `• ${typeof b === 'string' ? b : b?.text || ''}`)
                              .join('\n');
