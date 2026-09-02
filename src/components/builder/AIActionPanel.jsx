@@ -349,10 +349,15 @@ export const AIActionPanel = ({ resume, setResume }) => {
     // (existing + demonstrated), never the job-relevant-but-not-demonstrated ones.
     if (result.type === 'skills' && result.data) {
       const d = result.data;
-      const supported = (Array.isArray(d.recommendedSkills) && d.recommendedSkills.length)
-        ? d.recommendedSkills
-        : (Array.isArray(d.existingSkills) ? d.existingSkills : [])
-            .map(s => (typeof s === 'string' ? s : s?.name)).filter(Boolean);
+      // Force-flatten to plain strings: resume.skills must only ever contain
+      // strings (ListField + preview templates render them directly). Never
+      // leak {name, reason} objects into the resume. (SKILLS-05)
+      const supported = flatStrings(
+        (Array.isArray(d.recommendedSkills) && d.recommendedSkills.length)
+          ? d.recommendedSkills
+          : (Array.isArray(d.existingSkills) ? d.existingSkills : [])
+              .map(s => (typeof s === 'string' ? s : s?.name)).filter(Boolean)
+      );
       setResume(p => ({ ...p, skills: supported }));
     }
     if (result.type === 'tailor' && result.data) {
@@ -1073,9 +1078,11 @@ function getResultText(result) {
     // SKILLS-03: copy-all includes only the recommended resume skills.
     case 'skills': {
       const d = result.data || {};
-      return (Array.isArray(d.recommendedSkills) && d.recommendedSkills.length
-        ? d.recommendedSkills
-        : (Array.isArray(d.existingSkills) ? d.existingSkills.map(s => s?.name || s) : [])
+      return flatStrings(
+        (Array.isArray(d.recommendedSkills) && d.recommendedSkills.length)
+          ? d.recommendedSkills
+          : (Array.isArray(d.existingSkills) ? d.existingSkills : [])
+              .map(s => (typeof s === 'string' ? s : s?.name)).filter(Boolean)
       ).join('\n');
     }
     case 'grammar':   return result.data?.correctedText || '';
