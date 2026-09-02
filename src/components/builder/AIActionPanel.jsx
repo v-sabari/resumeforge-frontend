@@ -226,18 +226,17 @@ export const AIActionPanel = ({ resume, setResume }) => {
             skillCategory:     skillCategory,
           });
 
-          // Response shape (SKILLS-02):
-          // { existingSkills:[{name,reason}], demonstratedSkills:[{name,reason}],
-          //   jobRelevantSkillsNotDemonstrated:[{name,reason}], recommendedResumeSkills:[...] }
+          // Response shape (SKILLS-03): canonical keys with defensive aliases so
+          // skill sections render even if the model drifts on a key name.
+          // Canonical: existingSkills, demonstratedSkills, jobRelevantSkills, recommendedSkills.
+          // Aliases accepted: jobRelevantSkillsNotDemonstrated, recommendedResumeSkills.
           setResult({
             type: 'skills',
             data: {
-              existingSkills:            Array.isArray(res?.existingSkills)            ? res.existingSkills            : [],
-              demonstratedSkills:        Array.isArray(res?.demonstratedSkills)        ? res.demonstratedSkills        : [],
-              jobRelevantSkillsNotDemo:  Array.isArray(res?.jobRelevantSkillsNotDemonstrated)
-                                           ? res.jobRelevantSkillsNotDemonstrated       : [],
-              recommendedResumeSkills:   Array.isArray(res?.recommendedResumeSkills)
-                                           ? res.recommendedResumeSkills                : [],
+              existingSkills:   normalizeSkills(skillPick(res, ['existingSkills'])),
+              demonstratedSkills: normalizeSkills(skillPick(res, ['demonstratedSkills'])),
+              jobRelevantSkills:  normalizeSkills(skillPick(res, ['jobRelevantSkills', 'jobRelevantSkillsNotDemonstrated'])),
+              recommendedSkills:  normalizeSkills(flatStrings(skillPick(res, ['recommendedSkills', 'recommendedResumeSkills']))),
             },
           });
           break;
@@ -337,13 +336,14 @@ export const AIActionPanel = ({ resume, setResume }) => {
   const applyToResume = () => {
     if (!result) return;
     if (result.type === 'text'   && active === 'summary') setResume(p => ({ ...p, summary: result.text }));
-    // SKILLS-02: apply only the skills the user's information actually supports
+    // SKILLS-03: apply only the skills the user's information actually supports
     // (existing + demonstrated), never the job-relevant-but-not-demonstrated ones.
     if (result.type === 'skills' && result.data) {
-      const supported = result.data.recommendedResumeSkills
-        && result.data.recommendedResumeSkills.length
-        ? result.data.recommendedResumeSkills
-        : (result.data.existingSkills || []).map(s => (typeof s === 'string' ? s : s?.name)).filter(Boolean);
+      const d = result.data;
+      const supported = (Array.isArray(d.recommendedSkills) && d.recommendedSkills.length)
+        ? d.recommendedSkills
+        : (Array.isArray(d.existingSkills) ? d.existingSkills : [])
+            .map(s => (typeof s === 'string' ? s : s?.name)).filter(Boolean);
       setResume(p => ({ ...p, skills: supported }));
     }
     if (result.type === 'tailor' && result.data) {
@@ -843,13 +843,13 @@ const ResultContent = ({ result }) => {
         </ul>
       );
 
-    // SKILLS-02: categorized skills result.
+    // SKILLS-03: categorized skills result (canonical keys, aliases handled at parse time).
     case 'skills': {
       const d = result.data || {};
       const existing = Array.isArray(d.existingSkills) ? d.existingSkills : [];
       const demonstrated = Array.isArray(d.demonstratedSkills) ? d.demonstratedSkills : [];
-      const jobRelevant = Array.isArray(d.jobRelevantSkillsNotDemo) ? d.jobRelevantSkillsNotDemo : [];
-      const recommended = Array.isArray(d.recommendedResumeSkills) ? d.recommendedResumeSkills : [];
+      const jobRelevant = Array.isArray(d.jobRelevantSkills) ? d.jobRelevantSkills : [];
+      const recommended = Array.isArray(d.recommendedSkills) ? d.recommendedSkills : [];
       if (!existing.length && !demonstrated.length && !jobRelevant.length && !recommended.length) {
         return <p className="text-xs text-ink-400">No skills could be identified.</p>;
       }
@@ -1078,11 +1078,11 @@ function getResultText(result) {
     case 'bullets':   return (result.items || [])
                              .map(b => `• ${typeof b === 'string' ? b : b?.text || ''}`)
                              .join('\n');
-    // SKILLS-02: copy-all includes only the recommended resume skills.
+    // SKILLS-03: copy-all includes only the recommended resume skills.
     case 'skills': {
       const d = result.data || {};
-      return (Array.isArray(d.recommendedResumeSkills) && d.recommendedResumeSkills.length
-        ? d.recommendedResumeSkills
+      return (Array.isArray(d.recommendedSkills) && d.recommendedSkills.length
+        ? d.recommendedSkills
         : (Array.isArray(d.existingSkills) ? d.existingSkills.map(s => s?.name || s) : [])
       ).join('\n');
     }
@@ -1099,7 +1099,27 @@ function getResultText(result) {
   }
 }
 
-/* ─── Suggest Skills helper components (SKILLS-02) ──────────────────── */
+/* ─── Suggest Skills helper components (SKILLS-03) ──────────────────── */
+
+// Return the first present array from the given response keys (defensive
+// against LLM field-name drift / older schema variants).
+const skillPick = (obj, keys) => {
+  for (const k of keys) {
+    const v = obj && obj[k];
+    if (Array.isArray(v)) return v;
+  }
+  return [];
+};
+
+// Normalize a list of skills into [{ name, reason }] form (accepts plain
+// strings or { name, reason } objects) and drops empty entries.
+const normalizeSkills = (list) =>
+  (list || []).map(s => (typeof s === 'string' ? { name: s, reason: '' } : s || {}))
+    .filter(s => s && s.name && String(s.name).trim());
+
+// Reduce a list to plain non-empty skill-name strings (for copy/apply chips).
+const flatStrings = (list) =>
+  list.map(s => (typeof s === 'string' ? s : s?.name || '')).filter(Boolean);
 
 const skillName = (s) => (typeof s === 'string' ? s : s?.name || '');
 
