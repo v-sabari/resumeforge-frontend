@@ -100,6 +100,11 @@ export const AIActionPanel = ({ resume, setResume }) => {
   const [skillCategory,      setSkillCategory]      = useState('All Relevant Skills');
 
   const reset = () => {
+    // Always return to the idle state when (re)selecting an action or clearing
+    // results. Not resetting `loading` here is what caused the Suggest Skills
+    // form to be skipped: if loading was left true, the form's `!loading` guard
+    // failed and the panel went straight to the AI loading screen. (SKILLS-04)
+    setLoading(false);
     setResult(null);
     setError('');
     setInput('');
@@ -673,23 +678,6 @@ export const AIActionPanel = ({ resume, setResume }) => {
                       ? `Optional — defaults to "${resume.professionalTitle}"`
                       : 'e.g. Java Developer, Full Stack Developer'}
                   />
-                </div>
-                <div>
-                  <label className="label text-xs">Skill category (optional)</label>
-                  <select
-                    className="input text-xs"
-                    value={skillCategory}
-                    onChange={e => setSkillCategory(e.target.value)}
-                  >
-                    <option>All Relevant Skills</option>
-                    <option>Technical Skills</option>
-                    <option>Programming Languages</option>
-                    <option>Frameworks/Libraries</option>
-                    <option>Databases</option>
-                    <option>Tools</option>
-                    <option>Cloud/DevOps</option>
-                    <option>Soft Skills</option>
-                  </select>
                 </div>
                 <div>
                   <label className="label text-xs">Target job description (optional, recommended)</label>
