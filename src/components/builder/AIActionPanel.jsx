@@ -99,6 +99,11 @@ export const AIActionPanel = ({ resume, setResume }) => {
   /* ── Grammar Check form state (GRAMMAR-01) ──────────────────── */
   const [grammarSection, setGrammarSection] = useState('Summary'); // Summary / Experience / Project / Education / Skills / Other
 
+  /* ── LinkedIn Optimization form state (LINKEDIN-01) ────────── */
+  const [linkedinResumeInfo,      setLinkedinResumeInfo]      = useState(''); // full resume/profile details
+  const [linkedinTargetRole,      setLinkedinTargetRole]      = useState(''); // target job role
+  const [linkedinExistingContent, setLinkedinExistingContent] = useState(''); // optional existing LinkedIn content
+
   /* ── Suggest Skills form state (SKILLS-02) ─────────────────── */
   const [skillCurrent,       setSkillCurrent]       = useState('');  // current skills (comma)
   const [skillResumeInfo,    setSkillResumeInfo]    = useState('');  // resume info textarea
@@ -138,6 +143,9 @@ export const AIActionPanel = ({ resume, setResume }) => {
     setSkillRole('');
     setSkillJobDesc('');
     setSkillCategory('All Relevant Skills');
+    setLinkedinResumeInfo('');
+    setLinkedinTargetRole('');
+    setLinkedinExistingContent('');
   };
 
   const run = async (id) => {
@@ -332,18 +340,24 @@ export const AIActionPanel = ({ resume, setResume }) => {
           break;
         }
 
-        /* ── LinkedIn ────────────────────────────────────── */
-        case 'linkedin':
+        /* ── LinkedIn (LINKEDIN-01) ──────────────────────────── */
+        case 'linkedin': {
+          if (!linkedinResumeInfo.trim()) {
+            setError('Please paste your resume/profile information so the AI can generate your LinkedIn content.');
+            setLoading(false); return;
+          }
+          // LINKEDIN-01: send the user's full resume info, target role, and
+          // optional existing LinkedIn content. The AI generates headline,
+          // about, relevant skills, and improvement suggestions — all based
+          // strictly on the provided information.
           res = await optimizeLinkedIn({
-            currentRole:     resume.professionalTitle || '',
-            targetRole:      resume.professionalTitle || '',
-            currentHeadline: '',
-            currentAbout:    resume.summary || '',
-            topSkills:       (resume.skills || []).slice(0, 8),
-            achievements:    resume.achievements || [],
+            targetRole:            linkedinTargetRole.trim() || resume.professionalTitle || '',
+            linkedinResumeInfo:    linkedinResumeInfo.trim(),
+            linkedinExistingContent: linkedinExistingContent.trim() || undefined,
           });
           setResult({ type: 'linkedin', data: res });
           break;
+        }
 
         /* ── Cover letter ────────────────────────────────── */
         case 'cover':
@@ -552,6 +566,45 @@ export const AIActionPanel = ({ resume, setResume }) => {
                     <option>ATS-Friendly</option>
                     <option>Stronger wording</option>
                   </select>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* LinkedIn Optimization form (LINKEDIN-01) */}
+          {active === 'linkedin' && !loading && !result && (
+            <>
+              <p className="label text-xs font-medium text-ink-600 uppercase tracking-wide mb-2">
+                LinkedIn Optimization
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <label className="label text-xs">
+                    Resume / profile information <span className="text-danger-600">*</span>
+                  </label>
+                  <textarea className="input min-h-[100px] resize-none text-xs"
+                    value={linkedinResumeInfo} onChange={e => setLinkedinResumeInfo(e.target.value)}
+                    placeholder="Paste your education, skills, experience, projects, and achievements here…"
+                  />
+                  <p className="text-[10px] text-ink-400 mt-0.5">Include education, skills, experience, internships, projects, and achievements.</p>
+                </div>
+                <div>
+                  <label className="label text-xs">
+                    Target job role <span className="text-danger-600">*</span>
+                  </label>
+                  <input className="input text-xs" type="text"
+                    value={linkedinTargetRole} onChange={e => setLinkedinTargetRole(e.target.value)}
+                    placeholder="e.g. Java Developer, Frontend Engineer, Data Analyst"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">
+                    Existing LinkedIn content <span className="text-ink-400">(optional)</span>
+                  </label>
+                  <textarea className="input min-h-[60px] resize-none text-xs"
+                    value={linkedinExistingContent} onChange={e => setLinkedinExistingContent(e.target.value)}
+                    placeholder="Paste your current LinkedIn headline or About section if you want it improved…"
+                  />
                 </div>
               </div>
             </>
@@ -1198,18 +1251,52 @@ const ResultContent = ({ result }) => {
     }
 
     case 'linkedin': {
-      const { optimizedHeadline, optimizedAbout, headlineTips } = result.data;
+      // LINKEDIN-01: structured output — headline, about, skills, and suggestions.
+      const d = result.data || {};
+      const headline = d.headline || d.optimizedHeadline || '';
+      const about    = d.about    || d.optimizedAbout    || '';
+      const skills   = Array.isArray(d.skills) ? d.skills.filter(s => typeof s === 'string') : [];
+      const suggestions = Array.isArray(d.suggestions) ? d.suggestions.filter(s => typeof s === 'string') : [];
+      const headlineTips = d.headlineTips || '';
       return (
         <div className="space-y-3">
-          <div>
-            <p className="text-xs font-medium text-ink-700 mb-1">Headline:</p>
-            <p className="text-xs text-ink-700 leading-relaxed font-medium">{optimizedHeadline}</p>
-            {headlineTips && <p className="text-xs text-ink-400 mt-1 italic">{headlineTips}</p>}
-          </div>
-          <div>
-            <p className="text-xs font-medium text-ink-700 mb-1">About section:</p>
-            <p className="text-xs text-ink-700 leading-relaxed whitespace-pre-wrap">{optimizedAbout}</p>
-          </div>
+          {headline && (
+            <div>
+              <p className="text-xs font-medium text-ink-700 mb-1">Headline:</p>
+              <p className="text-xs text-ink-700 leading-relaxed font-medium">{headline}</p>
+              {headlineTips && <p className="text-xs text-ink-400 mt-1 italic">{headlineTips}</p>}
+            </div>
+          )}
+          {about && (
+            <div>
+              <p className="text-xs font-medium text-ink-700 mb-1">About section:</p>
+              <p className="text-xs text-ink-700 leading-relaxed whitespace-pre-wrap">{about}</p>
+            </div>
+          )}
+          {skills.length > 0 && (
+            <div>
+              <p className="text-xs font-medium text-ink-700 mb-1">Relevant skills:</p>
+              <div className="flex flex-wrap gap-1">
+                {skills.map((sk, i) => (
+                  <span key={i} className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] text-brand-700 border border-brand-100">
+                    {sk}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          {suggestions.length > 0 && (
+            <div>
+              <p className="text-xs font-medium text-ink-700 mb-1">Profile improvement suggestions:</p>
+              <ul className="space-y-1">
+                {suggestions.map((s, i) => (
+                  <li key={i} className="text-xs text-ink-600 flex gap-1.5">
+                    <span className="font-semibold text-success-500 shrink-0">✓</span>{s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       );
     }
@@ -1357,7 +1444,19 @@ function getResultText(result) {
       return lines.join('\n');
     }
 
-    case 'linkedin':  return `Headline:\n${result.data?.optimizedHeadline}\n\nAbout:\n${result.data?.optimizedAbout}`;
+    case 'linkedin': {
+      const d = result.data || {};
+      const headline = d.headline || d.optimizedHeadline || '';
+      const about = d.about || d.optimizedAbout || '';
+      const skills = Array.isArray(d.skills) ? d.skills : [];
+      const suggestions = Array.isArray(d.suggestions) ? d.suggestions : [];
+      const parts = [];
+      if (headline) parts.push(`Headline:\n${headline}`);
+      if (about) parts.push(`\nAbout:\n${about}`);
+      if (skills.length) parts.push(`\nRelevant skills:\n${skills.map(s => `- ${s}`).join('\n')}`);
+      if (suggestions.length) parts.push(`\nProfile suggestions:\n${suggestions.map((s, i) => `${i + 1}. ${s}`).join('\n')}`);
+      return parts.join('\n');
+    }
     case 'tailor':    return result.data?.tailoredSummary || '';
     case 'interview': return (result.data?.questions || [])
                              .map((q, i) => `Q${i+1}: ${q.question}\n\nA: ${q.modelAnswer}`)
