@@ -104,6 +104,13 @@ export const AIActionPanel = ({ resume, setResume }) => {
   const [linkedinTargetRole,      setLinkedinTargetRole]      = useState(''); // target job role
   const [linkedinExistingContent, setLinkedinExistingContent] = useState(''); // optional existing LinkedIn content
 
+  /* ── Cover Letter form state (COVER-01) ───────────────────── */
+  const [coverResumeInfo, setCoverResumeInfo] = useState('');   // full resume/profile details
+  const [coverJobTitle,   setCoverJobTitle]   = useState('');   // target job title
+  const [coverCompany,    setCoverCompany]    = useState('');   // company name (optional)
+  const [coverJd,         setCoverJd]         = useState('');   // job description
+  const [coverAdditional, setCoverAdditional] = useState('');   // additional info (optional)
+
   /* ── Suggest Skills form state (SKILLS-02) ─────────────────── */
   const [skillCurrent,       setSkillCurrent]       = useState('');  // current skills (comma)
   const [skillResumeInfo,    setSkillResumeInfo]    = useState('');  // resume info textarea
@@ -146,6 +153,11 @@ export const AIActionPanel = ({ resume, setResume }) => {
     setLinkedinResumeInfo('');
     setLinkedinTargetRole('');
     setLinkedinExistingContent('');
+    setCoverResumeInfo('');
+    setCoverJobTitle('');
+    setCoverCompany('');
+    setCoverJd('');
+    setCoverAdditional('');
   };
 
   const run = async (id) => {
@@ -359,20 +371,31 @@ export const AIActionPanel = ({ resume, setResume }) => {
           break;
         }
 
-        /* ── Cover letter ────────────────────────────────── */
-        case 'cover':
+        /* ── Cover letter (COVER-01) ────────────────────────── */
+        case 'cover': {
+          if (!coverResumeInfo.trim()) {
+            setError('Please paste your resume information so the AI can generate your cover letter.');
+            setLoading(false); return;
+          }
+          if (!coverJd.trim()) {
+            setError('Please paste the job description to generate a tailored cover letter.');
+            setLoading(false); return;
+          }
+          // COVER-01: send the user's full resume info, job title, company name,
+          // job description, and optional additional info. The AI generates a
+          // cover letter based strictly on the provided information.
           res = await generateCoverLetter({
-            candidateName:   resume.fullName         || '',
-            targetRole:      resume.professionalTitle || '',
-            companyName:     company                  || '',
-            summary:         resume.summary           || '',
-            topAchievements: resume.achievements      || [],
-            skills:          (resume.skills || []).slice(0, 8),
-            jobDescription:  jd || undefined,
-            tone:            'professional',
+            candidateName:   resume.fullName || '',
+            targetRole:      coverJobTitle.trim(),
+            companyName:     coverCompany.trim() || undefined,
+            jobDescription:  coverJd.trim(),
+            coverResumeInfo: coverResumeInfo.trim(),
+            additionalInfo:  coverAdditional.trim() || undefined,
           });
-          setResult({ type: 'text', text: res?.text || '' });
+          const coverLetter = res?.coverLetter || res?.text || '';
+          setResult({ type: 'coverletter', data: { coverLetter } });
           break;
+        }
 
         /* ── Tailor ──────────────────────────────────────── */
         case 'tailor':
@@ -444,8 +467,8 @@ export const AIActionPanel = ({ resume, setResume }) => {
 
   /* ── Input fields for certain actions ──────────────────────────── */
   const needsTextInput    = ['grammar'].includes(active) && !loading && !result;
-  const needsJdInput      = ['ats', 'cover', 'tailor', 'interview'].includes(active) && !loading && !result;
-  const needsCompanyInput = ['cover', 'interview'].includes(active) && !loading && !result;
+  const needsJdInput      = ['ats', 'tailor', 'interview'].includes(active) && !loading && !result;
+  const needsCompanyInput = ['interview'].includes(active) && !loading && !result;
 
   return (
     <div className="card p-5 space-y-4">
@@ -604,6 +627,63 @@ export const AIActionPanel = ({ resume, setResume }) => {
                   <textarea className="input min-h-[60px] resize-none text-xs"
                     value={linkedinExistingContent} onChange={e => setLinkedinExistingContent(e.target.value)}
                     placeholder="Paste your current LinkedIn headline or About section if you want it improved…"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Cover Letter form (COVER-01) */}
+          {active === 'cover' && !loading && !result && (
+            <>
+              <p className="label text-xs font-medium text-ink-600 uppercase tracking-wide mb-2">
+                Cover Letter Generator
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <label className="label text-xs">
+                    Resume / profile information <span className="text-danger-600">*</span>
+                  </label>
+                  <textarea className="input min-h-[100px] resize-none text-xs"
+                    value={coverResumeInfo} onChange={e => setCoverResumeInfo(e.target.value)}
+                    placeholder="Paste your education, skills, experience, projects, and achievements here…"
+                  />
+                  <p className="text-[10px] text-ink-400 mt-0.5">Include education, skills, experience, internships, and projects.</p>
+                </div>
+                <div>
+                  <label className="label text-xs">
+                    Job title <span className="text-danger-600">*</span>
+                  </label>
+                  <input className="input text-xs" type="text"
+                    value={coverJobTitle} onChange={e => setCoverJobTitle(e.target.value)}
+                    placeholder="e.g. Java Developer, Frontend Engineer, Data Analyst"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">
+                    Company name <span className="text-ink-400">(optional)</span>
+                  </label>
+                  <input className="input text-xs" type="text"
+                    value={coverCompany} onChange={e => setCoverCompany(e.target.value)}
+                    placeholder="e.g. Google, Accenture, HDFC Bank"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">
+                    Job description <span className="text-danger-600">*</span>
+                  </label>
+                  <textarea className="input min-h-[90px] resize-none text-xs"
+                    value={coverJd} onChange={e => setCoverJd(e.target.value)}
+                    placeholder="Paste the job description here to get a tailored cover letter…"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">
+                    Additional information <span className="text-ink-400">(optional)</span>
+                  </label>
+                  <textarea className="input min-h-[60px] resize-none text-xs"
+                    value={coverAdditional} onChange={e => setCoverAdditional(e.target.value)}
+                    placeholder="Anything else you want mentioned in the cover letter…"
                   />
                 </div>
               </div>
@@ -960,6 +1040,17 @@ const ResultContent = ({ result }) => {
 
     case 'text':
       return <p className="text-xs text-ink-700 leading-relaxed whitespace-pre-wrap">{result.text}</p>;
+
+    // COVER-01: dedicated cover letter display with formatted text and copy support.
+    case 'coverletter': {
+      const cl = result.data?.coverLetter || '';
+      return (
+        <div className="space-y-3">
+          <p className="text-xs font-medium text-ink-700 mb-1">Cover Letter:</p>
+          <p className="text-xs text-ink-700 leading-relaxed whitespace-pre-wrap">{cl}</p>
+        </div>
+      );
+    }
 
     // REWRITE-01: shows the original text alongside the rewritten result so
     // the user can compare them. Copy-button copies only the rewritten text.
@@ -1386,6 +1477,7 @@ function getResultText(result) {
   if (!result) return '';
   switch (result.type) {
     case 'text':      return result.text;
+    case 'coverletter': return result.data?.coverLetter || '';
     case 'list':      return result.items.join('\n');
     case 'rewrite':   return result.data?.rewrittenText || '';
     case 'bullets':   return (result.items || [])
