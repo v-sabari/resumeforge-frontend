@@ -96,6 +96,9 @@ export const AIActionPanel = ({ resume, setResume }) => {
   const [rewriteSection, setRewriteSection] = useState('Summary');   // Summary / Experience / Project / Education / Skills / Other
   const [rewriteStyle,   setRewriteStyle]   = useState('Professional'); // Professional / Concise / ATS-Friendly / Stronger wording
 
+  /* ── Grammar Check form state (GRAMMAR-01) ──────────────────── */
+  const [grammarSection, setGrammarSection] = useState('Summary'); // Summary / Experience / Project / Education / Skills / Other
+
   /* ── Suggest Skills form state (SKILLS-02) ─────────────────── */
   const [skillCurrent,       setSkillCurrent]       = useState('');  // current skills (comma)
   const [skillResumeInfo,    setSkillResumeInfo]    = useState('');  // resume info textarea
@@ -129,6 +132,7 @@ export const AIActionPanel = ({ resume, setResume }) => {
     setBulletCount(3);
     setRewriteSection('Summary');
     setRewriteStyle('Professional');
+    setGrammarSection('Summary');
     setSkillCurrent('');
     setSkillResumeInfo('');
     setSkillRole('');
@@ -278,12 +282,21 @@ export const AIActionPanel = ({ resume, setResume }) => {
           break;
         }
 
-        /* ── Grammar check ───────────────────────────────── */
-        case 'grammar':
+        /* ── Grammar check (GRAMMAR-01) ────────────────────── */
+        case 'grammar': {
           if (!input.trim()) { setError('Please enter some text to check.'); setLoading(false); return; }
-          res = await checkGrammar({ text: input, context: 'general' });
-          setResult({ type: 'grammar', data: res });
+          const originalText = input.trim();
+          res = await checkGrammar({ text: originalText, grammarSection });
+          // GRAMMAR-01: preserve the original so we can always fall back to it if
+          // the AI omits correctedText, and to display original vs corrected side
+          // by side.
+          setResult({ type: 'grammar', data: {
+            originalText,
+            correctedText: (typeof res?.correctedText === 'string' && res.correctedText.trim()) ? res.correctedText : originalText,
+            issues: Array.isArray(res?.issues) ? res.issues : [],
+          } });
           break;
+        }
 
         /* ── ATS Score (ATS-01) ───────────────────────────── */
         case 'ats': {
@@ -475,6 +488,24 @@ export const AIActionPanel = ({ resume, setResume }) => {
                 value={input} onChange={e => setInput(e.target.value)}
                 placeholder="Paste any resume text to check for errors…"
               />
+              {/* Grammar Check resume-section selector (GRAMMAR-01) */}
+              {active === 'grammar' && (
+                <div>
+                  <label className="label text-xs">Resume section</label>
+                  <select
+                    className="input text-xs"
+                    value={grammarSection}
+                    onChange={e => setGrammarSection(e.target.value)}
+                  >
+                    <option>Summary</option>
+                    <option>Experience</option>
+                    <option>Project</option>
+                    <option>Education</option>
+                    <option>Skills</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+              )}
             </>
           )}
 
@@ -993,35 +1024,66 @@ const ResultContent = ({ result }) => {
     }
 
     case 'grammar': {
+      // GRAMMAR-01: structured output — originalText + correctedText + a list of
+      // issues each with { original, correction, reason }. Backwards-compatible
+      // with the old string[] issuesFound shape.
       const data = result.data && typeof result.data === 'object' ? result.data : {};
-      const { correctedText, issueCount, clean } = data;
-      const issuesFound = Array.isArray(data.issuesFound) ? data.issuesFound : [];
+      const originalText = data.originalText || '';
+      const correctedText = data.correctedText || '';
+      const issues = Array.isArray(data.issues)
+        ? data.issues.filter(i => i && typeof i === 'object')
+        : (Array.isArray(data.issuesFound) ? data.issuesFound.map(s => ({ reason: s })) : []);
+      const noIssues = issues.length === 0;
       return (
         <div className="space-y-3">
-          {clean ? (
+          {noIssues ? (
             <div className="flex items-center gap-2 text-xs text-success-700">
               <Icon name="check" className="h-4 w-4 text-success-600" />
               No issues found — your text looks great!
             </div>
           ) : (
             <div className="text-xs text-warning-700 font-medium">
-              {issueCount} issue{issueCount !== 1 ? 's' : ''} found
+              {issues.length} issue{issues.length !== 1 ? 's' : ''} found
             </div>
           )}
-          {issuesFound.length > 0 && (
-            <ul className="space-y-1">
-              {issuesFound.map((issue, i) => (
-                <li key={i} className="text-xs text-ink-600 flex gap-1.5">
-                  <span className="text-warning-500 shrink-0">→</span>{issue}
+
+          {issues.length > 0 && (
+            <ul className="space-y-2">
+              {issues.map((issue, i) => (
+                <li key={i} className="rounded-lg border border-ink-100 bg-surface-50 p-2 text-xs">
+                  <div className="flex gap-1.5">
+                    <span className="font-semibold text-ink-700 shrink-0">
+                      {typeof issue?.original === 'string' && issue.original
+                        ? issue.original
+                        : issue?.reason || 'Issue'}
+                    </span>
+                    <span className="text-danger-600 shrink-0">→</span>
+                    <span className="font-medium text-success-700">
+                      {typeof issue?.correction === 'string' && issue.correction ? issue.correction : ''}
+                    </span>
+                  </div>
+                  {typeof issue?.reason === 'string' && issue.reason && (
+                    <p className="text-ink-400 mt-0.5">{issue.reason}</p>
+                  )}
                 </li>
               ))}
             </ul>
           )}
-          {correctedText && !clean && (
-            <>
-              <p className="text-xs font-medium text-ink-500 mt-2">Corrected text:</p>
+
+          {correctedText && (
+            <div>
+              <p className="text-xs font-medium text-ink-500 mt-2">
+                {noIssues ? 'Text (no changes needed)' : 'Corrected text:'}
+              </p>
               <p className="text-xs text-ink-700 leading-relaxed whitespace-pre-wrap">{correctedText}</p>
-            </>
+            </div>
+          )}
+
+          {originalText && correctedText && originalText !== correctedText && (
+            <div>
+              <p className="text-xs font-medium text-ink-500 mt-2">Original text:</p>
+              <p className="text-xs text-ink-400 leading-relaxed whitespace-pre-wrap line-through decoration-ink-300">{originalText}</p>
+            </div>
           )}
         </div>
       );
@@ -1252,7 +1314,20 @@ function getResultText(result) {
               .map(s => (typeof s === 'string' ? s : s?.name)).filter(Boolean)
       ).join('\n');
     }
-    case 'grammar':   return result.data?.correctedText || '';
+    case 'grammar': {
+      const g = result.data && typeof result.data === 'object' ? result.data : {};
+      const issues = Array.isArray(g.issues)
+        ? g.issues
+        : (Array.isArray(g.issuesFound) ? g.issuesFound.map(s => ({ reason: s })) : []);
+      const parts = [];
+      if (typeof g.correctedText === 'string' && g.correctedText) parts.push(g.correctedText);
+      if (issues.length) {
+        parts.push('\n\nIssues:\n' + issues.map((it, i) =>
+          `${i + 1}. ${typeof it?.original === 'string' && it.original ? it.original : ''} → ${typeof it?.correction === 'string' ? it.correction : ''}${typeof it?.reason === 'string' && it.reason ? ` (${it.reason})` : ''}`
+        ).join('\n'));
+      }
+      return parts.join('');
+    }
     case 'ats': {
       const d = result.data || {};
       const fs = d.factorScores || {};
