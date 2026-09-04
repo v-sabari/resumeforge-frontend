@@ -72,7 +72,7 @@ export const TraditionalTemplate = ({ data }) => {
 
   return (
     <div className="resume-template traditional max-w-4xl mx-auto bg-white font-serif text-gray-900 overflow-hidden">
-      <div className="flex">
+      <div className="flex min-h-[1075px]">
         <div className="w-[34%] shrink-0 bg-gray-100 px-5 py-6">
           {personalInfo&&(
             <div className="mb-5 break-after-avoid">

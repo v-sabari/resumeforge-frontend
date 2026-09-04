@@ -58,7 +58,7 @@ export const LeadershipTemplate = ({ data }) => {
 
   return (
     <div className="resume-template leadership max-w-4xl mx-auto bg-white font-sans overflow-hidden">
-      <div className="flex">
+      <div className="flex min-h-[1059px]">
         <div className="w-[26%] shrink-0 bg-gray-900 px-4 py-6 text-white">
           {personalInfo&&(
             <div className="break-after-avoid">

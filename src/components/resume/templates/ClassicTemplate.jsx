@@ -2,7 +2,7 @@
 const CustomBlock = ({ label, content }) => {
   if (!content) return null;
   const { mode, text, items } = content;
-  const H = <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-800 text-center border-b border-t border-gray-300 py-0.5 mb-2 break-after-avoid">{label}</h2>;
+  const H = <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-800 border-b border-t border-gray-300 py-0.5 mb-2 break-after-avoid">{label}</h2>;
   if (mode === 'bullets') {
     if (!items?.filter(Boolean).length) return null;
     return <div>{H}<ul className="space-y-0.5">{items.filter(Boolean).map((it,i)=><li key={i} className="text-[10.5px] text-gray-700 leading-relaxed break-words break-inside-avoid">• {it}</li>)}</ul></div>;
@@ -17,13 +17,13 @@ export const ClassicTemplate = ({ data }) => {
     projects, certifications, achievements, languages, customSections,
   } = data;
 
-  const SH = ({ children }) => <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-800 text-center border-b border-t border-gray-300 py-0.5 mb-2 break-after-avoid">{children}</h2>;
+  const SH = ({ children }) => <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-800 border-b border-t border-gray-300 py-0.5 mb-2 break-after-avoid">{children}</h2>;
 
   const renderSection = (sec) => {
     if (sec.type === 'custom') return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]}/>;
     switch (sec.key) {
       case 'basics': return null;
-      case 'summary': return summary ? <div key="summary" className="mb-3"><SH>Objective</SH><p className="text-[10.5px] text-gray-700 text-center leading-relaxed break-words">{summary}</p></div> : null;
+      case 'summary': return summary ? <div key="summary" className="mb-3"><SH>Objective</SH><p className="text-[10.5px] text-gray-700 leading-relaxed break-words">{summary}</p></div> : null;
       case 'experience': return experience?.length ? (<div key="experience" className="mb-3"><SH>Experience</SH>{experience.map((e,i)=>(
         <div key={i} className="mb-2 break-inside-avoid">
           <div className="flex justify-between items-baseline flex-wrap gap-1">
@@ -47,10 +47,10 @@ export const ClassicTemplate = ({ data }) => {
           {(p.link||p.github)&&<div className="text-[9.5px] text-gray-400 mb-0.5 break-all">{[p.link,p.github].filter(Boolean).join(' · ')}</div>}
           {p.description&&<p className="text-[10.5px] text-gray-700 leading-relaxed break-words">{p.description}</p>}
         </div>))}</div>) : null;
-      case 'skills': return skills?.length ? (<div key="skills" className="mb-3"><SH>Skills</SH><p className="text-[10.5px] text-gray-700 text-center leading-relaxed break-words">{(Array.isArray(skills)?skills:[skills]).join('  •  ')}</p></div>) : null;
-      case 'certifications': return certifications?.length ? (<div key="certifications" className="mb-3"><SH>Certifications</SH><div className="space-y-0.5">{certifications.map((c,i)=><div key={i} className="text-[10.5px] text-gray-700 text-center break-words break-inside-avoid">{c.name}{c.issuer&&<span className="text-gray-500"> — {c.issuer}</span>}{c.year&&<span className="text-gray-400"> ({c.year})</span>}</div>)}</div></div>) : null;
+      case 'skills': return skills?.length ? (<div key="skills" className="mb-3"><SH>Skills</SH><p className="text-[10.5px] text-gray-700 leading-relaxed break-words">{(Array.isArray(skills)?skills:[skills]).join('  •  ')}</p></div>) : null;
+      case 'certifications': return certifications?.length ? (<div key="certifications" className="mb-3"><SH>Certifications</SH><div className="space-y-0.5">{certifications.map((c,i)=><div key={i} className="text-[10.5px] text-gray-700 break-words break-inside-avoid">{c.name}{c.issuer&&<span className="text-gray-500"> — {c.issuer}</span>}{c.year&&<span className="text-gray-400"> ({c.year})</span>}</div>)}</div></div>) : null;
       case 'achievements': return achievements?.length ? (<div key="achievements" className="mb-3"><SH>Achievements</SH><ul className="space-y-0.5">{achievements.map((a,i)=><li key={i} className="text-[10.5px] text-gray-700 leading-relaxed break-words break-inside-avoid">• {a}</li>)}</ul></div>) : null;
-      case 'languages': return languages?.length ? (<div key="languages" className="mb-3"><SH>Languages</SH><p className="text-[10.5px] text-gray-700 text-center break-words">{languages.join('  ·  ')}</p></div>) : null;
+      case 'languages': return languages?.length ? (<div key="languages" className="mb-3"><SH>Languages</SH><p className="text-[10.5px] text-gray-700 break-words">{languages.join('  ·  ')}</p></div>) : null;
       default: return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]}/>;
     }
   };

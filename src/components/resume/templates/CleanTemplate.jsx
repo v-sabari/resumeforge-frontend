@@ -69,7 +69,7 @@ export const CleanTemplate = ({ data }) => {
 
   return (
     <div className="resume-template clean max-w-4xl mx-auto bg-white font-sans overflow-hidden">
-      <div className="flex">
+      <div className="flex min-h-[1059px]">
         <div className="w-[30%] shrink-0 px-7 py-6 border-r border-gray-100 bg-surface-50">
           {leftSections.map((s)=>renderLeft(s))}
         </div>

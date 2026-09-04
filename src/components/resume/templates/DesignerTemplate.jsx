@@ -67,7 +67,7 @@ export const DesignerTemplate = ({ data }) => {
 
   return (
     <div className="resume-template designer max-w-4xl mx-auto bg-white font-sans overflow-hidden">
-      <div className="flex">
+      <div className="flex min-h-[1059px]">
         <div className="w-[30%] shrink-0 bg-gray-900 px-5 py-6">
           {personalInfo&&(
             <div className="mb-4 break-after-avoid">

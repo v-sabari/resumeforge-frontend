@@ -850,7 +850,7 @@ import { jsx as jsx6, jsxs as jsxs6 } from "react/jsx-runtime";
 var CustomBlock6 = ({ label, content }) => {
   if (!content) return null;
   const { mode, text, items } = content;
-  const H = /* @__PURE__ */ jsx6("h2", { className: "text-[11px] font-bold uppercase tracking-[0.2em] text-gray-800 text-center border-b border-t border-gray-300 py-0.5 mb-2 break-after-avoid", children: label });
+  const H = /* @__PURE__ */ jsx6("h2", { className: "text-[11px] font-bold uppercase tracking-[0.2em] text-gray-800 border-b border-t border-gray-300 py-0.5 mb-2 break-after-avoid", children: label });
   if (mode === "bullets") {
     if (!items?.filter(Boolean).length) return null;
     return /* @__PURE__ */ jsxs6("div", { children: [
@@ -881,7 +881,7 @@ var ClassicTemplate = ({ data }) => {
     languages,
     customSections
   } = data;
-  const SH = ({ children }) => /* @__PURE__ */ jsx6("h2", { className: "text-[11px] font-bold uppercase tracking-[0.2em] text-gray-800 text-center border-b border-t border-gray-300 py-0.5 mb-2 break-after-avoid", children });
+  const SH = ({ children }) => /* @__PURE__ */ jsx6("h2", { className: "text-[11px] font-bold uppercase tracking-[0.2em] text-gray-800 border-b border-t border-gray-300 py-0.5 mb-2 break-after-avoid", children });
   const renderSection = (sec) => {
     if (sec.type === "custom") return /* @__PURE__ */ jsx6(CustomBlock6, { label: sec.label, content: (customSections || {})[sec.id] }, sec.id);
     switch (sec.key) {
@@ -890,7 +890,7 @@ var ClassicTemplate = ({ data }) => {
       case "summary":
         return summary ? /* @__PURE__ */ jsxs6("div", { className: "mb-3", children: [
           /* @__PURE__ */ jsx6(SH, { children: "Objective" }),
-          /* @__PURE__ */ jsx6("p", { className: "text-[10.5px] text-gray-700 text-center leading-relaxed break-words", children: summary })
+          /* @__PURE__ */ jsx6("p", { className: "text-[10.5px] text-gray-700 leading-relaxed break-words", children: summary })
         ] }, "summary") : null;
       case "experience":
         return experience?.length ? /* @__PURE__ */ jsxs6("div", { className: "mb-3", children: [
@@ -947,12 +947,12 @@ var ClassicTemplate = ({ data }) => {
       case "skills":
         return skills?.length ? /* @__PURE__ */ jsxs6("div", { className: "mb-3", children: [
           /* @__PURE__ */ jsx6(SH, { children: "Skills" }),
-          /* @__PURE__ */ jsx6("p", { className: "text-[10.5px] text-gray-700 text-center leading-relaxed break-words", children: (Array.isArray(skills) ? skills : [skills]).join("  \u2022  ") })
+          /* @__PURE__ */ jsx6("p", { className: "text-[10.5px] text-gray-700 leading-relaxed break-words", children: (Array.isArray(skills) ? skills : [skills]).join("  \u2022  ") })
         ] }, "skills") : null;
       case "certifications":
         return certifications?.length ? /* @__PURE__ */ jsxs6("div", { className: "mb-3", children: [
           /* @__PURE__ */ jsx6(SH, { children: "Certifications" }),
-          /* @__PURE__ */ jsx6("div", { className: "space-y-0.5", children: certifications.map((c, i) => /* @__PURE__ */ jsxs6("div", { className: "text-[10.5px] text-gray-700 text-center break-words break-inside-avoid", children: [
+          /* @__PURE__ */ jsx6("div", { className: "space-y-0.5", children: certifications.map((c, i) => /* @__PURE__ */ jsxs6("div", { className: "text-[10.5px] text-gray-700 break-words break-inside-avoid", children: [
             c.name,
             c.issuer && /* @__PURE__ */ jsxs6("span", { className: "text-gray-500", children: [
               " \u2014 ",
@@ -976,7 +976,7 @@ var ClassicTemplate = ({ data }) => {
       case "languages":
         return languages?.length ? /* @__PURE__ */ jsxs6("div", { className: "mb-3", children: [
           /* @__PURE__ */ jsx6(SH, { children: "Languages" }),
-          /* @__PURE__ */ jsx6("p", { className: "text-[10.5px] text-gray-700 text-center break-words", children: languages.join("  \xB7  ") })
+          /* @__PURE__ */ jsx6("p", { className: "text-[10.5px] text-gray-700 break-words", children: languages.join("  \xB7  ") })
         ] }, "languages") : null;
       default:
         return /* @__PURE__ */ jsx6(CustomBlock6, { label: sec.label, content: (customSections || {})[sec.id] }, sec.id);
@@ -1301,7 +1301,7 @@ var TraditionalTemplate = ({ data }) => {
     }
   };
   const customSide = activeSections.filter((s) => s.type === "custom");
-  return /* @__PURE__ */ jsx8("div", { className: "resume-template traditional max-w-4xl mx-auto bg-white font-serif text-gray-900 overflow-hidden", children: /* @__PURE__ */ jsxs8("div", { className: "flex", children: [
+  return /* @__PURE__ */ jsx8("div", { className: "resume-template traditional max-w-4xl mx-auto bg-white font-serif text-gray-900 overflow-hidden", children: /* @__PURE__ */ jsxs8("div", { className: "flex min-h-[1075px]", children: [
     /* @__PURE__ */ jsxs8("div", { className: "w-[34%] shrink-0 bg-gray-100 px-5 py-6", children: [
       personalInfo && /* @__PURE__ */ jsxs8("div", { className: "mb-5 break-after-avoid", children: [
         /* @__PURE__ */ jsx8("h1", { className: "text-[20px] font-bold leading-tight break-words", children: personalInfo.fullName }),
@@ -1469,7 +1469,7 @@ var CleanTemplate = ({ data }) => {
   };
   const leftSections = activeSections.filter((s) => leftKeys.includes(s.key) || s.type === "custom");
   const rightSections = activeSections.filter((s) => rightKeys.includes(s.key));
-  return /* @__PURE__ */ jsx9("div", { className: "resume-template clean max-w-4xl mx-auto bg-white font-sans overflow-hidden", children: /* @__PURE__ */ jsxs9("div", { className: "flex", children: [
+  return /* @__PURE__ */ jsx9("div", { className: "resume-template clean max-w-4xl mx-auto bg-white font-sans overflow-hidden", children: /* @__PURE__ */ jsxs9("div", { className: "flex min-h-[1059px]", children: [
     /* @__PURE__ */ jsx9("div", { className: "w-[30%] shrink-0 px-7 py-6 border-r border-gray-100 bg-surface-50", children: leftSections.map((s) => renderLeft(s)) }),
     /* @__PURE__ */ jsxs9("div", { className: "flex-1 px-7 py-6 space-y-4", children: [
       personalInfo && /* @__PURE__ */ jsxs9("div", { className: "mb-1", children: [
@@ -1944,7 +1944,7 @@ var EngineeringTemplate = ({ data }) => {
   const customSide = activeSections.filter((s) => s.type === "custom");
   const sideSections = activeSections.filter((s) => sideKeys.includes(s.key)).concat(customSide);
   const mainSections = activeSections.filter((s) => !sideKeys.includes(s.key) && !["basics"].includes(s.key));
-  return /* @__PURE__ */ jsx12("div", { className: "resume-template engineering max-w-4xl mx-auto bg-white font-sans overflow-hidden", children: /* @__PURE__ */ jsxs12("div", { className: "flex", children: [
+  return /* @__PURE__ */ jsx12("div", { className: "resume-template engineering max-w-4xl mx-auto bg-white font-sans overflow-hidden", children: /* @__PURE__ */ jsxs12("div", { className: "flex min-h-[1059px]", children: [
     /* @__PURE__ */ jsxs12("div", { className: "w-[30%] shrink-0 bg-emerald-50/60 px-5 py-6", children: [
       personalInfo && /* @__PURE__ */ jsxs12("div", { className: "mb-4 break-after-avoid", children: [
         /* @__PURE__ */ jsx12("h1", { className: "text-[20px] font-bold text-gray-900 leading-tight break-words", children: personalInfo.fullName }),
@@ -2095,7 +2095,7 @@ var LeadershipTemplate = ({ data }) => {
     }
   };
   const activeSections = (sectionsConfig || []).filter((s) => s.visible);
-  return /* @__PURE__ */ jsx13("div", { className: "resume-template leadership max-w-4xl mx-auto bg-white font-sans overflow-hidden", children: /* @__PURE__ */ jsxs13("div", { className: "flex", children: [
+  return /* @__PURE__ */ jsx13("div", { className: "resume-template leadership max-w-4xl mx-auto bg-white font-sans overflow-hidden", children: /* @__PURE__ */ jsxs13("div", { className: "flex min-h-[1059px]", children: [
     /* @__PURE__ */ jsx13("div", { className: "w-[26%] shrink-0 bg-gray-900 px-4 py-6 text-white", children: personalInfo && /* @__PURE__ */ jsxs13("div", { className: "break-after-avoid", children: [
       /* @__PURE__ */ jsx13("h1", { className: "text-[18px] font-bold leading-tight break-words", children: personalInfo.fullName }),
       personalInfo.title && /* @__PURE__ */ jsx13("div", { className: "text-[10.5px] text-amber-400 font-medium mt-0.5 mb-3 uppercase tracking-wide break-words", children: personalInfo.title }),
@@ -2267,7 +2267,7 @@ var DesignerTemplate = ({ data }) => {
   };
   const sideSections = activeSections.filter((s) => sideKeys.includes(s.key)).concat(activeSections.filter((s) => s.type === "custom"));
   const mainSections = activeSections.filter((s) => !sideKeys.includes(s.key) && !["basics"].includes(s.key));
-  return /* @__PURE__ */ jsx14("div", { className: "resume-template designer max-w-4xl mx-auto bg-white font-sans overflow-hidden", children: /* @__PURE__ */ jsxs14("div", { className: "flex", children: [
+  return /* @__PURE__ */ jsx14("div", { className: "resume-template designer max-w-4xl mx-auto bg-white font-sans overflow-hidden", children: /* @__PURE__ */ jsxs14("div", { className: "flex min-h-[1059px]", children: [
     /* @__PURE__ */ jsxs14("div", { className: "w-[30%] shrink-0 bg-gray-900 px-5 py-6", children: [
       personalInfo && /* @__PURE__ */ jsxs14("div", { className: "mb-4 break-after-avoid", children: [
         /* @__PURE__ */ jsx14("h1", { className: "text-[19px] font-bold text-white leading-tight break-words", children: personalInfo.fullName }),
