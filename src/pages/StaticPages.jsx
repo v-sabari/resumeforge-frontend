@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { APP_NAME } from '../utils/constants';
+import { cookieRegistry } from '../cookieconsent-config';
 
 // ─── Email Constants ───────────────────────────────────────────────────────────
 const SUPPORT_EMAIL = 'support@resumeforgeai.site';
@@ -372,6 +373,91 @@ export const RefundPolicyPage = () => (
     <H2>Contact</H2>
     <P>
       For billing enquiries: <MailLink email={BILLING_EMAIL} />
+    </P>
+  </Wrap>
+);
+
+// ─── Cookie Policy ─────────────────────────────────────────────────────────────
+
+const cookieCategoryHeading = {
+  necessary: 'Necessary cookies',
+  analytics: 'Analytics cookies',
+};
+
+const cookieCategoryIntro = {
+  necessary:
+    'These cookies are strictly required for the site to function and are ' +
+    'always enabled. They cannot be turned off, and rejecting a category ' +
+    'will never interfere with signing in or with the authentication flow.',
+  analytics:
+    'These cookies are only used after you explicitly opt in. They help us ' +
+    'understand how the site is used. They are not set unless you accept ' +
+    'the "analytics" category in the consent banner or Cookie Preferences.',
+};
+
+const CATEGORY_ORDER = ['necessary', 'analytics'];
+
+const cookieTable = (rows) => (
+  <table className="w-full border-collapse text-xs">
+    <thead>
+      <tr className="border-b border-surface-200">
+        <th className="text-left px-2 py-1.5">Name</th>
+        <th className="text-left px-2 py-1.5">Purpose</th>
+        <th className="text-left px-2 py-1.5">Duration</th>
+        <th className="text-left px-2 py-1.5">Party</th>
+        <th className="text-left px-2 py-1.5">Set by</th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((c) => (
+        <tr key={c.name} className="border-b border-surface-100 align-top">
+          <td className="px-2 py-2 font-mono text-ink-800">{c.name}</td>
+          <td className="px-2 py-2 text-ink-600">{c.purpose}</td>
+          <td className="px-2 py-2 text-ink-600">{c.duration}</td>
+          <td className="px-2 py-2 text-ink-600">{c.party}</td>
+          <td className="px-2 py-2 text-ink-600">{c.setBy}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+);
+
+export const CookiePolicyPage = () => (
+  <Wrap title="Cookie Policy" lastUpdated="4 September 2026">
+    <P>
+      This policy explains the cookies and similar technologies used on{' '}
+      {APP_NAME}, how they are used, and how you can manage them. You can change{' '}
+      your preferences at any time using the cookie banner or the Cookie
+      Preferences link in the footer.
+    </P>
+    <P>
+      Cookies are categorised below. <strong>Necessary</strong> cookies are
+      always active and cannot be disabled. <strong>Analytics</strong> cookies
+      are only set after you accept them and are disabled by default.
+    </P>
+
+    {CATEGORY_ORDER.map((cat) => (
+      <div key={cat} className="mt-6">
+        <H2>{cookieCategoryHeading[cat]}</H2>
+        <P>{cookieCategoryIntro[cat]}</P>
+        {cookieTable(cookieRegistry.filter((c) => c.category === cat))}
+      </div>
+    ))}
+
+    <H2>How we use your consent</H2>
+    <P>
+      We treat any non-essential (analytics) cookie as opt-in only. If you do
+      not accept that category, no analytics scripts load and no analytics
+      cookies are set. Your choice is stored in a first-party{' '}
+      <span className="font-mono">cc_cookie</span> cookie (category:
+      necessary) and is respected across reloads and page navigation.
+    </P>
+
+    <H2>Your cookie choices</H2>
+    <P>
+      Use the footer's "Cookie settings" link at any time to review or change
+      your preferences. Analytics cookies that are no longer accepted are
+      removed from your browser.
     </P>
   </Wrap>
 );

@@ -1,5 +1,5 @@
 // Loads the Google Analytics 4 and AdSense scripts ONLY after the visitor has
-// explicitly opted in via the cookie-consent banner (see CookieBanner).
+// explicitly opted in via the cookie-consent banner (see cookieconsent-config).
 // Before that, no analytics or advertising script is loaded and no tracking
 // cookie is set. This keeps the site's consent promise (Privacy Policy §6)
 // truthful: measurement starts only on opt-in and stops if the visitor clears
@@ -8,11 +8,11 @@
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA4_ID;
 const ADSENSE_CLIENT = import.meta.env.VITE_ADSENSE_CLIENT;
 
-export const ANALYTICS_CONSENT_KEY = 'rf_cookie_consent';
+export const analyticsConsentKey = 'rf_cookie_consent';
 
 const consentGranted = () => {
   if (typeof localStorage === 'undefined') return false;
-  return localStorage.getItem(ANALYTICS_CONSENT_KEY) === 'accepted';
+  return localStorage.getItem(analyticsConsentKey) === 'accepted';
 };
 
 const loadScript = (src) => {

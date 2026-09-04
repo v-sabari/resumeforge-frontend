@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Logo } from '../common/Logo';
 import { APP_NAME } from '../../utils/constants';
+import { openCookiePreferences } from '../../cookieconsent-config';
 
 const currentYear = new Date().getFullYear();
 
@@ -30,6 +31,7 @@ const footerSections = [
     links: [
       { to: '/privacy',       label: 'Privacy Policy' },
       { to: '/terms',         label: 'Terms of Service' },
+      { to: '/cookie-policy', label: 'Cookie Policy'  },
       { to: '/refund-policy', label: 'Refund Policy'  },
     ],
   },
@@ -120,6 +122,9 @@ export const Footer = () => (
           {utilityLinks.map(({ to, label }) => (
             <Link key={to} to={to} className={utilityLinkClass}>{label}</Link>
           ))}
+          <button type="button" onClick={openCookiePreferences} className={utilityLinkClass}>
+            Cookie settings
+          </button>
           <a href="mailto:support@resumeforgeai.site" className={utilityLinkClass}>
             support@resumeforgeai.site
           </a>

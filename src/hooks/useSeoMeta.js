@@ -61,6 +61,10 @@ const PAGE_META = {
     title: `Refund Policy – ${APP_NAME}`,
     description: 'Read the refund and cancellation policy for ResumeForge AI Premium.',
   },
+  '/cookie-policy': {
+    title: `Cookie Policy – ${APP_NAME}`,
+    description: 'Learn what cookies ResumeForge AI uses, their purpose and duration, and how to manage your cookie preferences.',
+  },
   '/resources': {
     title: `Career Resources & Resume Tips – ${APP_NAME}`,
     description:

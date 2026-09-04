@@ -2,7 +2,7 @@ import { BrowserRouter, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import { AppRoutes } from './routes/AppRoutes';
-import { CookieBanner } from './components/common/CookieBanner';
+import { CookieConsentBanner } from './components/CookieConsentBanner';
 import { initAnalytics } from './utils/analytics';
 
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA4_ID;
@@ -30,10 +30,12 @@ function PageTracking() {
 
 const App = () => (
   <BrowserRouter>
+    {/* Cookie consent banner (vanilla-cookieconsent). Mounted here, outside
+        the routed pages, so it initializes once and persists across all pages. */}
+    <CookieConsentBanner />
     <AuthProvider>
       <PageTracking />
       <AppRoutes />
-      <CookieBanner />
     </AuthProvider>
   </BrowserRouter>
 );

@@ -27,6 +27,7 @@ const ContactPage         = lazy(() => import('../pages/ContactPage').then(m => 
 const TermsPage           = lazy(() => import('../pages/StaticPages').then(m => ({ default: m.TermsPage })));
 const PrivacyPage         = lazy(() => import('../pages/StaticPages').then(m => ({ default: m.PrivacyPage })));
 const RefundPolicyPage    = lazy(() => import('../pages/StaticPages').then(m => ({ default: m.RefundPolicyPage })));
+const CookiePolicyPage    = lazy(() => import('../pages/StaticPages').then(m => ({ default: m.CookiePolicyPage })));
 const AboutPage           = lazy(() => import('../pages/StaticPages').then(m => ({ default: m.AboutPage })));
 const NotFoundPage        = lazy(() => import('../pages/StaticPages').then(m => ({ default: m.NotFoundPage })));
 
@@ -66,6 +67,7 @@ export const AppRoutes = () => (
           <Route path="contact" element={<ContactPage />} />
           <Route path="terms"   element={<TermsPage />} />
           <Route path="privacy" element={<PrivacyPage />} />
+          <Route path="cookie-policy" element={<CookiePolicyPage />} />
           <Route path="refund-policy" element={<RefundPolicyPage />} />
           <Route path="resources"     element={<ResourcesPage />} />
           <Route path="resources/:slug" element={<ArticlePage />} />
