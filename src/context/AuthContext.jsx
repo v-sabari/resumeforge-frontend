@@ -8,7 +8,7 @@ import { formatApiError } from '../utils/helpers';
 const AuthContext = createContext(null);
 
 const normalisePremium = (v) => {
-  if (!v) return null;
+  if (!v || typeof v !== 'object') return null;
   return { ...v, isPremium: Boolean(v.isPremium ?? v.premium) };
 };
 
@@ -98,7 +98,7 @@ export const AuthProvider = ({ children }) => {
   const refreshPremiumStatus = useCallback(async () => {
     try {
       const res = await getPremiumStatus();
-      const next = normalisePremium(res?.premium || res?.data || res);
+      const next = normalisePremium(res?.data || res);
 setPremium({
   ...next,
   _loaded: true
