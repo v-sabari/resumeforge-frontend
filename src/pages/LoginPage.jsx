@@ -90,6 +90,7 @@ export const LoginPage = () => {
                 />
                 <input
                   type="email"
+                  name="email"
                   autoComplete="username"
                   required
                   className="input pl-9"
@@ -109,6 +110,7 @@ export const LoginPage = () => {
                 />
                 <input
                   type={showPass ? 'text' : 'password'}
+                  name="password"
                   autoComplete="current-password"
                   required
                   className="input pl-9 pr-10"
@@ -131,6 +133,7 @@ export const LoginPage = () => {
               <label className="flex items-center gap-2.5 select-none text-sm text-ink-500 cursor-pointer">
                 <input
                   type="checkbox"
+                  name="remember"
                   className="h-4 w-4 rounded accent-brand cursor-pointer"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}

@@ -108,7 +108,7 @@ export const RegisterPage = () => {
               <label className="label">Full name</label>
               <div className="relative">
                 <Icon name="user" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
-                <input type="text" className="input pl-9"
+                <input type="text" name="name" className="input pl-9"
                   value={form.name} onChange={set('name')}
                   placeholder="Jane Smith" autoComplete="name" />
               </div>
@@ -119,7 +119,7 @@ export const RegisterPage = () => {
               <label className="label">Email address</label>
               <div className="relative">
                 <Icon name="text" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
-                <input type="email" className="input pl-9"
+                <input type="email" name="email" className="input pl-9"
                   value={form.email} onChange={set('email')}
                   placeholder="jane@example.com" autoComplete="email" />
               </div>
@@ -130,7 +130,7 @@ export const RegisterPage = () => {
               <label className="label">Password</label>
               <div className="relative">
                 <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
-                <input type={showPass ? 'text' : 'password'} className="input pl-9 pr-10"
+                <input type={showPass ? 'text' : 'password'} name="password" className="input pl-9 pr-10"
                   value={form.password} onChange={set('password')}
                   placeholder="Min 8 characters" autoComplete="new-password" />
                 <button type="button"
@@ -146,7 +146,7 @@ export const RegisterPage = () => {
               <label className="label">Confirm password</label>
               <div className="relative">
                 <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
-                <input type="password" className="input pl-9"
+                <input type="password" name="confirm" className="input pl-9"
                   value={form.confirm} onChange={set('confirm')}
                   placeholder="Repeat password" autoComplete="new-password" />
               </div>
@@ -160,7 +160,7 @@ export const RegisterPage = () => {
               </label>
               <div className="relative">
                 <Icon name="star" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
-                <input type="text" className="input pl-9 font-mono uppercase tracking-widest"
+                <input type="text" name="referralCode" className="input pl-9 font-mono uppercase tracking-widest"
                   value={form.referralCode}
                   onChange={e => setForm(p => ({ ...p, referralCode: e.target.value.toUpperCase() }))}
                   placeholder="e.g. ABCD1234"
