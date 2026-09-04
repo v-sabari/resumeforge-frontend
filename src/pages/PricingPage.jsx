@@ -109,9 +109,12 @@ export const PricingPage = () => {
 
         {/* CHAT-01: Premium flagship Voice & Chat Resume Builder advertisement */}
         <div className="mt-10 max-w-3xl mx-auto">
-          <div className="card p-6 sm:p-8 border-2 border-brand-500 relative overflow-hidden">
-            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-              <span className="premium-badge px-3 py-1">FLAGSHIP AI FEATURE</span>
+          <div className="card p-6 sm:p-8 border-2 border-brand-500 relative">
+            <div
+              className="absolute top-0 left-1/2"
+              style={{ transform: 'translate(-50%, -50%)' }}
+            >
+              <span className="premium-badge px-3 py-1 uppercase tracking-widest whitespace-nowrap">FLAGSHIP AI FEATURE</span>
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
               <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl
