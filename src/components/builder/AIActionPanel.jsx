@@ -111,6 +111,10 @@ export const AIActionPanel = ({ resume, setResume }) => {
   const [coverJd,         setCoverJd]         = useState('');   // job description
   const [coverAdditional, setCoverAdditional] = useState('');   // additional info (optional)
 
+  /* ── Tailor Resume form state (TAILOR-01) ─────────────────── */
+  const [tailorResumeInfo, setTailorResumeInfo] = useState(''); // complete resume content
+  const [tailorJobTitle,   setTailorJobTitle]   = useState(''); // target job title (optional)
+
   /* ── Suggest Skills form state (SKILLS-02) ─────────────────── */
   const [skillCurrent,       setSkillCurrent]       = useState('');  // current skills (comma)
   const [skillResumeInfo,    setSkillResumeInfo]    = useState('');  // resume info textarea
@@ -158,6 +162,8 @@ export const AIActionPanel = ({ resume, setResume }) => {
     setCoverCompany('');
     setCoverJd('');
     setCoverAdditional('');
+    setTailorResumeInfo('');
+    setTailorJobTitle('');
   };
 
   const run = async (id) => {
@@ -399,13 +405,12 @@ export const AIActionPanel = ({ resume, setResume }) => {
 
         /* ── Tailor ──────────────────────────────────────── */
         case 'tailor':
+          if (!tailorResumeInfo.trim()) { setError('Please paste your resume content to tailor it.'); setLoading(false); return; }
           if (!jd.trim()) { setError('Please paste the job description to tailor your resume.'); setLoading(false); return; }
           res = await tailorResume({
-            targetRole:             resume.professionalTitle || '',
-            currentSummary:         resume.summary           || '',
-            skills:                 resume.skills            || [],
-            experienceBulletGroups: (resume.experience || []).slice(0, 3).map(e => e.bullets || []),
-            jobDescription:         jd,
+            tailorResumeInfo,
+            targetRole:      tailorJobTitle,
+            jobDescription:  jd,
           });
           setResult({ type: 'tailor', data: res });
           break;
@@ -452,22 +457,18 @@ export const AIActionPanel = ({ resume, setResume }) => {
       setResume(p => ({ ...p, skills: supported }));
     }
     if (result.type === 'tailor' && result.data) {
+      // TAILOR-01: only apply the improved summary. The tailored bullets are a
+      // generic reworking reference (not grouped by role), so we do NOT auto-apply
+      // them — the user reviews and manually updates experience/project bullets.
       const d = result.data;
-      setResume(p => ({
-        ...p,
-        summary:    d.tailoredSummary || p.summary,
-        experience: (p.experience || []).map((exp, i) => ({
-          ...exp,
-          bullets: d.tailoredBulletGroups?.[i] || exp.bullets,
-        })),
-      }));
+      setResume(p => ({ ...p, summary: d.tailoredSummary || p.summary }));
     }
     reset(); setActive(null);
   };
 
   /* ── Input fields for certain actions ──────────────────────────── */
   const needsTextInput    = ['grammar'].includes(active) && !loading && !result;
-  const needsJdInput      = ['ats', 'tailor', 'interview'].includes(active) && !loading && !result;
+  const needsJdInput      = ['ats', 'interview'].includes(active) && !loading && !result;
   const needsCompanyInput = ['interview'].includes(active) && !loading && !result;
 
   return (
@@ -685,6 +686,48 @@ export const AIActionPanel = ({ resume, setResume }) => {
                     value={coverAdditional} onChange={e => setCoverAdditional(e.target.value)}
                     placeholder="Anything else you want mentioned in the cover letter…"
                   />
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Tailor Resume form (TAILOR-01) */}
+          {active === 'tailor' && !loading && !result && (
+            <>
+              <p className="label text-xs font-medium text-ink-600 uppercase tracking-wide mb-2">
+                Tailor Resume to the Job
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <label className="label text-xs">
+                    Current resume content <span className="text-danger-600">*</span>
+                  </label>
+                  <textarea className="input min-h-[100px] resize-none text-xs"
+                    value={tailorResumeInfo} onChange={e => setTailorResumeInfo(e.target.value)}
+                    placeholder="Paste your complete resume — summary, skills, experience, projects, education…"
+                  />
+                  <p className="text-[10px] text-ink-400 mt-0.5">
+                    Include your summary, skills, experience, and projects so the AI can analyze your actual content.
+                  </p>
+                </div>
+                <div>
+                  <label className="label text-xs">
+                    Job description <span className="text-danger-600">*</span>
+                  </label>
+                  <textarea className="input min-h-[90px] resize-none text-xs"
+                    value={jd} onChange={e => setJd(e.target.value)}
+                    placeholder="Paste the job description to tailor your resume for this role…"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">
+                    Target job title <span className="text-ink-400">(optional)</span>
+                  </label>
+                  <input className="input text-xs" type="text"
+                    value={tailorJobTitle} onChange={e => setTailorJobTitle(e.target.value)}
+                    placeholder="e.g. Java Developer (optional — you can leave this blank)"
+                  />
+                  <p className="text-[10px] text-ink-400 mt-0.5">Optional if it can be extracted from the job description.</p>
                 </div>
               </div>
             </>
@@ -1393,35 +1436,69 @@ const ResultContent = ({ result }) => {
     }
 
     case 'tailor': {
-      const { tailoredSummary, suggestedSkillsToAdd, keywordsMissing } = result.data;
+      const {
+        tailoredSummary, tailoredSkills, tailoredBullets,
+        matchingKeywords, missingKeywords, suggestions,
+      } = result.data || {};
       return (
         <div className="space-y-3">
           <div>
             <p className="text-xs font-medium text-ink-700 mb-1">Tailored summary:</p>
             <p className="text-xs text-ink-700 leading-relaxed">{tailoredSummary}</p>
           </div>
-          {suggestedSkillsToAdd?.length > 0 && (
+          {tailoredSkills?.length > 0 && (
             <div>
-              <p className="text-xs font-medium text-ink-700 mb-1">Suggested skills to add:</p>
+              <p className="text-xs font-medium text-ink-700 mb-1">Skills:</p>
               <div className="flex flex-wrap gap-1">
-                {suggestedSkillsToAdd.map((s, i) => (
+                {tailoredSkills.map((s, i) => (
                   <span key={i} className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] text-brand-700 border border-brand-100">{s}</span>
                 ))}
               </div>
             </div>
           )}
-          {keywordsMissing?.length > 0 && (
+          {tailoredBullets?.length > 0 && (
             <div>
-              <p className="text-xs font-medium text-ink-700 mb-1">Keywords missing from resume:</p>
+              <p className="text-xs font-medium text-ink-700 mb-1">Improved bullets:</p>
+              <ul className="space-y-1.5">
+                {tailoredBullets.map((b, i) => (
+                  <li key={i} className="text-xs text-ink-700 leading-relaxed">• {b}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {matchingKeywords?.length > 0 && (
+            <div>
+              <p className="text-xs font-medium text-ink-700 mb-1">Matching keywords:</p>
               <div className="flex flex-wrap gap-1">
-                {keywordsMissing.map((k, i) => (
-                  <span key={i} className="rounded-full bg-warning-50 px-2 py-0.5 text-[10px] text-warning-700 border border-warning-100">{k}</span>
+                {matchingKeywords.map((k, i) => (
+                  <span key={i} className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] text-emerald-700 border border-emerald-100">{k}</span>
                 ))}
               </div>
             </div>
           )}
+          {missingKeywords?.length > 0 && (
+            <div>
+              <p className="text-xs font-medium text-ink-700 mb-1">Missing keywords:</p>
+              <div className="flex flex-wrap gap-1">
+                {missingKeywords.map((k, i) => (
+                  <span key={i} className="rounded-full bg-warning-50 px-2 py-0.5 text-[10px] text-warning-700 border border-warning-100">{k}</span>
+                ))}
+              </div>
+              <p className="text-[10px] text-ink-400 mt-0.5">Add only if you actually have this skill — never invent information.</p>
+            </div>
+          )}
+          {suggestions?.length > 0 && (
+            <div>
+              <p className="text-xs font-medium text-ink-700 mb-1">Suggestions:</p>
+              <ul className="space-y-1">
+                {suggestions.map((s, i) => (
+                  <li key={i} className="text-xs text-ink-500 leading-relaxed">• {s}</li>
+                ))}
+              </ul>
+            </div>
+          )}
           <p className="text-xs text-ink-400">
-            Click "Apply to resume" to update your summary and experience bullets.
+            Click "Apply to resume" to update your summary.
           </p>
         </div>
       );
@@ -1549,7 +1626,15 @@ function getResultText(result) {
       if (suggestions.length) parts.push(`\nProfile suggestions:\n${suggestions.map((s, i) => `${i + 1}. ${s}`).join('\n')}`);
       return parts.join('\n');
     }
-    case 'tailor':    return result.data?.tailoredSummary || '';
+    case 'tailor': {
+      const d = result.data || {};
+      const parts = [];
+      if (d.tailoredSummary) parts.push('Tailored summary:\n' + d.tailoredSummary);
+      if (d.matchingKeywords?.length) parts.push('\nMatching keywords: ' + d.matchingKeywords.join(', '));
+      if (d.missingKeywords?.length) parts.push('\nMissing keywords: ' + d.missingKeywords.join(', '));
+      if (d.suggestions?.length) parts.push('\nSuggestions:\n' + d.suggestions.map(s => '- ' + s).join('\n'));
+      return parts.join('\n');
+    }
     case 'interview': return (result.data?.questions || [])
                              .map((q, i) => `Q${i+1}: ${q.question}\n\nA: ${q.modelAnswer}`)
                              .join('\n\n---\n\n');
