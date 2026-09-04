@@ -160,6 +160,77 @@
   }
 }
 
+/* ── Orbital Blink loader ──────────────────────────────────────── */
+.orbital-blink {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.orbital-ring {
+  position: absolute;
+  border-radius: 9999px;
+  border: 1px solid rgba(125, 196, 248, 0.15);
+}
+
+.orbital-halo {
+  position: absolute;
+  border-radius: 9999px;
+  animation: orbital-halo-pulse 2.8s ease-in-out infinite;
+}
+
+.orbital-dot {
+  position: absolute;
+  border-radius: 9999px;
+  background: #7cc4f8;
+  box-shadow: 0 0 6px 1px rgba(124, 196, 248, 0.55);
+  animation: orbital-dot-seq 1.4s ease-in-out infinite;
+}
+
+.orbital-core {
+  position: absolute;
+  border-radius: 9999px;
+  background: #7cc4f8;
+  box-shadow: 0 0 8px 2px rgba(124, 196, 248, 0.5);
+  animation: orbital-core-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes orbital-dot-seq {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.6);
+    box-shadow: 0 0 2px 0px rgba(124, 196, 248, 0.2);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 10px 3px rgba(124, 196, 248, 0.7);
+  }
+}
+
+@keyframes orbital-core-pulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.7);
+    box-shadow: 0 0 4px 1px rgba(124, 196, 248, 0.25);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 14px 4px rgba(124, 196, 248, 0.6);
+  }
+}
+
+@keyframes orbital-halo-pulse {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* ── Custom scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar          { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track    { background: transparent; }

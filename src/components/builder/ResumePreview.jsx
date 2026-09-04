@@ -4,6 +4,7 @@ import { buildTransformed } from '../../utils/transformResume';
 import { A4_W, A4_H, getPageMargin, scaleStyle } from '../../utils/pageLayout';
 import { findCompressionScale, MIN_SCALE, MAX_SCALE } from '../../utils/compression';
 import { CompressModal } from './CompressModal';
+import { OrbitalBlink } from '../common/OrbitalBlink';
 import {
   ModernProTemplate,
   MinimalATSTemplate,
@@ -251,8 +252,9 @@ export const ResumePreview = ({ resume, template = 'modern', onScaleChange }) =>
 
   if (!resume) {
     return (
-      <div className="flex items-center justify-center rounded-2xl border border-surface-200 bg-white p-12 text-sm text-ink-400">
-        Loading preview…
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-12 gap-4">
+        <OrbitalBlink size="lg" />
+        <span className="text-sm text-ink-400">Loading preview…</span>
       </div>
     );
   }
