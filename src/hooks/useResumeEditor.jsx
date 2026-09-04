@@ -46,7 +46,14 @@ export function useResumeEditor(resumeId) {
   const [error,       setError]       = useState('');
   const [success,     setSuccess]     = useState('');
   const [currentId,   setCurrentId]   = useState(resumeId || null);
-  const [template,    setTemplate]    = useState('modern');
+  // Check for a pending template selection from the /templates page
+  const [template,    setTemplate]    = useState(() => {
+    try {
+      const pending = localStorage.getItem('pendingTemplate');
+      if (pending) { localStorage.removeItem('pendingTemplate'); return pending; }
+    } catch { /* ignore */ }
+    return 'modern';
+  });
 
   /* ── Derive active sectionsConfig ─────────────────────────────── */
   const sectionsConfig = useMemo(

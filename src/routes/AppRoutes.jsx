@@ -48,6 +48,7 @@ const ATSScorePage        = lazy(() => import('../pages/ATSScorePage').then(m =>
 
 // Admin panel (authenticated, admin-only)
 const AdminPage           = lazy(() => import('../pages/AdminPage').then(m => ({ default: m.AdminPage })));
+const TemplatesPage       = lazy(() => import('../pages/TemplatesPage').then(m => ({ default: m.TemplatesPage })));
 
 const SeoWrapper = ({ children }) => {
   useSeoMeta();
@@ -62,8 +63,9 @@ export const AppRoutes = () => (
         {/* ── Marketing (public) ─────────────────────────────── */}
         <Route element={<MarketingLayout />}>
           <Route index          element={<LandingPage />} />
-          <Route path="pricing" element={<PricingPage />} />
-          <Route path="about"   element={<AboutPage />} />
+          <Route path="pricing"   element={<PricingPage />} />
+          <Route path="templates" element={<TemplatesPage />} />
+          <Route path="about"     element={<AboutPage />} />
           <Route path="contact" element={<ContactPage />} />
           <Route path="terms"   element={<TermsPage />} />
           <Route path="privacy" element={<PrivacyPage />} />

@@ -17,6 +17,11 @@ const PAGE_META = {
     description:
       'Start free, upgrade for unlimited exports. ResumeForge AI offers transparent one-time pricing with no subscription required.',
   },
+  '/templates': {
+    title: `Resume Templates – ${APP_NAME}`,
+    description:
+      'Browse 20 professionally designed, ATS-optimised resume templates. 10 free templates to get started, or upgrade to Premium for all.',
+  },
   '/features': {
     title: `Features – ${APP_NAME}`,
     description:

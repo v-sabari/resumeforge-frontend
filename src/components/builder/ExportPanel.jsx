@@ -13,16 +13,7 @@ import { Alert } from '../common/Alert';
 import { Loader } from '../common/Loader';
 import { Icon } from '../icons/Icon';
 import { formatApiError, prettyDate } from '../../utils/helpers';
-import { FREE_EXPORT_LIMIT } from '../../utils/constants';
-
-const TEMPLATES = [
-  { id: 'modern',    label: 'Modern Pro',    desc: 'Dark sidebar — stands out visually'         },
-  { id: 'classic',   label: 'Classic',       desc: 'Single-column — maximum ATS compatibility'  },
-  { id: 'minimal',   label: 'Minimal ATS',   desc: 'Ultra-clean whitespace — refined look'      },
-  { id: 'executive', label: 'Executive',     desc: 'Bold and authoritative for senior roles'    },
-  { id: 'fresher',   label: 'Fresher',       desc: 'Optimized for entry-level candidates'       },
-  { id: 'creative',  label: 'Creative ATS',  desc: 'Stylish with accent colors, yet ATS-safe'  },
-];
+import { FREE_EXPORT_LIMIT, RESUME_TEMPLATES } from '../../utils/constants';
 
 export const ExportPanel = ({
   resumeId,
@@ -196,7 +187,7 @@ export const ExportPanel = ({
         <div>
           <p className="text-xs font-medium text-ink-500 mb-2">Template</p>
           <div className="space-y-1.5">
-            {TEMPLATES.map(({ id, label, desc }) => (
+            {RESUME_TEMPLATES.map(({ id, label, description }) => (
               <button key={id} type="button"
                 onClick={() => onTemplateChange?.(id)}
                 className={`w-full flex items-start gap-3 rounded-xl border px-3 py-2.5 text-left transition-all
@@ -209,7 +200,7 @@ export const ExportPanel = ({
                   <p className={`text-xs font-semibold ${selectedTemplate === id ? 'text-brand-700' : 'text-ink-700'}`}>
                     {label}
                   </p>
-                  <p className="text-[10px] text-ink-400 mt-0.5">{desc}</p>
+                  <p className="text-[10px] text-ink-400 mt-0.5">{description}</p>
                 </div>
               </button>
             ))}

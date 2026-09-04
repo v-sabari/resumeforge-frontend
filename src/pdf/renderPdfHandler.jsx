@@ -51,6 +51,20 @@ import {
   FresherTemplate,
   CreativeATSTemplate,
   ClassicTemplate,
+  CorporateTemplate,
+  TraditionalTemplate,
+  CleanTemplate,
+  GraduateTemplate,
+  TechTemplate,
+  EngineeringTemplate,
+  LeadershipTemplate,
+  DesignerTemplate,
+  SleekTemplate,
+  ContemporaryTemplate,
+  AcademicTemplate,
+  ResearchTemplate,
+  MedicalTemplate,
+  FinanceTemplate,
 } from '../components/resume/templates/index.js';
 
 // NOTE: __dirname here resolves relative to the FINAL BUNDLED file's
@@ -66,6 +80,20 @@ const TEMPLATE_MAP = {
   executive: ExecutiveTemplate,
   fresher: FresherTemplate,
   creative: CreativeATSTemplate,
+  corporate: CorporateTemplate,
+  traditional: TraditionalTemplate,
+  clean: CleanTemplate,
+  graduate: GraduateTemplate,
+  tech: TechTemplate,
+  engineering: EngineeringTemplate,
+  leadership: LeadershipTemplate,
+  designer: DesignerTemplate,
+  sleek: SleekTemplate,
+  contemporary: ContemporaryTemplate,
+  academic: AcademicTemplate,
+  research: ResearchTemplate,
+  medical: MedicalTemplate,
+  finance: FinanceTemplate,
 };
 
 // Compiled by `npm run build:pdf-css` (see package.json), which runs

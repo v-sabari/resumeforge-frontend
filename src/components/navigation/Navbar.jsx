@@ -5,6 +5,7 @@ import { Logo } from '../common/Logo';
 import { Icon } from '../icons/Icon';
 
 const navLinks = [
+  { to: '/templates', label: 'Templates' },
   { to: '/tools',     label: 'Free Tools' },
   { to: '/pricing',   label: 'Pricing'    },
   { to: '/resources', label: 'Resources'  },

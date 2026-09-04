@@ -10,10 +10,11 @@ const footerSections = [
     heading: 'Product',
     ariaLabel: 'Product links',
     links: [
-      { to: '/tools',     label: 'Free Resume Tools' },
-      { to: '/pricing',   label: 'Pricing'           },
-      { to: '/resources', label: 'Career Resources'  },
-      { to: '/register',  label: 'Get started free'  },
+      { to: '/templates',  label: 'Resume Templates' },
+      { to: '/tools',      label: 'Free Resume Tools' },
+      { to: '/pricing',    label: 'Pricing'           },
+      { to: '/resources',  label: 'Career Resources'  },
+      { to: '/register',   label: 'Get started free'  },
     ],
   },
   {

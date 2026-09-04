@@ -35,12 +35,26 @@ export const A4_H = 1123;
 // Left/right insets remain wherever they already live inside each
 // template's own JSX (px-8, px-10, px-6, etc.) and are untouched here.
 export const TEMPLATE_PAGE_MARGINS = {
-  modern:    { top: 32, bottom: 32 },
-  executive: { top: 32, bottom: 32 },
-  fresher:   { top: 32, bottom: 32 },
-  minimal:   { top: 32, bottom: 32 },
-  classic:   { top: 24, bottom: 24 },
-  creative:  { top: 32, bottom: 32 },
+  modern:        { top: 32, bottom: 32 },
+  corporate:     { top: 32, bottom: 32 },
+  classic:       { top: 24, bottom: 24 },
+  traditional:   { top: 24, bottom: 24 },
+  minimal:       { top: 32, bottom: 32 },
+  clean:         { top: 32, bottom: 32 },
+  fresher:       { top: 32, bottom: 32 },
+  graduate:      { top: 32, bottom: 32 },
+  tech:          { top: 32, bottom: 32 },
+  engineering:   { top: 32, bottom: 32 },
+  executive:     { top: 32, bottom: 32 },
+  leadership:    { top: 32, bottom: 32 },
+  creative:      { top: 32, bottom: 32 },
+  designer:      { top: 32, bottom: 32 },
+  sleek:         { top: 32, bottom: 32 },
+  contemporary:  { top: 32, bottom: 32 },
+  academic:      { top: 28, bottom: 28 },
+  research:      { top: 28, bottom: 28 },
+  medical:       { top: 32, bottom: 32 },
+  finance:       { top: 32, bottom: 32 },
 };
 
 export const DEFAULT_PAGE_MARGIN = { top: 32, bottom: 32 };

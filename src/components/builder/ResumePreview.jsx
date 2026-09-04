@@ -11,6 +11,20 @@ import {
   FresherTemplate,
   CreativeATSTemplate,
   ClassicTemplate,
+  CorporateTemplate,
+  TraditionalTemplate,
+  CleanTemplate,
+  GraduateTemplate,
+  TechTemplate,
+  EngineeringTemplate,
+  LeadershipTemplate,
+  DesignerTemplate,
+  SleekTemplate,
+  ContemporaryTemplate,
+  AcademicTemplate,
+  ResearchTemplate,
+  MedicalTemplate,
+  FinanceTemplate,
 } from '../resume/templates';
 
 const PAGE_GAP = 16; // px between simulated sheets, at true (unscaled) size
@@ -253,12 +267,26 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange, o
   // External templates receive both the full transformed data AND sectionsConfig
   // so they can render sections in user-defined order (including custom sections).
   const renders = {
-    modern:    <ModernProTemplate    data={td} />,
-    classic:   <ClassicTemplate      data={td} />,
-    minimal:   <MinimalATSTemplate   data={td} />,
-    executive: <ExecutiveTemplate    data={td} />,
-    fresher:   <FresherTemplate      data={td} />,
-    creative:  <CreativeATSTemplate  data={td} />,
+    modern:        <ModernProTemplate      data={td} />,
+    classic:       <ClassicTemplate        data={td} />,
+    minimal:       <MinimalATSTemplate     data={td} />,
+    executive:     <ExecutiveTemplate      data={td} />,
+    fresher:       <FresherTemplate        data={td} />,
+    creative:      <CreativeATSTemplate    data={td} />,
+    corporate:     <CorporateTemplate      data={td} />,
+    traditional:   <TraditionalTemplate    data={td} />,
+    clean:         <CleanTemplate          data={td} />,
+    graduate:      <GraduateTemplate       data={td} />,
+    tech:          <TechTemplate           data={td} />,
+    engineering:   <EngineeringTemplate    data={td} />,
+    leadership:    <LeadershipTemplate     data={td} />,
+    designer:      <DesignerTemplate       data={td} />,
+    sleek:         <SleekTemplate          data={td} />,
+    contemporary:  <ContemporaryTemplate   data={td} />,
+    academic:      <AcademicTemplate       data={td} />,
+    research:      <ResearchTemplate       data={td} />,
+    medical:       <MedicalTemplate        data={td} />,
+    finance:       <FinanceTemplate        data={td} />,
   };
 
   const content = renders[active] || renders.modern;
