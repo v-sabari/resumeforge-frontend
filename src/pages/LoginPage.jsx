@@ -25,6 +25,10 @@ export const LoginPage = () => {
   const from = location.state?.from?.pathname || storedFrom || '/app/dashboard';
 
   const [form, setForm] = useState({ email: '', password: '' });
+  // REMEMBER-ME: unchecked by default so a session is never unknowingly made
+  // persistent. Defaults to the regular (24h) session; tick to extend it to
+  // the longer remember-me lifetime. This never saves the password.
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
@@ -46,6 +50,9 @@ export const LoginPage = () => {
       await login({
         email: form.email.trim().toLowerCase(),
         password: form.password,
+        // REMEMBER-ME: passed to the backend, which issues the longer-lived
+        // session token only when this is true. No password is saved anywhere.
+        rememberMe,
       });
       navigate(from, { replace: true });
     } catch (err) {
@@ -83,7 +90,7 @@ export const LoginPage = () => {
                 />
                 <input
                   type="email"
-                  autoComplete="email"
+                  autoComplete="username"
                   required
                   className="input pl-9"
                   placeholder="you@example.com"
@@ -120,7 +127,16 @@ export const LoginPage = () => {
               </div>
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex items-center justify-between gap-3">
+              <label className="flex items-center gap-2.5 select-none text-sm text-ink-500 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded accent-brand cursor-pointer"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                <span>Remember me</span>
+              </label>
               <Link
                 to="/forgot-password"
                 className="text-sm font-medium text-brand-600 hover:text-brand-700">
