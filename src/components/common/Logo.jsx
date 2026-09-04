@@ -12,7 +12,7 @@ export const Logo = ({ size = 'md', linkTo = '/', className = '' }) => {
   return (
     <Link to={linkTo} className={`inline-flex items-center gap-2 font-display font-semibold text-ink-950 ${s.text} ${className}`}>
       <span className={`${s.icon} inline-flex items-center justify-center`}>
-        <img src="/favicon.ico" alt="" className="h-full w-full object-contain" />
+        <img src="/favicon-48x48.png" alt="" className="h-full w-full object-contain" />
       </span>
       <span>{APP_NAME}</span>
     </Link>
