@@ -15,9 +15,6 @@ const VerifyEmailPage     = lazy(() => import('../pages/VerifyEmailPage').then(m
 const ForgotPasswordPage  = lazy(() => import('../pages/ForgotPasswordPage').then(m => ({ default: m.ForgotPasswordPage })));
 const ResetPasswordPage   = lazy(() => import('../pages/ResetPasswordPage').then(m => ({ default: m.ResetPasswordPage })));
 const DashboardPage       = lazy(() => import('../pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
-const ResumeEditorPage    = lazy(() => import('../pages/ResumeEditorPage').then(m => ({ default: m.ResumeEditorPage })));
-const ResumeSectionsPage  = lazy(() => import('../pages/ResumeSectionsPage').then(m => ({ default: m.ResumeSectionsPage })));
-const TemplatesTab        = lazy(() => import('../pages/TemplatesTab').then(m => ({ default: m.TemplatesTab })));
 const BuilderLayout       = lazy(() => import('../layouts/BuilderLayout').then(m => ({ default: m.BuilderLayout })));
 const PricingPage         = lazy(() => import('../pages/PricingPage').then(m => ({ default: m.PricingPage })));
 const ProfilePage         = lazy(() => import('../pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
@@ -113,19 +110,16 @@ export const AppRoutes = () => (
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard"         element={<DashboardPage />} />
           {/* Resume builder — BuilderLayout mounts ONE shared editor state
-              (ResumeEditorProvider) around both nested pages below, so
-              switching between Editor and Sections never re-fetches or
-              re-creates the resume — see layouts/BuilderLayout.jsx. */}
-          <Route path="builder" element={<BuilderLayout />}>
-            <Route index            element={<ResumeEditorPage />} />
-            <Route path="sections"  element={<ResumeSectionsPage />} />
-            <Route path="templates" element={<TemplatesTab />} />
-          </Route>
-          <Route path="builder/:resumeId" element={<BuilderLayout />}>
-            <Route index            element={<ResumeEditorPage />} />
-            <Route path="sections"  element={<ResumeSectionsPage />} />
-            <Route path="templates" element={<TemplatesTab />} />
-          </Route>
+              (ResumeEditorProvider) around every builder view and presents the
+              app as a single unified content switcher: Editor | Sections |
+              Templates | AI Copilot | Export. The resume preview stays visible
+              in every view. Deep links below keep older URLs working. */}
+          <Route path="builder"                element={<BuilderLayout />} />
+          <Route path="builder/sections"       element={<BuilderLayout />} />
+          <Route path="builder/templates"      element={<BuilderLayout />} />
+          <Route path="builder/:resumeId"      element={<BuilderLayout />} />
+          <Route path="builder/:resumeId/sections"  element={<BuilderLayout />} />
+          <Route path="builder/:resumeId/templates" element={<BuilderLayout />} />
           <Route path="profile"           element={<ProfilePage />} />
           {/* CHAT-01: Premium Voice/Chat Resume Builder (premium-gated inside the page) */}
           <Route path="chat-builder"      element={<ChatResumeBuilderPage />} />
