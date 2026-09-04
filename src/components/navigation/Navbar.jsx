@@ -76,7 +76,7 @@ export const Navbar = memo(() => {
         {/* Mobile hamburger */}
         <button
           onClick={() => setMenuOpen(o => !o)}
-          className="md:hidden btn-ghost p-2"
+          className="md:hidden btn-ghost p-2 order-first"
           aria-label="Toggle menu">
           <Icon name={menuOpen ? 'close' : 'menu'} className="h-5 w-5" />
         </button>
