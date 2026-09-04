@@ -115,6 +115,13 @@ export const AIActionPanel = ({ resume, setResume }) => {
   const [tailorResumeInfo, setTailorResumeInfo] = useState(''); // complete resume content
   const [tailorJobTitle,   setTailorJobTitle]   = useState(''); // target job title (optional)
 
+  /* ── Interview Prep form state (INTERVIEW-01) ─────────────── */
+  const [interviewResumeInfo, setInterviewResumeInfo] = useState(''); // full resume content
+  const [interviewTargetRole, setInterviewTargetRole] = useState(''); // target job role
+  const [interviewType,       setInterviewType]       = useState('Mixed');  // Technical / HR / Behavioral / Mixed
+  const [interviewExpLevel,   setInterviewExpLevel]   = useState('Experienced'); // Fresher / Internship / Experienced
+  const [interviewCount,      setInterviewCount]      = useState(10); // question count
+
   /* ── Suggest Skills form state (SKILLS-02) ─────────────────── */
   const [skillCurrent,       setSkillCurrent]       = useState('');  // current skills (comma)
   const [skillResumeInfo,    setSkillResumeInfo]    = useState('');  // resume info textarea
@@ -164,6 +171,11 @@ export const AIActionPanel = ({ resume, setResume }) => {
     setCoverAdditional('');
     setTailorResumeInfo('');
     setTailorJobTitle('');
+    setInterviewResumeInfo('');
+    setInterviewTargetRole('');
+    setInterviewType('Mixed');
+    setInterviewExpLevel('Experienced');
+    setInterviewCount(10);
   };
 
   const run = async (id) => {
@@ -417,13 +429,15 @@ export const AIActionPanel = ({ resume, setResume }) => {
 
         /* ── Interview prep ──────────────────────────────── */
         case 'interview':
+          if (!interviewResumeInfo.trim()) { setError('Please paste your resume content to generate interview questions.'); setLoading(false); return; }
+          if (!interviewTargetRole.trim()) { setError('Please enter the target job role.'); setLoading(false); return; }
           res = await generateInterviewPrep({
-            targetRole:      resume.professionalTitle || '',
-            companyName:     company                  || '',
-            summary:         resume.summary           || '',
-            skills:          resume.skills            || [],
-            topAchievements: resume.achievements      || [],
-            jobDescription:  jd || undefined,
+            interviewResumeInfo,
+            targetRole:     interviewTargetRole,
+            jobDescription: jd || undefined,
+            interviewType:  interviewType,
+            experienceLevel: interviewExpLevel,
+            questionCount:  interviewCount,
           });
           setResult({ type: 'interview', data: res });
           break;
@@ -468,8 +482,8 @@ export const AIActionPanel = ({ resume, setResume }) => {
 
   /* ── Input fields for certain actions ──────────────────────────── */
   const needsTextInput    = ['grammar'].includes(active) && !loading && !result;
-  const needsJdInput      = ['ats', 'interview'].includes(active) && !loading && !result;
-  const needsCompanyInput = ['interview'].includes(active) && !loading && !result;
+  const needsJdInput      = ['ats'].includes(active) && !loading && !result;
+  const needsCompanyInput = false;
 
   return (
     <div className="card p-5 space-y-4">
@@ -728,6 +742,86 @@ export const AIActionPanel = ({ resume, setResume }) => {
                     placeholder="e.g. Java Developer (optional — you can leave this blank)"
                   />
                   <p className="text-[10px] text-ink-400 mt-0.5">Optional if it can be extracted from the job description.</p>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Interview Prep form (INTERVIEW-01) */}
+          {active === 'interview' && !loading && !result && (
+            <>
+              <p className="label text-xs font-medium text-ink-600 uppercase tracking-wide mb-2">
+                Interview Preparation
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <label className="label text-xs">
+                    Your resume <span className="text-danger-600">*</span>
+                  </label>
+                  <textarea className="input min-h-[100px] resize-none text-xs"
+                    value={interviewResumeInfo} onChange={e => setInterviewResumeInfo(e.target.value)}
+                    placeholder="Paste your resume — skills, experience, projects, education, achievements…"
+                  />
+                  <p className="text-[10px] text-ink-400 mt-0.5">Include your skills, projects, and experience so questions/answers use your actual background.</p>
+                </div>
+                <div>
+                  <label className="label text-xs">
+                    Target job role <span className="text-danger-600">*</span>
+                  </label>
+                  <input className="input text-xs" type="text"
+                    value={interviewTargetRole} onChange={e => setInterviewTargetRole(e.target.value)}
+                    placeholder="e.g. Java Developer"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">
+                    Job description <span className="text-ink-400">(optional)</span>
+                  </label>
+                  <textarea className="input min-h-[80px] resize-none text-xs"
+                    value={jd} onChange={e => setJd(e.target.value)}
+                    placeholder="Paste the job description to focus questions on the role…"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">Interview type</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {['Technical', 'HR', 'Behavioral', 'Mixed'].map(t => (
+                      <button key={t} type="button"
+                        onClick={() => setInterviewType(t)}
+                        className={`rounded-full px-2.5 py-1 text-[11px] border transition-colors ${
+                          interviewType === t
+                            ? 'bg-brand-600 text-white border-brand-600'
+                            : 'bg-surface-50 text-ink-600 border-surface-200 hover:border-brand-300'
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="label text-xs">Experience level</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {['Fresher', 'Internship', 'Experienced'].map(l => (
+                      <button key={l} type="button"
+                        onClick={() => setInterviewExpLevel(l)}
+                        className={`rounded-full px-2.5 py-1 text-[11px] border transition-colors ${
+                          interviewExpLevel === l
+                            ? 'bg-brand-600 text-white border-brand-600'
+                            : 'bg-surface-50 text-ink-600 border-surface-200 hover:border-brand-300'
+                        }`}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="label text-xs">Number of questions</label>
+                  <input className="input text-xs" type="number" min={5} max={30}
+                    value={interviewCount} onChange={e => setInterviewCount(Number(e.target.value) || 10)}
+                    placeholder="e.g. 10, 20, 30"
+                  />
                 </div>
               </div>
             </>
@@ -1505,22 +1599,47 @@ const ResultContent = ({ result }) => {
     }
 
     case 'interview': {
-      const { questions, generalTips } = result.data;
+      const { questions, generalTips } = result.data || {};
+      const diffColor = (d) => {
+        if (!d) return 'text-ink-500 bg-ink-50 border-ink-100';
+        const dl = String(d).toLowerCase();
+        if (dl === 'easy') return 'text-emerald-700 bg-emerald-50 border-emerald-100';
+        if (dl === 'hard') return 'text-danger-700 bg-danger-50 border-danger-100';
+        return 'text-amber-700 bg-amber-50 border-amber-100';
+      };
       return (
         <div className="space-y-3">
           {generalTips && (
             <p className="text-xs text-ink-500 italic border-l-2 border-brand-200 pl-2">{generalTips}</p>
           )}
           {(questions || []).map((qa, i) => (
-            <div key={i} className="border border-surface-200 rounded-lg p-2.5 space-y-1">
-              <div className="flex items-center gap-1.5">
+            <div key={i} className="border border-surface-200 rounded-lg p-2.5 space-y-1.5">
+              <div className="flex flex-wrap items-center gap-1.5">
                 <span className="text-[10px] font-semibold uppercase tracking-wide
                                  text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded-full">
-                  {qa.category}
+                  {qa.category || 'Question'}
                 </span>
+                {qa.difficulty && (
+                  <span className={`text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full border ${diffColor(qa.difficulty)}`}>
+                    {qa.difficulty}
+                  </span>
+                )}
               </div>
               <p className="text-xs font-medium text-ink-800">{i + 1}. {qa.question}</p>
-              <p className="text-xs text-ink-500 leading-relaxed">{qa.modelAnswer}</p>
+              <div>
+                <p className="text-[11px] font-medium text-ink-600 mb-0.5">Suggested answer:</p>
+                <p className="text-xs text-ink-500 leading-relaxed whitespace-pre-wrap">{qa.suggestedAnswer || qa.modelAnswer || ''}</p>
+              </div>
+              {(qa.keyPoints || []).length > 0 && (
+                <div>
+                  <p className="text-[11px] font-medium text-ink-600 mb-0.5">Key points:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {qa.keyPoints.map((kp, j) => (
+                      <span key={j} className="rounded-full bg-surface-100 px-2 py-0.5 text-[10px] text-ink-600 border border-surface-200">{kp}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -1636,7 +1755,12 @@ function getResultText(result) {
       return parts.join('\n');
     }
     case 'interview': return (result.data?.questions || [])
-                             .map((q, i) => `Q${i+1}: ${q.question}\n\nA: ${q.modelAnswer}`)
+                             .map((q, i) => {
+                               const head = `Q${i+1}${q.category ? ` (${q.category})` : ''}${q.difficulty ? ` [${q.difficulty}]` : ''}: ${q.question}`;
+                               const ans = q.suggestedAnswer || q.modelAnswer || '';
+                               const keys = (q.keyPoints || []).length ? '\nKey points: ' + q.keyPoints.join(', ') : '';
+                               return head + (ans ? `\n\nSuggested answer: ${ans}` : '') + keys;
+                             })
                              .join('\n\n---\n\n');
     default:          return '';
   }
