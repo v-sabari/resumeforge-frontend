@@ -109,8 +109,8 @@ export const PrivacyPage = () => (
     <H2>4. Data Retention</H2>
     <P>
       We retain your account and resume data for as long as your account is active. If you delete
-      your account, your data is permanently deleted within 30 days. Payment records may be retained
-      for up to 7 years for legal and accounting compliance.
+      your account, your account and associated data are permanently deleted, including records
+      held for payment and referral history, as soon as the deletion is processed.
     </P>
 
     <H2>5. Security</H2>
@@ -124,9 +124,15 @@ export const PrivacyPage = () => (
     <H2>6. Cookies and Local Storage</H2>
     <P>
       We use a secure, essential (httpOnly) cookie to keep your session signed in — it cannot be
-      read by JavaScript and is required for you to stay logged in. We do not use advertising
-      cookies or third-party tracking cookies. If you opt into analytics, an analytics cookie may
-      be set.
+      read by JavaScript and is required for you to stay logged in. We also store an "analytics
+      consent" flag in your browser to remember your choice.
+    </P>
+    <P>
+      Analytics (Google Analytics) and advertising (Google AdSense) scripts are not loaded by
+      default. They start only if you accept the cookie banner — our forms of measurement use a
+      "first-party" mechanism. If you decline or have not made a choice, no tracking or advertising
+      cookies are set. You can change your choice at any time by clearing your browser's site data,
+      which resets the banner.
     </P>
 
     <H2>7. Your Rights</H2>

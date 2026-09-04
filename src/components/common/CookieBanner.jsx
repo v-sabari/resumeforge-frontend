@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-const COOKIE_KEY = 'rf_cookie_consent';
+import { initAnalytics, ANALYTICS_CONSENT_KEY } from '../../utils/analytics';
 
 export const CookieBanner = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem(COOKIE_KEY);
+    const consent = localStorage.getItem(ANALYTICS_CONSENT_KEY);
     if (!consent) {
       // Delay slightly so it doesn't flash on first paint
       const t = setTimeout(() => setVisible(true), 1500);
@@ -16,12 +15,14 @@ export const CookieBanner = () => {
   }, []);
 
   const accept = () => {
-    localStorage.setItem(COOKIE_KEY, 'accepted');
+    localStorage.setItem(ANALYTICS_CONSENT_KEY, 'accepted');
+    // Start optional analytics only once the visitor has opted in.
+    initAnalytics();
     setVisible(false);
   };
 
   const decline = () => {
-    localStorage.setItem(COOKIE_KEY, 'declined');
+    localStorage.setItem(ANALYTICS_CONSENT_KEY, 'declined');
     setVisible(false);
   };
 
@@ -33,7 +34,8 @@ export const CookieBanner = () => {
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-ink-950 mb-0.5">We use cookies</p>
           <p className="text-xs text-ink-400 leading-relaxed">
-            We use essential cookies to keep you signed in. We do not use tracking or advertising cookies.{' '}
+            We use essential cookies to keep you signed in. Analytics are off by default and only
+            run if you accept.{' '}
             <Link to="/privacy" className="text-brand-600 hover:underline">Privacy Policy</Link>
           </p>
         </div>
