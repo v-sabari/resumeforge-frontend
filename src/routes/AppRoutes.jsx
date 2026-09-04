@@ -17,6 +17,7 @@ const ResetPasswordPage   = lazy(() => import('../pages/ResetPasswordPage').then
 const DashboardPage       = lazy(() => import('../pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
 const ResumeEditorPage    = lazy(() => import('../pages/ResumeEditorPage').then(m => ({ default: m.ResumeEditorPage })));
 const ResumeSectionsPage  = lazy(() => import('../pages/ResumeSectionsPage').then(m => ({ default: m.ResumeSectionsPage })));
+const TemplatesTab        = lazy(() => import('../pages/TemplatesTab').then(m => ({ default: m.TemplatesTab })));
 const BuilderLayout       = lazy(() => import('../layouts/BuilderLayout').then(m => ({ default: m.BuilderLayout })));
 const PricingPage         = lazy(() => import('../pages/PricingPage').then(m => ({ default: m.PricingPage })));
 const ProfilePage         = lazy(() => import('../pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
@@ -118,10 +119,12 @@ export const AppRoutes = () => (
           <Route path="builder" element={<BuilderLayout />}>
             <Route index            element={<ResumeEditorPage />} />
             <Route path="sections"  element={<ResumeSectionsPage />} />
+            <Route path="templates" element={<TemplatesTab />} />
           </Route>
           <Route path="builder/:resumeId" element={<BuilderLayout />}>
             <Route index            element={<ResumeEditorPage />} />
             <Route path="sections"  element={<ResumeSectionsPage />} />
+            <Route path="templates" element={<TemplatesTab />} />
           </Route>
           <Route path="profile"           element={<ProfilePage />} />
           {/* CHAT-01: Premium Voice/Chat Resume Builder (premium-gated inside the page) */}

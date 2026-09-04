@@ -21,7 +21,7 @@ import { SectionsManager } from '../components/builder/SectionsManager';
 export const ResumeSectionsPage = () => {
   const editor = useResumeEditorContext();
   const {
-    resume, template, setTemplate, setSuccess, top,
+    resume, template, setSuccess, top,
     sectionsConfig, setSectionsConfig, visibleSections,
     renderStandard, renderCustom,
   } = editor;
@@ -30,7 +30,6 @@ export const ResumeSectionsPage = () => {
     <ResumePreview
       resume={{ ...resume, sectionsConfig }}
       template={template}
-      onTemplateChange={setTemplate}
       onScaleChange={(scale) => { top('layoutScale', scale); setSuccess(''); }}
     />
   );

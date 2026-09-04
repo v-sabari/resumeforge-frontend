@@ -13,7 +13,7 @@ import { Alert } from '../common/Alert';
 import { Loader } from '../common/Loader';
 import { Icon } from '../icons/Icon';
 import { formatApiError, prettyDate } from '../../utils/helpers';
-import { FREE_EXPORT_LIMIT, RESUME_TEMPLATES } from '../../utils/constants';
+import { FREE_EXPORT_LIMIT } from '../../utils/constants';
 
 export const ExportPanel = ({
   resumeId,
@@ -21,8 +21,6 @@ export const ExportPanel = ({
   exportStatus,
   onExported,
   refreshStatuses,
-  selectedTemplate,
-  onTemplateChange,
 }) => {
   const navigate = useNavigate();
 
@@ -182,30 +180,6 @@ export const ExportPanel = ({
             <p className="mt-1 text-xs text-ink-400">{exportsUsed} / {FREE_EXPORT_LIMIT} exports used</p>
           </div>
         )}
-
-        {/* Template selector */}
-        <div>
-          <p className="text-xs font-medium text-ink-500 mb-2">Template</p>
-          <div className="space-y-1.5">
-            {RESUME_TEMPLATES.map(({ id, label, description }) => (
-              <button key={id} type="button"
-                onClick={() => onTemplateChange?.(id)}
-                className={`w-full flex items-start gap-3 rounded-xl border px-3 py-2.5 text-left transition-all
-                  ${selectedTemplate === id
-                    ? 'border-brand-400 bg-brand-50'
-                    : 'border-surface-200 hover:border-brand-200 hover:bg-brand-50/50'}`}>
-                <div className={`mt-0.5 h-3.5 w-3.5 rounded-full border-2 shrink-0 transition-colors
-                  ${selectedTemplate === id ? 'border-brand-500 bg-brand-500' : 'border-surface-300'}`} />
-                <div>
-                  <p className={`text-xs font-semibold ${selectedTemplate === id ? 'text-brand-700' : 'text-ink-700'}`}>
-                    {label}
-                  </p>
-                  <p className="text-[10px] text-ink-400 mt-0.5">{description}</p>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Download buttons */}
         <div className="space-y-2">

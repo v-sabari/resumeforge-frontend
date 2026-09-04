@@ -9,7 +9,7 @@ const BENEFITS = [
   'Unlimited PDF and DOCX exports',
   'ATS Pro Scan — unlimited per day',
   'Cover letter, tailor, interview prep AI tools',
-  'All resume templates (Classic, Modern, Minimal)',
+  'All 20 resume templates (10 premium-exclusive)',
   'No ads, no rate limits',
   'One-time payment — no subscription ever',
 ];

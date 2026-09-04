@@ -25,7 +25,7 @@ export const ResumeEditorPage = () => {
   const { premium, exportStatus, refreshExportStatus, refreshPremiumStatus } = useAuth();
   const editor = useResumeEditorContext();
   const {
-    resume, setSuccess, currentId, template, setTemplate,
+    resume, setSuccess, currentId, template,
     sectionsConfig, visibleSections, renderStandard, renderCustom, top,
   } = editor;
   const [mobileTab, setMobileTab] = useState('edit');
@@ -36,7 +36,6 @@ export const ResumeEditorPage = () => {
     <ResumePreview
       resume={{ ...resume, sectionsConfig }}
       template={template}
-      onTemplateChange={setTemplate}
       onScaleChange={(scale) => { top('layoutScale', scale); setSuccess(''); }}
     />
   );
@@ -46,8 +45,6 @@ export const ResumeEditorPage = () => {
       resumeId={currentId}
       premium={premium}
       exportStatus={exportStatus}
-      selectedTemplate={template}
-      onTemplateChange={setTemplate}
       onExported={() => setSuccess('Your resume has been downloaded!')}
       refreshStatuses={refreshStatuses}
     />

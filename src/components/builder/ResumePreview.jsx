@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useImperativeHandle, forwardRef, useCallback } from 'react';
-import { RESUME_TEMPLATES, DEFAULT_SECTIONS_CONFIG } from '../../utils/constants';
+import { DEFAULT_SECTIONS_CONFIG } from '../../utils/constants';
 import { buildTransformed } from '../../utils/transformResume';
 import { A4_W, A4_H, getPageMargin, scaleStyle } from '../../utils/pageLayout';
 import { findCompressionScale, MIN_SCALE, MAX_SCALE } from '../../utils/compression';
@@ -170,7 +170,7 @@ const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange
 A4Viewer.displayName = 'A4Viewer';
 
 /* ─── Public ResumePreview ─────────────────────────────────────── */
-export const ResumePreview = ({ resume, template = 'modern', onTemplateChange, onScaleChange }) => {
+export const ResumePreview = ({ resume, template = 'modern', onScaleChange }) => {
   const [active, setActive] = useState(template);
   const [pages,  setPages]  = useState(1);
   const [showCompress, setShowCompress] = useState(false);
@@ -179,7 +179,6 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange, o
   const viewerRef = useRef(null);
 
   useEffect(() => { setActive(template); }, [template]);
-  const change = (id) => { setActive(id); onTemplateChange?.(id); };
 
   // The compressed scale lives on the resume itself (resume.layoutScale)
   // so it survives Save and is what actually gets sent to PDF export —
@@ -300,19 +299,6 @@ export const ResumePreview = ({ resume, template = 'modern', onTemplateChange, o
         onClose={() => setShowCompress(false)}
         onConfirm={(target) => { setShowCompress(false); runCompress(target); }}
       />
-
-      {/* Template switcher */}
-      <div className="flex flex-wrap gap-1 rounded-xl bg-slate-100 p-1 border border-slate-200">
-        {RESUME_TEMPLATES.map((t) => (
-          <button key={t.id} type="button" onClick={() => change(t.id)}
-            className={['flex-1 min-w-fit rounded-lg px-2 py-1.5 text-[11px] font-semibold',
-              'transition-all duration-150 whitespace-nowrap',
-              active === t.id ? 'bg-white shadow text-slate-900 ring-1 ring-slate-200' : 'text-slate-500 hover:text-slate-800',
-            ].join(' ')}>
-            {t.label}
-          </button>
-        ))}
-      </div>
 
       {/* Compress controls */}
       <div className="flex items-center justify-between gap-2 rounded-xl border border-surface-200 bg-white px-3 py-2">

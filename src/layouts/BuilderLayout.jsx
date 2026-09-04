@@ -26,11 +26,20 @@ const BuilderTabs = () => {
   const { currentId } = useResumeEditorContext();
   const base = currentId ? `/app/builder/${currentId}` : '/app/builder';
   const sectionsHref = currentId ? `${base}/sections` : null;
+  const templatesHref = currentId ? `${base}/templates` : null;
 
   const tabClass = (isActive) => [
     'flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition-all',
     isActive ? 'bg-white text-ink-950 shadow-sm' : 'text-ink-400 hover:text-ink-700',
   ].join(' ');
+
+  const disabledTab = (
+    <span
+      title="Save your resume first to access this tab"
+      className="flex cursor-not-allowed items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-ink-300">
+      <Icon name="grid" className="h-4 w-4" /> Sections
+    </span>
+  );
 
   return (
     <div className="mb-5 flex items-center gap-1 rounded-xl border border-surface-200 bg-surface-50 p-1 w-fit">
@@ -41,11 +50,16 @@ const BuilderTabs = () => {
         <NavLink to={sectionsHref} className={({ isActive }) => tabClass(isActive)}>
           <Icon name="grid" className="h-4 w-4" /> Sections
         </NavLink>
+      ) : disabledTab}
+      {templatesHref ? (
+        <NavLink to={templatesHref} className={({ isActive }) => tabClass(isActive)}>
+          <Icon name="grid" className="h-4 w-4" /> Templates
+        </NavLink>
       ) : (
         <span
-          title="Save your resume first to manage sections on their own page"
+          title="Save your resume first to browse templates"
           className="flex cursor-not-allowed items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-ink-300">
-          <Icon name="grid" className="h-4 w-4" /> Sections
+          <Icon name="grid" className="h-4 w-4" /> Templates
         </span>
       )}
     </div>
