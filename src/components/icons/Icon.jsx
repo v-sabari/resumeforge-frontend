@@ -1,4 +1,7 @@
 ﻿import { memo } from 'react';
+// Single source of truth for the brand mark — the exact same /public/logo.svg
+// file used for the favicon. Editing logo.svg updates the logo everywhere.
+import logoRaw from '../../assets/logo.svg?raw';
 
 const strokeIcon = (paths, extras = {}) => {
   const C = (p) => (
@@ -11,13 +14,16 @@ const strokeIcon = (paths, extras = {}) => {
 };
 
 const icons = {
+  // Brand mark — rendered from the single source of truth file
+  // (src/assets/logo.svg, mirrored to public/logo.svg for the favicon).
   logo: (p) => (
-    <svg viewBox="0 0 30 30" fill="none" {...p}>
-      <rect width="30" height="30" rx="7" fill="#0B1220" />
-      <path d="M10 22V7.5h5.2a4 4 0 0 1 0 8H10" stroke="#FFFFFF" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M14.9 15.5 19.5 22" stroke="#FFFFFF" strokeWidth="2.6" strokeLinecap="round" />
-      <circle cx="21.5" cy="8.5" r="2.6" fill="#38A6F0" />
-    </svg>
+    <svg viewBox="0 0 30 30" fill="none" {...p}
+      dangerouslySetInnerHTML={{
+        __html: logoRaw.replace(/^<\?xml[^>]*\?>\s*/i, '')
+                       .replace(/^<svg[^>]*>/i, '')
+                       .replace(/<\/svg>\s*$/i, ''),
+      }}
+    />
   ),
   // Lucide-style stroke icons (24Ã—24, currentColor).
   check: strokeIcon(<path d="M20 6 9 17l-5-5" />),
