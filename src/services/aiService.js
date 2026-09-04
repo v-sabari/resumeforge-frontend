@@ -57,6 +57,20 @@ export const checkGrammar = async (payload) => {
   return data;
 };
 
+// Premium Voice/Chat Resume Builder — one conversational turn.
+// Sends the full in-memory conversation history + current collected context.
+export const chatWithAI = async (payload) => {
+  const { data } = await api.post('/api/ai/chat', payload);
+  return data;
+};
+
+// Premium Voice/Chat Resume Builder — generate structured resume JSON
+// from the collected conversation context.
+export const generateResumeFromChat = async (payload) => {
+  const { data } = await api.post('/api/ai/chat/generate', payload);
+  return data;
+};
+
 export const aiService = {
   generateSummary,
   generateBullets,
@@ -68,6 +82,8 @@ export const aiService = {
   optimizeLinkedIn,
   generateInterviewPrep,
   checkGrammar,
+  chatWithAI,
+  generateResumeFromChat,
 };
 
 export default aiService;

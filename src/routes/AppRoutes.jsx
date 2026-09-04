@@ -37,6 +37,9 @@ const PaymentFailedPage   = lazy(() => import('../pages/PaymentPages').then(m =>
 // Phase 3: referral hub (authenticated, inside /app)
 const ReferralPage        = lazy(() => import('../pages/ReferralPage').then(m => ({ default: m.ReferralPage })));
 
+// CHAT-01: Premium Voice/Chat Resume Builder (authenticated, premium-gated in-page)
+const ChatResumeBuilderPage = lazy(() => import('../pages/ChatResumeBuilderPage').then(m => ({ default: m.ChatResumeBuilderPage })));
+
 // Free tools and AI-powered pages (public)
 const FreeToolsPage       = lazy(() => import('../pages/FreeToolsPage').then(m => ({ default: m.FreeToolsPage })));
 const LinkedInToolsPage   = lazy(() => import('../pages/LinkedInToolsPage').then(m => ({ default: m.LinkedInToolsPage })));
@@ -117,6 +120,8 @@ export const AppRoutes = () => (
             <Route path="sections"  element={<ResumeSectionsPage />} />
           </Route>
           <Route path="profile"           element={<ProfilePage />} />
+          {/* CHAT-01: Premium Voice/Chat Resume Builder (premium-gated inside the page) */}
+          <Route path="chat-builder"      element={<ChatResumeBuilderPage />} />
           {/* Phase 3: referral hub */}
           <Route path="referral"          element={<ReferralPage />} />
           {/* Admin panel - requires ADMIN role */}

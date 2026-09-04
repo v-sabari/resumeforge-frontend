@@ -107,6 +107,43 @@ export const PricingPage = () => {
           </div>
         </div>
 
+        {/* CHAT-01: Premium flagship Voice & Chat Resume Builder advertisement */}
+        <div className="mt-10 max-w-3xl mx-auto">
+          <div className="card p-6 sm:p-8 border-2 border-brand-500 relative overflow-hidden">
+            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+              <span className="premium-badge px-3 py-1">FLAGSHIP AI FEATURE</span>
+            </div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl
+                              bg-gradient-to-br from-brand-600 to-brand-700 text-white">
+                <Icon name="sparkles" className="h-7 w-7" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="kicker text-brand-600 mb-1">Premium Feature</p>
+                <h3 className="text-xl font-display font-bold text-ink-950">Voice &amp; Chat Resume Builder</h3>
+                <p className="mt-2 text-sm text-ink-500 leading-relaxed">
+                  Build your resume by simply talking to AI or chatting with it.
+                  Answer a few questions and let ResumeForge AI guide you through creating a professional resume.
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {[
+                ['🎙️', 'Voice-based resume creation'],
+                ['💬', 'Conversational AI resume builder'],
+                ['🤖', 'AI-guided questions'],
+                ['✨', 'Smart resume improvements'],
+                ['📄', 'Generate complete resume sections'],
+                ['🎯', 'Job-focused resume guidance'],
+              ].map(([emoji, text]) => (
+                <div key={text} className="flex items-center gap-2.5 rounded-xl bg-surface-50 border border-surface-200 px-3 py-2.5 text-sm text-ink-600">
+                  <span className="text-base">{emoji}</span>{text}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* Trust signals */}
         <div className="mt-12 flex flex-wrap justify-center gap-6 text-sm text-ink-400">
           {['Secure payment via Razorpay', 'No subscription — pay once', 'Instant activation', '30-day support guarantee'].map((t) => (

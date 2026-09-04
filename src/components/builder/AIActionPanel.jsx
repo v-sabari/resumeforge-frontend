@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   generateSummary,
@@ -64,6 +65,7 @@ const ScoreBar = ({ score }) => {
 export const AIActionPanel = ({ resume, setResume }) => {
   const { premium } = useAuth();
   const isPremium   = premium?.isPremium;
+  const navigate    = useNavigate();
 
   const [active,   setActive]  = useState(null);
   const [loading,  setLoading] = useState(false);
@@ -527,6 +529,22 @@ export const AIActionPanel = ({ resume, setResume }) => {
               />
             ))}
           </div>
+
+          {/* CHAT-01: premium flagship Voice/Chat Resume Builder */}
+          <button type="button"
+            onClick={() => { if (!isPremium) return; navigate('/app/chat-builder'); }}
+            className={`flex w-full items-center gap-2.5 rounded-xl border px-3 py-3 text-xs font-semibold transition-all text-left ${
+              !isPremium
+                ? 'cursor-not-allowed opacity-60 border-surface-200 text-ink-400'
+                : 'border-brand-300 bg-gradient-to-r from-brand-50 to-white text-brand-700 hover:border-brand-400'
+            }`}>
+            <Icon name="sparkles" className="h-4 w-4 shrink-0 text-brand-600" />
+            <span className="flex-1">Voice &amp; Chat Resume Builder</span>
+            <span className="inline-flex items-center rounded-full bg-amber-50 px-1.5 py-0.5
+                             text-[9px] font-semibold uppercase tracking-wide text-amber-700 border border-amber-200">
+              Flagship
+            </span>
+          </button>
         </div>
       )}
 

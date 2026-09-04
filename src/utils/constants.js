@@ -23,6 +23,8 @@ export const premiumFeatures = [
   'AI Resume Tailoring to job descriptions',
   'AI Interview Prep (5 questions + answers)',
   'ATS Pro Scan — unlimited per day',
+  'Voice & Chat Resume Builder (flagship)',
+  'Personalized AI Resume Guidance',
   'Lifetime access — pay once',
 ];
 

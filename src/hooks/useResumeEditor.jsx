@@ -80,6 +80,42 @@ export function useResumeEditor(resumeId) {
 
   useEffect(() => { setResume((p) => ({ ...p, template })); }, [template]);
 
+  /* ── CHAT-01: prefill a fresh resume from the Premium Chat Builder ──
+     When the user generates a resume in the Voice/Chat builder and clicks
+     "Open in Builder", the generated object is kept in sessionStorage under
+     `chat_resume_draft`. On mount of a NEW resume (no resumeId), we merge
+     it in so the builder opens already populated, then clear the key so it
+     only applies once. */
+  useEffect(() => {
+    if (resumeId) return;
+    const raw = sessionStorage.getItem('chat_resume_draft');
+    if (!raw) return;
+    sessionStorage.removeItem('chat_resume_draft');
+    try {
+      const draft = JSON.parse(raw);
+      if (!draft || typeof draft !== 'object') return;
+      const withIds = (arr, prefix) => (Array.isArray(arr) ? arr.map((it) => ({ id: it?.id || uid(prefix), ...it })) : []);
+      setResume((prev) => ({
+        ...prev,
+        fullName:        draft.fullName        || prev.fullName,
+        professionalTitle: draft.professionalTitle || prev.professionalTitle,
+        email:           draft.email           || prev.email,
+        phone:           draft.phone           || prev.phone,
+        location:        draft.location        || prev.location,
+        summary:         draft.summary         || prev.summary,
+        skills:          Array.isArray(draft.skills) ? draft.skills : prev.skills,
+        achievements:    Array.isArray(draft.achievements) ? draft.achievements : prev.achievements,
+        experience:      withIds(draft.experience, 'exp'),
+        projects:        withIds(draft.projects, 'proj'),
+        education:       withIds(draft.education, 'edu'),
+        certifications:  withIds(draft.certifications, 'cert'),
+      }));
+      setSuccess('Your AI-generated resume is ready. Review and edit below.');
+    } catch {
+      /* ignore malformed draft */
+    }
+  }, [resumeId, setSuccess]);
+
   /* ── Save ─────────────────────────────────────────────────────── */
   const saveResume = async () => {
     setSaving(true); setError(''); setSuccess('');
