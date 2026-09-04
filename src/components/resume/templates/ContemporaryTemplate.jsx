@@ -1,96 +1,89 @@
-import React from 'react';
-
-const CustomBlock = ({ label, content }) => {
-  if (!content) return null;
-  const { mode, text, items } = content;
-  const H = <div className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600 border-b border-indigo-200 pb-0.5 mb-2 mt-5 break-after-avoid">{label}</div>;
-  if (mode === 'bullets') {
-    if (!items?.filter(Boolean).length) return null;
-    return <>{H}<ul className="space-y-1">{items.filter(Boolean).map((it,i)=><li key={i} className="flex gap-2 text-xs text-gray-600 break-inside-avoid"><span className="text-indigo-400 shrink-0 mt-0.5">–</span><span className="break-words min-w-0">{it}</span></li>)}</ul></>;
-  }
-  if (!text?.trim()) return null;
-  return <>{H}<p className="text-xs text-gray-600 leading-relaxed break-words">{text}</p></>;
-};
+const Card = ({ accent, title, children }) => (
+  <div className="mb-3 border border-gray-100 shadow-sm rounded-lg overflow-hidden break-after-avoid">
+    <div className={`flex items-center gap-2 px-3 py-1.5 ${accent} text-white`}>
+      <span className="text-[9.5px] font-bold uppercase tracking-[0.2em] break-words">{title}</span>
+    </div>
+    <div className="px-3 py-2">{children}</div>
+  </div>
+);
 
 export const ContemporaryTemplate = ({ data }) => {
-  const { sectionsConfig, personalInfo, summary, experience, education, skills, projects, certifications, achievements, languages, customSections } = data;
+  const {
+    sectionsConfig, personalInfo, summary, experience, education, skills,
+    projects, certifications, achievements, languages, customSections,
+  } = data;
 
-  const SH = ({ children }) => <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-indigo-600 border-b border-indigo-200 pb-0.5 mb-2 mt-5 first:mt-0 break-after-avoid">{children}</div>;
+  const ACCENT = 'bg-indigo-600';
+
+  const body = (mode, text, items) => {
+    if (mode === 'bullets') {
+      if (!items?.filter(Boolean).length) return null;
+      return <ul className="space-y-1">{items.filter(Boolean).map((it,i)=><li key={i} className="flex gap-2 text-[10.5px] text-gray-600 leading-relaxed break-words break-inside-avoid"><span className={`mt-[2px] w-1 h-1 shrink-0 rounded-full ${ACCENT.replace('bg-','bg-')}`}></span><span className="break-words min-w-0">{it}</span></li>)}</ul>;
+    }
+    if (!text?.trim()) return null;
+    return <p className="text-[10.5px] text-gray-600 leading-relaxed break-words">{text}</p>;
+  };
 
   const renderSection = (sec) => {
-    if (sec.type === 'custom') return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]}/>;
+    if (sec.type === 'custom') {
+      const c=(customSections||{})[sec.id];
+      return <Card key={sec.id} accent={ACCENT} title={sec.label}>{body(c?.mode, c?.text, c?.items)}</Card>;
+    }
     switch (sec.key) {
       case 'basics': return null;
-      case 'summary': return summary ? (<React.Fragment key="summary"><SH>Profile</SH><p className="text-gray-600 leading-relaxed text-xs break-words">{summary}</p></React.Fragment>) : null;
+      case 'summary': return summary ? <Card key="summary" accent={ACCENT} title="Profile"><p className="text-[10.5px] text-gray-600 leading-relaxed break-words">{summary}</p></Card> : null;
+      case 'skills': return skills?.length ? <Card key="skills" accent={ACCENT} title="Skills"><div className="flex flex-wrap gap-1.5">{(Array.isArray(skills)?skills:[skills]).map((s,i)=><span key={i} className="text-[10px] bg-indigo-50 text-indigo-800 rounded px-2 py-0.5 break-words">{s}</span>)}</div></Card> : null;
       case 'experience': return experience?.length ? (
-        <React.Fragment key="experience"><SH>Experience</SH>
-          <div className="space-y-4">{experience.map((e,i)=>(
-            <div key={i} className="break-inside-avoid shadow-sm rounded-lg p-2">
-              <div className="flex justify-between items-baseline flex-wrap gap-1">
-                <span className="font-semibold text-gray-900 text-sm break-words min-w-0">{e.position}</span>
-                <span className="text-xs text-gray-400 whitespace-nowrap shrink-0">{e.duration}</span>
-              </div>
-              <div className="text-xs text-indigo-600 mb-1 break-words">{e.company}{e.location?`, ${e.location}`:''}{e.employmentType?` · ${e.employmentType}`:''}</div>
-              {e.summary&&<p className="text-xs text-gray-600 mb-1 leading-relaxed break-words">{e.summary}</p>}
-              {e.responsibilities?.length>0&&<ul className="space-y-0.5">{e.responsibilities.map((r,j)=><li key={j} className="flex gap-2 text-gray-600 text-xs break-inside-avoid"><span className="text-indigo-300 shrink-0 mt-0.5">–</span><span className="break-words min-w-0">{r}</span></li>)}</ul>}
-            </div>
-          ))}</div>
-        </React.Fragment>) : null;
-      case 'skills': return skills?.length ? (
-        <React.Fragment key="skills">
-          <SH>Skills</SH>
-          <div className="flex flex-wrap gap-2">
-            {(Array.isArray(skills) ? skills : [skills]).map((s, i) => (
-              <span key={i} className="rounded-lg bg-indigo-50 px-3 py-1 text-indigo-700 text-xs break-words">{s}</span>
-            ))}
-          </div>
-        </React.Fragment>
-      ) : null;
-      case 'projects': return projects?.length ? (
-        <React.Fragment key="projects"><SH>Projects</SH>
-          <div className="space-y-3">{projects.map((p,i)=>(
+        <Card key="experience" accent={ACCENT} title="Experience">
+          <div className="space-y-2.5">{experience.map((e,i)=>(
             <div key={i} className="break-inside-avoid">
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-0.5">
-                <span className="font-semibold text-gray-900 text-sm break-words min-w-0">{p.name}</span>
-                {p.role&&<span className="text-xs text-gray-400 break-words">({p.role})</span>}
+              <div className="flex items-baseline justify-between gap-1 flex-wrap">
+                <span className="text-[11.5px] font-semibold text-gray-900 break-words min-w-0">{e.position}</span>
+                <span className="text-[9.5px] text-indigo-600 font-medium shrink-0 whitespace-nowrap">{e.duration}</span>
               </div>
-              {p.technologies&&<div className="text-xs text-indigo-500 mb-0.5 break-words">Tech: {p.technologies}</div>}
-              {(p.link||p.github)&&<div className="text-xs text-gray-400 mb-0.5 break-all">{[p.link,p.github].filter(Boolean).join('  ·  ')}</div>}
-              {p.description&&<p className="text-xs text-gray-600 leading-relaxed break-words">{p.description}</p>}
-              {p.highlights?.length>0&&<ul className="mt-0.5 space-y-0.5">{p.highlights.map((h,j)=><li key={j} className="flex gap-2 text-xs text-gray-600 break-inside-avoid"><span className="text-indigo-300 shrink-0 mt-0.5">–</span><span className="break-words min-w-0">{h}</span></li>)}</ul>}
+              <div className="text-[10.5px] text-gray-500 mb-0.5 break-words">{e.company}{e.location?` · ${e.location}`:''}{e.employmentType?` · ${e.employmentType}`:''}</div>
+              {e.summary&&<p className="text-[10.5px] text-gray-600 mb-0.5 leading-relaxed break-words">{e.summary}</p>}
+              {e.responsibilities?.length>0&&<ul className="space-y-1">{e.responsibilities.map((r,j)=><li key={j} className="flex gap-2 text-[10.5px] text-gray-600 leading-relaxed break-words break-inside-avoid"><span className="mt-[5px] w-1 h-1 shrink-0 rounded-full bg-indigo-600"></span><span className="break-words min-w-0">{r}</span></li>)}</ul>}
             </div>
           ))}</div>
-        </React.Fragment>) : null;
+        </Card>) : null;
+      case 'projects': return projects?.length ? (
+        <Card key="projects" accent={ACCENT} title="Projects">
+          <div className="space-y-2.5">{projects.map((p,i)=>(
+            <div key={i} className="break-inside-avoid">
+              <div className="flex items-baseline gap-x-2 flex-wrap"><span className="text-[11.5px] font-semibold text-gray-900 break-words min-w-0">{p.name}</span>{p.role&&<span className="text-[10px] text-gray-400 break-words">({p.role})</span>}</div>
+              {p.technologies&&<div className="text-[10.5px] text-indigo-600 mb-0.5 break-words">Tech: {p.technologies}</div>}
+              {(p.link||p.github)&&<div className="text-[9.5px] text-gray-400 mb-0.5 break-all">{[p.link,p.github].filter(Boolean).join(' · ')}</div>}
+              {p.description&&<p className="text-[10.5px] text-gray-600 leading-relaxed break-words">{p.description}</p>}
+            </div>
+          ))}</div>
+        </Card>) : null;
       case 'education': return education?.length ? (
-        <React.Fragment key="education"><SH>Education</SH>
+        <Card key="education" accent={ACCENT} title="Education">
           <div className="space-y-2">{education.map((e,i)=>(
             <div key={i} className="break-inside-avoid">
-              <div className="flex justify-between items-baseline flex-wrap gap-1">
-                <div className="min-w-0"><span className="font-semibold text-gray-900 text-sm break-words">{e.degree}</span>{e.field&&<span className="text-gray-500 text-sm break-words"> in {e.field}</span>}</div>
-                <span className="text-xs text-gray-400 whitespace-nowrap shrink-0">{e.year}</span>
-              </div>
-              {e.institution&&<div className="text-xs text-gray-500 break-words">{e.institution}</div>}
-              {e.gpa&&<div className="text-xs text-gray-400 break-words">Grade: {e.gpa}</div>}
-              {e.details&&<div className="text-xs text-gray-400 mt-0.5 leading-relaxed break-words">{e.details}</div>}
+              <div className="flex items-baseline justify-between gap-1 flex-wrap"><span className="text-[11.5px] font-semibold text-gray-900 break-words">{e.degree}</span><span className="text-[9.5px] text-indigo-600 font-medium shrink-0 whitespace-nowrap">{e.year}</span></div>
+              <div className="text-[10.5px] text-gray-500 break-words">{e.institution}</div>
+              {(e.gpa||e.details)&&<div className="text-[10px] text-gray-400 break-words">{[e.gpa,e.details].filter(Boolean).join(' — ')}</div>}
             </div>
           ))}</div>
-        </React.Fragment>) : null;
-      case 'achievements': return achievements?.length ? (<React.Fragment key="achievements"><SH>Achievements</SH><ul className="space-y-1">{achievements.map((a,i)=><li key={i} className="flex gap-2 text-xs text-gray-600 break-inside-avoid"><span className="text-indigo-300 shrink-0 mt-0.5">–</span><span className="break-words min-w-0">{a}</span></li>)}</ul></React.Fragment>) : null;
-      case 'languages': return languages?.length ? (<React.Fragment key="languages"><SH>Languages</SH><p className="text-xs text-gray-600 break-words">{languages.join('  ·  ')}</p></React.Fragment>) : null;
-      case 'certifications': return certifications?.length ? (<React.Fragment key="certifications"><SH>Certifications</SH><div className="space-y-1">{certifications.map((c,i)=><div key={i} className="text-xs text-gray-600 break-words break-inside-avoid"><span className="font-medium">{c.name}</span>{c.issuer&&<span className="text-gray-500"> — {c.issuer}</span>}{c.year&&<span className="text-gray-400"> ({c.year})</span>}</div>)}</div></React.Fragment>) : null;
-      default: return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]}/>;
+        </Card>) : null;
+      case 'certifications': return certifications?.length ? <Card key="certifications" accent={ACCENT} title="Certifications"><div className="space-y-0.5">{certifications.map((c,i)=><div key={i} className="text-[10.5px] text-gray-600 break-words break-inside-avoid">{c.name}{c.issuer?` — ${c.issuer}`:''}{c.year?` (${c.year})`:''}</div>)}</div></Card> : null;
+      case 'achievements': return achievements?.length ? <Card key="achievements" accent={ACCENT} title="Achievements"><ul className="space-y-1">{achievements.map((a,i)=><li key={i} className="flex gap-2 text-[10.5px] text-gray-600 leading-relaxed break-words break-inside-avoid"><span className="mt-[5px] w-1 h-1 shrink-0 rounded-full bg-indigo-600"></span><span className="break-words min-w-0">{a}</span></li>)}</ul></Card> : null;
+      case 'languages': return languages?.length ? <Card key="languages" accent={ACCENT} title="Languages"><p className="text-[10.5px] text-gray-600 break-words">{languages.join('  ·  ')}</p></Card> : null;
+      default: return null;
     }
   };
 
   const activeSections = (sectionsConfig||[]).filter((s)=>s.visible);
 
   return (
-    <div className="resume-template contemporary max-w-4xl mx-auto bg-white px-10 font-sans text-sm text-gray-800 overflow-hidden">
+    <div className="resume-template contemporary max-w-4xl mx-auto bg-white px-9 pt-3 font-sans overflow-hidden">
       {personalInfo&&(
-        <div className="mb-5">
-          <h1 className="text-2xl font-light tracking-tight text-gray-900 mb-0.5 break-words">{personalInfo.fullName}</h1>
-          {personalInfo.title&&<div className="text-sm text-indigo-600 mb-1.5 break-words">{personalInfo.title}</div>}
-          <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-gray-500">
+        <div className="mb-3 pb-2">
+          <h1 className="text-[24px] font-light tracking-tight text-gray-900 break-words">{personalInfo.fullName}</h1>
+          {personalInfo.title&&<div className="text-[11px] text-indigo-700 font-medium mt-0.5 break-words">{personalInfo.title}</div>}
+          <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-1.5 text-[9.5px] text-gray-500">
             {personalInfo.email&&<span className="break-all">{personalInfo.email}</span>}
             {personalInfo.phone&&<span className="break-words">{personalInfo.phone}</span>}
             {personalInfo.location&&<span className="break-words">{personalInfo.location}</span>}

@@ -1,36 +1,17 @@
-
-const Bul = ({ c, num }) => (
-  <li className="flex gap-1.5 break-inside-avoid">
-    <span className="text-gray-900 shrink-0 select-none font-bold">{num}.</span>
-    <span className="text-gray-700 break-words min-w-0">{c}</span>
-  </li>
-);
-
-const SH = ({ children }) => (
-  <div className="bg-gray-900 text-white px-2 py-0.5 uppercase text-[9px] tracking-widest mb-1.5 mt-3 first:mt-0 break-after-avoid">
-    {children}
-  </div>
-);
-
-const CustomBlock = ({ label, content }) => {
+const CustomBlock = ({ label, content, num }) => {
   if (!content) return null;
   const { mode, text, items } = content;
-  if (mode === 'bullets') {
-    if (!items || !items.filter(Boolean).length) return null;
-    return (
-      <div>
-        <SH>{label}</SH>
-        <ul className="space-y-0.5 pl-1">
-          {items.filter(Boolean).map((it, i) => <Bul key={i} c={it} num={i + 1} />)}
-        </ul>
-      </div>
-    );
-  }
-  if (!text || !text.trim()) return null;
   return (
-    <div>
-      <SH>{label}</SH>
-      <p className="text-gray-700 leading-relaxed break-words">{text}</p>
+    <div className="flex gap-3 mb-3 break-inside-avoid">
+      <div className="w-[10%] shrink-0 text-right pt-1">
+        <span className="inline-block w-6 text-center bg-gray-900 text-white text-[10px] font-bold">{num}</span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-900 border-b border-gray-300 pb-0.5 mb-1.5 break-after-avoid">{label}</h3>
+        {mode==='bullets'
+          ? (items?.filter(Boolean).length ? <ul className="space-y-0.5">{items.filter(Boolean).map((it,i)=><li key={i} className="text-[10px] text-gray-700 leading-relaxed break-words break-inside-avoid">{it}</li>)}</ul> : null)
+          : (text?.trim() ? <p className="text-[10px] text-gray-700 leading-relaxed break-words">{text}</p> : null)}
+      </div>
     </div>
   );
 };
@@ -41,134 +22,101 @@ export const ResearchTemplate = ({ data }) => {
     projects, certifications, achievements, languages, customSections,
   } = data;
 
-  const activeSections = (sectionsConfig || []).filter((s) => s.visible);
+  const SideNum = ({ n }) => (
+    <div className="w-[10%] shrink-0 text-right pt-1">
+      <span className="inline-block w-6 text-center bg-gray-900 text-white text-[10px] font-bold">{n}</span>
+    </div>
+  );
 
-  const renderSection = (sec) => {
-    if (sec.type === 'custom') {
-      return <CustomBlock key={sec.id} label={sec.label} content={(customSections || {})[sec.id]} />;
-    }
-    switch (sec.key) {
-      case 'basics': return null;
+  const Head = ({ children }) => (
+    <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-900 border-b border-gray-300 pb-0.5 mb-1.5 break-after-avoid">{children}</h3>
+  );
 
-      case 'summary':
-        if (!summary) return null;
-        return <div key="summary"><SH>Professional Summary</SH><p className="text-gray-700 leading-relaxed break-words">{summary}</p></div>;
+  const Frame = ({ n, title, children }) => (
+    <div className="flex gap-3 mb-3 break-inside-avoid">
+      <SideNum n={n} />
+      <div className="flex-1 min-w-0">
+        <Head>{title}</Head>
+        <div className="min-w-0 space-y-0.5">{children}</div>
+      </div>
+    </div>
+  );
 
-      case 'skills':
-        if (!(skills || []).length) return null;
-        return (
-          <div key="skills">
-            <SH>Skills</SH>
-            <div className="space-y-0.5">
-              {(skills || []).map((s, i) => <p key={i} className="break-words text-gray-700">{s}</p>)}
-            </div>
-          </div>
-        );
-
-      case 'experience':
-        if (!(experience || []).length) return null;
-        return (
-          <div key="experience"><SH>Work Experience</SH>
-            {(experience || []).map((e, i) => (
-              <div key={i} className="mb-2 break-inside-avoid">
-                <div className="flex justify-between gap-2">
-                  <span className="font-semibold break-words min-w-0">{e.position}{e.company ? ` — ${e.company}` : ''}</span>
-                  <span className="text-gray-500 shrink-0 whitespace-nowrap">{e.duration}</span>
-                </div>
-                {(e.location || e.employmentType) && <div className="text-gray-500 text-[9px]">{[e.location, e.employmentType].filter(Boolean).join(' · ')}</div>}
-                {e.summary && <p className="text-gray-600 mt-0.5 break-words">{e.summary}</p>}
-                {(e.responsibilities || []).filter(Boolean).length > 0 && <ul className="mt-1 space-y-0.5 pl-1">{(e.responsibilities || []).filter(Boolean).map((b, j) => <Bul key={j} c={b} num={j + 1} />)}</ul>}
-              </div>
-            ))}
-          </div>
-        );
-
-      case 'projects':
-        if (!(projects || []).length) return null;
-        return (
-          <div key="projects"><SH>Projects</SH>
-            {(projects || []).map((p, i) => (
-              <div key={i} className="mb-1.5 break-inside-avoid">
-                <div className="flex flex-wrap items-baseline gap-x-2">
-                  <span className="font-semibold break-words min-w-0">{p.name}</span>
-                  {p.role && <span className="text-gray-500 text-[9px] break-words">({p.role})</span>}
-                </div>
-                {p.technologies && <div className="text-gray-500 text-[9px] break-words">{p.technologies}</div>}
-                {(p.link || p.github) && <div className="text-gray-400 text-[9px] break-all">{[p.link, p.github].filter(Boolean).join(' · ')}</div>}
-                {p.description && <p className="text-gray-700 mt-0.5 break-words">{p.description}</p>}
-                {(p.highlights || []).filter(Boolean).length > 0 && <ul className="mt-0.5 space-y-0.5 pl-1">{(p.highlights || []).filter(Boolean).map((h, j) => <Bul key={j} c={h} num={j + 1} />)}</ul>}
-              </div>
-            ))}
-          </div>
-        );
-
-      case 'education':
-        if (!(education || []).length) return null;
-        return (
-          <div key="education"><SH>Education</SH>
-            {(education || []).map((e, i) => (
-              <div key={i} className="mb-1.5 break-inside-avoid">
-                <div className="flex justify-between gap-2">
-                  <div className="min-w-0">
-                    <span className="font-semibold">{e.degree}</span>
-                    {e.field && <span className="text-gray-600"> in {e.field}</span>}
-                    {e.institution && <div className="text-gray-500">{e.institution}</div>}
-                    {e.gpa && <div className="text-gray-400 text-[9px]">Grade: {e.gpa}</div>}
-                    {e.details && <div className="text-gray-400 text-[9px] mt-0.5">{e.details}</div>}
-                  </div>
-                  <span className="text-gray-500 shrink-0 whitespace-nowrap">{e.year}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        );
-
-      case 'certifications':
-        if (!(certifications || []).length) return null;
-        return (
-          <div key="certifications"><SH>Certifications</SH>
-            {(certifications || []).map((c, i) => (
-              <div key={i} className="break-words break-inside-avoid"><span className="font-medium break-words">{c.name}</span>{c.issuer && <span className="text-gray-500"> — {c.issuer}</span>}{c.year && <span className="text-gray-400"> ({c.year})</span>}</div>
-            ))}
-          </div>
-        );
-
-      case 'achievements':
-        if (!(achievements || []).length) return null;
-        return <div key="achievements"><SH>Achievements</SH><ul className="space-y-0.5 pl-1">{(achievements || []).map((a, i) => <Bul key={i} c={a} num={i + 1} />)}</ul></div>;
-
-      case 'languages':
-        if (!(languages || []).length) return null;
-        return <div key="languages"><SH>Languages</SH><p className="break-words">{(languages || []).join(' · ')}</p></div>;
-
-      default:
-        return <CustomBlock key={sec.id} label={sec.label} content={(customSections || {})[sec.id]} />;
-    }
+  const cases = {
+    summary: summary ? <p className="text-[10px] text-gray-700 leading-relaxed break-words">{summary}</p> : null,
+    experience: experience?.length ? experience.map((e,i)=>(
+      <div key={i} className="pb-1.5 break-inside-avoid">
+        <div className="flex items-baseline justify-between gap-2 flex-wrap">
+          <span className="text-[10.5px] font-bold text-gray-900 break-words min-w-0">{e.position}</span>
+          <span className="text-[9px] text-gray-400 whitespace-nowrap shrink-0">{e.duration}</span>
+        </div>
+        <div className="text-[9.5px] text-gray-500 break-words">{e.company}{e.location?` · ${e.location}`:''}{e.employmentType?` · ${e.employmentType}`:''}</div>
+        {e.summary && <p className="text-[10px] text-gray-700 leading-relaxed mt-0.5 break-words">{e.summary}</p>}
+        {e.responsibilities?.length>0 && <ul className="pl-3 space-y-0.5">{e.responsibilities.map((r,j)=><li key={j} className="text-[10px] text-gray-700 leading-relaxed break-words break-inside-avoid">{j+1}. {r}</li>)}</ul>}
+      </div>
+    )) : null,
+    education: education?.length ? education.map((e,i)=>(
+      <div key={i} className="pb-1 break-inside-avoid">
+        <div className="flex items-baseline justify-between gap-2 flex-wrap">
+          <span className="text-[10.5px] font-bold text-gray-900 break-words">{e.degree}</span>
+          <span className="text-[9px] text-gray-400 shrink-0 whitespace-nowrap">{e.year}</span>
+        </div>
+        <div className="text-[9.5px] text-gray-500 break-words">{e.institution}</div>
+        {(e.gpa||e.details) && <div className="text-[9px] text-gray-500 break-words">{[e.gpa,e.details].filter(Boolean).join(' — ')}</div>}
+      </div>
+    )) : null,
+    projects: projects?.length ? projects.map((p,i)=>(
+      <div key={i} className="pb-1.5 break-inside-avoid">
+        <div className="flex items-baseline gap-x-2 flex-wrap">
+          <span className="text-[10.5px] font-bold text-gray-900 break-words min-w-0">{p.name}</span>
+          {p.role&&<span className="text-[9px] text-gray-400 break-words">({p.role})</span>}
+        </div>
+        {p.technologies && <div className="text-[9.5px] text-gray-500 break-words">Tech: {p.technologies}</div>}
+        {(p.link||p.github) && <div className="text-[8.5px] break-all">{[p.link,p.github].filter(Boolean).join(' · ')}</div>}
+        {p.description && <p className="text-[10px] text-gray-700 leading-relaxed break-words">{p.description}</p>}
+      </div>
+    )) : null,
+    skills: skills?.length ? <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">{ (Array.isArray(skills)?skills:[skills]).map((s,i)=><div key={i} className="text-[10px] text-gray-700 break-words break-inside-avoid">{s}</div>)}</div> : null,
+    certifications: certifications?.length ? certifications.map((c,i)=><div key={i} className="text-[10px] text-gray-700 break-words break-inside-avoid">{c.name}{c.issuer?` — ${c.issuer}`:''}{c.year?` (${c.year})`:''}</div>) : null,
+    achievements: achievements?.length ? achievements.map((a,i)=><div key={i} className="text-[10px] text-gray-700 leading-relaxed break-words break-inside-avoid">{i+1}. {a}</div>) : null,
+    languages: languages?.length ? <p className="text-[10px] text-gray-700 break-words">{languages.join('  ·  ')}</p> : null,
+  };
+  const titles = {
+    summary:'Summary', experience:'Experience', education:'Education',
+    projects:'Publications & Projects', skills:'Skills / Methods',
+    certifications:'Certifications', achievements:'Achievements', languages:'Languages',
   };
 
+  const ordered = (sectionsConfig||[]).filter((s)=>s.visible).sort((a,b)=>a.order-b.order).filter((s)=>s.key!=='basics');
+
+  let idx = 0;
+  const rendered = ordered.map((sec)=>{
+    if (sec.type === 'custom') {
+      const c=(customSections||{})[sec.id];
+      return c ? <CustomBlock key={sec.id} label={sec.label} content={c} num={String(++idx).padStart(2,'0')}/> : null;
+    }
+    const body = cases[sec.key];
+    if (!body) return null;
+    return <Frame key={sec.key} n={String(++idx).padStart(2,'0')} title={titles[sec.key]}>{body}</Frame>;
+  });
+
   return (
-    <div className="resume-template research font-sans text-[10px] leading-tight text-gray-900 bg-white px-6 space-y-3 overflow-hidden">
-      {personalInfo && (
-        <div className="flex justify-between items-start border-b border-gray-300 pb-3 mb-3">
-          <div className="min-w-0">
-            <div className="text-lg font-bold tracking-wide uppercase break-words">{personalInfo.fullName}</div>
-            {personalInfo.title && <div className="text-[10px] text-gray-600 mt-0.5 break-words">{personalInfo.title}</div>}
-          </div>
-          <div className="text-right shrink-0 ml-4">
-            <div className="flex flex-wrap justify-end gap-x-3 gap-y-0.5 text-gray-500">
-              {personalInfo.email && <span className="break-all">{personalInfo.email}</span>}
-              {personalInfo.phone && <span className="break-words">{personalInfo.phone}</span>}
-              {personalInfo.location && <span className="break-words">{personalInfo.location}</span>}
-            </div>
-            <div className="flex flex-wrap justify-end gap-x-3 gap-y-0.5 mt-0.5 text-gray-500">
-              {personalInfo.linkedin && <span className="break-all">{personalInfo.linkedin}</span>}
-              {personalInfo.github && <span className="break-all">{personalInfo.github}</span>}
-              {personalInfo.portfolio && <span className="break-all">{personalInfo.portfolio}</span>}
-            </div>
+    <div className="resume-template research max-w-4xl mx-auto bg-white px-8 pt-2 font-sans overflow-hidden">
+      {personalInfo&&(
+        <div className="mb-3 pb-2 border-b-2 border-gray-900">
+          <h1 className="text-[20px] font-bold text-gray-900 break-words">{personalInfo.fullName}</h1>
+          {personalInfo.title&&<div className="text-[11px] text-gray-600 mt-0.5 break-words">{personalInfo.title}</div>}
+          <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-1 text-[9.5px] text-gray-500">
+            {personalInfo.email&&<span className="break-all">{personalInfo.email}</span>}
+            {personalInfo.phone&&<span className="break-words">{personalInfo.phone}</span>}
+            {personalInfo.location&&<span className="break-words">{personalInfo.location}</span>}
+            {personalInfo.linkedin&&<span className="break-all">{personalInfo.linkedin}</span>}
+            {personalInfo.github&&<span className="break-all">{personalInfo.github}</span>}
+            {personalInfo.portfolio&&<span className="break-all">{personalInfo.portfolio}</span>}
           </div>
         </div>
       )}
-      {activeSections.filter((s) => s.key !== 'basics').map((sec) => renderSection(sec))}
+      <div className="space-y-1">{rendered}</div>
     </div>
   );
 };

@@ -1,38 +1,13 @@
-
-const Bul = ({ c }) => (
-  <li className="flex gap-1.5 break-inside-avoid">
-    <span className="text-gray-400 shrink-0 select-none">•</span>
-    <span className="text-gray-700 break-words min-w-0">{c}</span>
-  </li>
-);
-
-const SH = ({ children }) => (
-  <div className="text-[9px] font-bold uppercase tracking-widest pb-0.5 mb-1.5 border-b-2 border-gray-800 mb-1 border-t border-t-gray-800 pt-1 text-gray-500 break-after-avoid italic">
-    {children}
-  </div>
-);
-
 const CustomBlock = ({ label, content }) => {
   if (!content) return null;
   const { mode, text, items } = content;
+  const H = <h2 className="text-center text-[9px] italic uppercase tracking-[0.14em] text-gray-600 border-t border-gray-800 border-b-2 border-gray-800 py-[1px] mb-1 mt-3 break-after-avoid">{label}</h2>;
   if (mode === 'bullets') {
-    if (!items || !items.filter(Boolean).length) return null;
-    return (
-      <div>
-        <SH>{label}</SH>
-        <ul className="space-y-0.5 pl-1">
-          {items.filter(Boolean).map((it, i) => <Bul key={i} c={it} />)}
-        </ul>
-      </div>
-    );
+    if (!items?.filter(Boolean).length) return null;
+    return <div>{H}<ul className="space-y-0.5 text-center">{items.filter(Boolean).map((it,i)=><li key={i} className="text-[10px] leading-relaxed break-words break-inside-avoid">{it}</li>)}</ul></div>;
   }
-  if (!text || !text.trim()) return null;
-  return (
-    <div>
-      <SH>{label}</SH>
-      <p className="text-gray-700 leading-relaxed break-words font-serif italic">{text}</p>
-    </div>
-  );
+  if (!text?.trim()) return null;
+  return <div>{H}<p className="text-[10px] text-center leading-relaxed break-words">{text}</p></div>;
 };
 
 export const AcademicTemplate = ({ data }) => {
@@ -41,128 +16,63 @@ export const AcademicTemplate = ({ data }) => {
     projects, certifications, achievements, languages, customSections,
   } = data;
 
-  const activeSections = (sectionsConfig || []).filter((s) => s.visible);
+  const H = ({children}) => <h2 className="text-center text-[9px] italic uppercase tracking-[0.14em] text-gray-600 border-t border-gray-800 border-b-2 border-gray-800 py-[1px] mb-1 mt-3 break-after-avoid">{children}</h2>;
 
   const renderSection = (sec) => {
-    if (sec.type === 'custom') {
-      return <CustomBlock key={sec.id} label={sec.label} content={(customSections || {})[sec.id]} />;
-    }
+    if (sec.type === 'custom') return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]}/>;
     switch (sec.key) {
       case 'basics': return null;
-
-      case 'summary':
-        if (!summary) return null;
-        return <div key="summary"><SH>Professional Summary</SH><p className="text-gray-700 leading-relaxed break-words font-serif italic">{summary}</p></div>;
-
-      case 'skills':
-        if (!(skills || []).length) return null;
-        return (
-          <div key="skills">
-            <SH>Skills</SH>
-            <div className="space-y-0.5 font-serif">
-              {(skills || []).map((s, i) => <p key={i} className="break-words text-gray-700 italic">{s}</p>)}
-            </div>
+      case 'summary': return summary ? (<div key="summary" className="mb-2"><H>Summary</H><p className="text-center text-[10px] text-gray-800 leading-tight break-words">{summary}</p></div>) : null;
+      case 'experience': return experience?.length ? (<div key="experience" className="mb-2"><H>Experience</H>{experience.map((e,i)=>(
+        <div key={i} className="mb-1.5 break-inside-avoid">
+          <div className="flex items-baseline justify-between gap-2 flex-wrap">
+            <span className="text-[10px] font-bold text-gray-900 break-words min-w-0">{e.position}</span>
+            <span className="text-[9px] text-gray-500 italic shrink-0 whitespace-nowrap">{e.duration}</span>
           </div>
-        );
-
-      case 'experience':
-        if (!(experience || []).length) return null;
-        return (
-          <div key="experience"><SH>Work Experience</SH>
-            {(experience || []).map((e, i) => (
-              <div key={i} className="mb-2 break-inside-avoid font-serif">
-                <div className="flex justify-between gap-2">
-                  <span className="font-semibold break-words min-w-0 italic">{e.position}{e.company ? ` — ${e.company}` : ''}</span>
-                  <span className="text-gray-500 shrink-0 whitespace-nowrap">{e.duration}</span>
-                </div>
-                {(e.location || e.employmentType) && <div className="text-gray-500 text-[9px] italic">{[e.location, e.employmentType].filter(Boolean).join(' · ')}</div>}
-                {e.summary && <p className="text-gray-600 mt-0.5 break-words italic">{e.summary}</p>}
-                {(e.responsibilities || []).filter(Boolean).length > 0 && <ul className="mt-1 space-y-0.5 pl-1">{(e.responsibilities || []).filter(Boolean).map((b, j) => <Bul key={j} c={b} />)}</ul>}
-              </div>
-            ))}
-          </div>
-        );
-
-      case 'projects':
-        if (!(projects || []).length) return null;
-        return (
-          <div key="projects"><SH>Projects</SH>
-            {(projects || []).map((p, i) => (
-              <div key={i} className="mb-1.5 break-inside-avoid font-serif">
-                <div className="flex flex-wrap items-baseline gap-x-2">
-                  <span className="font-semibold break-words min-w-0 italic">{p.name}</span>
-                  {p.role && <span className="text-gray-500 text-[9px] break-words">({p.role})</span>}
-                </div>
-                {p.technologies && <div className="text-gray-500 text-[9px] break-words italic">{p.technologies}</div>}
-                {(p.link || p.github) && <div className="text-gray-400 text-[9px] break-all">{[p.link, p.github].filter(Boolean).join(' · ')}</div>}
-                {p.description && <p className="text-gray-700 mt-0.5 break-words italic">{p.description}</p>}
-                {(p.highlights || []).filter(Boolean).length > 0 && <ul className="mt-0.5 space-y-0.5 pl-1">{(p.highlights || []).filter(Boolean).map((h, j) => <Bul key={j} c={h} />)}</ul>}
-              </div>
-            ))}
-          </div>
-        );
-
-      case 'education':
-        if (!(education || []).length) return null;
-        return (
-          <div key="education"><SH>Education</SH>
-            {(education || []).map((e, i) => (
-              <div key={i} className="mb-1.5 break-inside-avoid font-serif">
-                <div className="flex justify-between gap-2">
-                  <div className="min-w-0">
-                    <span className="font-semibold italic">{e.degree}</span>
-                    {e.field && <span className="text-gray-600 italic"> in {e.field}</span>}
-                    {e.institution && <div className="text-gray-500 italic">{e.institution}</div>}
-                    {e.gpa && <div className="text-gray-400 text-[9px]">Grade: {e.gpa}</div>}
-                    {e.details && <div className="text-gray-400 text-[9px] mt-0.5 italic">{e.details}</div>}
-                  </div>
-                  <span className="text-gray-500 shrink-0 whitespace-nowrap">{e.year}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        );
-
-      case 'certifications':
-        if (!(certifications || []).length) return null;
-        return (
-          <div key="certifications"><SH>Certifications</SH>
-            {(certifications || []).map((c, i) => (
-              <div key={i} className="break-words break-inside-avoid font-serif"><span className="font-medium break-words italic">{c.name}</span>{c.issuer && <span className="text-gray-500"> — {c.issuer}</span>}{c.year && <span className="text-gray-400"> ({c.year})</span>}</div>
-            ))}
-          </div>
-        );
-
-      case 'achievements':
-        if (!(achievements || []).length) return null;
-        return <div key="achievements"><SH>Achievements</SH><ul className="space-y-0.5 pl-1 font-serif">{(achievements || []).map((a, i) => <Bul key={i} c={a} />)}</ul></div>;
-
-      case 'languages':
-        if (!(languages || []).length) return null;
-        return <div key="languages"><SH>Languages</SH><p className="break-words font-serif italic">{(languages || []).join(' · ')}</p></div>;
-
-      default:
-        return <CustomBlock key={sec.id} label={sec.label} content={(customSections || {})[sec.id]} />;
+          <div className="text-[9.5px] italic text-gray-600 break-words">{e.company}{e.location?`, ${e.location}`:''}{e.employmentType?` (${e.employmentType})`:''}</div>
+          {e.summary&&<p className="text-[10px] text-gray-800 leading-tight mt-0.5 break-words">{e.summary}</p>}
+          {e.responsibilities?.length>0&&<div className="pl-3">{e.responsibilities.map((r,j)=><div key={j} className="text-[10px] text-gray-800 leading-tight break-words break-inside-avoid">• {r}</div>)}</div>}
+        </div>))}</div>) : null;
+      case 'education': return education?.length ? (<div key="education" className="mb-2"><H>Education</H>{education.map((e,i)=>(
+        <div key={i} className="mb-1 break-inside-avoid">
+          <div className="flex items-baseline justify-between gap-2 flex-wrap"><span className="text-[10px] font-bold text-gray-900 break-words">{e.degree}</span><span className="text-[9px] italic text-gray-500 shrink-0 whitespace-nowrap">{e.year}</span></div>
+          <div className="text-[9.5px] italic text-gray-600 break-words">{e.institution}</div>
+          {(e.gpa||e.details)&&<div className="text-[9px] text-gray-600 break-words">{[(e.details||''),e.gpa].filter(Boolean).join(' — ')}</div>}
+        </div>))}</div>) : null;
+      case 'projects': return projects?.length ? (<div key="projects" className="mb-2"><H>Research & Projects</H>{projects.map((p,i)=>(
+        <div key={i} className="mb-1.5 break-inside-avoid">
+          <div className="flex items-baseline gap-x-2 flex-wrap"><span className="text-[10px] font-bold text-gray-900 break-words min-w-0">{p.name}</span>{p.role&&<span className="text-[9px] italic text-gray-500 break-words">({p.role})</span>}</div>
+          {p.technologies&&<div className="text-[9px] italic text-gray-600 break-words">Tech: {p.technologies}</div>}
+          {(p.link||p.github)&&<div className="text-[8.5px] break-all">{[p.link,p.github].filter(Boolean).join(' · ')}</div>}
+          {p.description&&<p className="text-[10px] text-gray-800 leading-tight break-words">{p.description}</p>}
+        </div>))}</div>) : null;
+      case 'skills': return skills?.length ? (<div key="skills" className="mb-2"><H>Research Interests / Skills</H><p className="text-center text-[10px] text-gray-800 leading-tight break-words">{(Array.isArray(skills)?skills:[skills]).join('  •  ')}</p></div>) : null;
+      case 'certifications': return certifications?.length ? (<div key="certifications" className="mb-2"><H>Certifications</H><div className="space-y-0.5 text-center">{certifications.map((c,i)=><div key={i} className="text-[10px] text-gray-800 break-words break-inside-avoid">{c.name}{c.issuer?` — ${c.issuer}`:''}{c.year?` (${c.year})`:''}</div>)}</div></div>) : null;
+      case 'achievements': return achievements?.length ? (<div key="achievements" className="mb-2"><H>Achievements</H><ul className="space-y-0.5">{achievements.map((a,i)=><li key={i} className="text-[10px] text-gray-800 leading-tight break-words break-inside-avoid">• {a}</li>)}</ul></div>) : null;
+      case 'languages': return languages?.length ? (<div key="languages" className="mb-2"><H>Languages</H><p className="text-center text-[10px] text-gray-800 break-words">{languages.join('  ·  ')}</p></div>) : null;
+      default: return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]}/>;
     }
   };
 
+  const activeSections = (sectionsConfig||[]).filter((s)=>s.visible);
+
   return (
-    <div className="resume-template academic font-serif text-[10px] leading-tight text-gray-900 bg-white px-6 space-y-3 overflow-hidden">
-      <div className="text-center border-b-2 border-gray-800 pb-3">
-        <div className="text-lg font-bold tracking-wide uppercase break-words">{personalInfo?.fullName || 'Your Name'}</div>
-        {personalInfo?.title && <div className="text-[10px] text-gray-600 mt-0.5 break-words italic">{personalInfo.title}</div>}
-        <div className="flex flex-wrap justify-center gap-x-3 gap-y-0.5 mt-1 text-gray-500">
-          {personalInfo?.email && <span className="break-all">{personalInfo.email}</span>}
-          {personalInfo?.phone && <span className="break-words">{personalInfo.phone}</span>}
-          {personalInfo?.location && <span className="break-words">{personalInfo.location}</span>}
+    <div className="resume-template academic max-w-4xl mx-auto bg-white px-7 py-1 font-serif text-gray-900 overflow-hidden">
+      {personalInfo&&(
+        <div className="text-center mb-2 pb-2 border-b-2 border-gray-800">
+          <h1 className="text-[18px] font-bold uppercase tracking-[0.12em] break-words">{personalInfo.fullName}</h1>
+          {personalInfo.title&&<div className="text-[11px] italic text-gray-700 break-words">{personalInfo.title}</div>}
+          <div className="flex flex-wrap justify-center gap-x-3 gap-y-0.5 mt-1 text-[9px] text-gray-600">
+            {personalInfo.email&&<span className="break-all">{personalInfo.email}</span>}
+            {personalInfo.phone&&<span className="break-words">{personalInfo.phone}</span>}
+            {personalInfo.location&&<span className="break-words">{personalInfo.location}</span>}
+            {personalInfo.linkedin&&<span className="break-all">{personalInfo.linkedin}</span>}
+            {personalInfo.github&&<span className="break-all">{personalInfo.github}</span>}
+            {personalInfo.portfolio&&<span className="break-all">{personalInfo.portfolio}</span>}
+          </div>
         </div>
-        <div className="flex flex-wrap justify-center gap-x-3 gap-y-0.5 mt-0.5 text-gray-500">
-          {personalInfo?.linkedin && <span className="break-all">{personalInfo.linkedin}</span>}
-          {personalInfo?.github && <span className="break-all">{personalInfo.github}</span>}
-          {personalInfo?.portfolio && <span className="break-all">{personalInfo.portfolio}</span>}
-        </div>
-      </div>
-      {activeSections.filter((s) => s.key !== 'basics').map((sec) => renderSection(sec))}
+      )}
+      {activeSections.filter((s)=>s.key!=='basics').map((sec)=>renderSection(sec))}
     </div>
   );
 };

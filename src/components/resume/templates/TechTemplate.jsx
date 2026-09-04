@@ -1,147 +1,88 @@
-
-/* Custom section block shared by all external templates */
-const CustomBlock = ({ label, content, headingClass, bodyClass, bulletClass }) => {
+const CustomBlock = ({ label, content }) => {
   if (!content) return null;
   const { mode, text, items } = content;
+  const SH = ({children}) => <h2 className="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-800 mt-3 mb-1.5 break-after-avoid">▸ {children}</h2>;
   if (mode === 'bullets') {
-    if (!items || !items.filter(Boolean).length) return null;
-    return (
-      <div className="mb-6">
-        <h2 className={headingClass}>{label}</h2>
-        <ul className="space-y-1">
-          {items.filter(Boolean).map((it, i) => (
-            <li key={i} className={`flex items-start break-inside-avoid ${bodyClass}`}>
-              <span className={`mr-2 shrink-0 ${bulletClass}`}>▸</span>
-              <span className="leading-relaxed break-words min-w-0 font-mono text-xs">{it}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
+    if (!items?.filter(Boolean).length) return null;
+    return <div><SH>{label}</SH><ul className="space-y-0.5">{items.filter(Boolean).map((it,i)=><li key={i} className="text-[10.5px] text-gray-600 leading-relaxed break-words break-inside-avoid">$ {it}</li>)}</ul></div>;
   }
-  if (!text || !text.trim()) return null;
-  return (
-    <div className="mb-6">
-      <h2 className={headingClass}>{label}</h2>
-      <p className={`${bodyClass} leading-relaxed break-words`}>{text}</p>
-    </div>
-  );
+  if (!text?.trim()) return null;
+  return <div><SH>{label}</SH><p className="text-[10.5px] text-gray-600 leading-relaxed break-words">{text}</p></div>;
 };
 
 export const TechTemplate = ({ data }) => {
   const {
-    sectionsConfig,
-    personalInfo, summary, experience, education, skills,
+    sectionsConfig, personalInfo, summary, experience, education, skills,
     projects, certifications, achievements, languages, customSections,
   } = data;
 
-  const H = 'text-base font-bold text-gray-900 mb-2 pb-1 border-b border-gray-300 font-mono uppercase tracking-[0.2em] break-after-avoid';
-  const B = 'text-gray-700 text-sm';
-  const BL = 'text-gray-400';
+  const SH = ({children}) => <h2 className="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-800 mt-3 mb-1.5 break-after-avoid">▸ {children}</h2>;
 
   const renderSection = (sec) => {
-    if (sec.type === 'custom') {
-      return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]} headingClass={H} bodyClass={B} bulletClass={BL}/>;
-    }
+    if (sec.type === 'custom') return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]}/>;
     switch (sec.key) {
       case 'basics': return null;
-      case 'summary': return summary ? (
-        <div key="summary" className="mb-6"><h2 className={H}>Summary</h2><p className={`${B} leading-relaxed break-words`}>{summary}</p></div>
-      ) : null;
-      case 'experience': return experience?.length ? (
-        <div key="experience" className="mb-6">
-          <h2 className={H}>Experience</h2>
-          {experience.map((exp,i)=>(
-            <div key={i} className="mb-5 break-inside-avoid">
-              <div className="flex justify-between items-start flex-wrap gap-1 mb-1">
-                <h3 className="font-bold text-gray-900 font-mono text-sm break-words min-w-0">{exp.position}</h3>
-                <span className="text-sm text-gray-500 whitespace-nowrap shrink-0">{exp.duration}</span>
-              </div>
-              <div className="text-sm text-gray-700 mb-1 break-words">{exp.company}{exp.location?` · ${exp.location}`:''}{exp.employmentType?` · ${exp.employmentType}`:''}</div>
-              {exp.summary&&<p className="text-sm text-gray-600 mb-1 leading-relaxed break-words">{exp.summary}</p>}
-              {exp.responsibilities?.length>0&&<ul className="list-disc list-inside space-y-1 text-gray-700 text-sm">{exp.responsibilities.map((r,j)=><li key={j} className="leading-relaxed break-words break-inside-avoid">{r}</li>)}</ul>}
-            </div>
-          ))}
-        </div>
-      ) : null;
-      case 'projects': return projects?.length ? (
-        <div key="projects" className="mb-6">
-          <h2 className={H}>Projects</h2>
-          {projects.map((p,i)=>(
-            <div key={i} className="mb-4 break-inside-avoid">
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-0.5">
-                <h3 className="font-bold text-gray-900 font-mono text-sm break-words min-w-0">{p.name}</h3>
-                {p.role&&<span className="text-sm text-gray-500 break-words">({p.role})</span>}
-              </div>
-              {p.technologies&&<div className="text-sm text-gray-600 mb-0.5 break-words font-mono text-xs">Tech: {p.technologies}</div>}
-              {(p.link||p.github)&&<div className="text-xs text-gray-400 mb-0.5 break-all">{[p.link,p.github].filter(Boolean).join('  ·  ')}</div>}
-              {p.description&&<p className="text-gray-700 text-sm leading-relaxed break-words">{p.description}</p>}
-              {p.highlights?.length>0&&<ul className="list-disc list-inside mt-1 space-y-1 text-gray-700 text-sm">{p.highlights.map((h,j)=><li key={j} className="break-words break-inside-avoid">{h}</li>)}</ul>}
-            </div>
-          ))}
-        </div>
-      ) : null;
-      case 'education': return education?.length ? (
-        <div key="education" className="mb-6">
-          <h2 className={H}>Education</h2>
-          {education.map((e,i)=>(
-            <div key={i} className="mb-3 break-inside-avoid">
-              <div className="flex justify-between items-start flex-wrap gap-1">
-                <div className="min-w-0">
-                  <h3 className="font-bold text-gray-900 font-mono text-sm break-words">{e.degree}{e.field?` in ${e.field}`:''}</h3>
-                  <div className="text-gray-700 text-sm break-words">{e.institution}</div>
-                  {e.gpa&&<div className="text-xs text-gray-500 break-words">Grade: {e.gpa}</div>}
-                  {e.details&&<div className="text-xs text-gray-500 mt-0.5 break-words">{e.details}</div>}
-                </div>
-                <span className="text-sm text-gray-500 whitespace-nowrap shrink-0">{e.year}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : null;
-      case 'skills': return skills?.length ? (
-        <div key="skills" className="mb-6">
-          <h2 className={H}>Skills</h2>
-          <div className="grid grid-cols-2 gap-x-4">
-            {(Array.isArray(skills) ? skills : [skills]).map((s, i) => (
-              <p key={i} className="text-gray-700 text-xs font-mono break-words">{s}</p>
-            ))}
+      case 'summary': return summary ? <div key="summary" className="mb-2"><SH>profile</SH><p className="text-[10.5px] text-gray-600 leading-relaxed break-words">{summary}</p></div> : null;
+      case 'skills': return skills?.length ? (<div key="skills" className="mb-2"><SH>skills</SH><div className="grid gap-x-4 gap-y-0.5 px-1 grid-cols-3">{(Array.isArray(skills)?skills:[skills]).map((s,i)=><span key={i} className="text-[10.5px] text-gray-700 break-words break-inside-avoid">{s}</span>)}</div></div>) : null;
+      case 'experience': return experience?.length ? (<div key="experience" className="mb-2"><SH>experience //</SH>{experience.map((e,i)=>(
+        <div key={i} className="mb-3 break-inside-avoid">
+          <div className="flex items-baseline justify-between gap-1 flex-wrap">
+            <span className="text-[11.5px] font-bold text-gray-900 break-words min-w-0">{e.position} <span className="text-emerald-700 font-medium">@ {e.company}</span></span>
+            <span className="text-[10px] text-gray-400 whitespace-nowrap shrink-0">{e.duration}</span>
           </div>
-        </div>
-      ) : null;
-      case 'achievements': return achievements?.length ? (
-        <div key="achievements" className="mb-6"><h2 className={H}>Achievements</h2><ul className="space-y-1.5">{achievements.map((a,i)=><li key={i} className={`flex items-start break-inside-avoid ${B}`}><span className={`font-bold mr-2 shrink-0 ${BL}`}>▸</span><span className="leading-relaxed break-words min-w-0">{a}</span></li>)}</ul></div>
-      ) : null;
-      case 'languages': return languages?.length ? (
-        <div key="languages" className="mb-6"><h2 className={H}>Languages</h2><div className="text-gray-700 text-sm break-words">{languages.join(' · ')}</div></div>
-      ) : null;
-      case 'certifications': return certifications?.length ? (
-        <div key="certifications" className="mb-6"><h2 className={H}>Certifications</h2>{certifications.map((c,i)=><div key={i} className="mb-1.5 text-sm text-gray-700 break-words"><span className="font-medium">{c.name}</span>{c.issuer&&<span className="text-gray-600"> — {c.issuer}</span>}{c.year&&<span className="text-gray-500"> ({c.year})</span>}{c.credentialUrl&&<span className="block text-xs text-gray-400 break-all">{c.credentialUrl}</span>}</div>)}</div>
-      ) : null;
-      default:
-        return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]} headingClass={H} bodyClass={B} bulletClass={BL}/>;
+          <div className="text-[10px] text-gray-500 mb-0.5 break-words">{e.location?`${e.location} `:''}{e.employmentType?`· ${e.employmentType}`:''}</div>
+          {e.summary&&<p className="text-[10.5px] text-gray-600 mb-0.5 leading-relaxed break-words">{e.summary}</p>}
+          {e.responsibilities?.length>0&&<ul className="space-y-0.5">{e.responsibilities.map((r,j)=><li key={j} className="text-[10.5px] text-gray-600 leading-relaxed break-words break-inside-avoid"><span className="text-emerald-700">$ </span>{r}</li>)}</ul>}
+        </div>))}</div>) : null;
+      case 'projects': return projects?.length ? (<div key="projects" className="mb-2"><SH>projects //</SH>{projects.map((p,i)=>(
+        <div key={i} className="mb-2.5 break-inside-avoid">
+          <div className="flex items-baseline gap-x-2 flex-wrap"><span className="text-[11.5px] font-bold text-gray-900 break-words min-w-0">{p.name}</span>{p.role&&<span className="text-[10px] text-gray-400 break-words">({p.role})</span>}</div>
+          {p.technologies&&<div className="text-[10.5px] text-emerald-700 mb-0.5 break-words">{`// ${p.technologies}`}</div>}
+          {(p.link||p.github)&&<div className="text-[9.5px] text-gray-400 mb-0.5 break-all">{[p.link,p.github].filter(Boolean).join(' · ')}</div>}
+          {p.description&&<p className="text-[10.5px] text-gray-600 leading-relaxed break-words">{p.description}</p>}
+        </div>))}</div>) : null;
+      case 'education': return education?.length ? (<div key="education" className="mb-2"><SH>edu</SH>{education.map((e,i)=>(
+        <div key={i} className="mb-2 break-inside-avoid">
+          <div className="flex items-baseline justify-between gap-1 flex-wrap"><span className="text-[11px] font-bold text-gray-900 break-words">{e.degree}</span><span className="text-[10px] text-gray-400 shrink-0 whitespace-nowrap">{e.year}</span></div>
+          <div className="text-[10.5px] text-emerald-700 font-medium break-words">{e.institution}</div>
+          {(e.gpa||e.details)&&<div className="text-[10px] text-gray-500 break-words">{[e.gpa,e.details].filter(Boolean).join(' — ')}</div>}
+        </div>))}</div>) : null;
+      case 'certifications': return certifications?.length ? (<div key="certifications" className="mb-2"><SH>certs</SH><div className="space-y-0.5">{certifications.map((c,i)=><div key={i} className="text-[10.5px] text-gray-600 break-words break-inside-avoid">{c.name}{c.issuer?` — ${c.issuer}`:''}{c.year?` (${c.year})`:''}</div>)}</div></div>) : null;
+      case 'achievements': return achievements?.length ? (<div key="achievements" className="mb-2"><SH>achievements</SH><ul className="space-y-0.5">{achievements.map((a,i)=><li key={i} className="text-[10.5px] text-gray-600 leading-relaxed break-words break-inside-avoid"><span className="text-emerald-700">$ </span>{a}</li>)}</ul></div>) : null;
+      case 'languages': return languages?.length ? (<div key="languages" className="mb-2"><SH>langs</SH><p className="text-[10.5px] text-gray-600 break-words">{languages.join('  ·  ')}</p></div>) : null;
+      default: return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]}/>;
     }
   };
 
   const activeSections = (sectionsConfig||[]).filter((s)=>s.visible);
 
   return (
-    <div className="resume-template tech max-w-4xl mx-auto bg-white px-8 font-sans overflow-hidden">
-      {personalInfo && (
-        <div className="border-b-2 border-gray-800 pb-4 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-1 break-words font-mono">{personalInfo.fullName}</h1>
-          {personalInfo.title&&<div className="text-base text-gray-600 font-medium mb-2 break-words">{personalInfo.title}</div>}
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 font-mono text-xs">
-            {personalInfo.email&&<span className="break-all">{personalInfo.email}</span>}
-            {personalInfo.phone&&<span className="break-words">{personalInfo.phone}</span>}
-            {personalInfo.location&&<span className="break-words">{personalInfo.location}</span>}
-            {personalInfo.linkedin&&<span className="break-all">{personalInfo.linkedin}</span>}
-            {personalInfo.github&&<span className="break-all">{personalInfo.github}</span>}
-            {personalInfo.portfolio&&<span className="break-all">{personalInfo.portfolio}</span>}
-          </div>
+    <div className="resume-template tech max-w-4xl mx-auto bg-white font-mono overflow-hidden">
+      <div className="bg-gray-900 text-emerald-400 px-8 py-3.5 mb-4">
+        <div className="flex items-center gap-1.5 mb-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-red-500"></span>
+          <span className="h-2.5 w-2.5 rounded-full bg-yellow-500"></span>
+          <span className="h-2.5 w-2.5 rounded-full bg-green-500"></span>
+          <span className="ml-2 text-[9px] text-gray-500">~/resume</span>
         </div>
-      )}
-      {activeSections.filter((s)=>s.key!=='basics').map((sec)=>renderSection(sec))}
+        {personalInfo&&(
+          <div>
+            <h1 className="text-[20px] font-bold text-emerald-300 break-words">{personalInfo.fullName}</h1>
+            {personalInfo.title&&<div className="text-[11px] text-gray-300 mt-0.5 mb-1.5 break-words">{personalInfo.title}</div>}
+            <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-[9.5px] text-gray-400">
+              {personalInfo.email&&<span className="break-all">{personalInfo.email}</span>}
+              {personalInfo.phone&&<span className="break-words">{personalInfo.phone}</span>}
+              {personalInfo.location&&<span className="break-words">{personalInfo.location}</span>}
+              {personalInfo.linkedin&&<span className="break-all">{personalInfo.linkedin}</span>}
+              {personalInfo.github&&<span className="break-all">{personalInfo.github}</span>}
+              {personalInfo.portfolio&&<span className="break-all">{personalInfo.portfolio}</span>}
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="px-8 pb-2">
+        {activeSections.filter((s)=>s.key!=='basics').map((sec)=>renderSection(sec))}
+      </div>
     </div>
   );
 };
