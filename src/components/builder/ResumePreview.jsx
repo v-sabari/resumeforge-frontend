@@ -38,7 +38,7 @@ const PAGE_GAP = 16; // px between simulated sheets, at true (unscaled) size
  * How it works: the content is rendered once, off-screen, purely to
  * measure its layout. It is then rendered again inside each page "window" —
  * a fixed-height, clipped box sized to that template's visible content area
- * (A4 height minus its own top/bottom margin) — shifted up by how much of
+ * (page height minus its own top/bottom margin) — shifted up by how much of
  * the content earlier pages already showed.
  *
  * Element-aware pagination (utils/previewPagination.js): instead of slicing
@@ -47,9 +47,10 @@ const PAGE_GAP = 16; // px between simulated sheets, at true (unscaled) size
  * records every atomic block — <li>, <p>, headings, and every element the
  * templates marked `break-inside: avoid` — and each page starts its window
  * exactly at a block top, ending before the first block that would not fit.
- * That makes the live preview break exactly like a print engine: whole
- * lines flow to the next page, nothing is clipped mid-line, and nothing is
- * painted twice.
+ * The window's HEIGHT is the boundary delta, not the full page: a block
+ * pushed to the next page is fully removed from this one (a true re-flow,
+ * like Chrome's PDF engine), so nothing is ever clipped mid-line and nothing
+ * is painted twice. The freed space reads as whitespace at the page bottom.
  *
  * `contentScale` (from the Compress feature) is applied to the SAME
  * hidden measurement node this component already used for pagination —
@@ -157,12 +158,20 @@ const A4Viewer = forwardRef(({ children, margin, size, contentScale = 1, onPages
 
       <div className="mx-auto flex flex-col items-center" style={{ width: scaledW, gap: PAGE_GAP * scale }}>
         {Array.from({ length: numPages }).map((_, i) => {
-          // Page content starts at the boundary computed from whole blocks
-          // (element-aware) — the offset is in the content's own unzoomed
-          // units, multiplied back by `zoom` so the target block lands at the
-          // top edge of the window at every density scale. Without boundaries
-          // the legacy blind-pixel slice is used (rare, no atomic blocks).
-          const offset = (pageStarts && pageStarts.length > 0) ? pageStarts[i] : i * visibleH;
+          // Element-aware re-flow: page i shows the flow from boundary[i] up
+          // to exactly boundary[i+1] — the sheet's content window HEIGHT is
+          // that slice, not the full page. A block that was pushed to the
+          // next page is therefore FULLY REMOVED from this one, the same way
+          // Chrome's PDF engine re-flows content — nothing is ever painted
+          // twice, no line is ever half-drawn, and the freed space shows up
+          // as whitespace at the page bottom. Without boundaries the legacy
+          // blind-pixel slice is used (rare, no atomic blocks).
+          const hasBounds = pageStarts && pageStarts.length > 0;
+          const start = hasBounds ? pageStarts[i] : i * visibleH;
+          const sliceEnd = hasBounds
+            ? (i === pageStarts.length - 1 ? start + visibleH : (pageStarts[i + 1] || start + visibleH))
+            : start + visibleH;
+          const sliceH = Math.max(0, sliceEnd - start);
           return (
             <div key={i} className="relative overflow-hidden bg-white shrink-0"
                  style={{ width: scaledW, height: scaledPageH,
@@ -171,17 +180,23 @@ const A4Viewer = forwardRef(({ children, margin, size, contentScale = 1, onPages
                   scaled down once as a whole — keeps the margin/offset math
                   simple and exactly mirrors how the single-page version used
                   to scale itself. */}
-              <div style={{ width: pageW, height: pageH, transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+              <div style={{ width: pageW, height: pageH, transform: `scale(${scale})`, transformOrigin: 'top left',
+                            display: 'flex', flexDirection: 'column' }}>
                 {/* Top margin — always blank, exactly like a print margin */}
-                <div style={{ height: mTop }} />
-                {/* This page's visible slice of the continuous content */}
-                <div style={{ height: visibleH, overflow: 'hidden' }}>
-                  <div style={{ marginTop: -(offset * (contentScale || 1)) }}>
+                <div style={{ height: mTop, flexShrink: 0 }} />
+                {/* This page's visible slice of the continuous content — its
+                    height is the boundary delta (in zoomed units), so it ends
+                    precisely where the next page begins. */}
+                <div style={{ height: sliceH * (contentScale || 1), overflow: 'hidden', flexShrink: 0 }}>
+                  <div style={{ marginTop: -(start * (contentScale || 1)) }}>
                     <div style={innerStyle}>{children}</div>
                   </div>
                 </div>
+                {/* Re-flow gap: space vacated by content pushed to the next
+                    page, exactly like a word processor. */}
+                <div style={{ flexGrow: 1 }} />
                 {/* Bottom margin — always blank, exactly like a print margin */}
-                <div style={{ height: mBottom }} />
+                <div style={{ height: mBottom, flexShrink: 0 }} />
               </div>
               <span className="absolute bottom-1.5 right-2.5 text-[9px] font-semibold text-slate-300 select-none">
                 {i + 1} / {numPages}
