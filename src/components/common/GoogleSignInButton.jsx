@@ -7,17 +7,23 @@ const GSI_SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
  * Identity Services (GSI) script — no @react-oauth/google dependency. The
  * GSI script is injected on first use and reused across pages.
  *
- * Renders Google's own iframe button sized to the container width. onSuccess
- * hands back the raw credential (ID token) string, which the caller POSTs to
- * /api/auth/google so the backend can verify it and create-or-login the user.
+ * onSuccess hands back the raw credential (ID token) string, which the caller
+ * POSTs to /api/auth/google so the backend can verify it and create-or-login.
  *
- * wut: the GSI callback is registered once at mount, so it would see stale
- * onSuccess/onError closures. We keep the latest props in refs and route the
- * callback through them, so RegisterPage's handler always reads the *current*
- * referral code the user typed, and LoginPage never posts one.
+ * CRITICAL (DOM conflict fix): Google's renderButton owns whatever element it
+ * renders into and destroys/replaces that element's children on every render.
+ * React must therefore never mount its own children into that node — otherwise
+ * the next React commit tries to removeChild a node GSI already removed and
+ * throws "NotFoundError: Failed to execute 'removeChild'". The GSI target div
+ * is kept permanently empty; the Loading placeholder lives OUTSIDE it as a
+ * sibling, so React only ever manipulates nodes it owns.
+ *
+ * The GSI callback is registered once and routed through refs, so handlers see
+ * the current props (RegisterPage's handler reads the latest typed referral
+ * code) without re-registering the GSI callback.
  */
 export const GoogleSignInButton = ({ onSuccess, onError, disabled = false }) => {
-  const containerRef = useRef(null);
+  const targetRef = useRef(null);
   const initRef = useRef(false);
   const onSuccessRef = useRef(onSuccess);
   const onErrorRef = useRef(onError);
@@ -34,14 +40,18 @@ export const GoogleSignInButton = ({ onSuccess, onError, disabled = false }) => 
     let cancelled = false;
 
     if (!clientId) {
-      onErrorRef.current?.(
-        'Google sign-in is not configured. Set VITE_GOOGLE_CLIENT_ID in your .env and redeploy.'
-      );
       return undefined;
     }
 
     const render = () => {
-      if (cancelled || !containerRef.current || !window.google?.accounts?.id) return;
+      if (cancelled || !targetRef.current || !window.google?.accounts?.id) return;
+
+      // React StrictMode double-invokes effects in dev — the target already
+      // holding a rendered iframe means renderButton already ran.
+      if (targetRef.current.children.length > 0) {
+        setReady(true);
+        return;
+      }
 
       if (!initRef.current) {
         window.google.accounts.id.initialize({
@@ -60,8 +70,9 @@ export const GoogleSignInButton = ({ onSuccess, onError, disabled = false }) => 
         initRef.current = true;
       }
 
-      const width = Math.min(400, Math.max(200, containerRef.current.clientWidth || 200));
-      window.google.accounts.id.renderButton(containerRef.current, {
+      const target = targetRef.current;
+      const width = Math.min(400, Math.max(200, target.parentElement?.clientWidth || target.clientWidth || 200));
+      window.google.accounts.id.renderButton(target, {
         theme: 'outlined',
         size: 'large',
         shape: 'rectangular',
@@ -95,24 +106,19 @@ export const GoogleSignInButton = ({ onSuccess, onError, disabled = false }) => 
 
   return (
     <div className={`google-signin ${disabled ? 'google-signin--disabled' : ''}`}>
-      <div
-        ref={containerRef}
-        className="google-signin__frame"
-        aria-busy={!ready}
-        data-testid="google-signin"
-      >
-        {!clientId
-          ? (
-            <p className="google-signin__placeholder">
-              Google sign-in unavailable
-            </p>
-          )
-          : !ready && (
-            <p className="google-signin__placeholder">
-              Loading Google sign-in…
-            </p>
-          )}
-      </div>
+      {!clientId
+        ? (
+          <p className="google-signin__placeholder">Google sign-in unavailable</p>
+        )
+        : (
+          <>
+            {!ready && (
+              <p className="google-signin__placeholder">Loading Google sign-in…</p>
+            )}
+            {/* GSI-owned element: never mount React children into this div. */}
+            <div ref={targetRef} className="google-signin__target" aria-busy={!ready} />
+          </>
+        )}
     </div>
   );
 };

@@ -247,9 +247,20 @@
 
 /* ── Google Sign-In button ─────────────────────────────────────── */
 .google-signin { width: 100%; }
-.google-signin__frame { min-height: 44px; display: flex; justify-content: center; align-items: center; }
+/* GSI renders its iframe into .google-signin__target, which must stay empty.
+   The placeholder is a React-owned SIBLING, never a child of the target —
+   mounting React children into a GSI-owned node makes React lose track of
+   its DOM (NotFoundError: removeChild). */
+.google-signin__target {
+  min-height: 44px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .google-signin__placeholder {
   margin: 0;
+  padding: 0.75rem 0;
+  text-align: center;
   font-size: 0.75rem;
   color: var(--color-ink-400, #7c8698);
 }
