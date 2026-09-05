@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-const GSI_SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
+export const GSI_SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
 
 /**
  * GOOGLE SIGN-IN: "Continue with Google" button built directly on the Google
@@ -85,6 +85,20 @@ export const GoogleSignInButton = ({ onSuccess, onError, disabled = false }) => 
 
     if (window.google?.accounts?.id) {
       render();
+    } else if (document.querySelector(`script[src="${GSI_SCRIPT_SRC}"]`)) {
+      // main.jsx pre-warms the GSI script at app idle; wait for it instead of
+      // injecting a duplicate <script> that would fetch the file twice.
+      const script = document.createElement('script');
+      script.src = GSI_SCRIPT_SRC;
+      script.async = true;
+      script.defer = true;
+      script.onload = render;
+      script.onerror = () => {
+        if (!cancelled) {
+          onErrorRef.current?.('Failed to load Google Sign-In. Please try again.');
+        }
+      };
+      document.head.appendChild(script);
     } else {
       const script = document.createElement('script');
       script.src = GSI_SCRIPT_SRC;

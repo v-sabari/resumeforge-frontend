@@ -249,11 +249,14 @@
 .google-signin {
   width: 100%;
   /* CLS FIX: reserve exactly the height GSI will render (44px for size=large)
-     in EVERY load state. This box is 44px tall whether the pre-load
+     in EVERY load state. This box is exactly 44px tall whether the pre-load
      placeholder or the post-load iframe is showing, so nothing below it can
-     ever move. */
+     ever move. A FIXED height (not min-height) + overflow:hidden also clamps
+     any transient churn while GSI mounts its iframe, so no frame can inflate
+     the box even mid-race. */
   position: relative;
-  min-height: 44px;
+  height: 44px;
+  overflow: hidden;
 }
 /* GSI renders its iframe into .google-signin__target, which must stay empty.
    The placeholder is a React-owned SIBLING, never a child of the target —
