@@ -10,6 +10,8 @@ export default [
       'dist/**',
       'api/render-pdf.js',
       'api/_pdf-compiled.css',
+      'api/_pagination.text.js',
+      'scripts/build-pagination.mjs',
     ],
   },
   js.configs.recommended,

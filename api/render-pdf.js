@@ -3218,6 +3218,11 @@ var TEMPLATE_MAP = {
   finance: FinanceTemplate
 };
 var compiledCss = readFileSync(path.join(__dirname, "_pdf-compiled.css"), "utf8");
+var PAGINATION_SOURCE = null;
+try {
+  PAGINATION_SOURCE = readFileSync(path.join(__dirname, "_pagination.text.js"), "utf8");
+} catch {
+}
 function wrapHtml(bodyHtml, pageW) {
   return `<!doctype html>
 <html>
@@ -3291,7 +3296,75 @@ async function handler(req, res) {
     const page = await browser.newPage();
     await page.setViewport({ width: pageW, height: pageH });
     await page.setContent(html, { waitUntil: "networkidle0" });
-    const pdfBuffer = await page.pdf({
+    const visibleH = pageH - marginTop - marginBottom;
+    let annotation = null;
+    if (PAGINATION_SOURCE) {
+      annotation = await page.evaluate(([source, scale, visibleH2]) => {
+        (0, eval)(source);
+        const root = document.body.firstElementChild;
+        if (!root) return null;
+        const starts = computePageStarts(root, visibleH2, scale);
+        if (!starts || starts.length < 2) return null;
+        const isAtomic = (el) => {
+          if (!(el instanceof HTMLElement)) return false;
+          const tag = el.tagName;
+          if (tag === "LI" || tag === "P" || /^H[1-6]$/.test(tag)) return true;
+          const cs = getComputedStyle(el);
+          return cs.breakInside === "avoid" || cs.pageBreakInside === "avoid";
+        };
+        const atomics = [];
+        const all = [];
+        const walk = (p) => {
+          for (const c of p.children) {
+            all.push(c);
+            if (isAtomic(c)) atomics.push(c);
+            if (c.firstElementChild) walk(c);
+          }
+        };
+        walk(root);
+        const rootTop = root.getBoundingClientRect().top;
+        const unTop = (el) => (el.getBoundingClientRect().top - rootTop) / scale;
+        const applyBreak = (el) => {
+          el.style.setProperty("break-before", "page");
+          el.style.setProperty("page-break-before", "always");
+        };
+        let count = 0;
+        for (const b of starts.slice(1)) {
+          let best = null;
+          let bestD = Infinity;
+          for (const el of atomics) {
+            const d = Math.abs(unTop(el) - b);
+            if (d < bestD) {
+              bestD = d;
+              best = el;
+            }
+          }
+          if (best && bestD <= 1.5) {
+            applyBreak(best);
+            count += 1;
+            continue;
+          }
+          let minEl = null;
+          let minT = Infinity;
+          for (const el of all) {
+            const t = unTop(el);
+            if (t >= b - 0.01 && t < minT) {
+              minT = t;
+              minEl = el;
+            }
+          }
+          if (minEl && minT - b <= visibleH2) {
+            const sentinel = document.createElement("div");
+            sentinel.style.cssText = "height:0;margin:0;padding:0;border:0;width:0;break-before:page;page-break-before:always;";
+            minEl.parentNode.insertBefore(sentinel, minEl);
+            count += 1;
+          }
+        }
+        return { stamped: count, expected: starts.length };
+      }, [PAGINATION_SOURCE, layoutScale, visibleH]);
+    }
+    if (annotation && annotation.stamped > 0) console.log(`render-pdf: stamped ${annotation.stamped} element-aware page breaks (template=${templateKey} scale=${layoutScale})`);
+    const pdfOpts = {
       width: `${pageW}px`,
       height: `${pageH}px`,
       printBackground: true,
@@ -3304,7 +3377,24 @@ async function handler(req, res) {
       // and needs no per-page repetition (see utils/pageLayout.js).
       margin: { top: `${marginTop}px`, bottom: `${marginBottom}px`, left: "0px", right: "0px" },
       preferCSSPageSize: false
-    });
+    };
+    const countPdfPages = (buf) => (Buffer.from(buf).toString("latin1").match(/\/Type\s*\/Page\b/g) || []).length;
+    let pdfBuffer = await page.pdf(pdfOpts);
+    let pdfPages = countPdfPages(pdfBuffer);
+    if (annotation && annotation.expected != null && pdfPages !== annotation.expected) {
+      await page.close();
+      const cleanPage = await browser.newPage();
+      await cleanPage.setViewport({ width: pageW, height: pageH });
+      await cleanPage.setContent(html, { waitUntil: "networkidle0" });
+      const naturalBuffer = await cleanPage.pdf(pdfOpts);
+      const naturalPages = countPdfPages(naturalBuffer);
+      await cleanPage.close();
+      console.log(`render-pdf: annotated=${pdfPages} natural=${naturalPages} expected=${annotation.expected} (template=${templateKey} scale=${layoutScale})`);
+      if (naturalPages === annotation.expected) pdfBuffer = naturalBuffer;
+      else if (naturalPages === pdfPages && pdfPages !== annotation.expected) {
+        pdfBuffer = naturalBuffer;
+      }
+    }
     await page.close();
     res.setHeader("Content-Type", "application/pdf");
     res.status(200).send(Buffer.from(pdfBuffer));
