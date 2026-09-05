@@ -98,19 +98,6 @@ export const LoginPage = () => {
             {error}
           </Alert>
 
-          {/* GOOGLE SIGN-IN */}
-          <GoogleSignInButton
-            onSuccess={handleGoogleSuccess}
-            onError={(msg) => setError(msg)}
-            disabled={loading}
-          />
-
-          <div className="my-4 flex items-center gap-3">
-            <span className="h-px flex-1 bg-ink-100" />
-            <span className="text-xs font-medium text-ink-400">or</span>
-            <span className="h-px flex-1 bg-ink-100" />
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
               <label className="label">Email address</label>
@@ -186,6 +173,19 @@ export const LoginPage = () => {
               {loading ? <Loader label="Signing in…" size="sm" /> : 'Sign in'}
             </button>
           </form>
+
+          {/* GOOGLE SIGN-IN */}
+          <div className="my-4 flex items-center gap-3">
+            <span className="h-px flex-1 bg-ink-100" />
+            <span className="text-xs font-medium text-ink-400">or</span>
+            <span className="h-px flex-1 bg-ink-100" />
+          </div>
+
+          <GoogleSignInButton
+            onSuccess={handleGoogleSuccess}
+            onError={(msg) => setError(msg)}
+            disabled={loading}
+          />
         </div>
 
         <p className="text-center mt-5 text-sm text-ink-400">

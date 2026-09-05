@@ -124,19 +124,6 @@ export const RegisterPage = () => {
         <div className="card p-6 shadow-lift">
           <Alert variant="error" className="mb-4">{error}</Alert>
 
-          {/* GOOGLE SIGN-IN */}
-          <GoogleSignInButton
-            onSuccess={handleGoogleSuccess}
-            onError={(msg) => setError(msg)}
-            disabled={loading}
-          />
-
-          <div className="my-4 flex items-center gap-3">
-            <span className="h-px flex-1 bg-ink-100" />
-            <span className="text-xs font-medium text-ink-400">or</span>
-            <span className="h-px flex-1 bg-ink-100" />
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             {/* Name */}
             <div>
@@ -214,6 +201,19 @@ export const RegisterPage = () => {
               {loading ? <Loader size="sm" label="" /> : 'Create account'}
             </button>
           </form>
+
+          {/* GOOGLE SIGN-IN */}
+          <div className="my-4 flex items-center gap-3">
+            <span className="h-px flex-1 bg-ink-100" />
+            <span className="text-xs font-medium text-ink-400">or</span>
+            <span className="h-px flex-1 bg-ink-100" />
+          </div>
+
+          <GoogleSignInButton
+            onSuccess={handleGoogleSuccess}
+            onError={(msg) => setError(msg)}
+            disabled={loading}
+          />
 
           <p className="mt-5 text-center text-xs text-ink-400">
             Already have an account?{' '}
