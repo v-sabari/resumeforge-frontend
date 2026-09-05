@@ -30,6 +30,14 @@ export const loginUser = async (payload) => {
   return data;
 };
 
+// GOOGLE SIGN-IN: one endpoint serves both login and registration — the raw
+// credential (ID token) from the Google button. The backend creates the
+// account when it doesn't exist yet and returns isNewUser so the UI can branch.
+export const googleLogin = async (payload) => {
+  const { data } = await api.post('/api/auth/google', payload);
+  return data;
+};
+
 // BUG-004 FIX: httpOnly cookies can't be cleared by client-side JS, so
 // logout has to call the backend, which clears it via Set-Cookie (maxAge=0).
 export const logoutUser = async () => {

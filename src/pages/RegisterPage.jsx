@@ -4,13 +4,14 @@ import { useAuth } from '../context/AuthContext';
 import { Logo } from '../components/common/Logo';
 import { Alert } from '../components/common/Alert';
 import { Loader } from '../components/common/Loader';
+import { GoogleSignInButton } from '../components/common/GoogleSignInButton';
 import { Icon } from '../components/icons/Icon';
 import { formatApiError } from '../utils/helpers';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const RegisterPage = () => {
-  const { register } = useAuth();
+  const { register, loginWithGoogle } = useAuth();
   const navigate       = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -69,6 +70,27 @@ export const RegisterPage = () => {
     }
   };
 
+  // GOOGLE SIGN-IN: same button/flow as the login page. The backend creates
+  // the account if it's new (isNewUser=true) or logs in an existing one. A
+  // Google email is already verified, so there's no OTP step: sign in → set
+  // the session cookie → straight to the dashboard. The typed (or ?ref=
+  // pre-filled) referral code rides along so referrals still credit.
+  const handleGoogleSuccess = async (credential) => {
+    setLoading(true);
+    setError('');
+    try {
+      await loginWithGoogle({
+        credential,
+        referralCode: form.referralCode.trim().toUpperCase() || undefined,
+      });
+      navigate('/app/dashboard', { replace: true });
+    } catch (err) {
+      setError(formatApiError(err, 'Google sign-in failed. Please try again.'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const hasRefCode = Boolean(form.referralCode);
 
   return (
@@ -101,6 +123,19 @@ export const RegisterPage = () => {
 
         <div className="card p-6 shadow-lift">
           <Alert variant="error" className="mb-4">{error}</Alert>
+
+          {/* GOOGLE SIGN-IN */}
+          <GoogleSignInButton
+            onSuccess={handleGoogleSuccess}
+            onError={(msg) => setError(msg)}
+            disabled={loading}
+          />
+
+          <div className="my-4 flex items-center gap-3">
+            <span className="h-px flex-1 bg-ink-100" />
+            <span className="text-xs font-medium text-ink-400">or</span>
+            <span className="h-px flex-1 bg-ink-100" />
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             {/* Name */}

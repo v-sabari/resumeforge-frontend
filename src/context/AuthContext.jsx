@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { getCurrentUser, loginUser, logoutUser, registerUser } from '../services/authService';
+import { getCurrentUser, googleLogin, loginUser, logoutUser, registerUser } from '../services/authService';
 import { getPremiumStatus } from '../services/premiumService';
 import { getExportStatus } from '../services/exportService';
 import { INACTIVITY_TIMEOUT_MS } from '../utils/constants';
@@ -175,6 +175,27 @@ setPremium({
     return res;
   }, []);
 
+  const loginWithGoogle = useCallback(async (payload) => {
+    // GOOGLE SIGN-IN: backend verifies the ID token, creates the account if
+    // it's new, links an existing account if the email matches, and sets the
+    // httpOnly session cookie — exactly like login(). It also returns
+    // isNewUser so the caller can branch on first-time signup.
+    const res = await googleLogin(payload);
+
+    const me = (() => {
+      if (res?.user && res.user.id) return res.user;
+      return null;
+    })();
+
+    // Fall back to the /me probe if the body carried no user (defensive).
+    const currentUser = me?.id ? me : await getCurrentUser();
+    setUser(currentUser?.id ? currentUser : null);
+
+    await Promise.all([refreshPremiumStatus(), refreshExportStatus()]);
+
+    return { user: currentUser, isNewUser: Boolean(res?.isNewUser) };
+  }, [refreshPremiumStatus, refreshExportStatus]);
+
   const value = useMemo(
     () => ({
       user,
@@ -185,6 +206,7 @@ setPremium({
       isAuthenticated: Boolean(user),
       login,
       register,
+      loginWithGoogle,
       logout,
       refreshPremiumStatus,
       refreshExportStatus,
@@ -204,6 +226,7 @@ setPremium({
       showInactivityWarning,
       login,
       register,
+      loginWithGoogle,
       logout,
       refreshPremiumStatus,
       refreshExportStatus,

@@ -244,3 +244,16 @@
   backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center;
 }
+
+/* ── Google Sign-In button ─────────────────────────────────────── */
+.google-signin { width: 100%; }
+.google-signin__frame { min-height: 44px; display: flex; justify-content: center; align-items: center; }
+.google-signin__placeholder {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-ink-400, #7c8698);
+}
+/* While an auth request is in flight the button is dimmed and made
+   unclickable — `pointer-events` on a parent also blocks the child
+   iframe from receiving clicks in Chromium and Firefox. */
+.google-signin--disabled { pointer-events: none; opacity: 0.6; }

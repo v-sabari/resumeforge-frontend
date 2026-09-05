@@ -4,11 +4,12 @@ import { useAuth } from '../context/AuthContext';
 import { Logo } from '../components/common/Logo';
 import { Alert } from '../components/common/Alert';
 import { Loader } from '../components/common/Loader';
+import { GoogleSignInButton } from '../components/common/GoogleSignInButton';
 import { Icon } from '../components/icons/Icon';
 import { formatApiError } from '../utils/helpers';
 
 export const LoginPage = () => {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   // Prefer the react-router destination (ProtectedRoute navigate), then fall
@@ -62,6 +63,23 @@ export const LoginPage = () => {
     }
   };
 
+  // GOOGLE SIGN-IN: same button/flow as registration. The backend decides
+  // login vs signup — it logs in an existing account, or creates and signs
+  // in a new one (isNewUser=true). Either way the session cookie is set, so
+  // we land on the same post-login page the email form would use.
+  const handleGoogleSuccess = async (credential) => {
+    setLoading(true);
+    setError('');
+    try {
+      await loginWithGoogle({ credential });
+      navigate(from, { replace: true });
+    } catch (err) {
+      setError(formatApiError(err, 'Google sign-in failed. Please try again.'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-surface-50 flex flex-col items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm">
@@ -79,6 +97,19 @@ export const LoginPage = () => {
           <Alert variant="error" className="mb-4">
             {error}
           </Alert>
+
+          {/* GOOGLE SIGN-IN */}
+          <GoogleSignInButton
+            onSuccess={handleGoogleSuccess}
+            onError={(msg) => setError(msg)}
+            disabled={loading}
+          />
+
+          <div className="my-4 flex items-center gap-3">
+            <span className="h-px flex-1 bg-ink-100" />
+            <span className="text-xs font-medium text-ink-400">or</span>
+            <span className="h-px flex-1 bg-ink-100" />
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
