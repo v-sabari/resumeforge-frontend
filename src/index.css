@@ -246,7 +246,15 @@
 }
 
 /* ── Google Sign-In button ─────────────────────────────────────── */
-.google-signin { width: 100%; }
+.google-signin {
+  width: 100%;
+  /* CLS FIX: reserve exactly the height GSI will render (44px for size=large)
+     in EVERY load state. This box is 44px tall whether the pre-load
+     placeholder or the post-load iframe is showing, so nothing below it can
+     ever move. */
+  position: relative;
+  min-height: 44px;
+}
 /* GSI renders its iframe into .google-signin__target, which must stay empty.
    The placeholder is a React-owned SIBLING, never a child of the target —
    mounting React children into a GSI-owned node makes React lose track of
@@ -258,8 +266,18 @@
   align-items: center;
 }
 .google-signin__placeholder {
+  /* CLS FIX: overlay the reserved 44px target instead of stacking above it.
+     Before, the placeholder (≈42px) PLUS the empty target (44px) made the
+     block ≈86px until GSI inserted its iframe, then it collapsed to 44px —
+     a ~42px jump for the card/footer below (worst on slow networks). Absolute
+     positioning keeps the text visible without adding flow height. */
+  position: absolute;
+  inset: 0;
   margin: 0;
   padding: 0.75rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   font-size: 0.75rem;
   color: var(--color-ink-400, #7c8698);
