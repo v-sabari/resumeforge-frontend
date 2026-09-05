@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useImperativeHandle, forwardRef, useCallba
 import { DEFAULT_SECTIONS_CONFIG } from '../../utils/constants';
 import { buildTransformed } from '../../utils/transformResume';
 import { getPageMargin, scaleStyle, getPageSize } from '../../utils/pageLayout';
+import { computePageStarts } from '../../utils/previewPagination';
 import { findCompressionScale, MIN_SCALE, MAX_SCALE } from '../../utils/compression';
 import { CompressModal } from './CompressModal';
 import { OrbitalBlink } from '../common/OrbitalBlink';
@@ -35,13 +36,20 @@ const PAGE_GAP = 16; // px between simulated sheets, at true (unscaled) size
  * instead of one continuous strip with a line drawn over it.
  *
  * How it works: the content is rendered once, off-screen, purely to
- * measure its total flowed height. It is then rendered again inside each
- * page "window" — a fixed-height, clipped box sized to that template's
- * visible content area (A4 height minus its own top/bottom margin) —
- * shifted up by however much of the content earlier pages already showed.
- * This mirrors what a print engine actually does: one continuous flow,
- * sliced into equal, margined pages — so every page (not just the first
- * and last) gets a proper top and bottom margin, matching the exported PDF.
+ * measure its layout. It is then rendered again inside each page "window" —
+ * a fixed-height, clipped box sized to that template's visible content area
+ * (A4 height minus its own top/bottom margin) — shifted up by how much of
+ * the content earlier pages already showed.
+ *
+ * Element-aware pagination (utils/previewPagination.js): instead of slicing
+ * the continuous flow at blind pixel boundaries (which can cut a text line
+ * in half and re-draw it on the next page), the measurement pass also
+ * records every atomic block — <li>, <p>, headings, and every element the
+ * templates marked `break-inside: avoid` — and each page starts its window
+ * exactly at a block top, ending before the first block that would not fit.
+ * That makes the live preview break exactly like a print engine: whole
+ * lines flow to the next page, nothing is clipped mid-line, and nothing is
+ * painted twice.
  *
  * `contentScale` (from the Compress feature) is applied to the SAME
  * hidden measurement node this component already used for pagination —
@@ -55,6 +63,7 @@ const A4Viewer = forwardRef(({ children, margin, size, contentScale = 1, onPages
   const [scale, setScale] = useState(1);
   const { w: pageW, h: pageH, name: pageName } = size;
   const [rawH,  setRawH]  = useState(pageH);
+  const [pageStarts, setPageStarts] = useState(null);
 
   const { top: mTop, bottom: mBottom } = margin;
   const visibleH = Math.max(1, pageH - mTop - mBottom);
@@ -74,6 +83,10 @@ const A4Viewer = forwardRef(({ children, margin, size, contentScale = 1, onPages
     // scrollHeight here would silently ignore every compression/enlarge
     // scale and always report the same, wrong height.
     setRawH(measure.getBoundingClientRect().height);
+    // Element-aware page boundaries (whole atomic blocks, never a sliced
+    // line) — see utils/previewPagination.js. Falls back to null (uniform
+    // slicing) when a template has no detectable atomic blocks.
+    setPageStarts(computePageStarts(measure, visibleH, contentScale || 1));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size]);
 
@@ -90,7 +103,9 @@ const A4Viewer = forwardRef(({ children, margin, size, contentScale = 1, onPages
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contentScale, size]);
 
-  const numPages    = Math.max(1, Math.ceil(rawH / visibleH));
+  const numPages = (pageStarts && pageStarts.length > 0)
+    ? pageStarts.length
+    : Math.max(1, Math.ceil(rawH / visibleH));
   const scaledW     = pageW * scale;
   const scaledPageH = pageH * scale;
 
@@ -141,31 +156,39 @@ const A4Viewer = forwardRef(({ children, margin, size, contentScale = 1, onPages
       </div>
 
       <div className="mx-auto flex flex-col items-center" style={{ width: scaledW, gap: PAGE_GAP * scale }}>
-        {Array.from({ length: numPages }).map((_, i) => (
-          <div key={i} className="relative overflow-hidden bg-white shrink-0"
-               style={{ width: scaledW, height: scaledPageH,
-                        boxShadow: '0 8px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25)' }}>
-            {/* Everything below is laid out in TRUE page pixel units, then
-                scaled down once as a whole — keeps the margin/offset math
-                simple and exactly mirrors how the single-page version used
-                to scale itself. */}
-            <div style={{ width: pageW, height: pageH, transform: `scale(${scale})`, transformOrigin: 'top left' }}>
-              {/* Top margin — always blank, exactly like a print margin */}
-              <div style={{ height: mTop }} />
-              {/* This page's visible slice of the continuous content */}
-              <div style={{ height: visibleH, overflow: 'hidden' }}>
-                <div style={{ marginTop: -(i * visibleH) }}>
-                  <div style={innerStyle}>{children}</div>
+        {Array.from({ length: numPages }).map((_, i) => {
+          // Page content starts at the boundary computed from whole blocks
+          // (element-aware) — the offset is in the content's own unzoomed
+          // units, multiplied back by `zoom` so the target block lands at the
+          // top edge of the window at every density scale. Without boundaries
+          // the legacy blind-pixel slice is used (rare, no atomic blocks).
+          const offset = (pageStarts && pageStarts.length > 0) ? pageStarts[i] : i * visibleH;
+          return (
+            <div key={i} className="relative overflow-hidden bg-white shrink-0"
+                 style={{ width: scaledW, height: scaledPageH,
+                          boxShadow: '0 8px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25)' }}>
+              {/* Everything below is laid out in TRUE page pixel units, then
+                  scaled down once as a whole — keeps the margin/offset math
+                  simple and exactly mirrors how the single-page version used
+                  to scale itself. */}
+              <div style={{ width: pageW, height: pageH, transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+                {/* Top margin — always blank, exactly like a print margin */}
+                <div style={{ height: mTop }} />
+                {/* This page's visible slice of the continuous content */}
+                <div style={{ height: visibleH, overflow: 'hidden' }}>
+                  <div style={{ marginTop: -(offset * (contentScale || 1)) }}>
+                    <div style={innerStyle}>{children}</div>
+                  </div>
                 </div>
+                {/* Bottom margin — always blank, exactly like a print margin */}
+                <div style={{ height: mBottom }} />
               </div>
-              {/* Bottom margin — always blank, exactly like a print margin */}
-              <div style={{ height: mBottom }} />
+              <span className="absolute bottom-1.5 right-2.5 text-[9px] font-semibold text-slate-300 select-none">
+                {i + 1} / {numPages}
+              </span>
             </div>
-            <span className="absolute bottom-1.5 right-2.5 text-[9px] font-semibold text-slate-300 select-none">
-              {i + 1} / {numPages}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

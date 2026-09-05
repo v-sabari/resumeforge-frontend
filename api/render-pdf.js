@@ -3228,7 +3228,20 @@ function wrapHtml(bodyHtml, pageW) {
   html, body { margin: 0; padding: 0; background: #fff; }
   body { width: ${pageW}px; }
   ${compiledCss}
-  h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
+  /* PAGE-BREAK RULES: the same break-controls the on-screen preview now
+     enforces element-wise (see utils/previewPagination.js) are expressed here
+     for the export engine. Chrome's print fragmenter honors these, so a list
+     item or paragraph that would straddle a page edge moves whole to the next
+     page instead of being sliced mid-line \u2014 and because the fraction assumes
+     line-level granularity, orphans/widows stop single stray lines from being
+     orphaned alone at a page bottom. Applies inside @media print so the
+     exported PDF and the on-screen preview break consistently. */
+  @media print {
+    p, li, .break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
+    p { orphans: 3; widows: 3; }
+    h1, h2, h3, h4, h5, h6 { break-after: avoid; page-break-after: avoid; }
+  }
+  h1, h2, h3, h4, h5, h6 { break-after: avoid; page-break-after: avoid; }
   li { break-inside: avoid; page-break-inside: avoid; }
 </style>
 </head>
