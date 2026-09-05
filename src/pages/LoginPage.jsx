@@ -81,24 +81,24 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-surface-50 flex flex-col items-center justify-center px-4 py-12">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
+    <div className="auth-page min-h-dvh bg-surface-50 flex flex-col overflow-y-auto px-4 py-3 sm:py-5">
+      <div className="m-auto w-full max-w-sm">
+        <div className="text-center mb-4">
           <Logo size="md" linkTo="/" className="justify-center" />
-          <h1 className="mt-6 text-2xl font-display font-semibold text-ink-950">
+          <h1 className="mt-2 text-xl font-display font-semibold text-ink-950">
             Welcome back
           </h1>
-          <p className="mt-1.5 text-sm text-ink-400">
+          <p className="mt-1 text-sm text-ink-400">
             Sign in to continue building your resume
           </p>
         </div>
 
-        <div className="card p-6 shadow-lift">
+        <div className="card p-4 shadow-lift">
           <Alert variant="error" className="mb-4">
             {error}
           </Alert>
 
-          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          <form onSubmit={handleSubmit} className="space-y-2.5" noValidate>
             <div>
               <label className="label">Email address</label>
               <div className="relative">
@@ -111,7 +111,7 @@ export const LoginPage = () => {
                   name="email"
                   autoComplete="username"
                   required
-                  className="input pl-9"
+                  className="input pl-9 !py-2"
                   placeholder="you@example.com"
                   value={form.email}
                   onChange={set('email')}
@@ -131,7 +131,7 @@ export const LoginPage = () => {
                   name="password"
                   autoComplete="current-password"
                   required
-                  className="input pl-9 pr-10"
+                  className="input pl-9 pr-10 !py-2"
                   placeholder="••••••••"
                   value={form.password}
                   onChange={set('password')}
@@ -167,7 +167,7 @@ export const LoginPage = () => {
 
             <button
               type="submit"
-              className="btn-primary w-full justify-center mt-2"
+              className="btn-primary w-full justify-center mt-1"
               disabled={loading}
             >
               {loading ? <Loader label="Signing in…" size="sm" /> : 'Sign in'}
@@ -175,7 +175,7 @@ export const LoginPage = () => {
           </form>
 
           {/* GOOGLE SIGN-IN */}
-          <div className="my-4 flex items-center gap-3">
+          <div className="my-2.5 flex items-center gap-3">
             <span className="h-px flex-1 bg-ink-100" />
             <span className="text-xs font-medium text-ink-400">or</span>
             <span className="h-px flex-1 bg-ink-100" />
@@ -188,7 +188,7 @@ export const LoginPage = () => {
           />
         </div>
 
-        <p className="text-center mt-5 text-sm text-ink-400">
+        <p className="text-center mt-3 text-sm text-ink-400">
           Don&apos;t have an account?{' '}
           <Link
             to="/register"

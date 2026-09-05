@@ -268,3 +268,18 @@
    unclickable — `pointer-events` on a parent also blocks the child
    iframe from receiving clicks in Chromium and Firefox. */
 .google-signin--disabled { pointer-events: none; opacity: 0.6; }
+
+/* ── Auth pages on short viewports ────────────────────────────────  */
+/* The login/register pages already fit desktop laptops at 100% zoom and
+   phones >= ~700px tall (normal utilities only). On shorter viewports the
+   `max-height` rules below compress paddings/gaps so the card fits without
+   scrolling. Scoped via .auth-page so nothing else is affected. */
+@media (max-height: 700px) {
+  .auth-page { padding: 0.5rem 1rem; }
+  .auth-page .mb-4 { margin-bottom: 0.75rem; }
+  .auth-page .card { padding: 0.75rem; }
+  .auth-page .space-y-2\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.5rem; }
+  .auth-page .my-2\.5 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+  .auth-page .mt-2 { margin-top: 0.375rem; }
+  .auth-page .mt-3 { margin-top: 0.5rem; }
+}

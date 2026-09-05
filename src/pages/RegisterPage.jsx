@@ -94,14 +94,14 @@ export const RegisterPage = () => {
   const hasRefCode = Boolean(form.referralCode);
 
   return (
-    <div className="min-h-screen bg-surface-50 flex flex-col items-center justify-center px-4 py-12">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
+    <div className="auth-page min-h-dvh bg-surface-50 flex flex-col overflow-y-auto px-4 py-3 sm:py-5">
+      <div className="m-auto w-full max-w-sm">
+        <div className="text-center mb-4">
           <Logo size="md" linkTo="/" className="justify-center" />
-          <h1 className="mt-6 text-2xl font-display font-semibold text-ink-950">
+          <h1 className="mt-2 text-xl font-display font-semibold text-ink-950">
             Create your account
           </h1>
-          <p className="mt-1.5 text-sm text-ink-400">
+          <p className="mt-1 text-sm text-ink-400">
             Free forever. No credit card needed.
           </p>
         </div>
@@ -121,16 +121,16 @@ export const RegisterPage = () => {
           </div>
         )}
 
-        <div className="card p-6 shadow-lift">
+        <div className="card p-4 shadow-lift">
           <Alert variant="error" className="mb-4">{error}</Alert>
 
-          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          <form onSubmit={handleSubmit} className="space-y-2.5" noValidate>
             {/* Name */}
             <div>
               <label className="label">Full name</label>
               <div className="relative">
                 <Icon name="user" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
-                <input type="text" name="name" className="input pl-9"
+                <input type="text" name="name" className="input pl-9 !py-2"
                   value={form.name} onChange={set('name')}
                   placeholder="Jane Smith" autoComplete="name" />
               </div>
@@ -141,7 +141,7 @@ export const RegisterPage = () => {
               <label className="label">Email address</label>
               <div className="relative">
                 <Icon name="text" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
-                <input type="email" name="email" className="input pl-9"
+                <input type="email" name="email" className="input pl-9 !py-2"
                   value={form.email} onChange={set('email')}
                   placeholder="jane@example.com" autoComplete="email" />
               </div>
@@ -152,7 +152,7 @@ export const RegisterPage = () => {
               <label className="label">Password</label>
               <div className="relative">
                 <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
-                <input type={showPass ? 'text' : 'password'} name="password" className="input pl-9 pr-10"
+                <input type={showPass ? 'text' : 'password'} name="password" className="input pl-9 pr-10 !py-2"
                   value={form.password} onChange={set('password')}
                   placeholder="Min 8 characters" autoComplete="new-password" />
                 <button type="button"
@@ -168,7 +168,7 @@ export const RegisterPage = () => {
               <label className="label">Confirm password</label>
               <div className="relative">
                 <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
-                <input type="password" name="confirm" className="input pl-9"
+                <input type="password" name="confirm" className="input pl-9 !py-2"
                   value={form.confirm} onChange={set('confirm')}
                   placeholder="Repeat password" autoComplete="new-password" />
               </div>
@@ -182,7 +182,7 @@ export const RegisterPage = () => {
               </label>
               <div className="relative">
                 <Icon name="star" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-300 pointer-events-none" />
-                <input type="text" name="referralCode" className="input pl-9 font-mono uppercase tracking-widest"
+                <input type="text" name="referralCode" className="input pl-9 font-mono uppercase tracking-widest !py-2"
                   value={form.referralCode}
                   onChange={e => setForm(p => ({ ...p, referralCode: e.target.value.toUpperCase() }))}
                   placeholder="e.g. ABCD1234"
@@ -197,13 +197,13 @@ export const RegisterPage = () => {
             </div>
 
             <button type="submit" disabled={loading}
-              className="btn-primary w-full justify-center mt-2">
+              className="btn-primary w-full justify-center mt-1">
               {loading ? <Loader size="sm" label="" /> : 'Create account'}
             </button>
           </form>
 
           {/* GOOGLE SIGN-IN */}
-          <div className="my-4 flex items-center gap-3">
+          <div className="my-2.5 flex items-center gap-3">
             <span className="h-px flex-1 bg-ink-100" />
             <span className="text-xs font-medium text-ink-400">or</span>
             <span className="h-px flex-1 bg-ink-100" />
@@ -215,12 +215,12 @@ export const RegisterPage = () => {
             disabled={loading}
           />
 
-          <p className="mt-5 text-center text-xs text-ink-400">
+          <p className="mt-3 text-center text-xs text-ink-400">
             Already have an account?{' '}
             <Link to="/login" className="text-brand-600 hover:underline font-medium">Sign in</Link>
           </p>
 
-          <p className="mt-3 text-center text-xs text-ink-300">
+          <p className="mt-2 text-center text-xs text-ink-300">
             By signing up, you agree to our{' '}
             <Link to="/terms" className="hover:underline">Terms</Link>
             {' '}and{' '}
