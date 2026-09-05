@@ -29,6 +29,24 @@
 export const A4_W = 794;
 export const A4_H = 1123;
 
+// US Letter @ 96dpi: 8.5 × 96 = 816, 11 × 96 = 1056.
+export const US_LETTER_W = 816;
+export const US_LETTER_H = 1056;
+
+// Per-template physical page size. Defaults to A4; the academic template is
+// explicitly designed for US Letter and must export as exactly that, so the
+// preview and the PDF handler share one lookup (getPageSize) and can never
+// disagree on the sheet geometry.
+export const PAGE_SIZES = {
+  academic: { name: 'US Letter', meta: '8.5 × 11 in', w: US_LETTER_W, h: US_LETTER_H },
+};
+
+export const DEFAULT_PAGE_SIZE = { name: 'A4', meta: '210 × 297 mm', w: A4_W, h: A4_H };
+
+export function getPageSize(templateId) {
+  return PAGE_SIZES[templateId] || DEFAULT_PAGE_SIZE;
+}
+
 // px. Kept in sync with each template's own designed density — a template
 // that reads "airy" (Minimal, Executive) gets a roomier margin; a template
 // built for maximum ATS/keyword density (Classic) gets a tighter one.
@@ -51,7 +69,7 @@ export const TEMPLATE_PAGE_MARGINS = {
   designer:      { top: 32, bottom: 32 },
   sleek:         { top: 32, bottom: 32 },
   contemporary:  { top: 32, bottom: 32 },
-  academic:      { top: 28, bottom: 28 },
+  academic:      { top: 33.6, bottom: 33.6 }, // 0.35in @96dpi, matches the template's own L/R inset
   research:      { top: 28, bottom: 28 },
   medical:       { top: 32, bottom: 32 },
   finance:       { top: 32, bottom: 32 },
@@ -95,9 +113,10 @@ export function getPageMargin(templateId) {
  *     why this technique — not transform — is what real "shrink/grow to
  *     fit" document tools use.
  *
- * The wrapping div's `width` is set to A4_W / scale so that after zoom is
- * applied, the effective on-page width is exactly A4_W again — content
- * keeps filling the full page width at every scale, with no leftover
+ * The wrapping div's `width` is set to pageWidth / scale so that after zoom
+ * is applied, the effective on-page width is exactly the page width again
+ * (A4 by default; the academic template passes its US Letter width) —
+ * content keeps filling the full page width at every scale, with no leftover
  * blank margin and no horizontal overflow. Only vertical density changes,
  * and the template's own alignment/layout structure is completely
  * untouched — every element just scales together, uniformly.
@@ -107,8 +126,8 @@ export function getPageMargin(templateId) {
  * `scale`. This is purely the CSS side of applying a scale once one has
  * been found.
  */
-export function scaleStyle(scale) {
+export function scaleStyle(scale, pageWidth = A4_W) {
   const s = (typeof scale === 'number' && scale > 0 && scale !== 1) ? scale : 1;
   if (s === 1) return undefined;
-  return { width: `${A4_W / s}px`, zoom: s };
+  return { width: `${pageWidth / s}px`, zoom: s };
 }

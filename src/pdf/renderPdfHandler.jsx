@@ -42,7 +42,7 @@ import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium-min';
 
 import { buildTransformed } from '../utils/transformResume.js';
-import { A4_W, A4_H, getPageMargin, scaleStyle } from '../utils/pageLayout.js';
+import { A4_W, A4_H, getPageMargin, getPageSize, scaleStyle } from '../utils/pageLayout.js';
 import { DEFAULT_SECTIONS_CONFIG } from '../utils/sectionsCatalog.js';
 import {
   ModernProTemplate,
@@ -102,7 +102,7 @@ const TEMPLATE_MAP = {
 // bundle stays small.
 const compiledCss = readFileSync(path.join(__dirname, '_pdf-compiled.css'), 'utf8');
 
-function wrapHtml(bodyHtml) {
+function wrapHtml(bodyHtml, pageW) {
   return `<!doctype html>
 <html>
 <head>
@@ -110,7 +110,7 @@ function wrapHtml(bodyHtml) {
 <style>
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { margin: 0; padding: 0; background: #fff; }
-  body { width: ${A4_W}px; }
+  body { width: ${pageW}px; }
   ${compiledCss}
   h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
   li { break-inside: avoid; page-break-inside: avoid; }
@@ -161,6 +161,7 @@ export default async function handler(req, res) {
     const templateKey = TEMPLATE_MAP[template] ? template : 'modern';
     const Template = TEMPLATE_MAP[templateKey];
     const { top: marginTop, bottom: marginBottom } = getPageMargin(templateKey);
+    const { w: pageW, h: pageH } = getPageSize(templateKey);
 
     // COMPRESS FEATURE: apply the exact density scale the user verified in
     // the live preview (see utils/pageLayout.js:scaleStyle and
@@ -170,21 +171,21 @@ export default async function handler(req, res) {
     // (`zoom`) the preview used, so Puppeteer's native pagination below
     // produces the SAME page count the user already confirmed on screen.
     const layoutScale = typeof resume.layoutScale === 'number' ? resume.layoutScale : 1;
-    const wrapStyle = scaleStyle(layoutScale);
+    const wrapStyle = scaleStyle(layoutScale, pageW);
     const templateEl = React.createElement(Template, { data });
     const bodyHtml = ReactDOMServer.renderToStaticMarkup(
       wrapStyle ? React.createElement('div', { style: wrapStyle }, templateEl) : templateEl
     );
-    const html = wrapHtml(bodyHtml);
+    const html = wrapHtml(bodyHtml, pageW);
 
     const browser = await getBrowser();
     const page = await browser.newPage();
-    await page.setViewport({ width: A4_W, height: A4_H });
+    await page.setViewport({ width: pageW, height: pageH });
     await page.setContent(html, { waitUntil: 'networkidle0' });
 
     const pdfBuffer = await page.pdf({
-      width: `${A4_W}px`,
-      height: `${A4_H}px`,
+      width: `${pageW}px`,
+      height: `${pageH}px`,
       printBackground: true,
       // Real top/bottom margin, per template, applied by Chrome's print
       // engine to EVERY page it paginates — this is what actually fixes

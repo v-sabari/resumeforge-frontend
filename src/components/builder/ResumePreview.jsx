@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useImperativeHandle, forwardRef, useCallback } from 'react';
 import { DEFAULT_SECTIONS_CONFIG } from '../../utils/constants';
 import { buildTransformed } from '../../utils/transformResume';
-import { A4_W, A4_H, getPageMargin, scaleStyle } from '../../utils/pageLayout';
+import { getPageMargin, scaleStyle, getPageSize } from '../../utils/pageLayout';
 import { findCompressionScale, MIN_SCALE, MAX_SCALE } from '../../utils/compression';
 import { CompressModal } from './CompressModal';
 import { OrbitalBlink } from '../common/OrbitalBlink';
@@ -49,14 +49,15 @@ const PAGE_GAP = 16; // px between simulated sheets, at true (unscaled) size
  * which is what lets one real measurement drive both the on-screen page
  * count AND the compression search below, with no separate estimate path.
  * ────────────────────────────────────────────────────────────────── */
-const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange }, ref) => {
+const A4Viewer = forwardRef(({ children, margin, size, contentScale = 1, onPagesChange }, ref) => {
   const shellRef   = useRef(null);
   const measureRef = useRef(null);
   const [scale, setScale] = useState(1);
-  const [rawH,  setRawH]  = useState(A4_H);
+  const { w: pageW, h: pageH, name: pageName } = size;
+  const [rawH,  setRawH]  = useState(pageH);
 
   const { top: mTop, bottom: mBottom } = margin;
-  const visibleH = Math.max(1, A4_H - mTop - mBottom);
+  const visibleH = Math.max(1, pageH - mTop - mBottom);
 
   const recalc = useCallback(() => {
     const shell   = shellRef.current;
@@ -64,7 +65,7 @@ const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange
     if (!shell || !measure) return;
     const aw = shell.clientWidth - 32;
     if (aw <= 0) return;
-    setScale(aw / A4_W);
+    setScale(aw / pageW);
     // NOTE: intentionally getBoundingClientRect().height, NOT scrollHeight.
     // Verified directly: Chromium's `scrollHeight`/`offsetHeight` report an
     // element's box size in its PRE-zoom local coordinate space and do not
@@ -73,7 +74,8 @@ const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange
     // scrollHeight here would silently ignore every compression/enlarge
     // scale and always report the same, wrong height.
     setRawH(measure.getBoundingClientRect().height);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [size]);
 
   useEffect(() => {
     const shell   = shellRef.current;
@@ -86,11 +88,11 @@ const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange
     recalc();
     return () => { ro1.disconnect(); ro2.disconnect(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contentScale]);
+  }, [contentScale, size]);
 
   const numPages    = Math.max(1, Math.ceil(rawH / visibleH));
-  const scaledW     = A4_W * scale;
-  const scaledPageH = A4_H * scale;
+  const scaledW     = pageW * scale;
+  const scaledPageH = pageH * scale;
 
   useEffect(() => { onPagesChange?.(numPages); }, [numPages, onPagesChange]);
 
@@ -109,8 +111,8 @@ const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange
       const measure = measureRef.current;
       if (!measure) return rawH;
       const prevStyle = measure.getAttribute('style') || '';
-      const style = scaleStyle(candidateScale);
-      Object.assign(measure.style, { width: `${A4_W}px`, zoom: '' }); // reset first
+      const style = scaleStyle(candidateScale, pageW);
+      Object.assign(measure.style, { width: `${pageW}px`, zoom: '' }); // reset first
       if (style) Object.assign(measure.style, style);
       void measure.offsetHeight; // force synchronous layout before reading rect
       const h = measure.getBoundingClientRect().height;
@@ -118,14 +120,14 @@ const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange
       return h;
     },
     getVisibleH: () => visibleH,
-  }), [rawH, visibleH]);
+  }), [rawH, visibleH, pageW]);
 
-  const innerStyle = scaleStyle(contentScale);
+  const innerStyle = scaleStyle(contentScale, pageW);
 
   return (
     <div ref={shellRef} className="w-full rounded-xl" style={{ background: '#475569', padding: '16px' }}>
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-widest">A4 Preview</span>
+        <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-widest">{pageName} Preview</span>
         <span className="rounded-full bg-slate-700 px-2.5 py-0.5 text-[10px] font-medium text-slate-300">
           {numPages} {numPages === 1 ? 'page' : 'pages'}
         </span>
@@ -134,7 +136,7 @@ const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange
       {/* Hidden measurement copy — full, unsliced content at true width.
           Never shown; exists only so we know the total flowed height,
           AND doubles as the compression search's measurement node. */}
-      <div style={{ position: 'absolute', top: 0, left: -99999, width: A4_W, visibility: 'hidden' }} aria-hidden="true">
+      <div style={{ position: 'absolute', top: 0, left: -99999, width: pageW, visibility: 'hidden' }} aria-hidden="true">
         <div ref={measureRef} style={innerStyle}>{children}</div>
       </div>
 
@@ -143,11 +145,11 @@ const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange
           <div key={i} className="relative overflow-hidden bg-white shrink-0"
                style={{ width: scaledW, height: scaledPageH,
                         boxShadow: '0 8px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25)' }}>
-            {/* Everything below is laid out in TRUE A4 pixel units, then
+            {/* Everything below is laid out in TRUE page pixel units, then
                 scaled down once as a whole — keeps the margin/offset math
                 simple and exactly mirrors how the single-page version used
                 to scale itself. */}
-            <div style={{ width: A4_W, height: A4_H, transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+            <div style={{ width: pageW, height: pageH, transform: `scale(${scale})`, transformOrigin: 'top left' }}>
               {/* Top margin — always blank, exactly like a print margin */}
               <div style={{ height: mTop }} />
               {/* This page's visible slice of the continuous content */}
@@ -334,11 +336,12 @@ export const ResumePreview = ({ resume, template = 'modern', onScaleChange }) =>
         </div>
       </div>
 
-      <A4Viewer ref={viewerRef} margin={getPageMargin(active)} contentScale={contentScale} onPagesChange={setPages}>
+      <A4Viewer ref={viewerRef} margin={getPageMargin(active)} size={getPageSize(active)}
+        contentScale={contentScale} onPagesChange={setPages}>
         {content}
       </A4Viewer>
       <p className="text-center text-[10px] text-slate-400 select-none tracking-wide">
-        A4 · 210 × 297 mm · Live preview
+        {getPageSize(active).name} · {getPageSize(active).meta} · Live preview
       </p>
     </div>
   );

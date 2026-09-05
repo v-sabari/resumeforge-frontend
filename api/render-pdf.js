@@ -60,6 +60,15 @@ var buildTransformed = (resume, sectionsConfig) => ({
 // src/utils/pageLayout.js
 var A4_W = 794;
 var A4_H = 1123;
+var US_LETTER_W = 816;
+var US_LETTER_H = 1056;
+var PAGE_SIZES = {
+  academic: { name: "US Letter", meta: "8.5 \xD7 11 in", w: US_LETTER_W, h: US_LETTER_H }
+};
+var DEFAULT_PAGE_SIZE = { name: "A4", meta: "210 \xD7 297 mm", w: A4_W, h: A4_H };
+function getPageSize(templateId) {
+  return PAGE_SIZES[templateId] || DEFAULT_PAGE_SIZE;
+}
 var TEMPLATE_PAGE_MARGINS = {
   modern: { top: 32, bottom: 32 },
   corporate: { top: 32, bottom: 32 },
@@ -77,7 +86,8 @@ var TEMPLATE_PAGE_MARGINS = {
   designer: { top: 32, bottom: 32 },
   sleek: { top: 32, bottom: 32 },
   contemporary: { top: 32, bottom: 32 },
-  academic: { top: 28, bottom: 28 },
+  academic: { top: 33.6, bottom: 33.6 },
+  // 0.35in @96dpi, matches the template's own L/R inset
   research: { top: 28, bottom: 28 },
   medical: { top: 32, bottom: 32 },
   finance: { top: 32, bottom: 32 }
@@ -86,10 +96,10 @@ var DEFAULT_PAGE_MARGIN = { top: 32, bottom: 32 };
 function getPageMargin(templateId) {
   return TEMPLATE_PAGE_MARGINS[templateId] || DEFAULT_PAGE_MARGIN;
 }
-function scaleStyle(scale) {
+function scaleStyle(scale, pageWidth = A4_W) {
   const s = typeof scale === "number" && scale > 0 && scale !== 1 ? scale : 1;
   if (s === 1) return void 0;
-  return { width: `${A4_W / s}px`, zoom: s };
+  return { width: `${pageWidth / s}px`, zoom: s };
 }
 
 // src/utils/sectionsCatalog.js
@@ -2556,152 +2566,217 @@ var ContemporaryTemplate = ({ data }) => {
 
 // src/components/resume/templates/AcademicTemplate.jsx
 import { jsx as jsx17, jsxs as jsxs17 } from "react/jsx-runtime";
-var CustomBlock16 = ({ label, content }) => {
-  if (!content) return null;
-  const { mode, text, items } = content;
-  const H = /* @__PURE__ */ jsx17("h2", { className: "text-center text-[9px] italic uppercase tracking-[0.14em] text-gray-600 border-t border-gray-800 border-b-2 border-gray-800 py-[1px] mb-1 mt-3 break-after-avoid", children: label });
-  if (mode === "bullets") {
-    if (!items?.filter(Boolean).length) return null;
-    return /* @__PURE__ */ jsxs17("div", { children: [
-      H,
-      /* @__PURE__ */ jsx17("ul", { className: "space-y-0.5 text-center", children: items.filter(Boolean).map((it, i) => /* @__PURE__ */ jsx17("li", { className: "text-[10px] leading-relaxed break-words break-inside-avoid", children: it }, i)) })
-    ] });
+var FONT = "'Calibri', 'Carlito', 'Lato', 'Segoe UI', sans-serif";
+var INK = "#111111";
+var RULE = "#8a8a8a";
+var ensure = (arr) => Array.isArray(arr) ? arr : [];
+var SectionTitle = ({ children }) => /* @__PURE__ */ jsx17("div", { style: {
+  marginTop: "11pt",
+  marginBottom: "5pt",
+  borderTop: `0.75pt solid ${RULE}`,
+  borderBottom: `0.75pt solid ${RULE}`,
+  textAlign: "center",
+  fontSize: "10pt",
+  fontWeight: "bold",
+  letterSpacing: "0.04em",
+  color: INK,
+  padding: "2.5pt 0"
+}, children });
+var Bullet = ({ text }) => /* @__PURE__ */ jsxs17("div", { style: {
+  display: "flex",
+  fontSize: "10pt",
+  lineHeight: "1.3",
+  margin: "0 0 1.5pt 0",
+  breakInside: "avoid"
+}, children: [
+  /* @__PURE__ */ jsx17("span", { style: { width: "11pt", flexShrink: 0 }, children: "\u25CF" }),
+  /* @__PURE__ */ jsx17("span", { style: { flex: 1, minWidth: 0 }, children: text })
+] });
+var Entry = ({ title, date, subtitle, location, meta, summary, bullets }) => {
+  const bulletList = ensure(bullets).filter(Boolean);
+  return /* @__PURE__ */ jsxs17("div", { style: { marginBottom: "6pt", breakInside: "avoid" }, children: [
+    (title || date) && /* @__PURE__ */ jsxs17("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "10pt" }, children: [
+      /* @__PURE__ */ jsx17("span", { style: { fontSize: "10.6pt", fontWeight: "bold", color: INK, minWidth: 0 }, children: title }),
+      date ? /* @__PURE__ */ jsx17("span", { style: { fontSize: "9pt", fontWeight: "normal", whiteSpace: "nowrap" }, children: date }) : null
+    ] }),
+    (subtitle || location) && /* @__PURE__ */ jsxs17("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "10pt" }, children: [
+      /* @__PURE__ */ jsx17("span", { style: { fontSize: "10pt", fontStyle: "italic", minWidth: 0 }, children: subtitle }),
+      location ? /* @__PURE__ */ jsx17("span", { style: { fontSize: "9pt", fontStyle: "italic", whiteSpace: "nowrap" }, children: location }) : null
+    ] }),
+    summary ? /* @__PURE__ */ jsx17("p", { style: { fontSize: "10pt", lineHeight: "1.35", margin: "1pt 0 0" }, children: summary }) : null,
+    meta ? /* @__PURE__ */ jsx17("div", { style: { fontSize: "9pt", fontStyle: "italic", marginTop: "1pt" }, children: meta }) : null,
+    bulletList.length > 0 && /* @__PURE__ */ jsx17("div", { style: { marginTop: "2pt" }, children: bulletList.map((b, i) => /* @__PURE__ */ jsx17(Bullet, { text: b }, i)) })
+  ] });
+};
+var Grid = ({ columns }) => {
+  const cols = ensure(columns).filter(Boolean);
+  if (!cols.length) return null;
+  return /* @__PURE__ */ jsx17("div", { style: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", columnGap: "14pt", rowGap: "5pt" }, children: cols.map((col, i) => /* @__PURE__ */ jsxs17("div", { style: { breakInside: "avoid" }, children: [
+    col.label ? /* @__PURE__ */ jsx17("div", { style: { fontSize: "10pt", fontWeight: "bold", color: INK }, children: col.label }) : null,
+    ensure(col.items).filter(Boolean).length > 0 ? /* @__PURE__ */ jsx17("div", { style: { fontSize: "10pt", lineHeight: "1.3" }, children: ensure(col.items).filter(Boolean).join(", ") }) : null
+  ] }, i)) });
+};
+var renderCustomBody = (id, customSections) => {
+  const c = (customSections || {})[id];
+  if (!c) return null;
+  if (c.mode === "grid") {
+    const columns = ensure(c.columns).filter(Boolean);
+    return columns.length ? /* @__PURE__ */ jsx17(Grid, { columns }) : null;
   }
-  if (!text?.trim()) return null;
-  return /* @__PURE__ */ jsxs17("div", { children: [
-    H,
-    /* @__PURE__ */ jsx17("p", { className: "text-[10px] text-center leading-relaxed break-words", children: text })
+  if (c.mode === "entries") {
+    const entries = ensure(c.entries).filter(Boolean);
+    if (!entries.length) return null;
+    return entries.map((e, i) => /* @__PURE__ */ jsx17(
+      Entry,
+      {
+        title: e?.title,
+        date: e?.date,
+        subtitle: e?.subtitle,
+        location: e?.location,
+        bullets: e?.bullets
+      },
+      i
+    ));
+  }
+  if (c.mode === "bullets") {
+    const items = ensure(c.items).filter(Boolean);
+    if (!items.length) return null;
+    return items.map((it, i) => /* @__PURE__ */ jsx17(Bullet, { text: it }, i));
+  }
+  if (!c.text || !c.text.trim()) return null;
+  return /* @__PURE__ */ jsx17("p", { style: { fontSize: "10pt", lineHeight: "1.35" }, children: c.text });
+};
+var skillsToColumns = (skills) => ensure(skills).filter(Boolean).map((s) => {
+  if (typeof s === "string" && s.includes(":")) {
+    const idx = s.indexOf(":");
+    const label = s.slice(0, idx).trim();
+    const rest = s.slice(idx + 1).split(",").map((x) => x.trim()).filter(Boolean);
+    return { label, items: rest.length ? rest : [s] };
+  }
+  return { label: "", items: [String(s)] };
+});
+var renderSectionBody = (sec, data) => {
+  if (sec.type === "custom") {
+    return renderCustomBody(sec.id, data.customSections);
+  }
+  switch (sec.key) {
+    case "summary": {
+      if (!data.summary || !data.summary.trim()) return null;
+      return /* @__PURE__ */ jsx17("p", { style: { fontSize: "10pt", lineHeight: "1.35" }, children: data.summary });
+    }
+    case "experience": {
+      if (!ensure(data.experience).length) return null;
+      return ensure(data.experience).filter((e) => e.position || e.company).map((e, i) => /* @__PURE__ */ jsx17(
+        Entry,
+        {
+          title: e.position,
+          date: e.duration,
+          subtitle: [e.company, e.employmentType].filter(Boolean).join(" \xB7 "),
+          location: e.location,
+          summary: e.summary,
+          bullets: e.responsibilities
+        },
+        i
+      ));
+    }
+    case "education": {
+      if (!ensure(data.education).length) return null;
+      return ensure(data.education).map((e, i) => /* @__PURE__ */ jsx17(
+        Entry,
+        {
+          title: [e.degree, e.field].filter(Boolean).join(", "),
+          date: e.year,
+          subtitle: e.institution,
+          location: "",
+          summary: [e.details, e.gpa].filter(Boolean).join(" \u2014 ") || void 0
+        },
+        i
+      ));
+    }
+    case "projects": {
+      if (!ensure(data.projects).length) return null;
+      return ensure(data.projects).filter((p) => p.name).map((p, i) => /* @__PURE__ */ jsx17(
+        Entry,
+        {
+          title: p.name,
+          subtitle: p.role,
+          meta: [p.technologies, p.link, p.github].filter(Boolean).join(" \xB7 "),
+          bullets: p.highlights
+        },
+        i
+      ));
+    }
+    case "skills": {
+      const columns = skillsToColumns(data.skills);
+      return columns.length ? /* @__PURE__ */ jsx17(Grid, { columns }) : null;
+    }
+    case "certifications": {
+      const items = ensure(data.certifications).filter(Boolean).map((c) => [c?.name, c?.issuer, c?.year].filter(Boolean).join(" \u2014 ")).filter(Boolean);
+      return items.length ? /* @__PURE__ */ jsx17(Grid, { columns: items.map((t) => ({ label: "", items: [t] })) }) : null;
+    }
+    case "achievements": {
+      const items = ensure(data.achievements).filter(Boolean);
+      if (!items.length) return null;
+      return items.map((a, i) => /* @__PURE__ */ jsx17(Bullet, { text: a }, i));
+    }
+    case "languages": {
+      const items = ensure(data.languages).filter(Boolean);
+      if (!items.length) return null;
+      return /* @__PURE__ */ jsx17("p", { style: { fontSize: "10pt", lineHeight: "1.3" }, children: items.join(" \xB7 ") });
+    }
+    default:
+      return renderCustomBody(sec.id, data.customSections);
+  }
+};
+var Header = ({ personalInfo }) => {
+  const p = personalInfo || {};
+  const contact = [p.email, p.phone, p.location, p.linkedin, p.github, p.portfolio].filter(Boolean);
+  const half = Math.ceil(contact.length / 2);
+  const left = contact.slice(0, half);
+  const right = contact.slice(half);
+  return /* @__PURE__ */ jsxs17("header", { style: { marginBottom: "5pt" }, children: [
+    /* @__PURE__ */ jsxs17("div", { style: { display: "flex", alignItems: "baseline", flexWrap: "wrap", gap: "0 8pt" }, children: [
+      /* @__PURE__ */ jsx17("h1", { style: { fontSize: "17pt", fontWeight: "bold", color: "#000", margin: 0 }, children: p.fullName || "Your Name" }),
+      p.title ? /* @__PURE__ */ jsx17("span", { style: { fontSize: "10.6pt", color: INK }, children: p.title }) : null
+    ] }),
+    contact.length > 0 && /* @__PURE__ */ jsxs17("div", { style: {
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      columnGap: "14pt",
+      rowGap: "1pt",
+      marginTop: "4pt",
+      fontSize: "9pt",
+      color: INK
+    }, children: [
+      /* @__PURE__ */ jsx17("div", { children: left.map((it, i) => /* @__PURE__ */ jsx17("div", { style: { wordBreak: "break-word" }, children: it }, i)) }),
+      /* @__PURE__ */ jsx17("div", { children: right.map((it, i) => /* @__PURE__ */ jsx17("div", { style: { wordBreak: "break-word" }, children: it }, i)) })
+    ] })
   ] });
 };
 var AcademicTemplate = ({ data }) => {
-  const {
-    sectionsConfig,
-    personalInfo,
-    summary,
-    experience,
-    education,
-    skills,
-    projects,
-    certifications,
-    achievements,
-    languages,
-    customSections
-  } = data;
-  const H = ({ children }) => /* @__PURE__ */ jsx17("h2", { className: "text-center text-[9px] italic uppercase tracking-[0.14em] text-gray-600 border-t border-gray-800 border-b-2 border-gray-800 py-[1px] mb-1 mt-3 break-after-avoid", children });
-  const renderSection = (sec) => {
-    if (sec.type === "custom") return /* @__PURE__ */ jsx17(CustomBlock16, { label: sec.label, content: (customSections || {})[sec.id] }, sec.id);
-    switch (sec.key) {
-      case "basics":
-        return null;
-      case "summary":
-        return summary ? /* @__PURE__ */ jsxs17("div", { className: "mb-2", children: [
-          /* @__PURE__ */ jsx17(H, { children: "Summary" }),
-          /* @__PURE__ */ jsx17("p", { className: "text-center text-[10px] text-gray-800 leading-tight break-words", children: summary })
-        ] }, "summary") : null;
-      case "experience":
-        return experience?.length ? /* @__PURE__ */ jsxs17("div", { className: "mb-2", children: [
-          /* @__PURE__ */ jsx17(H, { children: "Experience" }),
-          experience.map((e, i) => /* @__PURE__ */ jsxs17("div", { className: "mb-1.5 break-inside-avoid", children: [
-            /* @__PURE__ */ jsxs17("div", { className: "flex items-baseline justify-between gap-2 flex-wrap", children: [
-              /* @__PURE__ */ jsx17("span", { className: "text-[10px] font-bold text-gray-900 break-words min-w-0", children: e.position }),
-              /* @__PURE__ */ jsx17("span", { className: "text-[9px] text-gray-500 italic shrink-0 whitespace-nowrap", children: e.duration })
-            ] }),
-            /* @__PURE__ */ jsxs17("div", { className: "text-[9.5px] italic text-gray-600 break-words", children: [
-              e.company,
-              e.location ? `, ${e.location}` : "",
-              e.employmentType ? ` (${e.employmentType})` : ""
-            ] }),
-            e.summary && /* @__PURE__ */ jsx17("p", { className: "text-[10px] text-gray-800 leading-tight mt-0.5 break-words", children: e.summary }),
-            e.responsibilities?.length > 0 && /* @__PURE__ */ jsx17("div", { className: "pl-3", children: e.responsibilities.map((r, j) => /* @__PURE__ */ jsxs17("div", { className: "text-[10px] text-gray-800 leading-tight break-words break-inside-avoid", children: [
-              "\u2022 ",
-              r
-            ] }, j)) })
-          ] }, i))
-        ] }, "experience") : null;
-      case "education":
-        return education?.length ? /* @__PURE__ */ jsxs17("div", { className: "mb-2", children: [
-          /* @__PURE__ */ jsx17(H, { children: "Education" }),
-          education.map((e, i) => /* @__PURE__ */ jsxs17("div", { className: "mb-1 break-inside-avoid", children: [
-            /* @__PURE__ */ jsxs17("div", { className: "flex items-baseline justify-between gap-2 flex-wrap", children: [
-              /* @__PURE__ */ jsx17("span", { className: "text-[10px] font-bold text-gray-900 break-words", children: e.degree }),
-              /* @__PURE__ */ jsx17("span", { className: "text-[9px] italic text-gray-500 shrink-0 whitespace-nowrap", children: e.year })
-            ] }),
-            /* @__PURE__ */ jsx17("div", { className: "text-[9.5px] italic text-gray-600 break-words", children: e.institution }),
-            (e.gpa || e.details) && /* @__PURE__ */ jsx17("div", { className: "text-[9px] text-gray-600 break-words", children: [e.details || "", e.gpa].filter(Boolean).join(" \u2014 ") })
-          ] }, i))
-        ] }, "education") : null;
-      case "projects":
-        return projects?.length ? /* @__PURE__ */ jsxs17("div", { className: "mb-2", children: [
-          /* @__PURE__ */ jsx17(H, { children: "Research & Projects" }),
-          projects.map((p, i) => /* @__PURE__ */ jsxs17("div", { className: "mb-1.5 break-inside-avoid", children: [
-            /* @__PURE__ */ jsxs17("div", { className: "flex items-baseline gap-x-2 flex-wrap", children: [
-              /* @__PURE__ */ jsx17("span", { className: "text-[10px] font-bold text-gray-900 break-words min-w-0", children: p.name }),
-              p.role && /* @__PURE__ */ jsxs17("span", { className: "text-[9px] italic text-gray-500 break-words", children: [
-                "(",
-                p.role,
-                ")"
-              ] })
-            ] }),
-            p.technologies && /* @__PURE__ */ jsxs17("div", { className: "text-[9px] italic text-gray-600 break-words", children: [
-              "Tech: ",
-              p.technologies
-            ] }),
-            (p.link || p.github) && /* @__PURE__ */ jsx17("div", { className: "text-[8.5px] break-all", children: [p.link, p.github].filter(Boolean).join(" \xB7 ") }),
-            p.description && /* @__PURE__ */ jsx17("p", { className: "text-[10px] text-gray-800 leading-tight break-words", children: p.description })
-          ] }, i))
-        ] }, "projects") : null;
-      case "skills":
-        return skills?.length ? /* @__PURE__ */ jsxs17("div", { className: "mb-2", children: [
-          /* @__PURE__ */ jsx17(H, { children: "Research Interests / Skills" }),
-          /* @__PURE__ */ jsx17("p", { className: "text-center text-[10px] text-gray-800 leading-tight break-words", children: (Array.isArray(skills) ? skills : [skills]).join("  \u2022  ") })
-        ] }, "skills") : null;
-      case "certifications":
-        return certifications?.length ? /* @__PURE__ */ jsxs17("div", { className: "mb-2", children: [
-          /* @__PURE__ */ jsx17(H, { children: "Certifications" }),
-          /* @__PURE__ */ jsx17("div", { className: "space-y-0.5 text-center", children: certifications.map((c, i) => /* @__PURE__ */ jsxs17("div", { className: "text-[10px] text-gray-800 break-words break-inside-avoid", children: [
-            c.name,
-            c.issuer ? ` \u2014 ${c.issuer}` : "",
-            c.year ? ` (${c.year})` : ""
-          ] }, i)) })
-        ] }, "certifications") : null;
-      case "achievements":
-        return achievements?.length ? /* @__PURE__ */ jsxs17("div", { className: "mb-2", children: [
-          /* @__PURE__ */ jsx17(H, { children: "Achievements" }),
-          /* @__PURE__ */ jsx17("ul", { className: "space-y-0.5", children: achievements.map((a, i) => /* @__PURE__ */ jsxs17("li", { className: "text-[10px] text-gray-800 leading-tight break-words break-inside-avoid", children: [
-            "\u2022 ",
-            a
-          ] }, i)) })
-        ] }, "achievements") : null;
-      case "languages":
-        return languages?.length ? /* @__PURE__ */ jsxs17("div", { className: "mb-2", children: [
-          /* @__PURE__ */ jsx17(H, { children: "Languages" }),
-          /* @__PURE__ */ jsx17("p", { className: "text-center text-[10px] text-gray-800 break-words", children: languages.join("  \xB7  ") })
-        ] }, "languages") : null;
-      default:
-        return /* @__PURE__ */ jsx17(CustomBlock16, { label: sec.label, content: (customSections || {})[sec.id] }, sec.id);
-    }
-  };
-  const activeSections = (sectionsConfig || []).filter((s) => s.visible);
-  return /* @__PURE__ */ jsxs17("div", { className: "resume-template academic max-w-4xl mx-auto bg-white px-7 py-1 font-serif text-gray-900 overflow-hidden", children: [
-    personalInfo && /* @__PURE__ */ jsxs17("div", { className: "text-center mb-2 pb-2 border-b-2 border-gray-800", children: [
-      /* @__PURE__ */ jsx17("h1", { className: "text-[18px] font-bold uppercase tracking-[0.12em] break-words", children: personalInfo.fullName }),
-      personalInfo.title && /* @__PURE__ */ jsx17("div", { className: "text-[11px] italic text-gray-700 break-words", children: personalInfo.title }),
-      /* @__PURE__ */ jsxs17("div", { className: "flex flex-wrap justify-center gap-x-3 gap-y-0.5 mt-1 text-[9px] text-gray-600", children: [
-        personalInfo.email && /* @__PURE__ */ jsx17("span", { className: "break-all", children: personalInfo.email }),
-        personalInfo.phone && /* @__PURE__ */ jsx17("span", { className: "break-words", children: personalInfo.phone }),
-        personalInfo.location && /* @__PURE__ */ jsx17("span", { className: "break-words", children: personalInfo.location }),
-        personalInfo.linkedin && /* @__PURE__ */ jsx17("span", { className: "break-all", children: personalInfo.linkedin }),
-        personalInfo.github && /* @__PURE__ */ jsx17("span", { className: "break-all", children: personalInfo.github }),
-        personalInfo.portfolio && /* @__PURE__ */ jsx17("span", { className: "break-all", children: personalInfo.portfolio })
-      ] })
-    ] }),
-    activeSections.filter((s) => s.key !== "basics").map((sec) => renderSection(sec))
+  const sections = (data.sectionsConfig || []).filter((s) => s.visible && s.key !== "basics");
+  return /* @__PURE__ */ jsxs17("div", { className: "resume-template academic", style: {
+    width: "100%",
+    background: "#ffffff",
+    color: INK,
+    fontFamily: FONT,
+    padding: "0 0.35in"
+  }, children: [
+    /* @__PURE__ */ jsx17(Header, { personalInfo: data.personalInfo }),
+    sections.map((sec) => {
+      const body = renderSectionBody(sec, data);
+      if (body === null) return null;
+      return /* @__PURE__ */ jsxs17("section", { children: [
+        /* @__PURE__ */ jsx17(SectionTitle, { children: sec.label }),
+        body
+      ] }, sec.id);
+    })
   ] });
 };
 
 // src/components/resume/templates/ResearchTemplate.jsx
 import { jsx as jsx18, jsxs as jsxs18 } from "react/jsx-runtime";
-var CustomBlock17 = ({ label, content, num }) => {
+var CustomBlock16 = ({ label, content, num }) => {
   if (!content) return null;
   const { mode, text, items } = content;
   return /* @__PURE__ */ jsxs18("div", { className: "flex gap-3 mb-3 break-inside-avoid", children: [
@@ -2806,7 +2881,7 @@ var ResearchTemplate = ({ data }) => {
   const rendered = ordered.map((sec) => {
     if (sec.type === "custom") {
       const c = (customSections || {})[sec.id];
-      return c ? /* @__PURE__ */ jsx18(CustomBlock17, { label: sec.label, content: c, num: String(++idx).padStart(2, "0") }, sec.id) : null;
+      return c ? /* @__PURE__ */ jsx18(CustomBlock16, { label: sec.label, content: c, num: String(++idx).padStart(2, "0") }, sec.id) : null;
     }
     const body = cases[sec.key];
     if (!body) return null;
@@ -2831,7 +2906,7 @@ var ResearchTemplate = ({ data }) => {
 
 // src/components/resume/templates/MedicalTemplate.jsx
 import { jsx as jsx19, jsxs as jsxs19 } from "react/jsx-runtime";
-var CustomBlock18 = ({ label, content }) => {
+var CustomBlock17 = ({ label, content }) => {
   if (!content) return null;
   const { mode, text, items } = content;
   const H = /* @__PURE__ */ jsx19("h2", { className: "text-[10px] font-bold uppercase tracking-[0.22em] text-teal-800 border-b-2 border-teal-400 pb-0.5 mb-1.5 mt-3 break-after-avoid", children: label });
@@ -2864,7 +2939,7 @@ var MedicalTemplate = ({ data }) => {
   } = data;
   const H = ({ children }) => /* @__PURE__ */ jsx19("h2", { className: "text-[10px] font-bold uppercase tracking-[0.22em] text-teal-800 border-b-2 border-teal-400 pb-0.5 mb-1.5 mt-3 break-after-avoid", children });
   const renderSection = (sec) => {
-    if (sec.type === "custom") return /* @__PURE__ */ jsx19(CustomBlock18, { label: sec.label, content: (customSections || {})[sec.id] }, sec.id);
+    if (sec.type === "custom") return /* @__PURE__ */ jsx19(CustomBlock17, { label: sec.label, content: (customSections || {})[sec.id] }, sec.id);
     switch (sec.key) {
       case "basics":
         return null;
@@ -2956,7 +3031,7 @@ var MedicalTemplate = ({ data }) => {
           /* @__PURE__ */ jsx19("p", { className: "text-[10.5px] text-gray-700 break-words", children: languages.join("  \xB7  ") })
         ] }, "languages") : null;
       default:
-        return /* @__PURE__ */ jsx19(CustomBlock18, { label: sec.label, content: (customSections || {})[sec.id] }, sec.id);
+        return /* @__PURE__ */ jsx19(CustomBlock17, { label: sec.label, content: (customSections || {})[sec.id] }, sec.id);
     }
   };
   const activeSections = (sectionsConfig || []).filter((s) => s.visible);
@@ -2981,7 +3056,7 @@ var MedicalTemplate = ({ data }) => {
 
 // src/components/resume/templates/FinanceTemplate.jsx
 import { jsx as jsx20, jsxs as jsxs20 } from "react/jsx-runtime";
-var CustomBlock19 = ({ label, content }) => {
+var CustomBlock18 = ({ label, content }) => {
   if (!content) return null;
   const { mode, text, items } = content;
   const H = /* @__PURE__ */ jsx20("h2", { className: "text-[11px] font-bold uppercase tracking-[0.18em] text-gray-900 border-b-2 border-gray-900 pb-0.5 mb-2 mt-4 break-after-avoid", children: label });
@@ -3014,7 +3089,7 @@ var FinanceTemplate = ({ data }) => {
   } = data;
   const H = ({ children }) => /* @__PURE__ */ jsx20("h2", { className: "text-[11px] font-bold uppercase tracking-[0.18em] text-gray-900 border-b-2 border-gray-900 pb-0.5 mb-2 mt-4 break-after-avoid", children });
   const renderSection = (sec) => {
-    if (sec.type === "custom") return /* @__PURE__ */ jsx20(CustomBlock19, { label: sec.label, content: (customSections || {})[sec.id] }, sec.id);
+    if (sec.type === "custom") return /* @__PURE__ */ jsx20(CustomBlock18, { label: sec.label, content: (customSections || {})[sec.id] }, sec.id);
     switch (sec.key) {
       case "basics":
         return null;
@@ -3097,7 +3172,7 @@ var FinanceTemplate = ({ data }) => {
           /* @__PURE__ */ jsx20("p", { className: "text-[10.5px] text-gray-700 break-words", children: languages.join("  |  ") })
         ] }, "languages") : null;
       default:
-        return /* @__PURE__ */ jsx20(CustomBlock19, { label: sec.label, content: (customSections || {})[sec.id] }, sec.id);
+        return /* @__PURE__ */ jsx20(CustomBlock18, { label: sec.label, content: (customSections || {})[sec.id] }, sec.id);
     }
   };
   const activeSections = (sectionsConfig || []).filter((s) => s.visible);
@@ -3143,7 +3218,7 @@ var TEMPLATE_MAP = {
   finance: FinanceTemplate
 };
 var compiledCss = readFileSync(path.join(__dirname, "_pdf-compiled.css"), "utf8");
-function wrapHtml(bodyHtml) {
+function wrapHtml(bodyHtml, pageW) {
   return `<!doctype html>
 <html>
 <head>
@@ -3151,7 +3226,7 @@ function wrapHtml(bodyHtml) {
 <style>
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { margin: 0; padding: 0; background: #fff; }
-  body { width: ${A4_W}px; }
+  body { width: ${pageW}px; }
   ${compiledCss}
   h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
   li { break-inside: avoid; page-break-inside: avoid; }
@@ -3191,20 +3266,21 @@ async function handler(req, res) {
     const templateKey = TEMPLATE_MAP[template] ? template : "modern";
     const Template = TEMPLATE_MAP[templateKey];
     const { top: marginTop, bottom: marginBottom } = getPageMargin(templateKey);
+    const { w: pageW, h: pageH } = getPageSize(templateKey);
     const layoutScale = typeof resume.layoutScale === "number" ? resume.layoutScale : 1;
-    const wrapStyle = scaleStyle(layoutScale);
+    const wrapStyle = scaleStyle(layoutScale, pageW);
     const templateEl = React.createElement(Template, { data });
     const bodyHtml = ReactDOMServer.renderToStaticMarkup(
       wrapStyle ? React.createElement("div", { style: wrapStyle }, templateEl) : templateEl
     );
-    const html = wrapHtml(bodyHtml);
+    const html = wrapHtml(bodyHtml, pageW);
     const browser = await getBrowser();
     const page = await browser.newPage();
-    await page.setViewport({ width: A4_W, height: A4_H });
+    await page.setViewport({ width: pageW, height: pageH });
     await page.setContent(html, { waitUntil: "networkidle0" });
     const pdfBuffer = await page.pdf({
-      width: `${A4_W}px`,
-      height: `${A4_H}px`,
+      width: `${pageW}px`,
+      height: `${pageH}px`,
       printBackground: true,
       // Real top/bottom margin, per template, applied by Chrome's print
       // engine to EVERY page it paginates — this is what actually fixes
