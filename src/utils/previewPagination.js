@@ -19,6 +19,19 @@
  * first block that would not fit, so no block ever straddles a boundary and
  * every block is painted exactly once.
  *
+ * Two deliberate reads of "print engine" behavior are reproduced here:
+ *  - MULTI-COLUMN TEMPLATES (engineering, designer, etc.) lay their columns
+ *    side by side, so DOM order is NOT visual order. Blocks are sorted by
+ *    their painted top before packing — otherwise a block visually near the
+ *    bottom could be packed before one visually near the top, and page
+ *    boundaries would slice the top of low-lying blocks.
+ *  - ATOMIC FIT LIMIT: a block marked `break-inside: avoid` that is TALLER
+ *    than a full page cannot possibly be kept whole — exactly like print,
+ *    which ignores break-inside:avoid for anything taller than the
+ *    fragmentainer. Such a block is unwrapped into its own children, so the
+ *    pagination falls back to its innermost paragraphs/list items instead of
+ *    force-cutting mid-content at the page edge.
+ *
  * All numbers returned are in UNZOOMED content units: the measure node they
  * are computed from is `zoom`-scaled (see utils/pageLayout.js:scaleStyle), so
  * this module divides painted geometry by the zoom factor to recover the
@@ -47,13 +60,20 @@ const isHeadingLike = (el) => {
 };
 
 /* Depth-first collection of the smallest unsplittable blocks, in document
-   order, never descending into an element that is itself atomic. */
-function collectAtomicBlocks(rootEl) {
+   order, never descending into an element that is itself atomic — UNLESS that
+   atom is taller than a full page (visibleH is the painted capacity), in
+   which case it cannot be kept whole and is unwrapped so its innermost
+   paragraphs/list items become the page units instead (print engines ignore
+   break-inside:avoid for anything taller than the fragmentainer). */
+function collectAtomicBlocks(rootEl, visibleH) {
   const blocks = [];
   const walk = (parent) => {
     for (const child of parent.children) {
-      if (isAtomicElement(child)) blocks.push(child);
-      else walk(child);
+      if (isAtomicElement(child) && child.getBoundingClientRect().height <= visibleH + EPS) {
+        blocks.push(child);
+      } else {
+        walk(child);
+      }
     }
   };
   walk(rootEl);
@@ -88,7 +108,9 @@ export function computePageStarts(rootEl, visibleH, zoom = 1) {
   const z = zoom > 0 ? zoom : 1;
   const rootRect = rootEl.getBoundingClientRect();
 
-  const blocks = collectAtomicBlocks(rootEl)
+  // visibleH is the PAINTED page capacity (true pixels); the atomic-fit gate
+  // in collectAtomicBlocks compares painted heights, so pass the raw value.
+  const blocks = collectAtomicBlocks(rootEl, visibleH)
     .map((el) => {
       const r = el.getBoundingClientRect();
       return {
@@ -101,6 +123,12 @@ export function computePageStarts(rootEl, visibleH, zoom = 1) {
     .filter((b) => b.h > EPS);
 
   if (!blocks.length) return null;
+
+  // Multi-column templates (engineering, designer…) place columns side by
+  // side, so document order is NOT visual order. Sort by painted top so the
+  // greedy pack runs in true reading order — indices are preserved as a
+  // stable tie-breaker for blocks sharing a top.
+  blocks.sort((a, b) => (a.top - b.top) || 0);
 
   // Painted capacity of one page, in the same unzoomed units as the blocks:
   // the page window is visibleH true-pixels tall, and content paints at
