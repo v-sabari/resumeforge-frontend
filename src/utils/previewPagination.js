@@ -32,11 +32,12 @@
  *    pagination falls back to its innermost paragraphs/list items instead of
  *    force-cutting mid-content at the page edge.
  *
- * All numbers returned are in UNZOOMED content units: the measure node they
- * are computed from is `zoom`-scaled (see utils/pageLayout.js:scaleStyle), so
- * this module divides painted geometry by the zoom factor to recover the
- * template's own coordinate space. The caller multiplies back by `zoom` when
- * applying the page offset, which keeps the math exact at every density scale.
+ * All numbers returned are in UNZOOMED content units: the measure node is
+ * laid out at the template's TRUE size (there is no density scaling — the
+ * old "Compress" feature was removed), so painted geometry IS the template's
+ * own coordinate space and `scale` is always 1. The `scale` parameter is
+ * kept in the signature so this module stays shareable with the PDF export
+ * handler, which re-runs the same pagination inside the print page.
  *
  * Pure DOM — no React, no build globals — so it can be imported by the app.
  */
@@ -157,7 +158,45 @@ export function computePageStarts(rootEl, visibleH, zoom = 1) {
     const next = blocks[fitEnd + 1];
     // Never exceed a full page per window (over-tall blocks are force-split at
     // the page edge, exactly like a print engine — no flow is ever skipped).
-    let boundary = Math.min(next.top, pageStart + cap);
+    const capBoundary = pageStart + cap;
+
+    // TWO-COLUMN SEAM: column flows overlap vertically, so a single page-edge Y
+    // necessarily crosses at least one block when one column's tail extends
+    // past the other column's next block top. Pick the seam that slices the
+    // LEAST painted height — either the next block's top (the "reading order"
+    // seam used by standard greedy packing) or one column's fill end (the max
+    // bottom of everything assigned to this page). For single-column templates
+    // both candidates coincide and the cost is zero.
+    const sliceCost = (x) => {
+      let cost = 0;
+      for (let k = idx; k < blocks.length; k += 1) {
+        const t = blocks[k].top;
+        if (t >= x - EPS) break; // sorted by top: no block above x remains
+        const b = blocks[k].bottom;
+        if (b > x + EPS) cost += Math.min(b, x) - Math.max(t, x);
+      }
+      return cost;
+    };
+    let maxFitBottom = Math.min(next.top, capBoundary);
+    for (let k = idx; k <= fitEnd; k += 1) {
+      if (blocks[k].bottom > maxFitBottom) maxFitBottom = Math.min(blocks[k].bottom, capBoundary);
+    }
+    const boundaryAtNext = Math.min(next.top, capBoundary);
+    let boundary = sliceCost(boundaryAtNext) <= sliceCost(maxFitBottom)
+      ? boundaryAtNext
+      : maxFitBottom;
+
+    // Guard: does every block currently assigned to this page (top on or after
+    // pageStart) still end above the candidate boundary? If so, the boundary
+    // may be pulled UP for heading binding without re-slicing any block; if
+    // not, the block pulled down the boundary was the only thing keeping the
+    // whole-block invariant and any pull-up would reintroduce mid-block cuts.
+    const assignedEndsAbove = (cand) => {
+      for (let k = idx; k < blocks.length; k += 1) {
+        if (blocks[k].top >= pageStart - EPS && blocks[k].bottom > cand + EPS) return false;
+      }
+      return true;
+    };
 
     // Bind a section heading to its first body block: if the block that would
     // start this page belongs to a section that fits entirely from its own
@@ -167,7 +206,7 @@ export function computePageStarts(rootEl, visibleH, zoom = 1) {
       const sr = nextSectionBox.getBoundingClientRect();
       const sTop = (sr.top - rootRect.top) / z;
       const sBottom = (sr.bottom - rootRect.top) / z;
-      if (sTop > pageStart + EPS && sTop < boundary - EPS && sBottom - pageStart <= cap + EPS) {
+      if (sTop > pageStart + EPS && sTop < boundary - EPS && sBottom - pageStart <= cap + EPS && assignedEndsAbove(sTop)) {
         boundary = sTop;
       }
     }
@@ -181,7 +220,7 @@ export function computePageStarts(rootEl, visibleH, zoom = 1) {
       if (head && head !== rootEl && isHeadingLike(head)) {
         const hr = head.getBoundingClientRect();
         const hTop = (hr.top - rootRect.top) / z;
-        if (hTop >= pageStart - EPS && hTop < boundary - EPS) boundary = hTop;
+        if (hTop >= pageStart - EPS && hTop < boundary - EPS && assignedEndsAbove(hTop)) boundary = hTop;
       }
     }
 

@@ -12,7 +12,6 @@ export const defaultResume = {
   education: [], certifications: [], achievements: [],
   languages: [], customSections: {},
   sectionsConfig: null, // null → use DEFAULT_SECTIONS_CONFIG
-  layoutScale: 1, // 1 = full size; < 1 = compressed via the Compress feature (see compression.js)
 };
 
 export const premiumFeatures = [

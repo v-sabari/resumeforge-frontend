@@ -135,7 +135,6 @@ const BuilderLayoutInner = () => {
     <ResumePreview
       resume={{ ...resume, sectionsConfig }}
       template={template}
-      onScaleChange={(scale) => { editor.top('layoutScale', scale); setSuccess(''); }}
     />
   );
 

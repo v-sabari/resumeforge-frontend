@@ -96,11 +96,6 @@ var DEFAULT_PAGE_MARGIN = { top: 32, bottom: 32 };
 function getPageMargin(templateId) {
   return TEMPLATE_PAGE_MARGINS[templateId] || DEFAULT_PAGE_MARGIN;
 }
-function scaleStyle(scale, pageWidth = A4_W) {
-  const s = typeof scale === "number" && scale > 0 && scale !== 1 ? scale : 1;
-  if (s === 1) return void 0;
-  return { width: `${pageWidth / s}px`, zoom: s };
-}
 
 // src/utils/sectionsCatalog.js
 var STANDARD_SECTIONS = [
@@ -3220,7 +3215,13 @@ var TEMPLATE_MAP = {
 var compiledCss = readFileSync(path.join(__dirname, "_pdf-compiled.css"), "utf8");
 var PAGINATION_SOURCE = null;
 try {
-  PAGINATION_SOURCE = readFileSync(path.join(__dirname, "_pagination.text.js"), "utf8");
+  const moduleText = readFileSync(path.join(__dirname, "_pagination.text.js"), "utf8");
+  const marker = "export default ";
+  const at = moduleText.indexOf(marker);
+  if (at !== -1) {
+    const json = moduleText.slice(at + marker.length).trim().replace(/;\s*$/, "");
+    PAGINATION_SOURCE = JSON.parse(json).replace(/^export /gm, "");
+  }
 } catch {
 }
 function wrapHtml(bodyHtml, pageW) {
@@ -3285,12 +3286,8 @@ async function handler(req, res) {
     const Template = TEMPLATE_MAP[templateKey];
     const { top: marginTop, bottom: marginBottom } = getPageMargin(templateKey);
     const { w: pageW, h: pageH } = getPageSize(templateKey);
-    const layoutScale = typeof resume.layoutScale === "number" ? resume.layoutScale : 1;
-    const wrapStyle = scaleStyle(layoutScale, pageW);
     const templateEl = React.createElement(Template, { data });
-    const bodyHtml = ReactDOMServer.renderToStaticMarkup(
-      wrapStyle ? React.createElement("div", { style: wrapStyle }, templateEl) : templateEl
-    );
+    const bodyHtml = ReactDOMServer.renderToStaticMarkup(templateEl);
     const html = wrapHtml(bodyHtml, pageW);
     const browser = await getBrowser();
     const page = await browser.newPage();
@@ -3299,11 +3296,11 @@ async function handler(req, res) {
     const visibleH = pageH - marginTop - marginBottom;
     let annotation = null;
     if (PAGINATION_SOURCE) {
-      annotation = await page.evaluate(([source, scale, visibleH2]) => {
+      annotation = await page.evaluate(([source, visibleH2]) => {
         (0, eval)(source);
         const root = document.body.firstElementChild;
         if (!root) return null;
-        const starts = computePageStarts(root, visibleH2, scale);
+        const starts = computePageStarts(root, visibleH2, 1);
         if (!starts || starts.length < 2) return null;
         const isAtomic = (el) => {
           if (!(el instanceof HTMLElement)) return false;
@@ -3323,7 +3320,7 @@ async function handler(req, res) {
         };
         walk(root);
         const rootTop = root.getBoundingClientRect().top;
-        const unTop = (el) => (el.getBoundingClientRect().top - rootTop) / scale;
+        const unTop = (el) => el.getBoundingClientRect().top - rootTop;
         const applyBreak = (el) => {
           el.style.setProperty("break-before", "page");
           el.style.setProperty("page-break-before", "always");
@@ -3361,9 +3358,9 @@ async function handler(req, res) {
           }
         }
         return { stamped: count, expected: starts.length };
-      }, [PAGINATION_SOURCE, layoutScale, visibleH]);
+      }, [PAGINATION_SOURCE, visibleH]);
     }
-    if (annotation && annotation.stamped > 0) console.log(`render-pdf: stamped ${annotation.stamped} element-aware page breaks (template=${templateKey} scale=${layoutScale})`);
+    if (annotation && annotation.stamped > 0) console.log(`render-pdf: stamped ${annotation.stamped} element-aware page breaks (template=${templateKey})`);
     const pdfOpts = {
       width: `${pageW}px`,
       height: `${pageH}px`,
@@ -3389,7 +3386,7 @@ async function handler(req, res) {
       const naturalBuffer = await cleanPage.pdf(pdfOpts);
       const naturalPages = countPdfPages(naturalBuffer);
       await cleanPage.close();
-      console.log(`render-pdf: annotated=${pdfPages} natural=${naturalPages} expected=${annotation.expected} (template=${templateKey} scale=${layoutScale})`);
+      console.log(`render-pdf: annotated=${pdfPages} natural=${naturalPages} expected=${annotation.expected} (template=${templateKey})`);
       if (naturalPages === annotation.expected) pdfBuffer = naturalBuffer;
       else if (naturalPages === pdfPages && pdfPages !== annotation.expected) {
         pdfBuffer = naturalBuffer;

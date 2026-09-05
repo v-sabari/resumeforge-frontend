@@ -42,7 +42,7 @@ import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium-min';
 
 import { buildTransformed } from '../utils/transformResume.js';
-import { A4_W, A4_H, getPageMargin, getPageSize, scaleStyle } from '../utils/pageLayout.js';
+import { A4_W, A4_H, getPageMargin, getPageSize } from '../utils/pageLayout.js';
 import { DEFAULT_SECTIONS_CONFIG } from '../utils/sectionsCatalog.js';
 import {
   ModernProTemplate,
@@ -111,7 +111,19 @@ const compiledCss = readFileSync(path.join(__dirname, '_pdf-compiled.css'), 'utf
 // _pdf-compiled.css above.
 let PAGINATION_SOURCE = null;
 try {
-  PAGINATION_SOURCE = readFileSync(path.join(__dirname, '_pagination.text.js'), 'utf8');
+  // _pagination.text.js is a tiny generated module whose `export default`
+  // is the source of utils/previewPagination.js as a JSON string. That text
+  // is unusable as raw eval (ESM syntax, `export function`...) so unwrap the
+  // embedded string and strip the export keyword before injecting it into the
+  // print page — the resulting plain script defines computePageStarts as a
+  // page global, which the annotation step below then calls.
+  const moduleText = readFileSync(path.join(__dirname, '_pagination.text.js'), 'utf8');
+  const marker = 'export default ';
+  const at = moduleText.indexOf(marker);
+  if (at !== -1) {
+    const json = moduleText.slice(at + marker.length).trim().replace(/;\s*$/, '');
+    PAGINATION_SOURCE = JSON.parse(json).replace(/^export /gm, '');
+  }
 } catch {
   // older standalone deployments without the generated file: fall back to
   // Chrome's native pagination (no annotation) — export still works.
@@ -191,19 +203,13 @@ export default async function handler(req, res) {
     const { top: marginTop, bottom: marginBottom } = getPageMargin(templateKey);
     const { w: pageW, h: pageH } = getPageSize(templateKey);
 
-    // COMPRESS FEATURE: apply the exact density scale the user verified in
-    // the live preview (see utils/pageLayout.js:scaleStyle and
-    // utils/compression.js for how it was derived and re-measured client
-    // side). Wrapping here — rather than inside each template — means the
-    // PDF's real layout height shrinks by the identical CSS mechanism
-    // (`zoom`) the preview used, so Puppeteer's native pagination below
-    // produces the SAME page count the user already confirmed on screen.
-    const layoutScale = typeof resume.layoutScale === 'number' ? resume.layoutScale : 1;
-    const wrapStyle = scaleStyle(layoutScale, pageW);
+    // The exported PDF is always the template's TRUE, natural size — there is
+    // no density scaling (the old "Compress" feature was removed, see
+    // utils/pageLayout.js for the page geometry both surfaces share). The
+    // preview and this handler therefore only ever agree in one way: at
+    // scale 1, which is what both now always use.
     const templateEl = React.createElement(Template, { data });
-    const bodyHtml = ReactDOMServer.renderToStaticMarkup(
-      wrapStyle ? React.createElement('div', { style: wrapStyle }, templateEl) : templateEl
-    );
+    const bodyHtml = ReactDOMServer.renderToStaticMarkup(templateEl);
     const html = wrapHtml(bodyHtml, pageW);
 
     const browser = await getBrowser();
@@ -216,21 +222,21 @@ export default async function handler(req, res) {
     // boundary the user just saw. Chrome honors break-before:page on these
     // atomic-block tops, so the exported PDF paginates at EXACTLY the same
     // flow positions (and therefore the same page count) as the on-screen
-    // preview — at any compress scale — instead of letting Chrome's own
-    // fragmenter choose (which can differ for over-tall section bubbles such
-    // as the Research template's experience card). If no atomic blocks exist
-    // (computePageStarts returns null) nothing is stamped and Chrome paginates
-    // naturally, as before.
+    // preview — always at the template's true 1:1 size — instead of letting
+    // Chrome's own fragmenter choose (which can differ for over-tall section
+    // bubbles such as the Research template's experience card). If no atomic
+    // blocks exist (computePageStarts returns null) nothing is stamped and
+    // Chrome paginates naturally, as before.
     const visibleH = pageH - marginTop - marginBottom;
     let annotation = null;
     if (PAGINATION_SOURCE) {
-      annotation = await page.evaluate(([source, scale, visibleH]) => {
+      annotation = await page.evaluate(([source, visibleH]) => {
         (0, eval)(source);
         const root = document.body.firstElementChild;
         if (!root) return null;
         // computePageStarts is injected at runtime by (0, eval)(source).
         // eslint-disable-next-line no-undef
-        const starts = computePageStarts(root, visibleH, scale);
+        const starts = computePageStarts(root, visibleH, 1);
         if (!starts || starts.length < 2) return null;
         const isAtomic = (el) => {
           if (!(el instanceof HTMLElement)) return false;
@@ -250,7 +256,7 @@ export default async function handler(req, res) {
         };
         walk(root);
         const rootTop = root.getBoundingClientRect().top;
-        const unTop = (el) => (el.getBoundingClientRect().top - rootTop) / scale;
+        const unTop = (el) => el.getBoundingClientRect().top - rootTop;
         const applyBreak = (el) => {
           el.style.setProperty('break-before', 'page');
           el.style.setProperty('page-break-before', 'always');
@@ -284,10 +290,10 @@ export default async function handler(req, res) {
           }
         }
         return { stamped: count, expected: starts.length };
-      }, [PAGINATION_SOURCE, layoutScale, visibleH]);
+      }, [PAGINATION_SOURCE, visibleH]);
     }
 
-    if (annotation && annotation.stamped > 0) console.log(`render-pdf: stamped ${annotation.stamped} element-aware page breaks (template=${templateKey} scale=${layoutScale})`);
+    if (annotation && annotation.stamped > 0) console.log(`render-pdf: stamped ${annotation.stamped} element-aware page breaks (template=${templateKey})`);
 
     const pdfOpts = {
       width: `${pageW}px`,
@@ -325,7 +331,7 @@ export default async function handler(req, res) {
       const naturalBuffer = await cleanPage.pdf(pdfOpts);
       const naturalPages = countPdfPages(naturalBuffer);
       await cleanPage.close();
-      console.log(`render-pdf: annotated=${pdfPages} natural=${naturalPages} expected=${annotation.expected} (template=${templateKey} scale=${layoutScale})`);
+      console.log(`render-pdf: annotated=${pdfPages} natural=${naturalPages} expected=${annotation.expected} (template=${templateKey})`);
       if (naturalPages === annotation.expected) pdfBuffer = naturalBuffer;
       else if (naturalPages === pdfPages && pdfPages !== annotation.expected) {
         // neither matches: fall back to the previous verified (natural) output.
