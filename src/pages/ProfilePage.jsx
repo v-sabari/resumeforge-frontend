@@ -7,6 +7,7 @@ import { Alert } from '../components/common/Alert';
 import { Loader } from '../components/common/Loader';
 import { Icon } from '../components/icons/Icon';
 import { prettyDate } from '../utils/helpers';
+import { FREE_EXPORT_LIMIT } from '../utils/constants';
 import api from '../services/api';
 
 /* ── Data export ── */
@@ -131,8 +132,8 @@ export const ProfilePage = () => {
           <div className="space-y-3">
             {[
               ['Exports used',      exportStatus?.usedExports ?? 0],
-              ['Exports remaining', premium?.isPremium ? 'Unlimited' : Math.max(0, 2 - (exportStatus?.usedExports ?? 0))],
-              ['Plan type',         premium?.isPremium ? 'Premium (unlimited)' : 'Free (3 exports)'],
+              ['Exports remaining', premium?.isPremium ? 'Unlimited' : Math.max(0, FREE_EXPORT_LIMIT - (exportStatus?.usedExports ?? 0))],
+              ['Plan type',         premium?.isPremium ? 'Premium (unlimited)' : `Free (${FREE_EXPORT_LIMIT} exports)`],
             ].map(([label, value]) => (
               <div key={label} className="flex items-center justify-between py-2 border-b border-surface-100 last:border-0">
                 <span className="text-sm text-ink-400">{label}</span>

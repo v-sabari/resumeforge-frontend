@@ -84,7 +84,7 @@ export const GraduateTemplate = ({ data }) => {
           </div>))}</div>
       ):null)}
 
-      {skills?.length && visible('skills') && (
+      {Boolean(skills?.length) && visible('skills') && (
         <div key="skills"><SH>Skills</SH>
           <div className="grid grid-cols-2 gap-x-6 gap-y-0.5 pl-1">
             {(Array.isArray(skills)?skills:[skills]).map((s,i)=><div key={i} className="text-[10.5px] text-gray-700 leading-relaxed break-words break-inside-avoid">{s}</div>)}
