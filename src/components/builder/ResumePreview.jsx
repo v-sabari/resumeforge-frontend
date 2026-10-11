@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef, useImperativeHandle, forwardRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { DEFAULT_SECTIONS_CONFIG } from '../../utils/constants';
 import { buildTransformed } from '../../utils/transformResume';
-import { A4_W, A4_H, getPageMargin, scaleStyle } from '../../utils/pageLayout';
-import { findCompressionScale, MIN_SCALE, MAX_SCALE } from '../../utils/compression';
-import { CompressModal } from './CompressModal';
+import { getPageMargin, getPageSize } from '../../utils/pageLayout';
+import { computePageStarts } from '../../utils/previewPagination';
+import { OrbitalBlink } from '../common/OrbitalBlink';
 import {
   ModernProTemplate,
   MinimalATSTemplate,
@@ -34,28 +34,37 @@ const PAGE_GAP = 16; // px between simulated sheets, at true (unscaled) size
  * instead of one continuous strip with a line drawn over it.
  *
  * How it works: the content is rendered once, off-screen, purely to
- * measure its total flowed height. It is then rendered again inside each
- * page "window" — a fixed-height, clipped box sized to that template's
- * visible content area (A4 height minus its own top/bottom margin) —
- * shifted up by however much of the content earlier pages already showed.
- * This mirrors what a print engine actually does: one continuous flow,
- * sliced into equal, margined pages — so every page (not just the first
- * and last) gets a proper top and bottom margin, matching the exported PDF.
+ * measure its layout. It is then rendered again inside each page "window" —
+ * a fixed-height, clipped box sized to that template's visible content area
+ * (page height minus its own top/bottom margin) — shifted up by how much of
+ * the content earlier pages already showed.
  *
- * `contentScale` (from the Compress feature) is applied to the SAME
- * hidden measurement node this component already used for pagination —
- * see pageLayout.js:scaleStyle for why `zoom` (not `transform`) is used,
- * which is what lets one real measurement drive both the on-screen page
- * count AND the compression search below, with no separate estimate path.
+ * Element-aware pagination (utils/previewPagination.js): instead of slicing
+ * the continuous flow at blind pixel boundaries (which can cut a text line
+ * in half and re-draw it on the next page), the measurement pass also
+ * records every atomic block — <li>, <p>, headings, and every element the
+ * templates marked `break-inside: avoid` — and each page starts its window
+ * exactly at a block top, ending before the first block that would not fit.
+ * The window's HEIGHT is the boundary delta, not the full page: a block
+ * pushed to the next page is fully removed from this one (a true re-flow,
+ * like Chrome's PDF engine), so nothing is ever clipped mid-line and nothing
+ * is painted twice. The freed space reads as whitespace at the page bottom.
+ *
+ * Everything below renders at the template's TRUE, full size — there is no
+ * density scaling (the old "Compress" feature was removed). One real
+ * measurement node at natural size drives the on-screen page count, and the
+ * PDF export re-runs this same pagination so printed pages match exactly.
  * ────────────────────────────────────────────────────────────────── */
-const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange }, ref) => {
+const A4Viewer = ({ children, margin, size, onPagesChange }) => {
   const shellRef   = useRef(null);
   const measureRef = useRef(null);
   const [scale, setScale] = useState(1);
-  const [rawH,  setRawH]  = useState(A4_H);
+  const { w: pageW, h: pageH, name: pageName } = size;
+  const [rawH,  setRawH]  = useState(pageH);
+  const [pageStarts, setPageStarts] = useState(null);
 
   const { top: mTop, bottom: mBottom } = margin;
-  const visibleH = Math.max(1, A4_H - mTop - mBottom);
+  const visibleH = Math.max(1, pageH - mTop - mBottom);
 
   const recalc = useCallback(() => {
     const shell   = shellRef.current;
@@ -63,16 +72,14 @@ const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange
     if (!shell || !measure) return;
     const aw = shell.clientWidth - 32;
     if (aw <= 0) return;
-    setScale(aw / A4_W);
-    // NOTE: intentionally getBoundingClientRect().height, NOT scrollHeight.
-    // Verified directly: Chromium's `scrollHeight`/`offsetHeight` report an
-    // element's box size in its PRE-zoom local coordinate space and do not
-    // change when `zoom` is applied — only the actually-painted box
-    // (getBoundingClientRect) reflects the zoomed size. Reading
-    // scrollHeight here would silently ignore every compression/enlarge
-    // scale and always report the same, wrong height.
+    setScale(aw / pageW);
     setRawH(measure.getBoundingClientRect().height);
-  }, []);
+    // Element-aware page boundaries (whole atomic blocks, never a sliced
+    // line) — see utils/previewPagination.js. Falls back to null (uniform
+    // slicing) when a template has no detectable atomic blocks.
+    setPageStarts(computePageStarts(measure, visibleH, 1));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [size]);
 
   useEffect(() => {
     const shell   = shellRef.current;
@@ -85,174 +92,96 @@ const A4Viewer = forwardRef(({ children, margin, contentScale = 1, onPagesChange
     recalc();
     return () => { ro1.disconnect(); ro2.disconnect(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contentScale]);
+  }, [size]);
 
-  const numPages    = Math.max(1, Math.ceil(rawH / visibleH));
-  const scaledW     = A4_W * scale;
-  const scaledPageH = A4_H * scale;
+  const numPages = (pageStarts && pageStarts.length > 0)
+    ? pageStarts.length
+    : Math.max(1, Math.ceil(rawH / visibleH));
+  const scaledW     = pageW * scale;
+  const scaledPageH = pageH * scale;
 
   useEffect(() => { onPagesChange?.(numPages); }, [numPages, onPagesChange]);
-
-  /* ── Imperative measurement API for the compression search ─────────
-   * findCompressionScale() (utils/compression.js) needs to try many
-   * candidate scales and read back the REAL rendered height for each one
-   * before deciding anything. It does that through this single hidden
-   * node, applying a candidate scale, forcing a synchronous layout read
-   * via a real rendered measurement, then restoring whatever scale is
-   * actually active — so the visible preview never flickers during a
-   * search. Uses getBoundingClientRect().height rather than scrollHeight —
-   * see the note above recalc() for why that distinction is essential
-   * once `zoom` is involved. */
-  useImperativeHandle(ref, () => ({
-    measureAtScale(candidateScale) {
-      const measure = measureRef.current;
-      if (!measure) return rawH;
-      const prevStyle = measure.getAttribute('style') || '';
-      const style = scaleStyle(candidateScale);
-      Object.assign(measure.style, { width: `${A4_W}px`, zoom: '' }); // reset first
-      if (style) Object.assign(measure.style, style);
-      void measure.offsetHeight; // force synchronous layout before reading rect
-      const h = measure.getBoundingClientRect().height;
-      measure.setAttribute('style', prevStyle);
-      return h;
-    },
-    getVisibleH: () => visibleH,
-  }), [rawH, visibleH]);
-
-  const innerStyle = scaleStyle(contentScale);
 
   return (
     <div ref={shellRef} className="w-full rounded-xl" style={{ background: '#475569', padding: '16px' }}>
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-widest">A4 Preview</span>
+        <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-widest">{pageName} Preview</span>
         <span className="rounded-full bg-slate-700 px-2.5 py-0.5 text-[10px] font-medium text-slate-300">
           {numPages} {numPages === 1 ? 'page' : 'pages'}
         </span>
       </div>
 
-      {/* Hidden measurement copy — full, unsliced content at true width.
-          Never shown; exists only so we know the total flowed height,
-          AND doubles as the compression search's measurement node. */}
-      <div style={{ position: 'absolute', top: 0, left: -99999, width: A4_W, visibility: 'hidden' }} aria-hidden="true">
-        <div ref={measureRef} style={innerStyle}>{children}</div>
+      {/* Hidden measurement copy — full, unsliced content at true width and
+          true size. Never shown; exists only so we know the total flowed
+          height and can paginate element-aware. */}
+      <div style={{ position: 'absolute', top: 0, left: -99999, width: pageW, visibility: 'hidden' }} aria-hidden="true">
+        <div ref={measureRef}>{children}</div>
       </div>
 
       <div className="mx-auto flex flex-col items-center" style={{ width: scaledW, gap: PAGE_GAP * scale }}>
-        {Array.from({ length: numPages }).map((_, i) => (
-          <div key={i} className="relative overflow-hidden bg-white shrink-0"
-               style={{ width: scaledW, height: scaledPageH,
-                        boxShadow: '0 8px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25)' }}>
-            {/* Everything below is laid out in TRUE A4 pixel units, then
-                scaled down once as a whole — keeps the margin/offset math
-                simple and exactly mirrors how the single-page version used
-                to scale itself. */}
-            <div style={{ width: A4_W, height: A4_H, transform: `scale(${scale})`, transformOrigin: 'top left' }}>
-              {/* Top margin — always blank, exactly like a print margin */}
-              <div style={{ height: mTop }} />
-              {/* This page's visible slice of the continuous content */}
-              <div style={{ height: visibleH, overflow: 'hidden' }}>
-                <div style={{ marginTop: -(i * visibleH) }}>
-                  <div style={innerStyle}>{children}</div>
+        {Array.from({ length: numPages }).map((_, i) => {
+          // Element-aware re-flow: page i shows the flow from boundary[i] up
+          // to exactly boundary[i+1] — the sheet's content window HEIGHT is
+          // that slice, not the full page. A block that was pushed to the
+          // next page is therefore FULLY REMOVED from this one, the same way
+          // Chrome's PDF engine re-flows content — nothing is ever painted
+          // twice, no line is ever half-drawn, and the freed space shows up
+          // as whitespace at the page bottom. Without boundaries the legacy
+          // blind-pixel slice is used (rare, no atomic blocks).
+          const hasBounds = pageStarts && pageStarts.length > 0;
+          const start = hasBounds ? pageStarts[i] : i * visibleH;
+          const sliceEnd = hasBounds
+            ? (i === pageStarts.length - 1 ? start + visibleH : (pageStarts[i + 1] || start + visibleH))
+            : start + visibleH;
+          const sliceH = Math.max(0, sliceEnd - start);
+          return (
+            <div key={i} className="relative overflow-hidden bg-white shrink-0"
+                 style={{ width: scaledW, height: scaledPageH,
+                          boxShadow: '0 8px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25)' }}>
+              {/* Everything below is laid out in TRUE page pixel units, then
+                  scaled down once as a whole — keeps the margin/offset math
+                  simple and exactly mirrors how the single-page version used
+                  to scale itself. */}
+              <div style={{ width: pageW, height: pageH, transform: `scale(${scale})`, transformOrigin: 'top left',
+                            display: 'flex', flexDirection: 'column' }}>
+                {/* Top margin — always blank, exactly like a print margin */}
+                <div style={{ height: mTop, flexShrink: 0 }} />
+                {/* This page's visible slice of the continuous content — its
+                    height is the boundary delta, so it ends precisely where
+                    the next page begins. */}
+                <div style={{ height: sliceH, overflow: 'hidden', flexShrink: 0 }}>
+                  <div style={{ marginTop: -start }}>
+                    <div style={{ width: pageW }}>{children}</div>
+                  </div>
                 </div>
+                {/* Re-flow gap: space vacated by content pushed to the next
+                    page, exactly like a word processor. */}
+                <div style={{ flexGrow: 1 }} />
+                {/* Bottom margin — always blank, exactly like a print margin */}
+                <div style={{ height: mBottom, flexShrink: 0 }} />
               </div>
-              {/* Bottom margin — always blank, exactly like a print margin */}
-              <div style={{ height: mBottom }} />
+              <span className="absolute bottom-1.5 right-2.5 text-[9px] font-semibold text-slate-300 select-none">
+                {i + 1} / {numPages}
+              </span>
             </div>
-            <span className="absolute bottom-1.5 right-2.5 text-[9px] font-semibold text-slate-300 select-none">
-              {i + 1} / {numPages}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
-});
-A4Viewer.displayName = 'A4Viewer';
+};
 
 /* ─── Public ResumePreview ─────────────────────────────────────── */
-export const ResumePreview = ({ resume, template = 'modern', onScaleChange }) => {
+export const ResumePreview = ({ resume, template = 'modern' }) => {
   const [active, setActive] = useState(template);
-  const [pages,  setPages]  = useState(1);
-  const [showCompress, setShowCompress] = useState(false);
-  const [compressing,  setCompressing]  = useState(false);
-  const [compressMsg,  setCompressMsg]  = useState(null); // { variant, text }
-  const viewerRef = useRef(null);
 
   useEffect(() => { setActive(template); }, [template]);
 
-  // The compressed scale lives on the resume itself (resume.layoutScale)
-  // so it survives Save and is what actually gets sent to PDF export —
-  // see pageLayout.js and renderPdfHandler.jsx for the export-side half
-  // of this. Default to fully uncompressed (1) for resumes that have
-  // never been compressed.
-  const contentScale = typeof resume?.layoutScale === 'number' && resume.layoutScale >= MIN_SCALE && resume.layoutScale <= MAX_SCALE
-    ? resume.layoutScale
-    : 1;
-
-  const applyScale = (next) => {
-    onScaleChange?.(next);
-  };
-
-  const runCompress = (targetPages) => {
-    setCompressing(true);
-    setCompressMsg(null);
-    // Deferred so the "Compressing…" state actually paints before the
-    // (synchronous, but occasionally slow-ish for long resumes) search
-    // runs its repeated real-DOM measurements.
-    setTimeout(() => {
-      const viewer = viewerRef.current;
-      if (!viewer) { setCompressing(false); return; }
-      const visibleH = viewer.getVisibleH();
-      const result = findCompressionScale({
-        measureFn: (s) => viewer.measureAtScale(s),
-        targetPages,
-        visibleH,
-      });
-
-      if (result.mode === 'unchanged') {
-        setCompressMsg({ variant: 'info', text: `Already exactly ${result.pages} page${result.pages === 1 ? '' : 's'} — no change needed.` });
-      } else if (result.fits) {
-        applyScale(result.scale);
-        if (result.mode === 'shrink') {
-          setCompressMsg({
-            variant: 'success',
-            text: `Shrunk to fit ${result.pages} page${result.pages === 1 ? '' : 's'}, verified by re-measuring the actual layout. Alignment and template are unchanged. Save to keep this in your exported PDF.`,
-          });
-        } else if (result.shortOfTarget) {
-          setCompressMsg({
-            variant: 'info',
-            text: `Grown as much as it can while staying professional — there isn't enough content to fully reach ${targetPages} pages, so it settled at ${result.pages}. Save to keep this, or add more content and compress again.`,
-          });
-        } else {
-          setCompressMsg({
-            variant: 'success',
-            text: `Grown to fill ${result.pages} page${result.pages === 1 ? '' : 's'}, verified by re-measuring the actual layout. Alignment and template are unchanged. Save to keep this in your exported PDF.`,
-          });
-        }
-      } else {
-        // Honest failure: we do NOT apply a partial/guessed result. The
-        // floor scale is the smallest we'll ever go without text becoming
-        // unreadable, and even that only reaches result.pages pages.
-        setCompressMsg({
-          variant: 'error',
-          text: `Can't fit this into ${targetPages} page${targetPages === 1 ? '' : 's'} without shrinking text below a readable size. `
-              + `The most it can compress to while staying readable is ${result.pages} page${result.pages === 1 ? '' : 's'}. `
-              + `Try ${result.pages} instead, or shorten some content first.`,
-        });
-      }
-      setCompressing(false);
-    }, 30);
-  };
-
-  const resetCompression = () => {
-    applyScale(1);
-    setCompressMsg({ variant: 'info', text: 'Compression reset to full size.' });
-  };
-
   if (!resume) {
     return (
-      <div className="flex items-center justify-center rounded-2xl border border-surface-200 bg-white p-12 text-sm text-ink-400">
-        Loading preview…
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-12 gap-4">
+        <OrbitalBlink size="lg" />
+        <span className="text-sm text-ink-400">Loading preview…</span>
       </div>
     );
   }
@@ -292,51 +221,11 @@ export const ResumePreview = ({ resume, template = 'modern', onScaleChange }) =>
 
   return (
     <div className="flex flex-col gap-3">
-      <CompressModal
-        open={showCompress}
-        currentPages={pages}
-        busy={compressing}
-        onClose={() => setShowCompress(false)}
-        onConfirm={(target) => { setShowCompress(false); runCompress(target); }}
-      />
-
-      {/* Compress controls */}
-      <div className="flex items-center justify-between gap-2 rounded-xl border border-surface-200 bg-white px-3 py-2">
-        <div className="min-w-0">
-          <p className="text-xs font-semibold text-ink-700">
-            {contentScale < 1 ? `Compressed · ${Math.round(contentScale * 100)}% density`
-              : contentScale > 1 ? `Enlarged · ${Math.round(contentScale * 100)}% density`
-              : 'Full size'}
-          </p>
-          {compressMsg && (
-            <p className={[
-              'mt-0.5 text-[11px] leading-snug',
-              compressMsg.variant === 'error'   ? 'text-danger-600'  :
-              compressMsg.variant === 'success' ? 'text-success-600' : 'text-ink-400',
-            ].join(' ')}>
-              {compressMsg.text}
-            </p>
-          )}
-        </div>
-        <div className="flex shrink-0 gap-1.5">
-          {contentScale !== 1 && (
-            <button type="button" onClick={resetCompression}
-              className="btn-secondary btn-sm text-xs" disabled={compressing}>
-              Reset
-            </button>
-          )}
-          <button type="button" onClick={() => setShowCompress(true)}
-            className="btn-secondary btn-sm text-xs" disabled={compressing}>
-            {compressing ? 'Working…' : 'Compress'}
-          </button>
-        </div>
-      </div>
-
-      <A4Viewer ref={viewerRef} margin={getPageMargin(active)} contentScale={contentScale} onPagesChange={setPages}>
+      <A4Viewer margin={getPageMargin(active)} size={getPageSize(active)}>
         {content}
       </A4Viewer>
       <p className="text-center text-[10px] text-slate-400 select-none tracking-wide">
-        A4 · 210 × 297 mm · Live preview
+        {getPageSize(active).name} · {getPageSize(active).meta} · Live preview
       </p>
     </div>
   );

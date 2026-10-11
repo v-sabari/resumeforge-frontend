@@ -42,7 +42,7 @@ import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium-min';
 
 import { buildTransformed } from '../utils/transformResume.js';
-import { A4_W, A4_H, getPageMargin, scaleStyle } from '../utils/pageLayout.js';
+import { A4_W, A4_H, getPageMargin, getPageSize } from '../utils/pageLayout.js';
 import { DEFAULT_SECTIONS_CONFIG } from '../utils/sectionsCatalog.js';
 import {
   ModernProTemplate,
@@ -102,7 +102,34 @@ const TEMPLATE_MAP = {
 // bundle stays small.
 const compiledCss = readFileSync(path.join(__dirname, '_pdf-compiled.css'), 'utf8');
 
-function wrapHtml(bodyHtml) {
+// Source of utils/previewPagination.js, embedded as a text file by
+// scripts/build-pagination.mjs (see api/_pagination.text.js). The live
+// preview computes page breaks with this EXACT module; re-running it inside
+// the print page lets us stamp the same breaks into Chrome's pagination, so
+// the PDF always prints the page count (and break positions) the user saw on
+// screen. Read at runtime from the bundled api/ directory, exactly like
+// _pdf-compiled.css above.
+let PAGINATION_SOURCE = null;
+try {
+  // _pagination.text.js is a tiny generated module whose `export default`
+  // is the source of utils/previewPagination.js as a JSON string. That text
+  // is unusable as raw eval (ESM syntax, `export function`...) so unwrap the
+  // embedded string and strip the export keyword before injecting it into the
+  // print page — the resulting plain script defines computePageStarts as a
+  // page global, which the annotation step below then calls.
+  const moduleText = readFileSync(path.join(__dirname, '_pagination.text.js'), 'utf8');
+  const marker = 'export default ';
+  const at = moduleText.indexOf(marker);
+  if (at !== -1) {
+    const json = moduleText.slice(at + marker.length).trim().replace(/;\s*$/, '');
+    PAGINATION_SOURCE = JSON.parse(json).replace(/^export /gm, '');
+  }
+} catch {
+  // older standalone deployments without the generated file: fall back to
+  // Chrome's native pagination (no annotation) — export still works.
+}
+
+function wrapHtml(bodyHtml, pageW) {
   return `<!doctype html>
 <html>
 <head>
@@ -110,9 +137,22 @@ function wrapHtml(bodyHtml) {
 <style>
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { margin: 0; padding: 0; background: #fff; }
-  body { width: ${A4_W}px; }
+  body { width: ${pageW}px; }
   ${compiledCss}
-  h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
+  /* PAGE-BREAK RULES: the same break-controls the on-screen preview now
+     enforces element-wise (see utils/previewPagination.js) are expressed here
+     for the export engine. Chrome's print fragmenter honors these, so a list
+     item or paragraph that would straddle a page edge moves whole to the next
+     page instead of being sliced mid-line — and because the fraction assumes
+     line-level granularity, orphans/widows stop single stray lines from being
+     orphaned alone at a page bottom. Applies inside @media print so the
+     exported PDF and the on-screen preview break consistently. */
+  @media print {
+    p, li, .break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
+    p { orphans: 3; widows: 3; }
+    h1, h2, h3, h4, h5, h6 { break-after: avoid; page-break-after: avoid; }
+  }
+  h1, h2, h3, h4, h5, h6 { break-after: avoid; page-break-after: avoid; }
   li { break-inside: avoid; page-break-inside: avoid; }
 </style>
 </head>
@@ -161,30 +201,103 @@ export default async function handler(req, res) {
     const templateKey = TEMPLATE_MAP[template] ? template : 'modern';
     const Template = TEMPLATE_MAP[templateKey];
     const { top: marginTop, bottom: marginBottom } = getPageMargin(templateKey);
+    const { w: pageW, h: pageH } = getPageSize(templateKey);
 
-    // COMPRESS FEATURE: apply the exact density scale the user verified in
-    // the live preview (see utils/pageLayout.js:scaleStyle and
-    // utils/compression.js for how it was derived and re-measured client
-    // side). Wrapping here — rather than inside each template — means the
-    // PDF's real layout height shrinks by the identical CSS mechanism
-    // (`zoom`) the preview used, so Puppeteer's native pagination below
-    // produces the SAME page count the user already confirmed on screen.
-    const layoutScale = typeof resume.layoutScale === 'number' ? resume.layoutScale : 1;
-    const wrapStyle = scaleStyle(layoutScale);
+    // The exported PDF is always the template's TRUE, natural size — there is
+    // no density scaling (the old "Compress" feature was removed, see
+    // utils/pageLayout.js for the page geometry both surfaces share). The
+    // preview and this handler therefore only ever agree in one way: at
+    // scale 1, which is what both now always use.
     const templateEl = React.createElement(Template, { data });
-    const bodyHtml = ReactDOMServer.renderToStaticMarkup(
-      wrapStyle ? React.createElement('div', { style: wrapStyle }, templateEl) : templateEl
-    );
-    const html = wrapHtml(bodyHtml);
+    const bodyHtml = ReactDOMServer.renderToStaticMarkup(templateEl);
+    const html = wrapHtml(bodyHtml, pageW);
 
     const browser = await getBrowser();
     const page = await browser.newPage();
-    await page.setViewport({ width: A4_W, height: A4_H });
+    await page.setViewport({ width: pageW, height: pageH });
     await page.setContent(html, { waitUntil: 'networkidle0' });
 
-    const pdfBuffer = await page.pdf({
-      width: `${A4_W}px`,
-      height: `${A4_H}px`,
+    // PREVIEW/EXPORT PARITY: re-run the LIVE preview's pagination inside the
+    // print page and stamp an explicit print break at every element-aware
+    // boundary the user just saw. Chrome honors break-before:page on these
+    // atomic-block tops, so the exported PDF paginates at EXACTLY the same
+    // flow positions (and therefore the same page count) as the on-screen
+    // preview — always at the template's true 1:1 size — instead of letting
+    // Chrome's own fragmenter choose (which can differ for over-tall section
+    // bubbles such as the Research template's experience card). If no atomic
+    // blocks exist (computePageStarts returns null) nothing is stamped and
+    // Chrome paginates naturally, as before.
+    const visibleH = pageH - marginTop - marginBottom;
+    let annotation = null;
+    if (PAGINATION_SOURCE) {
+      annotation = await page.evaluate(([source, visibleH]) => {
+        (0, eval)(source);
+        const root = document.body.firstElementChild;
+        if (!root) return null;
+        // computePageStarts is injected at runtime by (0, eval)(source).
+        // eslint-disable-next-line no-undef
+        const starts = computePageStarts(root, visibleH, 1);
+        if (!starts || starts.length < 2) return null;
+        const isAtomic = (el) => {
+          if (!(el instanceof HTMLElement)) return false;
+          const tag = el.tagName;
+          if (tag === 'LI' || tag === 'P' || /^H[1-6]$/.test(tag)) return true;
+          const cs = getComputedStyle(el);
+          return cs.breakInside === 'avoid' || cs.pageBreakInside === 'avoid';
+        };
+        const atomics = [];
+        const all = [];
+        const walk = (p) => {
+          for (const c of p.children) {
+            all.push(c);
+            if (isAtomic(c)) atomics.push(c);
+            if (c.firstElementChild) walk(c);
+          }
+        };
+        walk(root);
+        const rootTop = root.getBoundingClientRect().top;
+        const unTop = (el) => el.getBoundingClientRect().top - rootTop;
+        const applyBreak = (el) => {
+          el.style.setProperty('break-before', 'page');
+          el.style.setProperty('page-break-before', 'always');
+        };
+        let count = 0;
+        for (const b of starts.slice(1)) {
+          // EXACT atomic-top boundary: stamp the break on that element.
+          let best = null;
+          let bestD = Infinity;
+          for (const el of atomics) {
+            const d = Math.abs(unTop(el) - b);
+            if (d < bestD) { bestD = d; best = el; }
+          }
+          if (best && bestD <= 1.5) { applyBreak(best); count += 1; continue; }
+          // INTERIOR forced-split: this boundary sits inside an over-tall
+          // break-inside:avoid bubble (the preview slices it mid-container).
+          // Insert a zero-height break-before sentinel at that flow position —
+          // a forced break is honored even inside a break-inside:avoid box,
+          // so Chrome paginates at EXACTLY the y the preview showed.
+          let minEl = null;
+          let minT = Infinity;
+          for (const el of all) {
+            const t = unTop(el);
+            if (t >= b - 0.01 && t < minT) { minT = t; minEl = el; }
+          }
+          if (minEl && minT - b <= visibleH) {
+            const sentinel = document.createElement('div');
+            sentinel.style.cssText = 'height:0;margin:0;padding:0;border:0;width:0;break-before:page;page-break-before:always;';
+            minEl.parentNode.insertBefore(sentinel, minEl);
+            count += 1;
+          }
+        }
+        return { stamped: count, expected: starts.length };
+      }, [PAGINATION_SOURCE, visibleH]);
+    }
+
+    if (annotation && annotation.stamped > 0) console.log(`render-pdf: stamped ${annotation.stamped} element-aware page breaks (template=${templateKey})`);
+
+    const pdfOpts = {
+      width: `${pageW}px`,
+      height: `${pageH}px`,
       printBackground: true,
       // Real top/bottom margin, per template, applied by Chrome's print
       // engine to EVERY page it paginates — this is what actually fixes
@@ -195,7 +308,36 @@ export default async function handler(req, res) {
       // and needs no per-page repetition (see utils/pageLayout.js).
       margin: { top: `${marginTop}px`, bottom: `${marginBottom}px`, left: '0px', right: '0px' },
       preferCSSPageSize: false,
-    });
+    };
+    const countPdfPages = (buf) => (Buffer.from(buf).toString('latin1').match(/\/Type\s*\/Page\b/g) || []).length;
+
+    let pdfBuffer = await page.pdf(pdfOpts);
+    let pdfPages = countPdfPages(pdfBuffer);
+
+    // VERIFY the annotated render reproduced the preview's exact page count.
+    // Forced breaks are honored even inside break-inside:avoid, but in rare
+    // cases (non-collapsing margins, orphan/keep-next chains) the sentinel can
+    // land a few px off the util boundary and Chrome shifts a fragment onto an
+    // extra page. When that happens the annotated render diverges, so fall
+    // back to Chrome's native pagination — which was the previous (and
+    // verified-on-20-templates) behavior. If even the natural render misses,
+    // prefer whichever run reproduced the preview count; else keep the
+    // annotated output (closest to what the user saw).
+    if (annotation && annotation.expected != null && pdfPages !== annotation.expected) {
+      await page.close();
+      const cleanPage = await browser.newPage();
+      await cleanPage.setViewport({ width: pageW, height: pageH });
+      await cleanPage.setContent(html, { waitUntil: 'networkidle0' });
+      const naturalBuffer = await cleanPage.pdf(pdfOpts);
+      const naturalPages = countPdfPages(naturalBuffer);
+      await cleanPage.close();
+      console.log(`render-pdf: annotated=${pdfPages} natural=${naturalPages} expected=${annotation.expected} (template=${templateKey})`);
+      if (naturalPages === annotation.expected) pdfBuffer = naturalBuffer;
+      else if (naturalPages === pdfPages && pdfPages !== annotation.expected) {
+        // neither matches: fall back to the previous verified (natural) output.
+        pdfBuffer = naturalBuffer;
+      }
+    }
 
     await page.close();
 

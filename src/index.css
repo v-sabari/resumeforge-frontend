@@ -160,6 +160,77 @@
   }
 }
 
+/* ── Orbital Blink loader ──────────────────────────────────────── */
+.orbital-blink {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.orbital-ring {
+  position: absolute;
+  border-radius: 9999px;
+  border: 1px solid rgba(125, 196, 248, 0.15);
+}
+
+.orbital-halo {
+  position: absolute;
+  border-radius: 9999px;
+  animation: orbital-halo-pulse 2.8s ease-in-out infinite;
+}
+
+.orbital-dot {
+  position: absolute;
+  border-radius: 9999px;
+  background: #7cc4f8;
+  box-shadow: 0 0 6px 1px rgba(124, 196, 248, 0.55);
+  animation: orbital-dot-seq 1.4s ease-in-out infinite;
+}
+
+.orbital-core {
+  position: absolute;
+  border-radius: 9999px;
+  background: #7cc4f8;
+  box-shadow: 0 0 8px 2px rgba(124, 196, 248, 0.5);
+  animation: orbital-core-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes orbital-dot-seq {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.6);
+    box-shadow: 0 0 2px 0px rgba(124, 196, 248, 0.2);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 10px 3px rgba(124, 196, 248, 0.7);
+  }
+}
+
+@keyframes orbital-core-pulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.7);
+    box-shadow: 0 0 4px 1px rgba(124, 196, 248, 0.25);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 14px 4px rgba(124, 196, 248, 0.6);
+  }
+}
+
+@keyframes orbital-halo-pulse {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* ── Custom scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar          { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track    { background: transparent; }
@@ -172,4 +243,64 @@
   background: rgba(10, 15, 28, 0.65);
   backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Google Sign-In button ─────────────────────────────────────── */
+.google-signin {
+  width: 100%;
+  /* CLS FIX: reserve exactly the height GSI will render (44px for size=large)
+     in EVERY load state. This box is exactly 44px tall whether the pre-load
+     placeholder or the post-load iframe is showing, so nothing below it can
+     ever move. A FIXED height (not min-height) + overflow:hidden also clamps
+     any transient churn while GSI mounts its iframe, so no frame can inflate
+     the box even mid-race. */
+  position: relative;
+  height: 44px;
+  overflow: hidden;
+}
+/* GSI renders its iframe into .google-signin__target, which must stay empty.
+   The placeholder is a React-owned SIBLING, never a child of the target —
+   mounting React children into a GSI-owned node makes React lose track of
+   its DOM (NotFoundError: removeChild). */
+.google-signin__target {
+  min-height: 44px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.google-signin__placeholder {
+  /* CLS FIX: overlay the reserved 44px target instead of stacking above it.
+     Before, the placeholder (≈42px) PLUS the empty target (44px) made the
+     block ≈86px until GSI inserted its iframe, then it collapsed to 44px —
+     a ~42px jump for the card/footer below (worst on slow networks). Absolute
+     positioning keeps the text visible without adding flow height. */
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0.75rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--color-ink-400, #7c8698);
+}
+/* While an auth request is in flight the button is dimmed and made
+   unclickable — `pointer-events` on a parent also blocks the child
+   iframe from receiving clicks in Chromium and Firefox. */
+.google-signin--disabled { pointer-events: none; opacity: 0.6; }
+
+/* ── Auth pages on short viewports ────────────────────────────────  */
+/* The login/register pages already fit desktop laptops at 100% zoom and
+   phones >= ~700px tall (normal utilities only). On shorter viewports the
+   `max-height` rules below compress paddings/gaps so the card fits without
+   scrolling. Scoped via .auth-page so nothing else is affected. */
+@media (max-height: 700px) {
+  .auth-page { padding: 0.5rem 1rem; }
+  .auth-page .mb-4 { margin-bottom: 0.75rem; }
+  .auth-page .card { padding: 0.75rem; }
+  .auth-page .space-y-2\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.5rem; }
+  .auth-page .my-2\.5 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+  .auth-page .mt-2 { margin-top: 0.375rem; }
+  .auth-page .mt-3 { margin-top: 0.5rem; }
 }
