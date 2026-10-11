@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/icons/Icon';
+import { PublicFeedbackSection } from '../components/feedback/PublicFeedbackSection';
 import { APP_NAME } from '../utils/constants';
 
 /* ─── Static data ────────────────────────────────────────────────── */
@@ -347,6 +348,11 @@ const CtaSection = () => (
 // FIX #7:  <FaqSchema /> injected as first child — renders JSON-LD into <head>
 //          before any visible section. Order of visible sections unchanged.
 // FIX HIGH-01: <UseCasesSection /> now renders USE_CASES (not TESTIMONIALS).
+// FIX #7:  <FaqSchema /> injected as first child — renders JSON-LD into <head>
+//          before any visible section. Order of visible sections unchanged.
+// FIX HIGH-01: <UseCasesSection /> now renders USE_CASES (not TESTIMONIALS).
+// FEEDBACK: <PublicFeedbackSection /> shows real general feedback (newest first)
+//           from GET /api/feedback/public. Existing sections untouched.
 export const LandingPage = () => (
   <main>
     <FaqSchema />
@@ -354,6 +360,7 @@ export const LandingPage = () => (
     <FeaturesSection />
     <StepsSection />
     <UseCasesSection />
+    <PublicFeedbackSection />
     <ReferralSection />
     <FaqSection />
     <CtaSection />

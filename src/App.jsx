@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import { AppRoutes } from './routes/AppRoutes';
 import { CookieConsentBanner } from './components/CookieConsentBanner';
+import { FeedbackButton } from './components/feedback/FeedbackButton';
 import { initAnalytics } from './utils/analytics';
 
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA4_ID;
@@ -36,6 +37,10 @@ const App = () => (
     <AuthProvider>
       <PageTracking />
       <AppRoutes />
+      {/* Global feedback launcher — fixed bottom-right on every page.
+          Lives inside AuthProvider so it can attach the logged-in user's
+          name/email to submissions. */}
+      <FeedbackButton />
     </AuthProvider>
   </BrowserRouter>
 );
