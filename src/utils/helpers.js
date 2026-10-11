@@ -43,6 +43,36 @@ export const prettyDate = (value) => {
 export const truncate = (str, len = 60) =>
   str && str.length > len ? str.slice(0, len) + '…' : str || '';
 
+/**
+ * Human relative time ("just now", "5 minutes ago", "2 days ago") used by the
+ * public feedback section. Accepts an ISO string (UTC) or Date.
+ */
+export const relativeTime = (value) => {
+  if (!value) return '';
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+
+  const seconds = Math.round((Date.now() - date.getTime()) / 1000);
+  if (seconds < 45) return 'just now';
+
+  const units = [
+    ['year', 31536000],
+    ['month', 2592000],
+    ['week', 604800],
+    ['day', 86400],
+    ['hour', 3600],
+    ['minute', 60],
+  ];
+
+  for (const [unit, secondsInUnit] of units) {
+    const amount = Math.floor(seconds / secondsInUnit);
+    if (amount >= 1) {
+      return `${amount} ${unit}${amount === 1 ? '' : 's'} ago`;
+    }
+  }
+  return 'just now';
+};
+
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /**

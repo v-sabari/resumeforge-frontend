@@ -46,6 +46,10 @@ const icons = {
   hand: strokeIcon(<><path d="M18 11V6a2 2 0 0 0-4 0v5" /><path d="M14 10V4a2 2 0 0 0-4 0v2" /><path d="M10 10.5V6a2 2 0 0 0-4 0v8" /><path d="m18 8-1.258-1.258a1.941 1.941 0 0 0-2.742 0" /><path d="m20.96 9.125.015-.015a1.93 1.93 0 0 0-1.392-3.267 1.93 1.93 0 0 0-1.372.564" /><path d="M18 20c0 1.1-.9 2-2 2H7.5a4.5 4.5 0 0 1-3.5-1.6l-2-2.5c-.7-.9-.5-2.1.4-2.8.9-.7 2.1-.5 2.8.4l2.3 2.9" /></>),
   medal: strokeIcon(<><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15" /><path d="M11 12 5.12 2.2" /><path d="m13 12 5.88-9.8" /><path d="M8 7h8" /><circle cx="12" cy="17" r="5" /><path d="M12 18v-2h-.5" /></>),
   book: strokeIcon(<><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20" /></>),
+  messageCircle: strokeIcon(<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />),
+  messagePlus: strokeIcon(<><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /><path d="M8 12h8" /><path d="M12 8v8" /></>),
+  bug: strokeIcon(<><path d="m8 2 1.88 1.88" /><path d="M14.12 3.88 16 2" /><path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1" /><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6" /><path d="M12 20v-9" /><path d="M6.53 9C4.6 8.8 3 7.1 3 5" /><path d="M6 13H2" /><path d="M3 21c0-2.1 1.7-3.9 3.8-4" /><path d="M20.97 5c0 2.1-1.7 3.9-3.8 4" /><path d="M22 13h-4" /><path d="M20.03 21c0-2.1-1.7-3.9-3.8-4" /></>),
+  send: strokeIcon(<><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></>),
 };
 
 export const Icon = memo(({ name, className = 'h-5 w-5', ...rest }) => {
