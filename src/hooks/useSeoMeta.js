@@ -76,9 +76,9 @@ const PAGE_META = {
       'Free resume writing guides, ATS tips, action verb lists, LinkedIn advice, and career resources from the ResumeForge AI team.',
   },
   '/tools': {
-    title: `Free Resume Tools – ATS Keyword Checker & Word Count | ${APP_NAME}`,
+    title: `Free ATS Resume Tools – Score & Format Checker | ${APP_NAME}`,
     description:
-      'Free resume analysis tools: check your ATS keyword strength, count resume words, and get instant tips — no account required. Powered by ResumeForge AI.',
+      'Free ATS tools: upload your resume to get a JD-based ATS score with missing keywords, and check whether your resume formatting will parse correctly. No account required. Powered by ResumeForge AI.',
   },
   // App pages (noindex)
   '/app/dashboard': { title: `Dashboard – ${APP_NAME}`,      description: 'Your resume dashboard.',          noIndex: true },
