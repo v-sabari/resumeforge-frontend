@@ -224,6 +224,28 @@ export function computePageStarts(rootEl, visibleH, zoom = 1) {
       }
     }
 
+    // GENERIC HEADING BINDING: most templates group a section in a plain <div>
+    // (not a <section>), so sectionContainerOf() finds no wrapper and the two
+    // rules above cannot see the heading. If the LAST block packed onto this
+    // page is itself a heading, pull the boundary up to that heading's top so
+    // it prints on the next page together with the body it introduces. This is
+    // what a print engine does with `break-after: avoid`; without it a section
+    // title can be stranded alone at the bottom of a page.
+    // (Unlike assignedEndsAbove, the heading's own box is allowed to sit at or
+    // below the candidate — it is exactly the block being pushed to the next
+    // page. Only a block that STRADDLES the candidate would still be cut.)
+    const noBlockStraddles = (cand) => {
+      for (let k = idx; k < blocks.length; k += 1) {
+        if (blocks[k].top < cand - EPS && blocks[k].bottom > cand + EPS) return false;
+      }
+      return true;
+    };
+    const lastFit = blocks[fitEnd];
+    if (lastFit && isHeadingLike(lastFit.el) && lastFit.top > pageStart + EPS
+        && lastFit.top < boundary - EPS && noBlockStraddles(lastFit.top)) {
+      boundary = lastFit.top;
+    }
+
     // Guard against zero/negative progress (pathological shapes).
     const minGain = Math.min(cap, Math.max(1, cap * 0.1));
     if (boundary - pageStart < minGain) boundary = pageStart + minGain;

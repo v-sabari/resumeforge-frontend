@@ -1,3 +1,5 @@
+import { DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE } from './resumeTypography.js';
+
 export const APP_NAME          = import.meta.env.VITE_APP_NAME || 'ResumeForge AI';
 // BUG-004 FIX: TOKEN_STORAGE_KEY removed — the JWT is now delivered as an
 // httpOnly cookie (see AuthController.setAuthCookie / api.js withCredentials)
@@ -12,6 +14,10 @@ export const defaultResume = {
   education: [], certifications: [], achievements: [],
   languages: [], customSections: {},
   sectionsConfig: null, // null → use DEFAULT_SECTIONS_CONFIG
+  // Resume-only typography (see utils/resumeTypography.js). `template` keeps
+  // the design each template ships with; 10.5 is its native body size.
+  fontFamily: DEFAULT_FONT_FAMILY,
+  fontSize: DEFAULT_FONT_SIZE,
 };
 
 export const premiumFeatures = [

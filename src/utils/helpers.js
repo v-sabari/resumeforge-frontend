@@ -1,3 +1,5 @@
+import { normaliseFontFamily, normaliseFontSize } from './resumeTypography.js';
+
 export const cn = (...classes) => classes.filter(Boolean).join(' ');
 
 // BUG-002 FIX: For validation failures, GlobalExceptionHandler.handleValidationErrors
@@ -142,6 +144,11 @@ export const normaliseResume = (payload) => {
     // FIX: sectionsConfig was not preserved — now explicitly normalised
     // null is a valid value (means "use DEFAULT_SECTIONS_CONFIG")
     sectionsConfig: safeParse(payload.sectionsConfig, null),
+
+    // Resume-only typography — normalised so an invalid/absent value from an
+    // older resume still renders with the template's own font at native size.
+    fontFamily: normaliseFontFamily(payload.fontFamily),
+    fontSize:   normaliseFontSize(payload.fontSize),
   };
 };
 
