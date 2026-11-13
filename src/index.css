@@ -304,3 +304,64 @@
   .auth-page .mt-2 { margin-top: 0.375rem; }
   .auth-page .mt-3 { margin-top: 0.5rem; }
 }
+
+/* ── Resume-only typography (font family) ──────────────────────────────────
+   SCOPE: `.resume-typography` is rendered ONLY around a resume template — by
+   components/builder/ResumePreview.jsx in the editor and by
+   src/pdf/renderPdfHandler.jsx for exports. Nothing in the application shell
+   is ever inside it, so these rules can never restyle the app UI itself.
+
+   The templates set their own font-family inline on `.resume-template`, and
+   some children carry Tailwind `font-sans`/`font-serif` utilities. `!important`
+   on both the root and every descendant is therefore required to make the
+   user's explicit choice actually win. `template` (the default) has no rule,
+   so each template keeps its designed typeface exactly as before.
+
+   Font SIZE is not handled here — it is a scoped `zoom` wrapper applied
+   inline (see utils/resumeTypography.js) so every absolute text-[Npx] size
+   scales uniformly, including padding and rules. */
+.resume-typography .resume-template {
+  /* The zoom wrapper compensates its width; a template's own max-width would
+     fight that compensation, so neutralise it inside the wrapper only. */
+  max-width: none !important;
+}
+
+.resume-typography[data-font-family="times"] .resume-template,
+.resume-typography[data-font-family="times"] .resume-template * {
+  font-family: 'Times New Roman', Times, 'Liberation Serif', 'Nimbus Roman', 'Inter', serif !important;
+}
+
+.resume-typography[data-font-family="georgia"] .resume-template,
+.resume-typography[data-font-family="georgia"] .resume-template * {
+  font-family: Georgia, 'Times New Roman', 'Liberation Serif', 'Inter', serif !important;
+}
+
+.resume-typography[data-font-family="garamond"] .resume-template,
+.resume-typography[data-font-family="garamond"] .resume-template * {
+  font-family: Garamond, 'EB Garamond', 'Apple Garamond', 'Times New Roman', 'Inter', serif !important;
+}
+
+.resume-typography[data-font-family="arial"] .resume-template,
+.resume-typography[data-font-family="arial"] .resume-template * {
+  font-family: Arial, Helvetica, 'Liberation Sans', 'Inter', sans-serif !important;
+}
+
+.resume-typography[data-font-family="helvetica"] .resume-template,
+.resume-typography[data-font-family="helvetica"] .resume-template * {
+  font-family: Helvetica, 'Helvetica Neue', Arial, 'Liberation Sans', 'Inter', sans-serif !important;
+}
+
+.resume-typography[data-font-family="calibri"] .resume-template,
+.resume-typography[data-font-family="calibri"] .resume-template * {
+  font-family: Calibri, Carlito, 'Segoe UI', 'Liberation Sans', 'Inter', sans-serif !important;
+}
+
+.resume-typography[data-font-family="cambria"] .resume-template,
+.resume-typography[data-font-family="cambria"] .resume-template * {
+  font-family: Cambria, Caladea, 'Liberation Serif', Georgia, 'Inter', serif !important;
+}
+
+.resume-typography[data-font-family="courier"] .resume-template,
+.resume-typography[data-font-family="courier"] .resume-template * {
+  font-family: 'Courier New', Courier, 'Liberation Mono', 'Inter', monospace !important;
+}
