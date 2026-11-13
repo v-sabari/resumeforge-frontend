@@ -1,0 +1,84 @@
+{
+  "generatedAt": "2026-11-13T18:13:43.021Z",
+  "leads": [
+    "Results-driven",
+    "Led",
+    "Résumé",
+    "Portfolio:",
+    "Token:"
+  ],
+  "templates": {
+    "academic": {
+      "everyParagraphStartsLine": true,
+      "perLine": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "orderOk": true,
+      "lineCount": 194
+    },
+    "classic": {
+      "everyParagraphStartsLine": true,
+      "perLine": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "orderOk": true,
+      "lineCount": 180
+    },
+    "clean": {
+      "everyParagraphStartsLine": true,
+      "perLine": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "orderOk": true,
+      "lineCount": 312
+    },
+    "executive": {
+      "everyParagraphStartsLine": true,
+      "perLine": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "orderOk": true,
+      "lineCount": 174
+    },
+    "finance": {
+      "everyParagraphStartsLine": true,
+      "perLine": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "orderOk": true,
+      "lineCount": 173
+    },
+    "modern": {
+      "everyParagraphStartsLine": true,
+      "perLine": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "orderOk": true,
+      "lineCount": 173
+    }
+  }
+}

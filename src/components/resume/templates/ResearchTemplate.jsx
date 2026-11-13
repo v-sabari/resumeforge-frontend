@@ -34,7 +34,7 @@ export const ResearchTemplate = ({ data }) => {
   );
 
   const cases = {
-    summary: summary ? <p className="text-[10.5px] text-gray-700 leading-relaxed break-words">{summary}</p> : null,
+    summary: summary ? <p className="text-[10.5px] text-gray-700 leading-relaxed break-words whitespace-pre-line">{summary}</p> : null,
     experience: experience?.length ? experience.map((e,i)=>(
       <div key={i} className="pb-1.5 break-inside-avoid">
         <div className="flex items-baseline justify-between gap-2 flex-wrap">

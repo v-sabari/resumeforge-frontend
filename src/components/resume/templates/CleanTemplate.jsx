@@ -28,7 +28,7 @@ export const CleanTemplate = ({ data }) => {
   const renderLeft = (sec) => {
     if (sec.type === 'custom') return <CustomBlock key={sec.id} label={labelOf(sec)} content={(customSections||{})[sec.id]}/>;
     switch (sec.key) {
-      case 'summary': return summary ? <div key="summary" className="mb-3"><H>{labelOf(sec, 'Profile')}</H><p className="text-[11px] text-gray-600 leading-relaxed break-words">{summary}</p></div> : null;
+      case 'summary': return summary ? <div key="summary" className="mb-3"><H>{labelOf(sec, 'Profile')}</H><p className="text-[11px] text-gray-600 leading-relaxed break-words whitespace-pre-line">{summary}</p></div> : null;
       case 'skills': return skills?.length ? (<div key="skills" className="mb-3"><H>{labelOf(sec, 'Skills')}</H><div className="space-y-0.5">{(Array.isArray(skills)?skills:[skills]).map((s,i)=><div key={i} className="text-[11px] text-gray-600 leading-relaxed break-words break-inside-avoid">{s}</div>)}</div></div>) : null;
       case 'languages': return languages?.length ? (<div key="languages" className="mb-3"><H>{labelOf(sec, 'Languages')}</H><p className="text-[11px] text-gray-600 leading-relaxed break-words">{languages.join(' · ')}</p></div>) : null;
       case 'certifications': return certifications?.length ? (<div key="certifications" className="mb-3"><H>{labelOf(sec, 'Certifications')}</H><div className="space-y-0.5">{certifications.map((c,i)=><CertItem key={i} cert={c} className="text-[11px] text-gray-600 break-words break-inside-avoid" />)}</div></div>) : null;

@@ -231,7 +231,7 @@ const Entry = ({
       )}
 
       {summary ? (
-        <p style={{ fontSize: 'calc(10pt + 0.5px)', lineHeight: LH, margin: '1pt 0 0' }}>
+        <p style={{ fontSize: 'calc(10pt + 0.5px)', lineHeight: LH, margin: '1pt 0 0', whiteSpace: 'pre-line', overflowWrap: 'anywhere' }}>
           {summary}
         </p>
       ) : null}
@@ -410,7 +410,7 @@ const renderSectionBody = (section, data) => {
       if (!isText(data.summary)) return null;
 
       return (
-        <p style={{ fontSize: 'calc(10pt + 0.5px)', lineHeight: LH, margin: 0 }}>
+        <p style={{ fontSize: 'calc(10pt + 0.5px)', lineHeight: LH, margin: 0, whiteSpace: 'pre-line', overflowWrap: 'anywhere' }}>
           {data.summary}
         </p>
       );

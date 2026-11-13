@@ -76,7 +76,7 @@ export const GraduateTemplate = ({ data }) => {
           return summary ? (
             <div key="summary" className="bg-indigo-50 rounded px-4 py-2.5 mb-3">
               <SH>{labelOf(sec, 'Summary')}</SH>
-              <p className="text-[11px] text-indigo-900 leading-relaxed break-words">{summary}</p>
+              <p className="text-[11px] text-indigo-900 leading-relaxed break-words whitespace-pre-line">{summary}</p>
             </div>
           ) : null;
         }

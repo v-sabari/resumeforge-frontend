@@ -41,7 +41,7 @@ export const EngineeringTemplate = ({ data }) => {
       return <div key={sec.id} className="mb-4 break-after-avoid"><Hmain>{labelOf(sec)}</Hmain><CustomContent content={content} /></div>;
     }
     switch (sec.key) {
-      case 'summary': return summary ? (<div key="summary" className="mb-4"><Hmain>{labelOf(sec, 'Professional Summary')}</Hmain><p className="text-[11px] text-gray-700 leading-relaxed break-words">{summary}</p></div>) : null;
+      case 'summary': return summary ? (<div key="summary" className="mb-4"><Hmain>{labelOf(sec, 'Professional Summary')}</Hmain><p className="text-[11px] text-gray-700 leading-relaxed break-words whitespace-pre-line">{summary}</p></div>) : null;
       case 'experience': return experience?.length ? (<div key="experience" className="mb-4"><Hmain>{labelOf(sec, 'Professional Experience')}</Hmain>{experience.map((e,i)=>(
         <div key={i} className="mb-3 break-inside-avoid">
           <div className="flex items-baseline justify-between gap-1 flex-wrap">

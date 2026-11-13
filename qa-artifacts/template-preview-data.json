@@ -1,0 +1,134 @@
+{
+  "description": "Curated, realistic one-page resume used ONLY to render the 20 template gallery preview images in public/templates/. Not used by the app at runtime. Content is deliberately moderate so every template's first page looks complete without overflowing.",
+  "template": "modern",
+  "fontFamily": "template",
+  "fontSize": 10.5,
+  "fullName": "Aarav Krishnan",
+  "professionalTitle": "Senior Product Engineer",
+  "email": "aarav.krishnan@example.com",
+  "phone": "+91 98765 43210",
+  "location": "Chennai, India",
+  "linkedin": "linkedin.com/in/aaravkrishnan",
+  "github": "github.com/aaravkrishnan",
+  "portfolio": "aaravkrishnan.dev",
+  "summary": "Product-minded engineer with 8+ years building fast, accessible web applications for fintech and healthcare. Led a cross-functional team that redesigned checkout for 2M+ customers and cut p95 page load from 4.1s to 1.2s. Comfortable owning a problem end to end, from discovery and design partnership through rollout and on-call.",
+  "skills": [
+    "TypeScript",
+    "React",
+    "Node.js",
+    "PostgreSQL",
+    "AWS",
+    "Docker",
+    "GraphQL",
+    "CI/CD",
+    "Accessibility (WCAG 2.1)",
+    "Testing (Vitest, Playwright)"
+  ],
+  "experience": [
+    {
+      "id": "exp-preview-1",
+      "role": "Senior Product Engineer",
+      "company": "Northwind Payments",
+      "location": "Chennai, India",
+      "employmentType": "Full-time",
+      "startDate": "Mar 2021",
+      "endDate": "Present",
+      "summary": "Tech lead for checkout and merchant onboarding, serving 2M+ customers across three markets.",
+      "bullets": [
+        "Redesigned the checkout flow with the design team, lifting conversion by 11% and cutting p95 load time from 4.1s to 1.2s.",
+        "Introduced typed end-to-end tests and progressive delivery, reducing production regressions by 70% across 40 releases.",
+        "Mentored four engineers and led the accessibility guild that brought the product to WCAG 2.1 AA."
+      ]
+    },
+    {
+      "id": "exp-preview-2",
+      "role": "Software Engineer",
+      "company": "Brightpath Health",
+      "location": "Bengaluru, India",
+      "employmentType": "Full-time",
+      "startDate": "Jul 2018",
+      "endDate": "Feb 2021",
+      "summary": "",
+      "bullets": [
+        "Built a scheduling service in Node.js and PostgreSQL that handled 30k appointments per day with 99.95% availability.",
+        "Automated release pipelines with GitHub Actions, taking deployments from a weekly manual process to on-demand.",
+        "Partnered with clinical staff to ship a patient intake flow that cut form completion time by 35%."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-preview-1",
+      "name": "Ledger Lens",
+      "role": "Creator",
+      "link": "github.com/aaravkrishnan/ledger-lens",
+      "github": "",
+      "techStack": "React, TypeScript, PostgreSQL",
+      "description": "An open-source dashboard that explains every cent of variance between payment processor reports and internal ledgers, with drill-downs and audit trails.",
+      "highlights": [
+        "Processes 9M ledger entries per day with incremental materialised views.",
+        "Used by three small finance teams; 900+ GitHub stars."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "id": "edu-preview-1",
+      "institution": "Indian Institute of Technology Madras",
+      "degree": "Master of Technology",
+      "field": "Computer Science and Engineering",
+      "grade": "9.1 / 10 CGPA",
+      "startDate": "2014",
+      "endDate": "2016",
+      "details": "Thesis: Adaptive Load Shedding for Multi-Tenant Payment APIs."
+    },
+    {
+      "id": "edu-preview-2",
+      "institution": "PSG College of Technology",
+      "degree": "Bachelor of Engineering",
+      "field": "Information Technology",
+      "grade": "8.7 / 10 CGPA",
+      "startDate": "2010",
+      "endDate": "2014",
+      "details": ""
+    }
+  ],
+  "certifications": [
+    {
+      "id": "cert-preview-1",
+      "name": "AWS Certified Solutions Architect — Associate",
+      "issuer": "Amazon Web Services",
+      "year": "2022",
+      "credentialUrl": ""
+    },
+    {
+      "id": "cert-preview-2",
+      "name": "Professional Scrum Master I",
+      "issuer": "Scrum.org",
+      "year": "2020",
+      "credentialUrl": ""
+    }
+  ],
+  "achievements": [
+    "Winner, Northwind Engineering Excellence Award 2023 for the checkout redesign.",
+    "Speaker at React India 2022: “Accessible by Default”.",
+    "Maintainer of two open-source utilities with a combined 1,400 GitHub stars."
+  ],
+  "languages": [
+    "English (Native / Bilingual)",
+    "Tamil (Native)",
+    "Hindi (Professional working proficiency)"
+  ],
+  "customSections": {},
+  "sectionsConfig": [
+    { "id": "basics", "type": "standard", "key": "basics", "label": "Personal Info", "visible": true, "order": 0 },
+    { "id": "summary", "type": "standard", "key": "summary", "label": "Professional Summary", "visible": true, "order": 1 },
+    { "id": "skills", "type": "standard", "key": "skills", "label": "Skills", "visible": true, "order": 2 },
+    { "id": "experience", "type": "standard", "key": "experience", "label": "Experience", "visible": true, "order": 3 },
+    { "id": "projects", "type": "standard", "key": "projects", "label": "Projects", "visible": true, "order": 4 },
+    { "id": "education", "type": "standard", "key": "education", "label": "Education", "visible": true, "order": 5 },
+    { "id": "certifications", "type": "standard", "key": "certifications", "label": "Certifications", "visible": true, "order": 6 },
+    { "id": "achievements", "type": "standard", "key": "achievements", "label": "Achievements", "visible": true, "order": 7 },
+    { "id": "languages", "type": "standard", "key": "languages", "label": "Languages", "visible": true, "order": 8 }
+  ]
+}
