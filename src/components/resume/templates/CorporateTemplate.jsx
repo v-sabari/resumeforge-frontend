@@ -1,14 +1,17 @@
+import {
+  BulletList,
+  CertItem,
+  CustomContent,
+  educationTitle,
+  hasCustomContent,
+  labelOf,
+} from './shared.jsx';
+
+const SH = ({ children }) => <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-gray-900 border-b-2 border-blue-600 pb-0.5 mb-2 mt-4 break-after-avoid">{children}</h2>;
 
 const CustomBlock = ({ label, content }) => {
-  if (!content) return null;
-  const { mode, text, items } = content;
-  const H = <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-gray-900 border-b-2 border-blue-600 pb-0.5 mb-2 mt-4 break-after-avoid">{label}</h2>;
-  if (mode === 'bullets') {
-    if (!items?.filter(Boolean).length) return null;
-    return <div>{H}<ul className="space-y-0.5">{items.filter(Boolean).map((it,i)=><li key={i} className="flex gap-2 text-[10.5px] text-gray-700 break-inside-avoid"><span className="text-blue-600 shrink-0 mt-[2px]">▪</span><span className="leading-relaxed break-words min-w-0">{it}</span></li>)}</ul></div>;
-  }
-  if (!text?.trim()) return null;
-  return <div>{H}<p className="text-[10.5px] text-gray-700 leading-relaxed break-words">{text}</p></div>;
+  if (!hasCustomContent(content)) return null;
+  return <div><SH>{label}</SH><CustomContent content={content} /></div>;
 };
 
 export const CorporateTemplate = ({ data }) => {
@@ -17,15 +20,13 @@ export const CorporateTemplate = ({ data }) => {
     projects, certifications, achievements, languages, customSections,
   } = data;
 
-  const SH = ({ children }) => <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-gray-900 border-b-2 border-blue-600 pb-0.5 mb-2 mt-4 break-after-avoid">{children}</h2>;
-
   const renderSection = (sec) => {
-    if (sec.type === 'custom') return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]}/>;
+    if (sec.type === 'custom') return <CustomBlock key={sec.id} label={labelOf(sec)} content={(customSections||{})[sec.id]}/>;
     switch (sec.key) {
       case 'basics': return null;
-      case 'summary': return summary ? <div key="summary" className="mb-2"><SH>Professional Summary</SH><p className="text-[10.5px] text-gray-700 leading-relaxed break-words">{summary}</p></div> : null;
+      case 'summary': return summary ? <div key="summary" className="mb-2"><SH>{labelOf(sec, 'Professional Summary')}</SH><p className="text-[10.5px] text-gray-700 leading-relaxed break-words">{summary}</p></div> : null;
       case 'experience': return experience?.length ? (
-        <div key="experience" className="mb-2"><SH>Professional Experience</SH>
+        <div key="experience" className="mb-2"><SH>{labelOf(sec, 'Professional Experience')}</SH>
           {experience.map((e,i)=>(
             <div key={i} className="mb-3 break-inside-avoid">
               <div className="flex justify-between items-start flex-wrap gap-1">
@@ -39,36 +40,37 @@ export const CorporateTemplate = ({ data }) => {
           ))}
         </div>) : null;
       case 'projects': return projects?.length ? (
-        <div key="projects" className="mb-2"><SH>Projects</SH>
+        <div key="projects" className="mb-2"><SH>{labelOf(sec, 'Projects')}</SH>
           {projects.map((p,i)=>(
             <div key={i} className="mb-2 break-inside-avoid">
               <div className="flex flex-wrap items-baseline gap-x-2"><span className="font-bold text-gray-900 text-[11px] break-words min-w-0">{p.name}</span>{p.role&&<span className="text-[10px] text-gray-500 break-words">({p.role})</span>}</div>
               {p.technologies&&<div className="text-[10.5px] text-gray-600 mb-0.5 break-words">Tech: {p.technologies}</div>}
               {(p.link||p.github)&&<div className="text-[9.5px] text-gray-400 mb-0.5 break-all">{[p.link,p.github].filter(Boolean).join(' · ')}</div>}
               {p.description&&<p className="text-[10.5px] text-gray-600 leading-relaxed break-words">{p.description}</p>}
+              {p.highlights?.length>0&&<BulletList items={p.highlights} className="mt-0.5 space-y-0.5 pl-3" />}
             </div>
           ))}
         </div>) : null;
       case 'education': return education?.length ? (
-        <div key="education" className="mb-2"><SH>Education</SH>
+        <div key="education" className="mb-2"><SH>{labelOf(sec, 'Education')}</SH>
           {education.map((e,i)=>(
             <div key={i} className="mb-2 break-inside-avoid">
-              <div className="flex justify-between items-start flex-wrap gap-1"><span className="font-bold text-gray-900 text-[11px] break-words">{e.degree}</span><span className="text-[10px] text-gray-500 shrink-0 whitespace-nowrap">{e.year}</span></div>
+              <div className="flex justify-between items-start flex-wrap gap-1"><span className="font-bold text-gray-900 text-[11px] break-words">{educationTitle(e) || e.institution}</span><span className="text-[10px] text-gray-500 shrink-0 whitespace-nowrap">{e.year}</span></div>
               <div className="text-[10.5px] text-gray-700 break-words">{e.institution}</div>
               {(e.gpa||e.details)&&<div className="text-[10px] text-gray-500 break-words">{[e.gpa,e.details].filter(Boolean).join(' — ')}</div>}
             </div>
           ))}
         </div>) : null;
       case 'skills': return skills?.length ? (
-        <div key="skills" className="mb-2"><SH>Core Skills</SH>
+        <div key="skills" className="mb-2"><SH>{labelOf(sec, 'Core Skills')}</SH>
           <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 px-1">
             {(Array.isArray(skills)?skills:[skills]).map((s,i)=><span key={i} className="text-[10.5px] text-gray-700 flex items-center gap-1.5 break-words"><span className="text-blue-600 shrink-0">▪</span><span className="break-words min-w-0">{s}</span></span>)}
           </div>
         </div>) : null;
-      case 'certifications': return certifications?.length ? (<div key="certifications" className="mb-2"><SH>Certifications</SH><div className="space-y-0.5">{certifications.map((c,i)=><div key={i} className="text-[10.5px] text-gray-700 break-words break-inside-avoid"><span className="font-medium">{c.name}</span>{c.issuer&&<span className="text-gray-500"> — {c.issuer}</span>}{c.year&&<span className="text-gray-400"> ({c.year})</span>}</div>)}</div></div>) : null;
-      case 'achievements': return achievements?.length ? (<div key="achievements" className="mb-2"><SH>Achievements</SH><ul className="space-y-0.5">{achievements.map((a,i)=><li key={i} className="flex gap-2 text-[10.5px] text-gray-700 break-inside-avoid"><span className="text-blue-600 shrink-0 mt-[2px]">▪</span><span className="leading-relaxed break-words min-w-0">{a}</span></li>)}</ul></div>) : null;
-      case 'languages': return languages?.length ? (<div key="languages" className="mb-2"><SH>Languages</SH><p className="text-[10.5px] text-gray-700 break-words">{languages.join('  ·  ')}</p></div>) : null;
-      default: return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]}/>;
+      case 'certifications': return certifications?.length ? (<div key="certifications" className="mb-2"><SH>{labelOf(sec, 'Certifications')}</SH><div className="space-y-0.5">{certifications.map((c,i)=><CertItem key={i} cert={c} className="text-[10.5px] text-gray-700 break-words break-inside-avoid" />)}</div></div>) : null;
+      case 'achievements': return achievements?.length ? (<div key="achievements" className="mb-2"><SH>{labelOf(sec, 'Achievements')}</SH><ul className="space-y-0.5">{achievements.map((a,i)=><li key={i} className="flex gap-2 text-[10.5px] text-gray-700 break-inside-avoid"><span className="text-blue-600 shrink-0 mt-[2px]">▪</span><span className="leading-relaxed break-words min-w-0">{a}</span></li>)}</ul></div>) : null;
+      case 'languages': return languages?.length ? (<div key="languages" className="mb-2"><SH>{labelOf(sec, 'Languages')}</SH><p className="text-[10.5px] text-gray-700 break-words">{languages.join('  ·  ')}</p></div>) : null;
+      default: return <CustomBlock key={sec.id} label={labelOf(sec)} content={(customSections||{})[sec.id]}/>;
     }
   };
 

@@ -3,6 +3,7 @@ import { DEFAULT_SECTIONS_CONFIG } from '../../utils/constants';
 import { buildTransformed } from '../../utils/transformResume';
 import { getPageMargin, getPageSize } from '../../utils/pageLayout';
 import { computePageStarts } from '../../utils/previewPagination';
+import { getResumeTypographyProps } from '../../utils/resumeTypography';
 import { OrbitalBlink } from '../common/OrbitalBlink';
 import {
   ModernProTemplate,
@@ -217,7 +218,15 @@ export const ResumePreview = ({ resume, template = 'modern' }) => {
     finance:       <FinanceTemplate        data={td} />,
   };
 
-  const content = renders[active] || renders.modern;
+  const content = (
+    // Resume-only typography wrapper (font family + size). The CSS rules in
+    // index.css are scoped to `.resume-typography .resume-template`, so this
+    // can never leak into the application UI. The same wrapper is applied by
+    // the PDF handler, which is what keeps preview and export identical.
+    <div {...getResumeTypographyProps(resume.fontFamily, resume.fontSize)}>
+      {renders[active] || renders.modern}
+    </div>
+  );
 
   return (
     <div className="flex flex-col gap-3">

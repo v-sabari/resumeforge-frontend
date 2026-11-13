@@ -4,6 +4,15 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { Icon } from '../icons/Icon';
 import { UpsellModal } from '../icons/UpsellModal';
 import { RESUME_TEMPLATES } from '../../utils/constants';
+import {
+  FONT_FAMILY_OPTIONS,
+  FONT_SIZE_STEP,
+  MAX_FONT_SIZE,
+  MIN_FONT_SIZE,
+  DEFAULT_FONT_SIZE,
+  normaliseFontFamily,
+  normaliseFontSize,
+} from '../../utils/resumeTypography.js';
 
 const TemplateCard = ({ template, active, locked, onSelect }) => (
   <button
@@ -73,11 +82,21 @@ const TemplateCard = ({ template, active, locked, onSelect }) => (
  */
 export const TemplatesPanel = () => {
   const editor = useResumeEditorContext();
-  const { currentId, template, setTemplate, setSuccess } = editor;
+  const { currentId, template, setTemplate, setSuccess, resume, setResume } = editor;
   const { premium } = useAuth();
   const isPremium = premium?.isPremium;
 
   const [showUpsell, setShowUpsell] = useState(false);
+
+  const fontFamily = normaliseFontFamily(resume?.fontFamily);
+  const fontSize   = normaliseFontSize(resume?.fontSize);
+
+  const applyTypography = (patch, label) => {
+    setResume((prev) => ({ ...prev, ...patch }));
+    setSuccess(currentId
+      ? `${label} — click Save changes to persist it.`
+      : `${label}. Save to keep it.`);
+  };
 
   const handleSelect = (t) => {
     if (t.isPremium && !isPremium) {
@@ -113,6 +132,81 @@ export const TemplatesPanel = () => {
             />
           );
         })}
+      </div>
+
+      {/* Resume-only typography — affects the preview, PDF and DOCX text only.
+          The application UI is never styled by these values (see
+          utils/resumeTypography.js and the scoped rules in index.css). */}
+      <div className="rounded-xl border border-surface-200 bg-white p-4 space-y-4">
+        <div>
+          <p className="kicker mb-1">Typography</p>
+          <p className="text-sm text-ink-500">
+            Applies only to this resume’s preview and exported file — never to the app itself.
+          </p>
+        </div>
+
+        <div className="space-y-1.5">
+          <label htmlFor="resume-font-family" className="block text-xs font-semibold text-ink-700">
+            Font family
+          </label>
+          <select
+            id="resume-font-family"
+            className="input"
+            value={fontFamily}
+            onChange={(e) => {
+              const next = e.target.value;
+              applyTypography(
+                { fontFamily: next },
+                `Font set to ${FONT_FAMILY_OPTIONS.find((f) => f.id === next)?.label || next}`,
+              );
+            }}
+          >
+            {FONT_FAMILY_OPTIONS.map((f) => (
+              <option key={f.id} value={f.id}>{f.label}</option>
+            ))}
+          </select>
+          <p className="text-[11px] text-ink-400">
+            {FONT_FAMILY_OPTIONS.find((f) => f.id === fontFamily)?.description}
+          </p>
+        </div>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label htmlFor="resume-font-size" className="block text-xs font-semibold text-ink-700">
+              Base font size
+            </label>
+            <span className="rounded-full bg-surface-100 px-2 py-0.5 text-[11px] font-semibold text-ink-600">
+              {fontSize.toFixed(1)} px
+            </span>
+          </div>
+          <input
+            id="resume-font-size"
+            type="range"
+            className="w-full accent-primary-600"
+            min={MIN_FONT_SIZE}
+            max={MAX_FONT_SIZE}
+            step={FONT_SIZE_STEP}
+            value={fontSize}
+            onChange={(e) => {
+              const next = normaliseFontSize(e.target.value);
+              applyTypography({ fontSize: next }, `Font size set to ${next.toFixed(1)} px`);
+            }}
+          />
+          <div className="flex items-center justify-between text-[11px] text-ink-400">
+            <span>{MIN_FONT_SIZE.toFixed(1)} px</span>
+            <button
+              type="button"
+              className="font-semibold text-primary-700 underline underline-offset-2 hover:text-primary-800"
+              onClick={() => applyTypography(
+                { fontFamily: 'template', fontSize: DEFAULT_FONT_SIZE },
+                'Typography reset to template defaults',
+              )}
+            >
+              Reset to template defaults
+            </button>
+            <span>{MAX_FONT_SIZE.toFixed(1)} px</span>
+          </div>
+        </div>
       </div>
 
       {/* Premium upsell banner for free users */}

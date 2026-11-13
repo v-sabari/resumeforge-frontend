@@ -1,13 +1,21 @@
+import {
+  CertItem,
+  CustomContent,
+  educationTitle,
+  hasCustomContent,
+  labelOf,
+} from './shared.jsx';
+
+const H = ({children}) => <h2 className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-gray-800 mb-2 mt-1 break-after-avoid"><span className="h-2 w-2 rounded-full bg-teal-600 shrink-0"></span><span className="break-words min-w-0">{children}</span></h2>;
+
 const CustomBlock = ({ label, content }) => {
-  if (!content) return null;
-  const { mode, text, items } = content;
-  const H = <h2 className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-gray-800 mb-2 mt-1 break-after-avoid"><span className="h-2 w-2 rounded-full bg-teal-600 shrink-0"></span>{label}</h2>;
-  if (mode === 'bullets') {
-    if (!items?.filter(Boolean).length) return null;
-    return <div className="mb-4 ml-4 border-l border-dashed border-teal-300 pl-4">{H}<ul className="space-y-1">{items.filter(Boolean).map((it,i)=><li key={i} className="text-[10.5px] text-gray-600 leading-relaxed break-words break-inside-avoid">• {it}</li>)}</ul></div>;
-  }
-  if (!text?.trim()) return null;
-  return <div className="ml-4 border-l border-dashed border-teal-300 pl-4 mb-4">{H}<p className="text-[10.5px] text-gray-600 leading-relaxed break-words">{text}</p></div>;
+  if (!hasCustomContent(content)) return null;
+  return (
+    <div className="ml-4 border-l border-dashed border-teal-300 pl-4 mb-4">
+      <H>{label}</H>
+      <CustomContent content={content} />
+    </div>
+  );
 };
 
 const TimelineItem = ({ marker, title, sub, meta, summary, bullets, dotClass }) => (
@@ -29,21 +37,19 @@ export const FresherTemplate = ({ data }) => {
     projects, certifications, achievements, languages, customSections,
   } = data;
 
-  const H = ({children}) => <h2 className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-gray-800 mb-2 mt-1 break-after-avoid"><span className="h-2 w-2 rounded-full bg-teal-600 shrink-0"></span>{children}</h2>;
-
   const renderSection = (sec) => {
-    if (sec.type === 'custom') return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]}/>;
+    if (sec.type === 'custom') return <CustomBlock key={sec.id} label={labelOf(sec)} content={(customSections||{})[sec.id]}/>;
     switch (sec.key) {
       case 'basics': return null;
-      case 'summary': return summary ? <div key="summary" className="mb-3"><H>Objective</H><p className="text-[10.5px] text-gray-600 leading-relaxed break-words">{summary}</p></div> : null;
-      case 'experience': return experience?.length ? (<div key="experience" className="mb-3"><H>Experience</H><div className="ml-1 border-l-2 border-teal-200 pl-3">{experience.map((e,i)=><TimelineItem key={i} marker title={e.position} sub={`${e.company}${e.location?` · ${e.location}`:''}${e.employmentType?` · ${e.employmentType}`:''}`} meta={e.duration} summary={e.summary} bullets={e.responsibilities} dotClass="bg-teal-500"/>)}</div></div>) : null;
-      case 'education': return education?.length ? (<div key="education" className="mb-3"><H>Education</H><div className="ml-1 border-l-2 border-teal-200 pl-3">{education.map((e,i)=><TimelineItem key={i} marker title={e.degree} sub={e.institution} meta={e.year} summary={(e.gpa||e.details)?[e.gpa,e.details].filter(Boolean).join(' — '):null} dotClass="bg-teal-400"/>)} </div></div>) : null;
-      case 'projects': return projects?.length ? (<div key="projects" className="mb-3"><H>Projects</H><div className="ml-1 border-l-2 border-teal-200 pl-3">{projects.map((p,i)=><TimelineItem key={i} marker title={p.name} meta={p.role?`${p.role}`:''} sub={p.technologies?`Tech: ${p.technologies}`:''} summary={p.description} bullets={null} dotClass="bg-teal-300"/>)}</div></div>) : null;
-      case 'skills': return skills?.length ? (<div key="skills" className="mb-3"><H>Skills</H><div className="flex flex-wrap gap-1.5">{(Array.isArray(skills)?skills:[skills]).map((s,i)=><span key={i} className="text-[10px] bg-teal-50 text-teal-800 border border-teal-100 rounded-full px-2.5 py-0.5 break-words">{s}</span>)}</div></div>) : null;
-      case 'certifications': return certifications?.length ? (<div key="certifications" className="mb-3"><H>Certifications</H><div className="space-y-1">{certifications.map((c,i)=><div key={i} className="text-[10.5px] text-gray-600 break-words break-inside-avoid">• {c.name}{c.issuer?` — ${c.issuer}`:''}{c.year?` (${c.year})`:''}</div>)}</div></div>) : null;
-      case 'achievements': return achievements?.length ? (<div key="achievements" className="mb-3"><H>Achievements</H><ul className="space-y-1">{achievements.map((a,i)=><li key={i} className="text-[10.5px] text-gray-600 leading-relaxed break-words break-inside-avoid">• {a}</li>)}</ul></div>) : null;
-      case 'languages': return languages?.length ? (<div key="languages" className="mb-3"><H>Languages</H><p className="text-[10.5px] text-gray-600 break-words">{languages.join('  ·  ')}</p></div>) : null;
-      default: return <CustomBlock key={sec.id} label={sec.label} content={(customSections||{})[sec.id]}/>;
+      case 'summary': return summary ? <div key="summary" className="mb-3"><H>{labelOf(sec, 'Objective')}</H><p className="text-[10.5px] text-gray-600 leading-relaxed break-words">{summary}</p></div> : null;
+      case 'experience': return experience?.length ? (<div key="experience" className="mb-3"><H>{labelOf(sec, 'Experience')}</H><div className="ml-1 border-l-2 border-teal-200 pl-3">{experience.map((e,i)=><TimelineItem key={i} marker title={e.position} sub={`${e.company}${e.location?` · ${e.location}`:''}${e.employmentType?` · ${e.employmentType}`:''}`} meta={e.duration} summary={e.summary} bullets={e.responsibilities} dotClass="bg-teal-500"/>)}</div></div>) : null;
+      case 'education': return education?.length ? (<div key="education" className="mb-3"><H>{labelOf(sec, 'Education')}</H><div className="ml-1 border-l-2 border-teal-200 pl-3">{education.map((e,i)=><TimelineItem key={i} marker title={educationTitle(e) || e.institution} sub={e.institution} meta={e.year} summary={(e.gpa||e.details)?[e.gpa,e.details].filter(Boolean).join(' — '):null} dotClass="bg-teal-400"/>)} </div></div>) : null;
+      case 'projects': return projects?.length ? (<div key="projects" className="mb-3"><H>{labelOf(sec, 'Projects')}</H><div className="ml-1 border-l-2 border-teal-200 pl-3">{projects.map((p,i)=><TimelineItem key={i} marker title={p.name} meta={p.role?`${p.role}`:''} sub={[p.technologies?`Tech: ${p.technologies}`:'',[p.link,p.github].filter(Boolean).join(' · ')].filter(Boolean).join(' · ')} summary={p.description} bullets={p.highlights} dotClass="bg-teal-300"/>)}</div></div>) : null;
+      case 'skills': return skills?.length ? (<div key="skills" className="mb-3"><H>{labelOf(sec, 'Skills')}</H><div className="flex flex-wrap gap-1.5">{(Array.isArray(skills)?skills:[skills]).map((s,i)=><span key={i} className="text-[10px] bg-teal-50 text-teal-800 border border-teal-100 rounded-full px-2.5 py-0.5 break-words">{s}</span>)}</div></div>) : null;
+      case 'certifications': return certifications?.length ? (<div key="certifications" className="mb-3"><H>{labelOf(sec, 'Certifications')}</H><div className="space-y-1">{certifications.map((c,i)=><CertItem key={i} cert={c} className="text-[10.5px] text-gray-600 break-words break-inside-avoid" />)}</div></div>) : null;
+      case 'achievements': return achievements?.length ? (<div key="achievements" className="mb-3"><H>{labelOf(sec, 'Achievements')}</H><ul className="space-y-1">{achievements.map((a,i)=><li key={i} className="text-[10.5px] text-gray-600 leading-relaxed break-words break-inside-avoid">• {a}</li>)}</ul></div>) : null;
+      case 'languages': return languages?.length ? (<div key="languages" className="mb-3"><H>{labelOf(sec, 'Languages')}</H><p className="text-[10.5px] text-gray-600 break-words">{languages.join('  ·  ')}</p></div>) : null;
+      default: return <CustomBlock key={sec.id} label={labelOf(sec)} content={(customSections||{})[sec.id]}/>;
     }
   };
 

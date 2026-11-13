@@ -474,6 +474,7 @@ const renderSectionBody = (section, data) => {
           titleRight={linkNode(project.github)}
           meta={techStackLine(project.technologies)}
           metaRight={linkNode(project.link)}
+          summary={project.description}
           bullets={project.highlights}
         />
       ));
@@ -494,6 +495,7 @@ const renderSectionBody = (section, data) => {
                 certification?.name,
                 certification?.issuer,
                 certification?.year,
+                certification?.credentialUrl,
               ]
                 .filter(Boolean)
                 .join(' — '),
