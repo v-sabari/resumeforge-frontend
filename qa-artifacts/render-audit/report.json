@@ -1,0 +1,3559 @@
+{
+  "generatedAt": "2026-11-13T16:58:17.607Z",
+  "source": "resume-max-coverage.json",
+  "fieldCount": 190,
+  "templates": {
+    "modern": {
+      "component": "ModernProTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 348
+        },
+        {
+          "id": "skills",
+          "pos": 1099
+        },
+        {
+          "id": "experience",
+          "pos": 1461
+        },
+        {
+          "id": "projects",
+          "pos": 5282
+        },
+        {
+          "id": "education",
+          "pos": 7505
+        },
+        {
+          "id": "certifications",
+          "pos": 8125
+        },
+        {
+          "id": "achievements",
+          "pos": 8494
+        },
+        {
+          "id": "languages",
+          "pos": 9143
+        },
+        {
+          "id": "interests",
+          "pos": 9325
+        },
+        {
+          "id": "awards",
+          "pos": 9574
+        },
+        {
+          "id": "references",
+          "pos": 9769
+        },
+        {
+          "id": "volunteer",
+          "pos": 10252
+        },
+        {
+          "id": "publications",
+          "pos": 10545
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10907
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11143
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11618
+        },
+        {
+          "id": "custom-text",
+          "pos": 11888
+        }
+      ],
+      "brokenText": []
+    },
+    "classic": {
+      "component": "ClassicTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 348
+        },
+        {
+          "id": "skills",
+          "pos": 1099
+        },
+        {
+          "id": "experience",
+          "pos": 1483
+        },
+        {
+          "id": "projects",
+          "pos": 5344
+        },
+        {
+          "id": "education",
+          "pos": 7567
+        },
+        {
+          "id": "certifications",
+          "pos": 8187
+        },
+        {
+          "id": "achievements",
+          "pos": 8556
+        },
+        {
+          "id": "languages",
+          "pos": 9217
+        },
+        {
+          "id": "interests",
+          "pos": 9399
+        },
+        {
+          "id": "awards",
+          "pos": 9648
+        },
+        {
+          "id": "references",
+          "pos": 9843
+        },
+        {
+          "id": "volunteer",
+          "pos": 10326
+        },
+        {
+          "id": "publications",
+          "pos": 10619
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10981
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11217
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11692
+        },
+        {
+          "id": "custom-text",
+          "pos": 11962
+        }
+      ],
+      "brokenText": []
+    },
+    "minimal": {
+      "component": "MinimalATSTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 348
+        },
+        {
+          "id": "skills",
+          "pos": 1099
+        },
+        {
+          "id": "experience",
+          "pos": 1483
+        },
+        {
+          "id": "projects",
+          "pos": 5304
+        },
+        {
+          "id": "education",
+          "pos": 7527
+        },
+        {
+          "id": "certifications",
+          "pos": 8147
+        },
+        {
+          "id": "achievements",
+          "pos": 8516
+        },
+        {
+          "id": "languages",
+          "pos": 9165
+        },
+        {
+          "id": "interests",
+          "pos": 9347
+        },
+        {
+          "id": "awards",
+          "pos": 9596
+        },
+        {
+          "id": "references",
+          "pos": 9791
+        },
+        {
+          "id": "volunteer",
+          "pos": 10274
+        },
+        {
+          "id": "publications",
+          "pos": 10567
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10929
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11165
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11640
+        },
+        {
+          "id": "custom-text",
+          "pos": 11910
+        }
+      ],
+      "brokenText": []
+    },
+    "executive": {
+      "component": "ExecutiveTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 348
+        },
+        {
+          "id": "skills",
+          "pos": 1099
+        },
+        {
+          "id": "experience",
+          "pos": 1461
+        },
+        {
+          "id": "projects",
+          "pos": 5282
+        },
+        {
+          "id": "education",
+          "pos": 7505
+        },
+        {
+          "id": "certifications",
+          "pos": 8125
+        },
+        {
+          "id": "achievements",
+          "pos": 8494
+        },
+        {
+          "id": "languages",
+          "pos": 9143
+        },
+        {
+          "id": "interests",
+          "pos": 9325
+        },
+        {
+          "id": "awards",
+          "pos": 9574
+        },
+        {
+          "id": "references",
+          "pos": 9769
+        },
+        {
+          "id": "volunteer",
+          "pos": 10252
+        },
+        {
+          "id": "publications",
+          "pos": 10545
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10907
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11143
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11618
+        },
+        {
+          "id": "custom-text",
+          "pos": 11888
+        }
+      ],
+      "brokenText": []
+    },
+    "fresher": {
+      "component": "FresherTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 348
+        },
+        {
+          "id": "skills",
+          "pos": 1099
+        },
+        {
+          "id": "experience",
+          "pos": 1461
+        },
+        {
+          "id": "projects",
+          "pos": 5322
+        },
+        {
+          "id": "education",
+          "pos": 7543
+        },
+        {
+          "id": "certifications",
+          "pos": 8163
+        },
+        {
+          "id": "achievements",
+          "pos": 8532
+        },
+        {
+          "id": "languages",
+          "pos": 9193
+        },
+        {
+          "id": "interests",
+          "pos": 9375
+        },
+        {
+          "id": "awards",
+          "pos": 9624
+        },
+        {
+          "id": "references",
+          "pos": 9819
+        },
+        {
+          "id": "volunteer",
+          "pos": 10302
+        },
+        {
+          "id": "publications",
+          "pos": 10595
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10957
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11193
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11668
+        },
+        {
+          "id": "custom-text",
+          "pos": 11938
+        }
+      ],
+      "brokenText": []
+    },
+    "creative": {
+      "component": "CreativeATSTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 348
+        },
+        {
+          "id": "skills",
+          "pos": 1099
+        },
+        {
+          "id": "experience",
+          "pos": 1461
+        },
+        {
+          "id": "projects",
+          "pos": 5322
+        },
+        {
+          "id": "education",
+          "pos": 7545
+        },
+        {
+          "id": "certifications",
+          "pos": 8165
+        },
+        {
+          "id": "achievements",
+          "pos": 8534
+        },
+        {
+          "id": "languages",
+          "pos": 9195
+        },
+        {
+          "id": "interests",
+          "pos": 9377
+        },
+        {
+          "id": "awards",
+          "pos": 9626
+        },
+        {
+          "id": "references",
+          "pos": 9821
+        },
+        {
+          "id": "volunteer",
+          "pos": 10304
+        },
+        {
+          "id": "publications",
+          "pos": 10597
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10959
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11195
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11670
+        },
+        {
+          "id": "custom-text",
+          "pos": 11940
+        }
+      ],
+      "brokenText": []
+    },
+    "corporate": {
+      "component": "CorporateTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 348
+        },
+        {
+          "id": "skills",
+          "pos": 1099
+        },
+        {
+          "id": "experience",
+          "pos": 1485
+        },
+        {
+          "id": "projects",
+          "pos": 5346
+        },
+        {
+          "id": "education",
+          "pos": 7569
+        },
+        {
+          "id": "certifications",
+          "pos": 8189
+        },
+        {
+          "id": "achievements",
+          "pos": 8558
+        },
+        {
+          "id": "languages",
+          "pos": 9219
+        },
+        {
+          "id": "interests",
+          "pos": 9401
+        },
+        {
+          "id": "awards",
+          "pos": 9650
+        },
+        {
+          "id": "references",
+          "pos": 9845
+        },
+        {
+          "id": "volunteer",
+          "pos": 10328
+        },
+        {
+          "id": "publications",
+          "pos": 10621
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10983
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11219
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11694
+        },
+        {
+          "id": "custom-text",
+          "pos": 11964
+        }
+      ],
+      "brokenText": []
+    },
+    "traditional": {
+      "component": "TraditionalTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 1914
+        },
+        {
+          "id": "skills",
+          "pos": 348
+        },
+        {
+          "id": "experience",
+          "pos": 2665
+        },
+        {
+          "id": "projects",
+          "pos": 6523
+        },
+        {
+          "id": "education",
+          "pos": 8728
+        },
+        {
+          "id": "certifications",
+          "pos": 710
+        },
+        {
+          "id": "achievements",
+          "pos": 1079
+        },
+        {
+          "id": "languages",
+          "pos": 1740
+        },
+        {
+          "id": "interests",
+          "pos": 9348
+        },
+        {
+          "id": "awards",
+          "pos": 9597
+        },
+        {
+          "id": "references",
+          "pos": 9792
+        },
+        {
+          "id": "volunteer",
+          "pos": 10275
+        },
+        {
+          "id": "publications",
+          "pos": 10568
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10930
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11166
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11641
+        },
+        {
+          "id": "custom-text",
+          "pos": 11911
+        }
+      ],
+      "brokenText": []
+    },
+    "clean": {
+      "component": "CleanTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 0
+        },
+        {
+          "id": "skills",
+          "pos": 751
+        },
+        {
+          "id": "experience",
+          "pos": 4214
+        },
+        {
+          "id": "projects",
+          "pos": 8035
+        },
+        {
+          "id": "education",
+          "pos": 10258
+        },
+        {
+          "id": "certifications",
+          "pos": 1113
+        },
+        {
+          "id": "achievements",
+          "pos": 1482
+        },
+        {
+          "id": "languages",
+          "pos": 2131
+        },
+        {
+          "id": "interests",
+          "pos": 10878
+        },
+        {
+          "id": "awards",
+          "pos": 11127
+        },
+        {
+          "id": "references",
+          "pos": 11322
+        },
+        {
+          "id": "volunteer",
+          "pos": 11805
+        },
+        {
+          "id": "publications",
+          "pos": 12098
+        },
+        {
+          "id": "custom-grid",
+          "pos": 2313
+        },
+        {
+          "id": "custom-entries",
+          "pos": 2549
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 3024
+        },
+        {
+          "id": "custom-text",
+          "pos": 3294
+        }
+      ],
+      "brokenText": []
+    },
+    "graduate": {
+      "component": "GraduateTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 348
+        },
+        {
+          "id": "skills",
+          "pos": 1099
+        },
+        {
+          "id": "experience",
+          "pos": 1461
+        },
+        {
+          "id": "projects",
+          "pos": 5282
+        },
+        {
+          "id": "education",
+          "pos": 7505
+        },
+        {
+          "id": "certifications",
+          "pos": 8125
+        },
+        {
+          "id": "achievements",
+          "pos": 8494
+        },
+        {
+          "id": "languages",
+          "pos": 9155
+        },
+        {
+          "id": "interests",
+          "pos": 9337
+        },
+        {
+          "id": "awards",
+          "pos": 9586
+        },
+        {
+          "id": "references",
+          "pos": 9781
+        },
+        {
+          "id": "volunteer",
+          "pos": 10264
+        },
+        {
+          "id": "publications",
+          "pos": 10557
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10919
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11155
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11630
+        },
+        {
+          "id": "custom-text",
+          "pos": 11900
+        }
+      ],
+      "brokenText": []
+    },
+    "tech": {
+      "component": "TechTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 359
+        },
+        {
+          "id": "skills",
+          "pos": 1112
+        },
+        {
+          "id": "experience",
+          "pos": 1476
+        },
+        {
+          "id": "projects",
+          "pos": 5339
+        },
+        {
+          "id": "education",
+          "pos": 7555
+        },
+        {
+          "id": "certifications",
+          "pos": 8177
+        },
+        {
+          "id": "achievements",
+          "pos": 8548
+        },
+        {
+          "id": "languages",
+          "pos": 9211
+        },
+        {
+          "id": "interests",
+          "pos": 9395
+        },
+        {
+          "id": "awards",
+          "pos": 9646
+        },
+        {
+          "id": "references",
+          "pos": 9843
+        },
+        {
+          "id": "volunteer",
+          "pos": 10328
+        },
+        {
+          "id": "publications",
+          "pos": 10623
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10987
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11225
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11702
+        },
+        {
+          "id": "custom-text",
+          "pos": 11974
+        }
+      ],
+      "brokenText": []
+    },
+    "engineering": {
+      "component": "EngineeringTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 1914
+        },
+        {
+          "id": "skills",
+          "pos": 348
+        },
+        {
+          "id": "experience",
+          "pos": 2665
+        },
+        {
+          "id": "projects",
+          "pos": 6526
+        },
+        {
+          "id": "education",
+          "pos": 8749
+        },
+        {
+          "id": "certifications",
+          "pos": 710
+        },
+        {
+          "id": "achievements",
+          "pos": 1079
+        },
+        {
+          "id": "languages",
+          "pos": 1740
+        },
+        {
+          "id": "interests",
+          "pos": 9369
+        },
+        {
+          "id": "awards",
+          "pos": 9618
+        },
+        {
+          "id": "references",
+          "pos": 9813
+        },
+        {
+          "id": "volunteer",
+          "pos": 10296
+        },
+        {
+          "id": "publications",
+          "pos": 10589
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10951
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11187
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11662
+        },
+        {
+          "id": "custom-text",
+          "pos": 11932
+        }
+      ],
+      "brokenText": []
+    },
+    "leadership": {
+      "component": "LeadershipTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 348
+        },
+        {
+          "id": "skills",
+          "pos": 1099
+        },
+        {
+          "id": "experience",
+          "pos": 1461
+        },
+        {
+          "id": "projects",
+          "pos": 5282
+        },
+        {
+          "id": "education",
+          "pos": 7505
+        },
+        {
+          "id": "certifications",
+          "pos": 8125
+        },
+        {
+          "id": "achievements",
+          "pos": 8494
+        },
+        {
+          "id": "languages",
+          "pos": 9143
+        },
+        {
+          "id": "interests",
+          "pos": 9325
+        },
+        {
+          "id": "awards",
+          "pos": 9574
+        },
+        {
+          "id": "references",
+          "pos": 9769
+        },
+        {
+          "id": "volunteer",
+          "pos": 10252
+        },
+        {
+          "id": "publications",
+          "pos": 10545
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10907
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11143
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11618
+        },
+        {
+          "id": "custom-text",
+          "pos": 11888
+        }
+      ],
+      "brokenText": []
+    },
+    "designer": {
+      "component": "DesignerTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 1914
+        },
+        {
+          "id": "skills",
+          "pos": 348
+        },
+        {
+          "id": "experience",
+          "pos": 2665
+        },
+        {
+          "id": "projects",
+          "pos": 6526
+        },
+        {
+          "id": "education",
+          "pos": 8749
+        },
+        {
+          "id": "certifications",
+          "pos": 710
+        },
+        {
+          "id": "achievements",
+          "pos": 1079
+        },
+        {
+          "id": "languages",
+          "pos": 1740
+        },
+        {
+          "id": "interests",
+          "pos": 9369
+        },
+        {
+          "id": "awards",
+          "pos": 9618
+        },
+        {
+          "id": "references",
+          "pos": 9813
+        },
+        {
+          "id": "volunteer",
+          "pos": 10296
+        },
+        {
+          "id": "publications",
+          "pos": 10589
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10951
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11187
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11662
+        },
+        {
+          "id": "custom-text",
+          "pos": 11932
+        }
+      ],
+      "brokenText": []
+    },
+    "sleek": {
+      "component": "SleekTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 348
+        },
+        {
+          "id": "skills",
+          "pos": 1099
+        },
+        {
+          "id": "experience",
+          "pos": 1461
+        },
+        {
+          "id": "projects",
+          "pos": 5322
+        },
+        {
+          "id": "education",
+          "pos": 7545
+        },
+        {
+          "id": "certifications",
+          "pos": 8165
+        },
+        {
+          "id": "achievements",
+          "pos": 8534
+        },
+        {
+          "id": "languages",
+          "pos": 9195
+        },
+        {
+          "id": "interests",
+          "pos": 9377
+        },
+        {
+          "id": "awards",
+          "pos": 9626
+        },
+        {
+          "id": "references",
+          "pos": 9821
+        },
+        {
+          "id": "volunteer",
+          "pos": 10304
+        },
+        {
+          "id": "publications",
+          "pos": 10597
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10959
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11195
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11670
+        },
+        {
+          "id": "custom-text",
+          "pos": 11940
+        }
+      ],
+      "brokenText": []
+    },
+    "contemporary": {
+      "component": "ContemporaryTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 348
+        },
+        {
+          "id": "skills",
+          "pos": 1099
+        },
+        {
+          "id": "experience",
+          "pos": 1461
+        },
+        {
+          "id": "projects",
+          "pos": 5282
+        },
+        {
+          "id": "education",
+          "pos": 7505
+        },
+        {
+          "id": "certifications",
+          "pos": 8125
+        },
+        {
+          "id": "achievements",
+          "pos": 8494
+        },
+        {
+          "id": "languages",
+          "pos": 9143
+        },
+        {
+          "id": "interests",
+          "pos": 9325
+        },
+        {
+          "id": "awards",
+          "pos": 9574
+        },
+        {
+          "id": "references",
+          "pos": 9769
+        },
+        {
+          "id": "volunteer",
+          "pos": 10252
+        },
+        {
+          "id": "publications",
+          "pos": 10545
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10907
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11143
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11618
+        },
+        {
+          "id": "custom-text",
+          "pos": 11888
+        }
+      ],
+      "brokenText": []
+    },
+    "academic": {
+      "component": "AcademicTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 348
+        },
+        {
+          "id": "skills",
+          "pos": 1099
+        },
+        {
+          "id": "experience",
+          "pos": 1461
+        },
+        {
+          "id": "projects",
+          "pos": 5276
+        },
+        {
+          "id": "education",
+          "pos": 7457
+        },
+        {
+          "id": "certifications",
+          "pos": 8077
+        },
+        {
+          "id": "achievements",
+          "pos": 8446
+        },
+        {
+          "id": "languages",
+          "pos": 9095
+        },
+        {
+          "id": "interests",
+          "pos": 9277
+        },
+        {
+          "id": "awards",
+          "pos": 9526
+        },
+        {
+          "id": "references",
+          "pos": 9715
+        },
+        {
+          "id": "volunteer",
+          "pos": 10192
+        },
+        {
+          "id": "publications",
+          "pos": 10481
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10841
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11077
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11546
+        },
+        {
+          "id": "custom-text",
+          "pos": 11810
+        }
+      ],
+      "brokenText": []
+    },
+    "research": {
+      "component": "ResearchTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 351
+        },
+        {
+          "id": "skills",
+          "pos": 1105
+        },
+        {
+          "id": "experience",
+          "pos": 1470
+        },
+        {
+          "id": "projects",
+          "pos": 5357
+        },
+        {
+          "id": "education",
+          "pos": 7583
+        },
+        {
+          "id": "certifications",
+          "pos": 8206
+        },
+        {
+          "id": "achievements",
+          "pos": 8578
+        },
+        {
+          "id": "languages",
+          "pos": 9248
+        },
+        {
+          "id": "interests",
+          "pos": 9433
+        },
+        {
+          "id": "awards",
+          "pos": 9685
+        },
+        {
+          "id": "references",
+          "pos": 9883
+        },
+        {
+          "id": "volunteer",
+          "pos": 10369
+        },
+        {
+          "id": "publications",
+          "pos": 10665
+        },
+        {
+          "id": "custom-grid",
+          "pos": 11030
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11269
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11747
+        },
+        {
+          "id": "custom-text",
+          "pos": 12020
+        }
+      ],
+      "brokenText": []
+    },
+    "medical": {
+      "component": "MedicalTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 348
+        },
+        {
+          "id": "skills",
+          "pos": 1099
+        },
+        {
+          "id": "experience",
+          "pos": 1461
+        },
+        {
+          "id": "projects",
+          "pos": 5322
+        },
+        {
+          "id": "education",
+          "pos": 7545
+        },
+        {
+          "id": "certifications",
+          "pos": 8165
+        },
+        {
+          "id": "achievements",
+          "pos": 8534
+        },
+        {
+          "id": "languages",
+          "pos": 9195
+        },
+        {
+          "id": "interests",
+          "pos": 9377
+        },
+        {
+          "id": "awards",
+          "pos": 9626
+        },
+        {
+          "id": "references",
+          "pos": 9821
+        },
+        {
+          "id": "volunteer",
+          "pos": 10304
+        },
+        {
+          "id": "publications",
+          "pos": 10597
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10959
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11195
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11670
+        },
+        {
+          "id": "custom-text",
+          "pos": 11940
+        }
+      ],
+      "brokenText": []
+    },
+    "finance": {
+      "component": "FinanceTemplate",
+      "fieldsTotal": 190,
+      "fieldsPassed": 190,
+      "fieldsFailed": 0,
+      "failedFields": [],
+      "headingsTotal": 17,
+      "headingsPassed": 17,
+      "missingHeadings": [],
+      "orderOk": true,
+      "headingPositions": [
+        {
+          "id": "summary",
+          "pos": 348
+        },
+        {
+          "id": "skills",
+          "pos": 1099
+        },
+        {
+          "id": "experience",
+          "pos": 1461
+        },
+        {
+          "id": "projects",
+          "pos": 5282
+        },
+        {
+          "id": "education",
+          "pos": 7508
+        },
+        {
+          "id": "certifications",
+          "pos": 8128
+        },
+        {
+          "id": "achievements",
+          "pos": 8497
+        },
+        {
+          "id": "languages",
+          "pos": 9146
+        },
+        {
+          "id": "interests",
+          "pos": 9328
+        },
+        {
+          "id": "awards",
+          "pos": 9577
+        },
+        {
+          "id": "references",
+          "pos": 9772
+        },
+        {
+          "id": "volunteer",
+          "pos": 10255
+        },
+        {
+          "id": "publications",
+          "pos": 10548
+        },
+        {
+          "id": "custom-grid",
+          "pos": 10910
+        },
+        {
+          "id": "custom-entries",
+          "pos": 11146
+        },
+        {
+          "id": "custom-bullets",
+          "pos": 11621
+        },
+        {
+          "id": "custom-text",
+          "pos": 11891
+        }
+      ],
+      "brokenText": []
+    }
+  },
+  "summary": {
+    "templates": 20,
+    "fieldsTotal": 190,
+    "fieldsPassedAllTemplates": 190,
+    "fieldsFailedAllTemplates": 0,
+    "fieldsPartial": 0,
+    "templatesFullyGreen": 20,
+    "brokenTextTemplates": [],
+    "orderFailures": []
+  },
+  "fields": [
+    {
+      "section": "basics",
+      "field": "fullName",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "basics",
+      "field": "professionalTitle",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "basics",
+      "field": "email",
+      "type": "email",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "basics",
+      "field": "phone",
+      "type": "tel",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "basics",
+      "field": "location",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "basics",
+      "field": "linkedin",
+      "type": "url",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "basics",
+      "field": "github",
+      "type": "url",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "basics",
+      "field": "portfolio",
+      "type": "url",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "summary",
+      "field": "summary",
+      "type": "textarea",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "skills",
+      "field": "skills[0]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "skills",
+      "field": "skills[1]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "skills",
+      "field": "skills[2]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "skills",
+      "field": "skills[3]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "skills",
+      "field": "skills[4]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "skills",
+      "field": "skills[5]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "skills",
+      "field": "skills[6]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "skills",
+      "field": "skills[7]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "skills",
+      "field": "skills[8]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "skills",
+      "field": "skills[9]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "skills",
+      "field": "skills[10]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "skills",
+      "field": "skills[11]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].role",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].company",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].location",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].employmentType",
+      "type": "select",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].duration",
+      "type": "date-range",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].summary",
+      "type": "textarea",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].bullets[0]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].bullets[1]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].bullets[2]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].bullets[3]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].bullets[4]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].bullets[5]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].bullets[6]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].bullets[7]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].bullets[8]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].bullets[9]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].bullets[10]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[0].bullets[11]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[1].role",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[1].company",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[1].location",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[1].employmentType",
+      "type": "select",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[1].duration",
+      "type": "date-range",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[1].summary",
+      "type": "textarea",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[1].bullets[0]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[1].bullets[1]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[1].bullets[2]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[1].bullets[3]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[1].bullets[4]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[2].role",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[2].company",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[2].location",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[2].employmentType",
+      "type": "select",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[2].duration",
+      "type": "date-range",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[2].bullets[0]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[2].bullets[1]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "experience",
+      "field": "experience[2].bullets[2]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[0].name",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[0].role",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[0].link",
+      "type": "url",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[0].github",
+      "type": "url",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[0].techStack",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[0].description",
+      "type": "textarea",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[0].highlights[0]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[0].highlights[1]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[0].highlights[2]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[0].highlights[3]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[0].highlights[4]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[0].highlights[5]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[1].name",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[1].role",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[1].link",
+      "type": "url",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[1].github",
+      "type": "url",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[1].techStack",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[1].description",
+      "type": "textarea",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[1].highlights[0]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[1].highlights[1]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[1].highlights[2]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[2].name",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[2].role",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[2].techStack",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "projects",
+      "field": "projects[2].description",
+      "type": "textarea",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[0].institution",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[0].degree",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[0].field",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[0].year",
+      "type": "date-range",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[0].grade",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[0].details",
+      "type": "textarea",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[1].institution",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[1].degree",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[1].field",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[1].year",
+      "type": "date-range",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[1].grade",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[1].details",
+      "type": "textarea",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[2].institution",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[2].degree",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[2].field",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "education",
+      "field": "education[2].year",
+      "type": "date-range",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "certifications",
+      "field": "certifications[0].name",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "certifications",
+      "field": "certifications[0].issuer",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "certifications",
+      "field": "certifications[0].year",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "certifications",
+      "field": "certifications[0].credentialUrl",
+      "type": "url",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "certifications",
+      "field": "certifications[1].name",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "certifications",
+      "field": "certifications[1].issuer",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "certifications",
+      "field": "certifications[1].year",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "certifications",
+      "field": "certifications[1].credentialUrl",
+      "type": "url",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "certifications",
+      "field": "certifications[2].name",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "certifications",
+      "field": "certifications[2].issuer",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "certifications",
+      "field": "certifications[2].year",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "achievements",
+      "field": "achievements[0]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "achievements",
+      "field": "achievements[1]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "achievements",
+      "field": "achievements[2]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "achievements",
+      "field": "achievements[3]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "achievements",
+      "field": "achievements[4]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "achievements",
+      "field": "achievements[5]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "languages",
+      "field": "languages[0]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "languages",
+      "field": "languages[1]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "languages",
+      "field": "languages[2]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "languages",
+      "field": "languages[3]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "languages",
+      "field": "languages[4]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "interests",
+      "field": "interests.text",
+      "type": "textarea",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "awards",
+      "field": "awards.items[0]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "awards",
+      "field": "awards.items[1]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "awards",
+      "field": "awards.items[2]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "references",
+      "field": "references.entries[0].title",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "references",
+      "field": "references.entries[0].subtitle",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "references",
+      "field": "references.entries[0].date",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "references",
+      "field": "references.entries[0].location",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "references",
+      "field": "references.entries[0].bullets[0]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "references",
+      "field": "references.entries[0].bullets[1]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "references",
+      "field": "references.entries[1].title",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "references",
+      "field": "references.entries[1].subtitle",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "references",
+      "field": "references.entries[1].date",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "references",
+      "field": "references.entries[1].location",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "references",
+      "field": "references.entries[1].bullets[0]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "volunteer",
+      "field": "volunteer.entries[0].title",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "volunteer",
+      "field": "volunteer.entries[0].subtitle",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "volunteer",
+      "field": "volunteer.entries[0].date",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "volunteer",
+      "field": "volunteer.entries[0].location",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "volunteer",
+      "field": "volunteer.entries[0].bullets[0]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "volunteer",
+      "field": "volunteer.entries[0].bullets[1]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "publications",
+      "field": "publications.entries[0].title",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "publications",
+      "field": "publications.entries[0].subtitle",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "publications",
+      "field": "publications.entries[0].date",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "publications",
+      "field": "publications.entries[0].location",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "publications",
+      "field": "publications.entries[0].bullets[0]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "publications",
+      "field": "publications.entries[1].title",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "publications",
+      "field": "publications.entries[1].subtitle",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "publications",
+      "field": "publications.entries[1].date",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "publications",
+      "field": "publications.entries[1].location",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[0].label",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[0].items[0]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[0].items[1]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[0].items[2]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[1].label",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[1].items[0]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[1].items[1]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[1].items[2]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[1].items[3]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[2].label",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[2].items[0]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[2].items[1]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[2].items[2]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[2].items[3]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[3].label",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[3].items[0]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[3].items[1]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[3].items[2]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[3].items[3]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[4].label",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[4].items[0]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[4].items[1]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[4].items[2]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-grid",
+      "field": "custom-grid.columns[4].items[3]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-entries",
+      "field": "custom-entries.entries[0].title",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-entries",
+      "field": "custom-entries.entries[0].subtitle",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-entries",
+      "field": "custom-entries.entries[0].date",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-entries",
+      "field": "custom-entries.entries[0].location",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-entries",
+      "field": "custom-entries.entries[0].bullets[0]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-entries",
+      "field": "custom-entries.entries[0].bullets[1]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-entries",
+      "field": "custom-entries.entries[1].title",
+      "type": "text",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-entries",
+      "field": "custom-entries.entries[1].subtitle",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-entries",
+      "field": "custom-entries.entries[1].date",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-entries",
+      "field": "custom-entries.entries[1].location",
+      "type": "text",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-entries",
+      "field": "custom-entries.entries[1].bullets[0]",
+      "type": "list-item",
+      "required": false,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-bullets",
+      "field": "custom-bullets.items[0]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-bullets",
+      "field": "custom-bullets.items[1]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-bullets",
+      "field": "custom-bullets.items[2]",
+      "type": "list-item",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    },
+    {
+      "section": "custom-text",
+      "field": "custom-text.text",
+      "type": "textarea",
+      "required": true,
+      "passed": 20,
+      "failed": 0,
+      "failedTemplates": [],
+      "status": "PASS"
+    }
+  ]
+}

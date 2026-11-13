@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-11-13T16:49:46.096Z",
+  "source": "qa-artifacts/pdf-audit/docx-word.pdf",
+  "pages": 5,
+  "linesPerPage": [
+    44,
+    43,
+    37,
+    35,
+    18
+  ],
+  "blankPages": [],
+  "lastPageBlank": false,
+  "headingsFound": 17,
+  "missingHeadings": [],
+  "orphanHeadings": [],
+  "lastPageTail": [
+    "CAREER PHILOSOPHY",
+    "I believe reliability is a product feature, not a tax. The best platforms make the safe path the easy path: sensible",
+    "defaults, clear guardrails, fast feedback, and incident reviews that focus on systems rather than individuals. I optimise",
+    "for teams that can operate what they build and for architectures that fail in predictable, recoverable ways. This custom",
+    "paragraph is intentionally long so that the text mode is exercised end to end, including wrapping, punctuation — em",
+    "dashes, semicolons; and “smart quotes” — plus Unicode: Zürich, 東京, مرحبا, ."
+  ]
+}

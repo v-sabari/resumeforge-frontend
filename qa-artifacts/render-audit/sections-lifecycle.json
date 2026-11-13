@@ -1,0 +1,229 @@
+{
+  "generatedAt": "2026-11-13T16:58:18.128Z",
+  "dataset": "resume-max-coverage.json",
+  "cases": [
+    {
+      "name": "hidden-custom-and-standard",
+      "template": "ModernProTemplate",
+      "rendered": true,
+      "error": null,
+      "checks": [
+        {
+          "label": "hidden custom heading absent",
+          "passed": true
+        },
+        {
+          "label": "hidden custom body absent",
+          "passed": true
+        },
+        {
+          "label": "hidden standard heading absent",
+          "passed": true
+        },
+        {
+          "label": "visible custom section still rendered",
+          "passed": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "hidden-custom-and-standard",
+      "template": "CleanTemplate",
+      "rendered": true,
+      "error": null,
+      "checks": [
+        {
+          "label": "hidden custom heading absent",
+          "passed": true
+        },
+        {
+          "label": "hidden custom body absent",
+          "passed": true
+        },
+        {
+          "label": "hidden standard heading absent",
+          "passed": true
+        },
+        {
+          "label": "visible custom section still rendered",
+          "passed": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "deleted-custom-and-standard",
+      "template": "ModernProTemplate",
+      "rendered": true,
+      "error": null,
+      "checks": [
+        {
+          "label": "deleted custom heading absent",
+          "passed": true
+        },
+        {
+          "label": "deleted standard heading absent",
+          "passed": true
+        },
+        {
+          "label": "remaining custom section present",
+          "passed": true
+        },
+        {
+          "label": "remaining standard section present",
+          "passed": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "deleted-custom-and-standard",
+      "template": "CleanTemplate",
+      "rendered": true,
+      "error": null,
+      "checks": [
+        {
+          "label": "deleted custom heading absent",
+          "passed": true
+        },
+        {
+          "label": "deleted standard heading absent",
+          "passed": true
+        },
+        {
+          "label": "remaining custom section present",
+          "passed": true
+        },
+        {
+          "label": "remaining standard section present",
+          "passed": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "renamed-custom-and-standard",
+      "template": "ModernProTemplate",
+      "rendered": true,
+      "error": null,
+      "checks": [
+        {
+          "label": "renamed custom heading present",
+          "passed": true
+        },
+        {
+          "label": "old custom heading absent",
+          "passed": true
+        },
+        {
+          "label": "renamed standard heading present",
+          "passed": true
+        },
+        {
+          "label": "old standard heading absent",
+          "passed": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "renamed-custom-and-standard",
+      "template": "CleanTemplate",
+      "rendered": true,
+      "error": null,
+      "checks": [
+        {
+          "label": "renamed custom heading present",
+          "passed": true
+        },
+        {
+          "label": "old custom heading absent",
+          "passed": true
+        },
+        {
+          "label": "renamed standard heading present",
+          "passed": true
+        },
+        {
+          "label": "old standard heading absent",
+          "passed": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "reordered-sections",
+      "template": "ModernProTemplate",
+      "rendered": true,
+      "error": null,
+      "checks": [
+        {
+          "label": "projects heading before experience heading",
+          "passed": true
+        },
+        {
+          "label": "custom text before custom grid",
+          "passed": true
+        },
+        {
+          "label": "all four headings present",
+          "passed": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "added-custom-section",
+      "template": "ModernProTemplate",
+      "rendered": true,
+      "error": null,
+      "checks": [
+        {
+          "label": "new heading present",
+          "passed": true
+        },
+        {
+          "label": "first item present once",
+          "passed": true
+        },
+        {
+          "label": "second item present once",
+          "passed": true
+        },
+        {
+          "label": "heading present once",
+          "passed": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "added-custom-section",
+      "template": "CleanTemplate",
+      "rendered": true,
+      "error": null,
+      "checks": [
+        {
+          "label": "new heading present",
+          "passed": true
+        },
+        {
+          "label": "first item present once",
+          "passed": true
+        },
+        {
+          "label": "second item present once",
+          "passed": true
+        },
+        {
+          "label": "heading present once",
+          "passed": true
+        }
+      ],
+      "ok": true
+    }
+  ],
+  "passed": 9,
+  "failed": 0
+}

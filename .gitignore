@@ -12,6 +12,9 @@ build
 # ── Generated at build time ───────────────────────────
 api/_pdf-compiled.css
 
+# ── QA harness generated bundles ──────────────────────
+qa-artifacts/.build/
+
 # ── Logs ──────────────────────────────────────────────
 logs
 *.log

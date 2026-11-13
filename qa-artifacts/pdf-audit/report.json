@@ -1,0 +1,501 @@
+{
+  "generatedAt": "2026-11-13T16:29:52.790Z",
+  "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "templates": {
+    "modern": {
+      "template": "modern",
+      "ms": 2328,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=modern)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/modern.pdf",
+      "bytes": 271517,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-SemiBold",
+        "BAAAAA+Inter-Medium",
+        "CAAAAA+Inter-Regular",
+        "DAAAAA+Inter-Bold",
+        "EAAAAA+MicrosoftYaHei",
+        "FAAAAA+SegoeUI"
+      ]
+    },
+    "classic": {
+      "template": "classic",
+      "ms": 1542,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=classic)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/classic.pdf",
+      "bytes": 251203,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-Bold",
+        "BAAAAA+Inter-Regular",
+        "CAAAAA+MicrosoftYaHei",
+        "DAAAAA+SegoeUI",
+        "FAAAAA+Inter-Medium",
+        "GAAAAA+Inter-SemiBold"
+      ]
+    },
+    "minimal": {
+      "template": "minimal",
+      "ms": 1519,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=minimal)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/minimal.pdf",
+      "bytes": 257799,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-Light",
+        "BAAAAA+Inter-Regular",
+        "CAAAAA+MicrosoftYaHei",
+        "DAAAAA+SegoeUI",
+        "FAAAAA+Inter-Medium",
+        "GAAAAA+Inter-SemiBold"
+      ]
+    },
+    "executive": {
+      "template": "executive",
+      "ms": 1748,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=executive)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/executive.pdf",
+      "bytes": 290807,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-Bold",
+        "BAAAAA+Inter-Regular",
+        "CAAAAA+Inter-Medium",
+        "DAAAAA+MicrosoftYaHei",
+        "EAAAAA+Tahoma",
+        "GAAAAA+MicrosoftYaHei",
+        "HAAAAA+SegoeUI",
+        "JAAAAA+Inter-SemiBold"
+      ]
+    },
+    "fresher": {
+      "template": "fresher",
+      "ms": 1517,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=fresher)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/fresher.pdf",
+      "bytes": 273597,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-Bold",
+        "BAAAAA+Inter-Medium",
+        "CAAAAA+Inter-Regular",
+        "DAAAAA+MicrosoftYaHei",
+        "EAAAAA+SegoeUI",
+        "GAAAAA+Inter-SemiBold"
+      ]
+    },
+    "creative": {
+      "template": "creative",
+      "ms": 1579,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=creative)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/creative.pdf",
+      "bytes": 275633,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-Bold",
+        "BAAAAA+Inter-Medium",
+        "CAAAAA+Inter-Regular",
+        "DAAAAA+MicrosoftYaHei",
+        "EAAAAA+SegoeUI",
+        "GAAAAA+SegoeUISymbol",
+        "HAAAAA+Inter-SemiBold"
+      ]
+    },
+    "corporate": {
+      "template": "corporate",
+      "ms": 1545,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=corporate)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/corporate.pdf",
+      "bytes": 258876,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-Bold",
+        "BAAAAA+Inter-Medium",
+        "CAAAAA+Inter-Regular",
+        "DAAAAA+MicrosoftYaHei",
+        "EAAAAA+SegoeUI",
+        "GAAAAA+Inter-SemiBold"
+      ]
+    },
+    "traditional": {
+      "template": "traditional",
+      "ms": 1577,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=traditional)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/traditional.pdf",
+      "bytes": 330811,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Georgia-Bold",
+        "BAAAAA+Georgia-Italic",
+        "CAAAAA+Georgia",
+        "DAAAAA+Georgia",
+        "EAAAAA+MicrosoftYaHei",
+        "FAAAAA+TimesNewRomanPSMT",
+        "HAAAAA+Georgia-Bold"
+      ]
+    },
+    "clean": {
+      "template": "clean",
+      "ms": 1527,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 2 element-aware page breaks (template=clean)"
+      ],
+      "stamped": 2,
+      "expectedPages": 3,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/clean.pdf",
+      "bytes": 259957,
+      "pages": 3,
+      "fonts": [
+        "AAAAAA+Inter-Regular",
+        "BAAAAA+MicrosoftYaHei",
+        "CAAAAA+SegoeUI",
+        "EAAAAA+Inter-Medium",
+        "FAAAAA+Inter-SemiBold"
+      ]
+    },
+    "graduate": {
+      "template": "graduate",
+      "ms": 1548,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=graduate)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/graduate.pdf",
+      "bytes": 278530,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-Bold",
+        "BAAAAA+Inter-Medium",
+        "CAAAAA+Inter-Regular",
+        "DAAAAA+MicrosoftYaHei",
+        "EAAAAA+SegoeUI",
+        "GAAAAA+SegoeUISymbol",
+        "HAAAAA+Inter-SemiBold"
+      ]
+    },
+    "tech": {
+      "template": "tech",
+      "ms": 1556,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=tech)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/tech.pdf",
+      "bytes": 284226,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Consolas",
+        "BAAAAA+Consolas-Bold",
+        "CAAAAA+MicrosoftYaHei",
+        "DAAAAA+CourierNewPSMT",
+        "FAAAAA+Consolas",
+        "GAAAAA+Consolas-Bold"
+      ]
+    },
+    "engineering": {
+      "template": "engineering",
+      "ms": 1591,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=engineering)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/engineering.pdf",
+      "bytes": 265902,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-Bold",
+        "BAAAAA+Inter-Medium",
+        "CAAAAA+Inter-Regular",
+        "DAAAAA+MicrosoftYaHei",
+        "EAAAAA+SegoeUI",
+        "GAAAAA+Inter-SemiBold",
+        "HAAAAA+CambriaMath"
+      ]
+    },
+    "leadership": {
+      "template": "leadership",
+      "ms": 1584,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=leadership)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/leadership.pdf",
+      "bytes": 272689,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-Bold",
+        "BAAAAA+Inter-Medium",
+        "CAAAAA+Inter-Regular",
+        "DAAAAA+MicrosoftYaHei",
+        "EAAAAA+SegoeUI",
+        "GAAAAA+Inter-SemiBold"
+      ]
+    },
+    "designer": {
+      "template": "designer",
+      "ms": 1568,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=designer)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/designer.pdf",
+      "bytes": 281388,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-Bold",
+        "BAAAAA+Inter-Medium",
+        "CAAAAA+Inter-Regular",
+        "DAAAAA+MicrosoftYaHei",
+        "EAAAAA+SegoeUI",
+        "GAAAAA+SegoeUISymbol",
+        "HAAAAA+Inter-SemiBold"
+      ]
+    },
+    "sleek": {
+      "template": "sleek",
+      "ms": 1559,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=sleek)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/sleek.pdf",
+      "bytes": 277853,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-Light",
+        "BAAAAA+Inter-Regular",
+        "CAAAAA+Inter-SemiBold",
+        "DAAAAA+MicrosoftYaHei",
+        "EAAAAA+SegoeUI",
+        "GAAAAA+Inter-Medium"
+      ]
+    },
+    "contemporary": {
+      "template": "contemporary",
+      "ms": 2082,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=contemporary)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/contemporary.pdf",
+      "bytes": 517502,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-Light",
+        "BAAAAA+Inter-Medium",
+        "CAAAAA+Inter-Regular",
+        "DAAAAA+Inter-Bold",
+        "EAAAAA+MicrosoftYaHei",
+        "FAAAAA+SegoeUI",
+        "HAAAAA+Inter-SemiBold"
+      ]
+    },
+    "academic": {
+      "template": "academic",
+      "ms": 3307,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=academic)",
+        "render-pdf: annotated=5 natural=4 expected=4 (template=academic)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/academic.pdf",
+      "bytes": 299070,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Calibri-Bold",
+        "BAAAAA+Calibri",
+        "CAAAAA+MicrosoftYaHei",
+        "EAAAAA+Calibri-Italic"
+      ]
+    },
+    "research": {
+      "template": "research",
+      "ms": 1579,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=research)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/research.pdf",
+      "bytes": 258384,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-Bold",
+        "BAAAAA+Inter-Regular",
+        "CAAAAA+MicrosoftYaHei",
+        "DAAAAA+SegoeUI",
+        "FAAAAA+Inter-Medium",
+        "GAAAAA+Inter-SemiBold"
+      ]
+    },
+    "medical": {
+      "template": "medical",
+      "ms": 1554,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=medical)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/medical.pdf",
+      "bytes": 273358,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-Light",
+        "BAAAAA+Inter-Medium",
+        "CAAAAA+Inter-Regular",
+        "DAAAAA+Inter-Bold",
+        "EAAAAA+MicrosoftYaHei",
+        "FAAAAA+SegoeUI",
+        "HAAAAA+Inter-SemiBold"
+      ]
+    },
+    "finance": {
+      "template": "finance",
+      "ms": 1507,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=finance)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/finance.pdf",
+      "bytes": 264579,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+Inter-Bold",
+        "BAAAAA+Inter-Medium",
+        "CAAAAA+Inter-Regular",
+        "DAAAAA+MicrosoftYaHei",
+        "EAAAAA+SegoeUI",
+        "GAAAAA+Inter-SemiBold"
+      ]
+    }
+  },
+  "fontVariants": [
+    {
+      "template": "modern",
+      "fontFamily": "times",
+      "fontSize": 11.5,
+      "ms": 1636,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 3 element-aware page breaks (template=modern)"
+      ],
+      "stamped": 3,
+      "expectedPages": 4,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/font-times-modern.pdf",
+      "bytes": 358746,
+      "pages": 4,
+      "fonts": [
+        "AAAAAA+TimesNewRomanPS-BoldMT",
+        "BAAAAA+TimesNewRomanPSMT",
+        "CAAAAA+TimesNewRomanPSMT",
+        "DAAAAA+TimesNewRomanPS-BoldMT",
+        "EAAAAA+MicrosoftYaHei"
+      ]
+    },
+    {
+      "template": "academic",
+      "fontFamily": "courier",
+      "fontSize": 11.5,
+      "ms": 3054,
+      "status": 200,
+      "logs": [
+        "render-pdf: stamped 6 element-aware page breaks (template=academic)",
+        "render-pdf: annotated=8 natural=7 expected=7 (template=academic)"
+      ],
+      "stamped": 6,
+      "expectedPages": 7,
+      "ok": true,
+      "file": "qa-artifacts/pdf-audit/font-courier-academic.pdf",
+      "bytes": 311690,
+      "pages": 7,
+      "fonts": [
+        "AAAAAA+CourierNewPS-BoldMT",
+        "BAAAAA+CourierNewPSMT",
+        "CAAAAA+MicrosoftYaHei",
+        "EAAAAA+CourierNewPS-ItalicMT"
+      ]
+    }
+  ]
+}
