@@ -1,4 +1,5 @@
 import api from './api';
+import { DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE, normaliseFontFamily, normaliseFontSize } from '../utils/resumeTypography.js';
 
 const safeJsonParse = (value, fallback = null) => {
   if (value == null || value === '') return fallback;
@@ -30,6 +31,10 @@ export function fromApiResponse(data) {
     languages:      safeJsonParse(data.languages,      []),
     customSections: safeJsonParse(data.customSections, {}),
     sectionsConfig: safeJsonParse(data.sectionsConfig, null),
+    // Resume-only typography — round-tripped so a saved choice survives
+    // refresh and drives both the preview and the PDF export.
+    fontFamily: normaliseFontFamily(data.fontFamily ?? DEFAULT_FONT_FAMILY),
+    fontSize:   normaliseFontSize(data.fontSize ?? DEFAULT_FONT_SIZE),
     createdAt: data.createdAt, updatedAt: data.updatedAt,
   };
 }
@@ -55,6 +60,10 @@ export function toApiPayload(resume) {
     languages:      s(resume.languages),
     customSections: s(resume.customSections),
     sectionsConfig: s(resume.sectionsConfig),
+    // Resume-only typography: persisted with the resume so export matches the
+    // preview exactly. Backend re-validates both (allow-list + 8.0–13.0).
+    fontFamily: normaliseFontFamily(resume.fontFamily),
+    fontSize:   normaliseFontSize(resume.fontSize),
   };
 }
 
