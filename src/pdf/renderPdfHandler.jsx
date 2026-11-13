@@ -45,6 +45,16 @@ import { buildTransformed } from '../utils/transformResume.js';
 import { A4_W, A4_H, getPageMargin, getPageSize } from '../utils/pageLayout.js';
 import { DEFAULT_SECTIONS_CONFIG } from '../utils/sectionsCatalog.js';
 import {
+  getResumeTypographyProps,
+  getFontFamilyStack,
+  normaliseFontFamily,
+} from '../utils/resumeTypography.js';
+// Self-hosted Inter faces: the serverless Chromium build ships no system
+// fonts, so without these @font-face rules the template's default stack
+// silently falls back to a metrically different font (wrong wraps -> wrong
+// page breaks). Previously exported but never imported.
+import { INTER_FONT_FACES } from '../../api/_pdf-fonts.js';
+import {
   ModernProTemplate,
   MinimalATSTemplate,
   ExecutiveTemplate,
@@ -129,7 +139,7 @@ try {
   // Chrome's native pagination (no annotation) — export still works.
 }
 
-function wrapHtml(bodyHtml, pageW) {
+function wrapHtml(bodyHtml, pageW, extraCss = '') {
   return `<!doctype html>
 <html>
 <head>
@@ -138,7 +148,13 @@ function wrapHtml(bodyHtml, pageW) {
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { margin: 0; padding: 0; background: #fff; }
   body { width: ${pageW}px; }
+  /* Self-hosted Inter (weights 300–700) — see api/_pdf-fonts.js. */
+  ${INTER_FONT_FACES.map((f) => `@font-face{font-family:'Inter';font-style:normal;font-weight:${f.weight};font-display:block;src:url(data:font/woff2;base64,${f.base64}) format('woff2');}`).join('\n')}
   ${compiledCss}
+  /* RESUME TYPOGRAPHY: same scoped override the live preview applies. Scoped
+     to .resume-typography .resume-template, so it cannot affect anything
+     outside the rendered resume. */
+  ${extraCss}
   /* PAGE-BREAK RULES: the same break-controls the on-screen preview now
      enforces element-wise (see utils/previewPagination.js) are expressed here
      for the export engine. Chrome's print fragmenter honors these, so a list
@@ -208,9 +224,25 @@ export default async function handler(req, res) {
     // utils/pageLayout.js for the page geometry both surfaces share). The
     // preview and this handler therefore only ever agree in one way: at
     // scale 1, which is what both now always use.
+    // RESUME TYPOGRAPHY (resume-only): identical wrapper + scoped override to
+    // the live preview (components/builder/ResumePreview.jsx). The wrapper is
+    // the first element of <body>, so the pagination pass below measures the
+    // same visual-space geometry the preview measured.
+    const fontFamily = normaliseFontFamily(resume.fontFamily);
+    const fontStack = getFontFamilyStack(fontFamily);
+    const typography = getResumeTypographyProps(fontFamily, resume.fontSize);
+    const typographyStyle = Object.entries(typography.style)
+      .map(([k, v]) => `${k.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)}:${v}`)
+      .join(';');
+    const typographyCss = fontStack
+      ? `.resume-typography .resume-template,
+         .resume-typography .resume-template * { font-family: ${fontStack} !important; }`
+      : '';
+
     const templateEl = React.createElement(Template, { data });
-    const bodyHtml = ReactDOMServer.renderToStaticMarkup(templateEl);
-    const html = wrapHtml(bodyHtml, pageW);
+    const markup = ReactDOMServer.renderToStaticMarkup(templateEl);
+    const bodyHtml = `<div class="${typography.className}" data-font-family="${fontFamily}" style="${typographyStyle}">${markup}</div>`;
+    const html = wrapHtml(bodyHtml, pageW, typographyCss);
 
     const browser = await getBrowser();
     const page = await browser.newPage();
@@ -323,8 +355,10 @@ export default async function handler(req, res) {
     // verified-on-20-templates) behavior. If even the natural render misses,
     // prefer whichever run reproduced the preview count; else keep the
     // annotated output (closest to what the user saw).
+    let annotatedPageClosed = false;
     if (annotation && annotation.expected != null && pdfPages !== annotation.expected) {
       await page.close();
+      annotatedPageClosed = true;
       const cleanPage = await browser.newPage();
       await cleanPage.setViewport({ width: pageW, height: pageH });
       await cleanPage.setContent(html, { waitUntil: 'networkidle0' });
@@ -339,7 +373,7 @@ export default async function handler(req, res) {
       }
     }
 
-    await page.close();
+    if (!annotatedPageClosed) await page.close();
 
     res.setHeader('Content-Type', 'application/pdf');
     res.status(200).send(Buffer.from(pdfBuffer));
