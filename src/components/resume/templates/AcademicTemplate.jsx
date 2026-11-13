@@ -31,13 +31,23 @@ const SectionTitle = ({ children }) => (
   </div>
 );
 
-/* ─── Bullet: 10pt, "●" marker, indented row (marker column + text). ─ */
+/* ─── Bullet: 10pt, drawn-dot marker, indented row (marker column + text). ─ */
 const Bullet = ({ text }) => (
   <div style={{
     display: 'flex', fontSize: '10pt', lineHeight: '1.3',
     margin: '0 0 1.5pt 0', breakInside: 'avoid',
   }}>
-    <span style={{ width: '11pt', flexShrink: 0 }}>●</span>
+    {/* Bullet dot is DRAWN with CSS, not the "●" text character: the PDF renderer
+        (headless Chromium on Vercel) lacks a font with that glyph, so the character
+        printed blank in the exported PDF. A drawn circle needs no font. The 1.3em
+        height equals one text line, so the dot stays on the first line of wrapped
+        bullets. Width stays 11pt so the layout is unchanged. */}
+    <span style={{
+      width: '11pt', flexShrink: 0, alignSelf: 'flex-start',
+      height: '1.3em', display: 'flex', alignItems: 'center',
+    }}>
+      <span style={{ width: '4.6pt', height: '4.6pt', borderRadius: '50%', background: 'currentColor' }} />
+    </span>
     <span style={{ flex: 1, minWidth: 0 }}>{text}</span>
   </div>
 );
