@@ -42,16 +42,32 @@ const Bullet = ({ text }) => (
   </div>
 );
 
+/* ─── Link helpers: show a clean "github.com/user/repo" (no protocol,
+   no www., no trailing slash) but keep a real clickable href. ───────── */
+const shortUrl = (u) =>
+  String(u || '').trim().replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/+$/, '');
+const hrefOf = (u) => {
+  const t = String(u || '').trim();
+  return /^https?:\/\//i.test(t) ? t : `https://${t}`;
+};
+const linkNode = (url) => (url && String(url).trim()
+  ? <a href={hrefOf(url)} style={{ color: 'inherit', textDecoration: 'none' }}>{shortUrl(url)}</a>
+  : null);
+
 /* ─── Entry: title + date on the top row, subtitle + location on the
-   second row, an optional italic 9pt meta/tech line, then bullets. ──── */
-const Entry = ({ title, date, subtitle, location, meta, summary, bullets }) => {
+   second row, an optional italic 9pt meta/tech line, then bullets.
+   Right-hand slots (all optional, right-aligned on the same row):
+     titleRight → top row, used when there is no date (e.g. GitHub URL)
+     metaRight  → meta/tech row (e.g. Live URL)                          */
+const Entry = ({ title, date, titleRight, subtitle, location, meta, metaRight, summary, bullets }) => {
   const bulletList = ensure(bullets).filter(Boolean);
+  const topRight = date || titleRight;
   return (
     <div style={{ marginBottom: '6pt', breakInside: 'avoid' }}>
-      {(title || date) && (
+      {(title || topRight) && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '10pt' }}>
           <span style={{ fontSize: '10.6pt', fontWeight: 'bold', color: INK, minWidth: 0 }}>{title}</span>
-          {date ? <span style={{ fontSize: '9pt', fontWeight: 'normal', whiteSpace: 'nowrap' }}>{date}</span> : null}
+          {topRight ? <span style={{ fontSize: '9pt', fontWeight: 'normal', whiteSpace: 'nowrap' }}>{topRight}</span> : null}
         </div>
       )}
       {(subtitle || location) && (
@@ -61,7 +77,15 @@ const Entry = ({ title, date, subtitle, location, meta, summary, bullets }) => {
         </div>
       )}
       {summary ? <p style={{ fontSize: '10pt', lineHeight: '1.35', margin: '1pt 0 0' }}>{summary}</p> : null}
-      {meta ? <div style={{ fontSize: '9pt', fontStyle: 'italic', marginTop: '1pt' }}>{meta}</div> : null}
+      {(meta || metaRight) ? (
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
+          gap: '10pt', fontSize: '9pt', fontStyle: 'italic', marginTop: '1pt',
+        }}>
+          <span style={{ minWidth: 0 }}>{meta}</span>
+          {metaRight ? <span style={{ whiteSpace: 'nowrap' }}>{metaRight}</span> : null}
+        </div>
+      ) : null}
       {bulletList.length > 0 && (
         <div style={{ marginTop: '2pt' }}>
           {bulletList.map((b, i) => <Bullet key={i} text={b} />)}
@@ -131,6 +155,13 @@ const skillsToColumns = (skills) =>
     return { label: '', items: [String(s)] };
   });
 
+/* ─── "Tech Stack: A, B, C" — adds the label once, even if the user
+   already typed it into the field. ───────────────────────────────────── */
+const techStackLine = (tech) => {
+  const t = String(tech || '').trim().replace(/^tech(?:nology)?\s*stack\s*:\s*/i, '');
+  return t ? `Tech Stack: ${t}` : '';
+};
+
 /* ─── Section content, chosen per standard section key. Each branch
    returns null when its content is empty so no orphan heading renders. ─ */
 const renderSectionBody = (sec, data) => {
@@ -166,7 +197,9 @@ const renderSectionBody = (sec, data) => {
         .filter((p) => p.name)
         .map((p, i) => (
           <Entry key={i} title={p.name} subtitle={p.role}
-            meta={[p.technologies, p.link, p.github].filter(Boolean).join(' · ')}
+            titleRight={linkNode(p.github)}
+            meta={techStackLine(p.technologies)}
+            metaRight={linkNode(p.link)}
             bullets={p.highlights} />
         ));
     }
