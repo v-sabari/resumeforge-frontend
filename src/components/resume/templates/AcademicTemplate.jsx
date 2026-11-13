@@ -22,10 +22,10 @@ const ensure = (arr) => (Array.isArray(arr) ? arr : []);
    above AND below — identical treatment for every section. ─────────── */
 const SectionTitle = ({ children }) => (
   <div style={{
-    marginTop: '11pt', marginBottom: '5pt',
+    marginTop: '6pt', marginBottom: '4pt',
     borderTop: `0.75pt solid ${RULE}`, borderBottom: `0.75pt solid ${RULE}`,
     textAlign: 'center', fontSize: '10pt', fontWeight: 'bold',
-    letterSpacing: '0.04em', color: INK, padding: '2.5pt 0',
+    letterSpacing: '0.04em', color: INK, padding: '2pt 0',
   }}>
     {children}
   </div>
@@ -34,17 +34,17 @@ const SectionTitle = ({ children }) => (
 /* ─── Bullet: 10pt, drawn-dot marker, indented row (marker column + text). ─ */
 const Bullet = ({ text }) => (
   <div style={{
-    display: 'flex', fontSize: '10pt', lineHeight: '1.3',
-    margin: '0 0 1.5pt 0', breakInside: 'avoid',
+    display: 'flex', fontSize: '10pt', lineHeight: '1.25',
+    margin: '0 0 1pt 0', breakInside: 'avoid',
   }}>
     {/* Bullet dot is DRAWN with CSS, not the "●" text character: the PDF renderer
         (headless Chromium on Vercel) lacks a font with that glyph, so the character
-        printed blank in the exported PDF. A drawn circle needs no font. The 1.3em
+        printed blank in the exported PDF. A drawn circle needs no font. The 1.25em
         height equals one text line, so the dot stays on the first line of wrapped
         bullets. Width stays 11pt so the layout is unchanged. */}
     <span style={{
       width: '11pt', flexShrink: 0, alignSelf: 'flex-start',
-      height: '1.3em', display: 'flex', alignItems: 'center',
+      height: '1.25em', display: 'flex', alignItems: 'center',
     }}>
       <span style={{ width: '4.6pt', height: '4.6pt', borderRadius: '50%', background: 'currentColor' }} />
     </span>
@@ -73,7 +73,7 @@ const Entry = ({ title, date, titleRight, subtitle, location, meta, metaRight, s
   const bulletList = ensure(bullets).filter(Boolean);
   const topRight = date || titleRight;
   return (
-    <div style={{ marginBottom: '6pt', breakInside: 'avoid' }}>
+    <div style={{ marginBottom: '3pt', breakInside: 'avoid' }}>
       {(title || topRight) && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '10pt' }}>
           <span style={{ fontSize: '10.6pt', fontWeight: 'bold', color: INK, minWidth: 0 }}>{title}</span>
@@ -110,12 +110,12 @@ const Grid = ({ columns }) => {
   const cols = ensure(columns).filter(Boolean);
   if (!cols.length) return null;
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', columnGap: '14pt', rowGap: '5pt' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', columnGap: '14pt', rowGap: '3pt' }}>
       {cols.map((col, i) => (
         <div key={i} style={{ breakInside: 'avoid' }}>
           {col.label ? <div style={{ fontSize: '10pt', fontWeight: 'bold', color: INK }}>{col.label}</div> : null}
           {ensure(col.items).filter(Boolean).length > 0 ? (
-            <div style={{ fontSize: '10pt', lineHeight: '1.3' }}>
+            <div style={{ fontSize: '10pt', lineHeight: '1.25' }}>
               {ensure(col.items).filter(Boolean).join(', ')}
             </div>
           ) : null}
@@ -181,7 +181,7 @@ const renderSectionBody = (sec, data) => {
   switch (sec.key) {
     case 'summary': {
       if (!data.summary || !data.summary.trim()) return null;
-      return <p style={{ fontSize: '10pt', lineHeight: '1.35' }}>{data.summary}</p>;
+      return <p style={{ fontSize: '10pt', lineHeight: '1.3' }}>{data.summary}</p>;
     }
     case 'experience': {
       if (!ensure(data.experience).length) return null;
@@ -248,7 +248,7 @@ const Header = ({ personalInfo }) => {
   const left = contact.slice(0, half);
   const right = contact.slice(half);
   return (
-    <header style={{ marginBottom: '5pt' }}>
+    <header style={{ marginBottom: '3pt' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: '0 8pt' }}>
         <h1 style={{ fontSize: '17pt', fontWeight: 'bold', color: '#000', margin: 0 }}>
           {p.fullName || 'Your Name'}
@@ -276,6 +276,9 @@ export const AcademicTemplate = ({ data }) => {
     <div className="resume-template academic" style={{
       width: '100%', background: '#ffffff', color: INK,
       fontFamily: FONT, padding: '0 0.35in',
+      // One explicit line-height for every row that doesn't set its own, so leading is
+      // identical in Calibri, Open Sans (the PDF renderer's fallback) or any other font.
+      lineHeight: '1.25',
     }}>
       <Header personalInfo={data.personalInfo} />
       {sections.map((sec) => {
