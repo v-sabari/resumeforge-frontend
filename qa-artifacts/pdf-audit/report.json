@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-11-13T16:29:52.790Z",
+  "generatedAt": "2026-11-13T17:23:24.541Z",
   "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
   "templates": {
     "modern": {
       "template": "modern",
-      "ms": 2328,
+      "ms": 2141,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=modern)"
@@ -13,7 +13,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/modern.pdf",
-      "bytes": 271517,
+      "bytes": 271333,
       "pages": 4,
       "fonts": [
         "AAAAAA+Inter-SemiBold",
@@ -26,7 +26,7 @@
     },
     "classic": {
       "template": "classic",
-      "ms": 1542,
+      "ms": 1495,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=classic)"
@@ -35,7 +35,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/classic.pdf",
-      "bytes": 251203,
+      "bytes": 251076,
       "pages": 4,
       "fonts": [
         "AAAAAA+Inter-Bold",
@@ -48,7 +48,7 @@
     },
     "minimal": {
       "template": "minimal",
-      "ms": 1519,
+      "ms": 1490,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=minimal)"
@@ -57,7 +57,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/minimal.pdf",
-      "bytes": 257799,
+      "bytes": 258163,
       "pages": 4,
       "fonts": [
         "AAAAAA+Inter-Light",
@@ -70,17 +70,18 @@
     },
     "executive": {
       "template": "executive",
-      "ms": 1748,
+      "ms": 3496,
       "status": 200,
       "logs": [
-        "render-pdf: stamped 3 element-aware page breaks (template=executive)"
+        "render-pdf: stamped 4 element-aware page breaks (template=executive)",
+        "render-pdf: annotated=7 natural=5 expected=5 (template=executive)"
       ],
-      "stamped": 3,
-      "expectedPages": 4,
+      "stamped": 4,
+      "expectedPages": 5,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/executive.pdf",
-      "bytes": 290807,
-      "pages": 4,
+      "bytes": 291719,
+      "pages": 5,
       "fonts": [
         "AAAAAA+Inter-Bold",
         "BAAAAA+Inter-Regular",
@@ -94,7 +95,7 @@
     },
     "fresher": {
       "template": "fresher",
-      "ms": 1517,
+      "ms": 1558,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=fresher)"
@@ -103,7 +104,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/fresher.pdf",
-      "bytes": 273597,
+      "bytes": 274110,
       "pages": 4,
       "fonts": [
         "AAAAAA+Inter-Bold",
@@ -116,7 +117,7 @@
     },
     "creative": {
       "template": "creative",
-      "ms": 1579,
+      "ms": 1540,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=creative)"
@@ -125,7 +126,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/creative.pdf",
-      "bytes": 275633,
+      "bytes": 275692,
       "pages": 4,
       "fonts": [
         "AAAAAA+Inter-Bold",
@@ -139,7 +140,7 @@
     },
     "corporate": {
       "template": "corporate",
-      "ms": 1545,
+      "ms": 1523,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=corporate)"
@@ -148,7 +149,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/corporate.pdf",
-      "bytes": 258876,
+      "bytes": 258796,
       "pages": 4,
       "fonts": [
         "AAAAAA+Inter-Bold",
@@ -161,7 +162,7 @@
     },
     "traditional": {
       "template": "traditional",
-      "ms": 1577,
+      "ms": 1554,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=traditional)"
@@ -170,7 +171,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/traditional.pdf",
-      "bytes": 330811,
+      "bytes": 331241,
       "pages": 4,
       "fonts": [
         "AAAAAA+Georgia-Bold",
@@ -184,7 +185,7 @@
     },
     "clean": {
       "template": "clean",
-      "ms": 1527,
+      "ms": 1595,
       "status": 200,
       "logs": [
         "render-pdf: stamped 2 element-aware page breaks (template=clean)"
@@ -193,7 +194,7 @@
       "expectedPages": 3,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/clean.pdf",
-      "bytes": 259957,
+      "bytes": 259914,
       "pages": 3,
       "fonts": [
         "AAAAAA+Inter-Regular",
@@ -205,7 +206,7 @@
     },
     "graduate": {
       "template": "graduate",
-      "ms": 1548,
+      "ms": 1556,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=graduate)"
@@ -214,7 +215,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/graduate.pdf",
-      "bytes": 278530,
+      "bytes": 278363,
       "pages": 4,
       "fonts": [
         "AAAAAA+Inter-Bold",
@@ -228,7 +229,7 @@
     },
     "tech": {
       "template": "tech",
-      "ms": 1556,
+      "ms": 1546,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=tech)"
@@ -237,7 +238,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/tech.pdf",
-      "bytes": 284226,
+      "bytes": 284316,
       "pages": 4,
       "fonts": [
         "AAAAAA+Consolas",
@@ -250,7 +251,7 @@
     },
     "engineering": {
       "template": "engineering",
-      "ms": 1591,
+      "ms": 1559,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=engineering)"
@@ -259,7 +260,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/engineering.pdf",
-      "bytes": 265902,
+      "bytes": 266382,
       "pages": 4,
       "fonts": [
         "AAAAAA+Inter-Bold",
@@ -273,7 +274,7 @@
     },
     "leadership": {
       "template": "leadership",
-      "ms": 1584,
+      "ms": 1520,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=leadership)"
@@ -282,7 +283,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/leadership.pdf",
-      "bytes": 272689,
+      "bytes": 272538,
       "pages": 4,
       "fonts": [
         "AAAAAA+Inter-Bold",
@@ -295,7 +296,7 @@
     },
     "designer": {
       "template": "designer",
-      "ms": 1568,
+      "ms": 1545,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=designer)"
@@ -304,7 +305,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/designer.pdf",
-      "bytes": 281388,
+      "bytes": 281532,
       "pages": 4,
       "fonts": [
         "AAAAAA+Inter-Bold",
@@ -318,7 +319,7 @@
     },
     "sleek": {
       "template": "sleek",
-      "ms": 1559,
+      "ms": 1546,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=sleek)"
@@ -327,7 +328,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/sleek.pdf",
-      "bytes": 277853,
+      "bytes": 277845,
       "pages": 4,
       "fonts": [
         "AAAAAA+Inter-Light",
@@ -340,16 +341,17 @@
     },
     "contemporary": {
       "template": "contemporary",
-      "ms": 2082,
+      "ms": 4285,
       "status": 200,
       "logs": [
-        "render-pdf: stamped 3 element-aware page breaks (template=contemporary)"
+        "render-pdf: stamped 3 element-aware page breaks (template=contemporary)",
+        "render-pdf: annotated=5 natural=4 expected=4 (template=contemporary)"
       ],
       "stamped": 3,
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/contemporary.pdf",
-      "bytes": 517502,
+      "bytes": 525946,
       "pages": 4,
       "fonts": [
         "AAAAAA+Inter-Light",
@@ -363,17 +365,16 @@
     },
     "academic": {
       "template": "academic",
-      "ms": 3307,
+      "ms": 1578,
       "status": 200,
       "logs": [
-        "render-pdf: stamped 3 element-aware page breaks (template=academic)",
-        "render-pdf: annotated=5 natural=4 expected=4 (template=academic)"
+        "render-pdf: stamped 3 element-aware page breaks (template=academic)"
       ],
       "stamped": 3,
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/academic.pdf",
-      "bytes": 299070,
+      "bytes": 299211,
       "pages": 4,
       "fonts": [
         "AAAAAA+Calibri-Bold",
@@ -384,7 +385,7 @@
     },
     "research": {
       "template": "research",
-      "ms": 1579,
+      "ms": 1559,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=research)"
@@ -393,7 +394,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/research.pdf",
-      "bytes": 258384,
+      "bytes": 258820,
       "pages": 4,
       "fonts": [
         "AAAAAA+Inter-Bold",
@@ -406,7 +407,7 @@
     },
     "medical": {
       "template": "medical",
-      "ms": 1554,
+      "ms": 1546,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=medical)"
@@ -415,7 +416,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/medical.pdf",
-      "bytes": 273358,
+      "bytes": 273316,
       "pages": 4,
       "fonts": [
         "AAAAAA+Inter-Light",
@@ -429,7 +430,7 @@
     },
     "finance": {
       "template": "finance",
-      "ms": 1507,
+      "ms": 1512,
       "status": 200,
       "logs": [
         "render-pdf: stamped 3 element-aware page breaks (template=finance)"
@@ -438,7 +439,7 @@
       "expectedPages": 4,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/finance.pdf",
-      "bytes": 264579,
+      "bytes": 264354,
       "pages": 4,
       "fonts": [
         "AAAAAA+Inter-Bold",
@@ -455,17 +456,17 @@
       "template": "modern",
       "fontFamily": "times",
       "fontSize": 11.5,
-      "ms": 1636,
+      "ms": 1626,
       "status": 200,
       "logs": [
-        "render-pdf: stamped 3 element-aware page breaks (template=modern)"
+        "render-pdf: stamped 4 element-aware page breaks (template=modern)"
       ],
-      "stamped": 3,
-      "expectedPages": 4,
+      "stamped": 4,
+      "expectedPages": 5,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/font-times-modern.pdf",
-      "bytes": 358746,
-      "pages": 4,
+      "bytes": 367903,
+      "pages": 5,
       "fonts": [
         "AAAAAA+TimesNewRomanPS-BoldMT",
         "BAAAAA+TimesNewRomanPSMT",
@@ -478,7 +479,7 @@
       "template": "academic",
       "fontFamily": "courier",
       "fontSize": 11.5,
-      "ms": 3054,
+      "ms": 3245,
       "status": 200,
       "logs": [
         "render-pdf: stamped 6 element-aware page breaks (template=academic)",
@@ -488,7 +489,7 @@
       "expectedPages": 7,
       "ok": true,
       "file": "qa-artifacts/pdf-audit/font-courier-academic.pdf",
-      "bytes": 311690,
+      "bytes": 314936,
       "pages": 7,
       "fonts": [
         "AAAAAA+CourierNewPS-BoldMT",

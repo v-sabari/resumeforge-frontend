@@ -55,7 +55,7 @@ const SectionTitle = ({ children }) => (
       borderTop: `0.75pt solid ${RULE}`,
       borderBottom: `0.75pt solid ${RULE}`,
       textAlign: 'center',
-      fontSize: '10pt',
+      fontSize: 'calc(10pt + 0.5px)',
       fontWeight: 'bold',
       letterSpacing: '0.04em',
       color: INK,
@@ -73,7 +73,7 @@ const Bullet = ({ text }) => (
   <div
     style={{
       display: 'flex',
-      fontSize: '10pt',
+      fontSize: 'calc(10pt + 0.5px)',
       lineHeight: LH,
       margin: '0 0 1.5pt 0',
       breakInside: 'avoid',
@@ -173,7 +173,7 @@ const Entry = ({
         >
           <span
             style={{
-              fontSize: '10.6pt',
+              fontSize: 'calc(10.6pt + 0.5px)',
               fontWeight: 'bold',
               color: INK,
               minWidth: 0,
@@ -185,7 +185,7 @@ const Entry = ({
           {topRight ? (
             <span
               style={{
-                fontSize: '9pt',
+                fontSize: 'calc(9pt + 0.5px)',
                 fontWeight: 'normal',
                 ...rightSlot(!!date),
               }}
@@ -207,7 +207,7 @@ const Entry = ({
         >
           <span
             style={{
-              fontSize: '10pt',
+              fontSize: 'calc(10pt + 0.5px)',
               fontStyle: 'italic',
               minWidth: 0,
               overflowWrap: 'anywhere',
@@ -218,7 +218,7 @@ const Entry = ({
           {location ? (
             <span
               style={{
-                fontSize: '9pt',
+                fontSize: 'calc(9pt + 0.5px)',
                 fontStyle: 'italic',
                 flexShrink: 0,
                 whiteSpace: 'nowrap',
@@ -231,7 +231,7 @@ const Entry = ({
       )}
 
       {summary ? (
-        <p style={{ fontSize: '10pt', lineHeight: LH, margin: '1pt 0 0' }}>
+        <p style={{ fontSize: 'calc(10pt + 0.5px)', lineHeight: LH, margin: '1pt 0 0' }}>
           {summary}
         </p>
       ) : null}
@@ -243,7 +243,7 @@ const Entry = ({
             justifyContent: 'space-between',
             alignItems: 'baseline',
             gap: '10pt',
-            fontSize: '9pt',
+            fontSize: 'calc(9pt + 0.5px)',
             fontStyle: 'italic',
             marginTop: '1pt',
           }}
@@ -295,13 +295,13 @@ const Grid = ({ columns, maxCols = 3 }) => {
           }}
         >
           {column.label ? (
-            <div style={{ fontSize: '10pt', fontWeight: 'bold', color: INK }}>
+            <div style={{ fontSize: 'calc(10pt + 0.5px)', fontWeight: 'bold', color: INK }}>
               {column.label}
             </div>
           ) : null}
 
           {ensure(column.items).filter(Boolean).length > 0 ? (
-            <div style={{ fontSize: '10pt', lineHeight: LH }}>
+            <div style={{ fontSize: 'calc(10pt + 0.5px)', lineHeight: LH }}>
               {ensure(column.items).filter(Boolean).join(', ')}
             </div>
           ) : null}
@@ -349,7 +349,7 @@ const renderCustomBody = (id, customSections) => {
   if (!isText(customSection.text)) return null;
 
   return (
-    <p style={{ fontSize: '10pt', lineHeight: LH, margin: 0 }}>
+    <p style={{ fontSize: 'calc(10pt + 0.5px)', lineHeight: LH, margin: 0 }}>
       {customSection.text}
     </p>
   );
@@ -410,7 +410,7 @@ const renderSectionBody = (section, data) => {
       if (!isText(data.summary)) return null;
 
       return (
-        <p style={{ fontSize: '10pt', lineHeight: LH, margin: 0 }}>
+        <p style={{ fontSize: 'calc(10pt + 0.5px)', lineHeight: LH, margin: 0 }}>
           {data.summary}
         </p>
       );
@@ -524,7 +524,7 @@ const renderSectionBody = (section, data) => {
       if (!items.length) return null;
 
       return (
-        <p style={{ fontSize: '10pt', lineHeight: LH, margin: 0 }}>
+        <p style={{ fontSize: 'calc(10pt + 0.5px)', lineHeight: LH, margin: 0 }}>
           {items.join(' · ')}
         </p>
       );
@@ -563,7 +563,7 @@ const Header = ({ personalInfo }) => {
       >
         <h1
           style={{
-            fontSize: '17pt',
+            fontSize: 'calc(17pt + 0.5px)',
             fontWeight: 'bold',
             color: '#000',
             margin: 0,
@@ -573,7 +573,7 @@ const Header = ({ personalInfo }) => {
         </h1>
 
         {personal.title ? (
-          <span style={{ fontSize: '10.6pt', color: INK }}>
+          <span style={{ fontSize: 'calc(10.6pt + 0.5px)', color: INK }}>
             {personal.title}
           </span>
         ) : null}
@@ -587,7 +587,7 @@ const Header = ({ personalInfo }) => {
             columnGap: '14pt',
             rowGap: '1pt',
             marginTop: '4pt',
-            fontSize: '9pt',
+            fontSize: 'calc(9pt + 0.5px)',
             color: INK,
           }}
         >

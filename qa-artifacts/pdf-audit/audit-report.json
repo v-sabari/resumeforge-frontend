@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-13T16:49:24.876Z",
+  "generatedAt": "2026-11-13T17:24:12.723Z",
   "pdfs": 22,
   "passed": 22,
   "failed": 0,
@@ -84,8 +84,8 @@
     {
       "name": "executive",
       "template": "executive",
-      "pages": 4,
-      "expectedPages": 4,
+      "pages": 5,
+      "expectedPages": 5,
       "blankPages": [],
       "lastBlank": false,
       "fieldsChecked": 190,
@@ -515,8 +515,8 @@
     {
       "name": "font-times-modern",
       "template": "modern",
-      "pages": 4,
-      "expectedPages": 4,
+      "pages": 5,
+      "expectedPages": 5,
       "blankPages": [],
       "lastBlank": false,
       "fieldsChecked": 190,

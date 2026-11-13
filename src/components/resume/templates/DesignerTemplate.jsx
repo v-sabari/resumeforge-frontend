@@ -7,8 +7,8 @@ import {
   labelOf,
 } from './shared.jsx';
 
-const SH = ({children}) => <h3 className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-orange-600 mb-1.5 mt-1 break-after-avoid"><span className="h-2.5 w-2.5 rounded-full bg-orange-500 shrink-0 inline-block"></span><span className="break-words">{children}</span></h3>;
-const SideHead = ({children}) => <h4 className="text-[9.5px] font-bold uppercase tracking-[0.22em] text-orange-400 mb-1 break-after-avoid break-words">{children}</h4>;
+const SH = ({children}) => <h3 className="flex items-center gap-2 text-[11.5px] font-bold uppercase tracking-[0.14em] text-orange-600 mb-1.5 mt-1 break-after-avoid"><span className="h-2.5 w-2.5 rounded-full bg-orange-500 shrink-0 inline-block"></span><span className="break-words">{children}</span></h3>;
+const SideHead = ({children}) => <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-orange-400 mb-1 break-after-avoid break-words">{children}</h4>;
 
 export const DesignerTemplate = ({ data }) => {
   const {
@@ -26,10 +26,10 @@ export const DesignerTemplate = ({ data }) => {
 
   const renderSide = (sec) => {
     switch (sec.key) {
-      case 'skills': return skills?.length ? (<div key="skills" className="mb-4 break-after-avoid"><SideHead>{labelOf(sec, 'Skills')}</SideHead><div className="flex flex-wrap gap-1">{(Array.isArray(skills)?skills:[skills]).map((s,i)=><span key={i} className="text-[9.5px] bg-white/10 text-gray-100 rounded-full px-2 py-0.5 break-words">{s}</span>)}</div></div>) : null;
-      case 'languages': return languages?.length ? (<div key="languages" className="mb-4 break-after-avoid"><SideHead>{labelOf(sec, 'Languages')}</SideHead><div className="space-y-0.5">{languages.map((l,i)=><div key={i} className="text-[10px] text-gray-100 break-words break-inside-avoid">{l}</div>)}</div></div>) : null;
-      case 'certifications': return certifications?.length ? (<div key="certifications" className="mb-4 break-after-avoid"><SideHead>{labelOf(sec, 'Certifications')}</SideHead><div className="space-y-0.5">{certifications.map((c,i)=><CertItem key={i} cert={c} tone="dark" className="text-[10px] text-gray-100 break-words break-inside-avoid" />)}</div></div>) : null;
-      case 'achievements': return achievements?.length ? (<div key="achievements" className="mb-4 break-after-avoid"><SideHead>{labelOf(sec, 'Achievements')}</SideHead><div className="space-y-0.5">{achievements.map((a,i)=><div key={i} className="text-[10px] text-gray-100 leading-relaxed break-words break-inside-avoid">• {a}</div>)}</div></div>) : null;
+      case 'skills': return skills?.length ? (<div key="skills" className="mb-4 break-after-avoid"><SideHead>{labelOf(sec, 'Skills')}</SideHead><div className="flex flex-wrap gap-1">{(Array.isArray(skills)?skills:[skills]).map((s,i)=><span key={i} className="text-[10px] bg-white/10 text-gray-100 rounded-full px-2 py-0.5 break-words">{s}</span>)}</div></div>) : null;
+      case 'languages': return languages?.length ? (<div key="languages" className="mb-4 break-after-avoid"><SideHead>{labelOf(sec, 'Languages')}</SideHead><div className="space-y-0.5">{languages.map((l,i)=><div key={i} className="text-[10.5px] text-gray-100 break-words break-inside-avoid">{l}</div>)}</div></div>) : null;
+      case 'certifications': return certifications?.length ? (<div key="certifications" className="mb-4 break-after-avoid"><SideHead>{labelOf(sec, 'Certifications')}</SideHead><div className="space-y-0.5">{certifications.map((c,i)=><CertItem key={i} cert={c} tone="dark" className="text-[10.5px] text-gray-100 break-words break-inside-avoid" />)}</div></div>) : null;
+      case 'achievements': return achievements?.length ? (<div key="achievements" className="mb-4 break-after-avoid"><SideHead>{labelOf(sec, 'Achievements')}</SideHead><div className="space-y-0.5">{achievements.map((a,i)=><div key={i} className="text-[10.5px] text-gray-100 leading-relaxed break-words break-inside-avoid">• {a}</div>)}</div></div>) : null;
       default: return null;
     }
   };
@@ -41,30 +41,30 @@ export const DesignerTemplate = ({ data }) => {
       return <div key={sec.id} className="mb-4 break-after-avoid"><SH>{labelOf(sec)}</SH><CustomContent content={content} /></div>;
     }
     switch (sec.key) {
-      case 'summary': return summary ? (<div key="summary" className="mb-4"><SH>{labelOf(sec, 'About')}</SH><p className="text-[10.5px] text-gray-600 leading-relaxed break-words">{summary}</p></div>) : null;
+      case 'summary': return summary ? (<div key="summary" className="mb-4"><SH>{labelOf(sec, 'About')}</SH><p className="text-[11px] text-gray-600 leading-relaxed break-words">{summary}</p></div>) : null;
       case 'experience': return experience?.length ? (<div key="experience" className="mb-4"><SH>{labelOf(sec, 'Experience')}</SH>{experience.map((e,i)=>(
         <div key={i} className="mb-3 break-inside-avoid">
           <div className="flex items-baseline justify-between gap-1 flex-wrap">
-            <span className="text-[11.5px] font-bold text-gray-900 break-words min-w-0">{e.position}</span>
-            <span className="text-[10px] text-orange-600 font-medium shrink-0 whitespace-nowrap">{e.duration}</span>
+            <span className="text-[12px] font-bold text-gray-900 break-words min-w-0">{e.position}</span>
+            <span className="text-[10.5px] text-orange-600 font-medium shrink-0 whitespace-nowrap">{e.duration}</span>
           </div>
-          <div className="text-[10.5px] text-gray-500 mb-0.5 break-words">{e.company}{e.location?` · ${e.location}`:''}{e.employmentType?` · ${e.employmentType}`:''}</div>
-          {e.summary&&<p className="text-[10.5px] text-gray-600 mb-0.5 leading-relaxed break-words">{e.summary}</p>}
-          {e.responsibilities?.length>0&&<ul className="space-y-0.5">{e.responsibilities.map((r,j)=><li key={j} className="flex gap-2 text-[10.5px] text-gray-600 leading-relaxed break-words break-inside-avoid"><span className="text-orange-500 shrink-0 mt-[2px]">✦</span><span className="break-words min-w-0">{r}</span></li>)}</ul>}
+          <div className="text-[11px] text-gray-500 mb-0.5 break-words">{e.company}{e.location?` · ${e.location}`:''}{e.employmentType?` · ${e.employmentType}`:''}</div>
+          {e.summary&&<p className="text-[11px] text-gray-600 mb-0.5 leading-relaxed break-words">{e.summary}</p>}
+          {e.responsibilities?.length>0&&<ul className="space-y-0.5">{e.responsibilities.map((r,j)=><li key={j} className="flex gap-2 text-[11px] text-gray-600 leading-relaxed break-words break-inside-avoid"><span className="text-orange-500 shrink-0 mt-[2px]">✦</span><span className="break-words min-w-0">{r}</span></li>)}</ul>}
         </div>))}</div>) : null;
       case 'projects': return projects?.length ? (<div key="projects" className="mb-4"><SH>{labelOf(sec, 'Projects')}</SH>{projects.map((p,i)=>(
         <div key={i} className="mb-2.5 break-inside-avoid">
-          <div className="flex items-baseline gap-x-2 flex-wrap"><span className="text-[11.5px] font-bold text-gray-900 break-words min-w-0">{p.name}</span>{p.role&&<span className="text-[10px] text-gray-400 break-words">({p.role})</span>}</div>
-          {p.technologies&&<div className="text-[10.5px] text-orange-600 mb-0.5 break-words">Tech: {p.technologies}</div>}
-          {(p.link||p.github)&&<div className="text-[9.5px] text-gray-400 mb-0.5 break-all">{[p.link,p.github].filter(Boolean).join(' · ')}</div>}
-          {p.description&&<p className="text-[10.5px] text-gray-600 leading-relaxed break-words">{p.description}</p>}
+          <div className="flex items-baseline gap-x-2 flex-wrap"><span className="text-[12px] font-bold text-gray-900 break-words min-w-0">{p.name}</span>{p.role&&<span className="text-[10.5px] text-gray-400 break-words">({p.role})</span>}</div>
+          {p.technologies&&<div className="text-[11px] text-orange-600 mb-0.5 break-words">Tech: {p.technologies}</div>}
+          {(p.link||p.github)&&<div className="text-[10px] text-gray-400 mb-0.5 break-all">{[p.link,p.github].filter(Boolean).join(' · ')}</div>}
+          {p.description&&<p className="text-[11px] text-gray-600 leading-relaxed break-words">{p.description}</p>}
           {p.highlights?.length>0&&<BulletList items={p.highlights} className="mt-0.5 space-y-0.5 pl-3" />}
         </div>))}</div>) : null;
       case 'education': return education?.length ? (<div key="education" className="mb-4"><SH>{labelOf(sec, 'Education')}</SH>{education.map((e,i)=>(
         <div key={i} className="mb-2 break-inside-avoid">
-          <div className="flex items-baseline justify-between gap-1 flex-wrap"><span className="text-[11.5px] font-bold text-gray-900 break-words">{educationTitle(e) || e.institution}</span><span className="text-[10px] text-orange-600 font-medium shrink-0 whitespace-nowrap">{e.year}</span></div>
-          <div className="text-[10.5px] text-gray-500 break-words">{e.institution}</div>
-          {(e.gpa||e.details)&&<div className="text-[10px] text-gray-400 break-words">{[e.gpa,e.details].filter(Boolean).join(' — ')}</div>}
+          <div className="flex items-baseline justify-between gap-1 flex-wrap"><span className="text-[12px] font-bold text-gray-900 break-words">{educationTitle(e) || e.institution}</span><span className="text-[10.5px] text-orange-600 font-medium shrink-0 whitespace-nowrap">{e.year}</span></div>
+          <div className="text-[11px] text-gray-500 break-words">{e.institution}</div>
+          {(e.gpa||e.details)&&<div className="text-[10.5px] text-gray-400 break-words">{[e.gpa,e.details].filter(Boolean).join(' — ')}</div>}
         </div>))}</div>) : null;
       default: {
         if (!hasCustomContent(content)) return null;
@@ -79,9 +79,9 @@ export const DesignerTemplate = ({ data }) => {
         <div className="w-[30%] shrink-0 bg-gray-900 px-5 py-6">
           {personalInfo&&(
             <div className="mb-4 break-after-avoid">
-              <h1 className="text-[19px] font-bold text-white leading-tight break-words">{personalInfo.fullName}</h1>
-              {personalInfo.title&&<div className="text-[10.5px] text-orange-400 font-medium mt-0.5 mb-3 break-words">{personalInfo.title}</div>}
-              <div className="space-y-1.5 text-[9.5px] text-gray-300">
+              <h1 className="text-[19.5px] font-bold text-white leading-tight break-words">{personalInfo.fullName}</h1>
+              {personalInfo.title&&<div className="text-[11px] text-orange-400 font-medium mt-0.5 mb-3 break-words">{personalInfo.title}</div>}
+              <div className="space-y-1.5 text-[10px] text-gray-300">
                 {personalInfo.email&&<div className="break-all">{personalInfo.email}</div>}
                 {personalInfo.phone&&<div className="break-words">{personalInfo.phone}</div>}
                 {personalInfo.location&&<div className="break-words">{personalInfo.location}</div>}

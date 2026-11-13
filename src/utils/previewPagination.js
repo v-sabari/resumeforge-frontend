@@ -65,12 +65,19 @@ const isHeadingLike = (el) => {
    atom is taller than a full page (visibleH is the painted capacity), in
    which case it cannot be kept whole and is unwrapped so its innermost
    paragraphs/list items become the page units instead (print engines ignore
-   break-inside:avoid for anything taller than the fragmentainer). */
+   break-inside:avoid for anything taller than the fragmentainer).
+
+   Heading-like elements are collected too, even when they are plain <div>s
+   rather than <h1>–<h6>. Academic titles, for example, are divs that suppress
+   a break after themselves; without treating them as blocks the paginator
+   cannot see them, so a page boundary can land between the title and its body
+   and strand the title alone at the bottom of a page. */
 function collectAtomicBlocks(rootEl, visibleH) {
   const blocks = [];
   const walk = (parent) => {
     for (const child of parent.children) {
-      if (isAtomicElement(child) && child.getBoundingClientRect().height <= visibleH + EPS) {
+      if ((isAtomicElement(child) || isHeadingLike(child))
+          && child.getBoundingClientRect().height <= visibleH + EPS) {
         blocks.push(child);
       } else {
         walk(child);

@@ -24,8 +24,11 @@
  * (text, padding, rules, avatars), which is exactly what a font-size control
  * should do for a fixed-layout resume. The wrapper compensates its own width
  * (100 / zoom %) so the template keeps filling the page instead of
- * overflowing it. 10.5px is the size the templates are designed around, so
- * the default is scale 1 (zero visual change for existing resumes).
+ * overflowing it. 10.5px is the base size that maps to scale 1, so the default
+ * is scale 1 (zero visual change for existing resumes). The templates
+ * themselves now ship one +0.5px step above their original design sizes, which
+ * keeps their stored typography values — and therefore the scale mapping —
+ * unchanged while making the default resumes slightly more legible.
  */
 
 /** The template body size that maps to scale 1. */
