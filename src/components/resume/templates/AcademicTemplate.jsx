@@ -13,110 +13,296 @@
  */
 
 const FONT = "'Calibri', 'Carlito', 'Lato', 'Segoe UI', sans-serif";
-const INK  = '#111111';
+const INK = '#111111';
 const RULE = '#8a8a8a';
+const LH = '1.25'; // single line-height used for every text block
 
 const ensure = (arr) => (Array.isArray(arr) ? arr : []);
+const isText = (value) => typeof value === 'string' && value.trim() !== '';
 
-/* ─── Section heading: centered bold title with a thin rule directly
-   above AND below — identical treatment for every section. ─────────── */
+/* Fallbacks used only when the builder hands us no/blank section data. */
+const DEFAULT_KEYS = [
+  'summary',
+  'experience',
+  'education',
+  'projects',
+  'skills',
+  'certifications',
+  'achievements',
+  'languages',
+];
+
+const prettyLabel = (key) =>
+  String(key || '')
+    .replace(/[-_]+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+
+const labelOf = (section) =>
+  isText(section.label)
+    ? section.label.trim()
+    : prettyLabel(section.key) || 'Section';
+
+/* Section heading: centered bold title with a thin rule above and below.
+ * Avoid breaking immediately after a heading so it is not stranded at the
+ * bottom of a page.
+ */
 const SectionTitle = ({ children }) => (
-  <div style={{
-    marginTop: '11pt', marginBottom: '5pt',
-    borderTop: `0.75pt solid ${RULE}`, borderBottom: `0.75pt solid ${RULE}`,
-    textAlign: 'center', fontSize: '10pt', fontWeight: 'bold',
-    letterSpacing: '0.04em', color: INK, padding: '2.5pt 0',
-  }}>
+  <div
+    style={{
+      marginTop: '11pt',
+      marginBottom: '5pt',
+      borderTop: `0.75pt solid ${RULE}`,
+      borderBottom: `0.75pt solid ${RULE}`,
+      textAlign: 'center',
+      fontSize: '10pt',
+      fontWeight: 'bold',
+      letterSpacing: '0.04em',
+      color: INK,
+      padding: '2.5pt 0',
+      breakAfter: 'avoid',
+      pageBreakAfter: 'avoid',
+    }}
+  >
     {children}
   </div>
 );
 
-/* ─── Bullet: 10pt, drawn-dot marker, indented row (marker column + text). ─ */
+/* Bullet: 10pt, CSS-drawn dot marker, indented row (marker column + text). */
 const Bullet = ({ text }) => (
-  <div style={{
-    display: 'flex', fontSize: '10pt', lineHeight: '1.3',
-    margin: '0 0 1.5pt 0', breakInside: 'avoid',
-  }}>
-    {/* Bullet dot is DRAWN with CSS, not the "●" text character: the PDF renderer
-        (headless Chromium on Vercel) lacks a font with that glyph, so the character
-        printed blank in the exported PDF. A drawn circle needs no font. The 1.3em
-        height equals one text line, so the dot stays on the first line of wrapped
-        bullets. Width stays 11pt so the layout is unchanged. */}
-    <span style={{
-      width: '11pt', flexShrink: 0, alignSelf: 'flex-start',
-      height: '1.3em', display: 'flex', alignItems: 'center',
-    }}>
-      <span style={{ width: '4.6pt', height: '4.6pt', borderRadius: '50%', background: 'currentColor' }} />
+  <div
+    style={{
+      display: 'flex',
+      fontSize: '10pt',
+      lineHeight: LH,
+      margin: '0 0 1.5pt 0',
+      breakInside: 'avoid',
+    }}
+  >
+    {/* Draw the bullet with CSS rather than a text glyph. This avoids missing
+        glyphs in headless Chromium PDF rendering. */}
+    <span
+      style={{
+        width: '11pt',
+        flexShrink: 0,
+        alignSelf: 'flex-start',
+        height: '1.3em',
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      <span
+        style={{
+          width: '4.6pt',
+          height: '4.6pt',
+          borderRadius: '50%',
+          background: 'currentColor',
+        }}
+      />
     </span>
-    <span style={{ flex: 1, minWidth: 0 }}>{text}</span>
+    <span style={{ flex: 1, minWidth: 0, overflowWrap: 'anywhere' }}>
+      {text}
+    </span>
   </div>
 );
 
-/* ─── Link helpers: show a clean "github.com/user/repo" (no protocol,
-   no www., no trailing slash) but keep a real clickable href. ───────── */
-const shortUrl = (u) =>
-  String(u || '').trim().replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/+$/, '');
-const hrefOf = (u) => {
-  const t = String(u || '').trim();
-  return /^https?:\/\//i.test(t) ? t : `https://${t}`;
-};
-const linkNode = (url) => (url && String(url).trim()
-  ? <a href={hrefOf(url)} style={{ color: 'inherit', textDecoration: 'none' }}>{shortUrl(url)}</a>
-  : null);
+/* Link helpers: display a clean URL without protocol, www, or trailing slash,
+ * while preserving a real clickable href.
+ */
+const shortUrl = (url) =>
+  String(url || '')
+    .trim()
+    .replace(/^https?:\/\//i, '')
+    .replace(/^www\./i, '')
+    .replace(/\/+$/, '');
 
-/* ─── Entry: title + date on the top row, subtitle + location on the
-   second row, an optional italic 9pt meta/tech line, then bullets.
-   Right-hand slots (all optional, right-aligned on the same row):
-     titleRight → top row, used when there is no date (e.g. GitHub URL)
-     metaRight  → meta/tech row (e.g. Live URL)                          */
-const Entry = ({ title, date, titleRight, subtitle, location, meta, metaRight, summary, bullets }) => {
+const hrefOf = (url) => {
+  const value = String(url || '').trim();
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+};
+
+const linkNode = (url) =>
+  url && String(url).trim() ? (
+    <a
+      href={hrefOf(url)}
+      style={{ color: 'inherit', textDecoration: 'none' }}
+    >
+      {shortUrl(url)}
+    </a>
+  ) : null;
+
+/* Right-hand slot style: dates stay on one line; URLs may wrap anywhere. */
+const rightSlot = (nowrap) => ({
+  flexShrink: 0,
+  maxWidth: '55%',
+  textAlign: 'right',
+  whiteSpace: nowrap ? 'nowrap' : 'normal',
+  overflowWrap: 'anywhere',
+});
+
+/* Entry: title + date on the top row, subtitle + location on the second row,
+ * optional italic meta/tech line, then bullets.
+ *
+ * titleRight: top row (for example, GitHub URL)
+ * metaRight: meta/tech row (for example, live URL)
+ */
+const Entry = ({
+  title,
+  date,
+  titleRight,
+  subtitle,
+  location,
+  meta,
+  metaRight,
+  summary,
+  bullets,
+}) => {
   const bulletList = ensure(bullets).filter(Boolean);
   const topRight = date || titleRight;
+
   return (
     <div style={{ marginBottom: '6pt', breakInside: 'avoid' }}>
       {(title || topRight) && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '10pt' }}>
-          <span style={{ fontSize: '10.6pt', fontWeight: 'bold', color: INK, minWidth: 0 }}>{title}</span>
-          {topRight ? <span style={{ fontSize: '9pt', fontWeight: 'normal', whiteSpace: 'nowrap' }}>{topRight}</span> : null}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            gap: '10pt',
+          }}
+        >
+          <span
+            style={{
+              fontSize: '10.6pt',
+              fontWeight: 'bold',
+              color: INK,
+              minWidth: 0,
+              overflowWrap: 'anywhere',
+            }}
+          >
+            {title}
+          </span>
+          {topRight ? (
+            <span
+              style={{
+                fontSize: '9pt',
+                fontWeight: 'normal',
+                ...rightSlot(!!date),
+              }}
+            >
+              {topRight}
+            </span>
+          ) : null}
         </div>
       )}
+
       {(subtitle || location) && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '10pt' }}>
-          <span style={{ fontSize: '10pt', fontStyle: 'italic', minWidth: 0 }}>{subtitle}</span>
-          {location ? <span style={{ fontSize: '9pt', fontStyle: 'italic', whiteSpace: 'nowrap' }}>{location}</span> : null}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            gap: '10pt',
+          }}
+        >
+          <span
+            style={{
+              fontSize: '10pt',
+              fontStyle: 'italic',
+              minWidth: 0,
+              overflowWrap: 'anywhere',
+            }}
+          >
+            {subtitle}
+          </span>
+          {location ? (
+            <span
+              style={{
+                fontSize: '9pt',
+                fontStyle: 'italic',
+                flexShrink: 0,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {location}
+            </span>
+          ) : null}
         </div>
       )}
-      {summary ? <p style={{ fontSize: '10pt', lineHeight: '1.35', margin: '1pt 0 0' }}>{summary}</p> : null}
+
+      {summary ? (
+        <p style={{ fontSize: '10pt', lineHeight: LH, margin: '1pt 0 0' }}>
+          {summary}
+        </p>
+      ) : null}
+
       {(meta || metaRight) ? (
-        <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
-          gap: '10pt', fontSize: '9pt', fontStyle: 'italic', marginTop: '1pt',
-        }}>
-          <span style={{ minWidth: 0 }}>{meta}</span>
-          {metaRight ? <span style={{ whiteSpace: 'nowrap' }}>{metaRight}</span> : null}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            gap: '10pt',
+            fontSize: '9pt',
+            fontStyle: 'italic',
+            marginTop: '1pt',
+          }}
+        >
+          <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{meta}</span>
+          {metaRight ? (
+            <span style={rightSlot(false)}>{metaRight}</span>
+          ) : null}
         </div>
       ) : null}
+
       {bulletList.length > 0 && (
         <div style={{ marginTop: '2pt' }}>
-          {bulletList.map((b, i) => <Bullet key={i} text={b} />)}
+          {bulletList.map((bullet, index) => (
+            <Bullet key={index} text={bullet} />
+          ))}
         </div>
       )}
     </div>
   );
 };
 
-/* ─── 3-column grid: bold category label over its regular items. ────── */
-const Grid = ({ columns }) => {
+/* Grid: bold category label over regular items. Use up to maxCols columns;
+ * sparse lists (such as one or two certifications) do not occupy narrow
+ * one-third-width cells.
+ */
+const Grid = ({ columns, maxCols = 3 }) => {
   const cols = ensure(columns).filter(Boolean);
   if (!cols.length) return null;
+
+  const columnCount = Math.max(1, Math.min(maxCols, cols.length));
+
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', columnGap: '14pt', rowGap: '5pt' }}>
-      {cols.map((col, i) => (
-        <div key={i} style={{ breakInside: 'avoid' }}>
-          {col.label ? <div style={{ fontSize: '10pt', fontWeight: 'bold', color: INK }}>{col.label}</div> : null}
-          {ensure(col.items).filter(Boolean).length > 0 ? (
-            <div style={{ fontSize: '10pt', lineHeight: '1.3' }}>
-              {ensure(col.items).filter(Boolean).join(', ')}
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
+        columnGap: '14pt',
+        rowGap: '3pt',
+      }}
+    >
+      {cols.map((column, index) => (
+        <div
+          key={index}
+          style={{
+            breakInside: 'avoid',
+            minWidth: 0,
+            overflowWrap: 'anywhere',
+          }}
+        >
+          {column.label ? (
+            <div style={{ fontSize: '10pt', fontWeight: 'bold', color: INK }}>
+              {column.label}
+            </div>
+          ) : null}
+
+          {ensure(column.items).filter(Boolean).length > 0 ? (
+            <div style={{ fontSize: '10pt', lineHeight: LH }}>
+              {ensure(column.items).filter(Boolean).join(', ')}
             </div>
           ) : null}
         </div>
@@ -125,143 +311,298 @@ const Grid = ({ columns }) => {
   );
 };
 
-/* ─── Custom-section body for all four content modes. ──────────────── */
+/* Custom-section body for all four content modes. */
 const renderCustomBody = (id, customSections) => {
-  const c = (customSections || {})[id];
-  if (!c) return null;
-  if (c.mode === 'grid') {
-    const columns = ensure(c.columns).filter(Boolean);
+  const customSection = (customSections || {})[id];
+  if (!customSection) return null;
+
+  if (customSection.mode === 'grid') {
+    const columns = ensure(customSection.columns).filter(Boolean);
     return columns.length ? <Grid columns={columns} /> : null;
   }
-  if (c.mode === 'entries') {
-    const entries = ensure(c.entries).filter(Boolean);
+
+  if (customSection.mode === 'entries') {
+    const entries = ensure(customSection.entries).filter(Boolean);
     if (!entries.length) return null;
-    return entries.map((e, i) => (
-      <Entry key={i} title={e?.title} date={e?.date} subtitle={e?.subtitle}
-        location={e?.location} bullets={e?.bullets} />
+
+    return entries.map((entry, index) => (
+      <Entry
+        key={index}
+        title={entry?.title}
+        date={entry?.date}
+        subtitle={entry?.subtitle}
+        location={entry?.location}
+        bullets={entry?.bullets}
+      />
     ));
   }
-  if (c.mode === 'bullets') {
-    const items = ensure(c.items).filter(Boolean);
+
+  if (customSection.mode === 'bullets') {
+    const items = ensure(customSection.items).filter(Boolean);
     if (!items.length) return null;
-    return items.map((it, i) => <Bullet key={i} text={it} />);
+
+    return items.map((item, index) => (
+      <Bullet key={index} text={item} />
+    ));
   }
-  if (!c.text || !c.text.trim()) return null;
-  return <p style={{ fontSize: '10pt', lineHeight: '1.35' }}>{c.text}</p>;
+
+  if (!isText(customSection.text)) return null;
+
+  return (
+    <p style={{ fontSize: '10pt', lineHeight: LH, margin: 0 }}>
+      {customSection.text}
+    </p>
+  );
 };
 
-/* ─── Skills → 3-column grid. A line in the flat skills array like
-   "Languages: English, Tamil" becomes a bold "Languages" label with its
-   items; a plain skill ("Python") becomes a single cell. Real category
-   data ({ label, items } objects) also renders directly. ───────────── */
+/* Convert skills into category columns. */
 const skillsToColumns = (skills) =>
-  ensure(skills).filter(Boolean).map((s) => {
-    if (typeof s === 'string' && s.includes(':')) {
-      const idx = s.indexOf(':');
-      const label = s.slice(0, idx).trim();
-      const rest = s.slice(idx + 1).split(',').map((x) => x.trim()).filter(Boolean);
-      return { label, items: rest.length ? rest : [s] };
-    }
-    return { label: '', items: [String(s)] };
-  });
+  ensure(skills)
+    .filter(Boolean)
+    .map((skill) => {
+      if (typeof skill === 'object') {
+        return {
+          label: skill.label || '',
+          items: ensure(skill.items).filter(Boolean).map(String),
+        };
+      }
 
-/* ─── "Tech Stack: A, B, C" — adds the label once, even if the user
-   already typed it into the field. ───────────────────────────────────── */
+      const value = String(skill);
+
+      if (value.includes(':')) {
+        const separatorIndex = value.indexOf(':');
+        const label = value.slice(0, separatorIndex).trim();
+        const items = value
+          .slice(separatorIndex + 1)
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean);
+
+        if (items.length) return { label, items };
+
+        // For example, "Python:" becomes a single unlabelled item.
+        return { label: '', items: label ? [label] : [] };
+      }
+
+      return { label: '', items: [value] };
+    })
+    .filter((column) => column.label || column.items.length);
+
+/* Add the "Tech Stack:" label only once. */
 const techStackLine = (tech) => {
-  const t = String(tech || '').trim().replace(/^tech(?:nology)?\s*stack\s*:\s*/i, '');
-  return t ? `Tech Stack: ${t}` : '';
+  const value = String(tech || '')
+    .trim()
+    .replace(/^tech(?:nology)?\s*stack\s*:\s*/i, '');
+
+  return value ? `Tech Stack: ${value}` : '';
 };
 
-/* ─── Section content, chosen per standard section key. Each branch
-   returns null when its content is empty so no orphan heading renders. ─ */
-const renderSectionBody = (sec, data) => {
-  if (sec.type === 'custom') {
-    return renderCustomBody(sec.id, data.customSections);
+/* Render content for each standard section key. Return null for empty
+ * sections so that no orphan section heading is rendered.
+ */
+const renderSectionBody = (section, data) => {
+  if (section.type === 'custom') {
+    return renderCustomBody(section.id, data.customSections);
   }
-  switch (sec.key) {
+
+  switch (section.key) {
     case 'summary': {
-      if (!data.summary || !data.summary.trim()) return null;
-      return <p style={{ fontSize: '10pt', lineHeight: '1.35' }}>{data.summary}</p>;
+      if (!isText(data.summary)) return null;
+
+      return (
+        <p style={{ fontSize: '10pt', lineHeight: LH, margin: 0 }}>
+          {data.summary}
+        </p>
+      );
     }
+
     case 'experience': {
-      if (!ensure(data.experience).length) return null;
-      return ensure(data.experience)
-        .filter((e) => e.position || e.company)
-        .map((e, i) => (
-          <Entry key={i} title={e.position} date={e.duration}
-            subtitle={[e.company, e.employmentType].filter(Boolean).join(' · ')}
-            location={e.location} summary={e.summary} bullets={e.responsibilities} />
-        ));
-    }
-    case 'education': {
-      if (!ensure(data.education).length) return null;
-      return ensure(data.education).map((e, i) => (
-        <Entry key={i} title={[e.degree, e.field].filter(Boolean).join(', ')} date={e.year}
-          subtitle={e.institution} location=""
-          summary={[e.details, e.gpa].filter(Boolean).join(' — ') || undefined} />
+      const rows = ensure(data.experience).filter(
+        (item) => item && (item.position || item.company),
+      );
+      if (!rows.length) return null;
+
+      return rows.map((item, index) => (
+        <Entry
+          key={index}
+          title={item.position}
+          date={item.duration}
+          subtitle={[item.company, item.employmentType].filter(Boolean).join(' · ')}
+          location={item.location}
+          summary={item.summary}
+          bullets={item.responsibilities}
+        />
       ));
     }
-    case 'projects': {
-      if (!ensure(data.projects).length) return null;
-      return ensure(data.projects)
-        .filter((p) => p.name)
-        .map((p, i) => (
-          <Entry key={i} title={p.name} subtitle={p.role}
-            titleRight={linkNode(p.github)}
-            meta={techStackLine(p.technologies)}
-            metaRight={linkNode(p.link)}
-            bullets={p.highlights} />
-        ));
+
+    case 'education': {
+      const rows = ensure(data.education).filter(
+        (item) =>
+          item &&
+          (item.degree ||
+            item.field ||
+            item.institution ||
+            item.year ||
+            item.details ||
+            item.gpa),
+      );
+      if (!rows.length) return null;
+
+      return rows.map((item, index) => (
+        <Entry
+          key={index}
+          title={[item.degree, item.field].filter(Boolean).join(', ')}
+          date={item.year}
+          subtitle={item.institution}
+          location=""
+          summary={
+            [item.details, item.gpa].filter(Boolean).join(' — ') || undefined
+          }
+        />
+      ));
     }
+
+    case 'projects': {
+      const rows = ensure(data.projects).filter((project) => project && project.name);
+      if (!rows.length) return null;
+
+      return rows.map((project, index) => (
+        <Entry
+          key={index}
+          title={project.name}
+          subtitle={project.role}
+          titleRight={linkNode(project.github)}
+          meta={techStackLine(project.technologies)}
+          metaRight={linkNode(project.link)}
+          bullets={project.highlights}
+        />
+      ));
+    }
+
     case 'skills': {
       const columns = skillsToColumns(data.skills);
       return columns.length ? <Grid columns={columns} /> : null;
     }
+
     case 'certifications': {
-      const items = ensure(data.certifications).filter(Boolean)
-        .map((c) => [c?.name, c?.issuer, c?.year].filter(Boolean).join(' — '))
+      const items = ensure(data.certifications)
+        .filter(Boolean)
+        .map((certification) =>
+          typeof certification === 'string'
+            ? certification
+            : [
+                certification?.name,
+                certification?.issuer,
+                certification?.year,
+              ]
+                .filter(Boolean)
+                .join(' — '),
+        )
         .filter(Boolean);
-      return items.length ? <Grid columns={items.map((t) => ({ label: '', items: [t] }))} /> : null;
+
+      return items.length ? (
+        <Grid
+          maxCols={3}
+          columns={items.map((item) => ({ label: '', items: [item] }))}
+        />
+      ) : null;
     }
+
     case 'achievements': {
       const items = ensure(data.achievements).filter(Boolean);
       if (!items.length) return null;
-      return items.map((a, i) => <Bullet key={i} text={a} />);
+
+      return items.map((item, index) => (
+        <Bullet key={index} text={item} />
+      ));
     }
+
     case 'languages': {
       const items = ensure(data.languages).filter(Boolean);
       if (!items.length) return null;
-      return <p style={{ fontSize: '10pt', lineHeight: '1.3' }}>{items.join(' · ')}</p>;
+
+      return (
+        <p style={{ fontSize: '10pt', lineHeight: LH, margin: 0 }}>
+          {items.join(' · ')}
+        </p>
+      );
     }
+
     default:
-      return renderCustomBody(sec.id, data.customSections);
+      return renderCustomBody(section.id, data.customSections);
   }
 };
 
-/* ─── Header: name (bold 17pt) + job title (10.6pt) on the same line,
-   contact info at 9pt split into two columns beneath. ──────────────── */
+/* Header: name and job title on the same line, contact information below. */
 const Header = ({ personalInfo }) => {
-  const p = personalInfo || {};
-  const contact = [p.email, p.phone, p.location, p.linkedin, p.github, p.portfolio]
-    .filter(Boolean);
+  const personal = personalInfo || {};
+  const contact = [
+    personal.email,
+    personal.phone,
+    personal.location,
+    personal.linkedin,
+    personal.github,
+    personal.portfolio,
+  ].filter(Boolean);
+
   const half = Math.ceil(contact.length / 2);
   const left = contact.slice(0, half);
   const right = contact.slice(half);
+
   return (
     <header style={{ marginBottom: '5pt' }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: '0 8pt' }}>
-        <h1 style={{ fontSize: '17pt', fontWeight: 'bold', color: '#000', margin: 0 }}>
-          {p.fullName || 'Your Name'}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'baseline',
+          flexWrap: 'wrap',
+          gap: '0 8pt',
+        }}
+      >
+        <h1
+          style={{
+            fontSize: '17pt',
+            fontWeight: 'bold',
+            color: '#000',
+            margin: 0,
+          }}
+        >
+          {personal.fullName || 'Your Name'}
         </h1>
-        {p.title ? <span style={{ fontSize: '10.6pt', color: INK }}>{p.title}</span> : null}
+
+        {personal.title ? (
+          <span style={{ fontSize: '10.6pt', color: INK }}>
+            {personal.title}
+          </span>
+        ) : null}
       </div>
+
       {contact.length > 0 && (
-        <div style={{
-          display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '14pt',
-          rowGap: '1pt', marginTop: '4pt', fontSize: '9pt', color: INK,
-        }}>
-          <div>{left.map((it, i) => <div key={i} style={{ wordBreak: 'break-word' }}>{it}</div>)}</div>
-          <div>{right.map((it, i) => <div key={i} style={{ wordBreak: 'break-word' }}>{it}</div>)}</div>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+            columnGap: '14pt',
+            rowGap: '1pt',
+            marginTop: '4pt',
+            fontSize: '9pt',
+            color: INK,
+          }}
+        >
+          <div>
+            {left.map((item, index) => (
+              <div key={index} style={{ overflowWrap: 'anywhere' }}>
+                {item}
+              </div>
+            ))}
+          </div>
+          <div>
+            {right.map((item, index) => (
+              <div key={index} style={{ overflowWrap: 'anywhere' }}>
+                {item}
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </header>
@@ -269,21 +610,44 @@ const Header = ({ personalInfo }) => {
 };
 
 export const AcademicTemplate = ({ data }) => {
-  const sections = (data.sectionsConfig || [])
-    .filter((s) => s.visible && s.key !== 'basics');
+  const resumeData = data || {};
+
+  const config = Array.isArray(resumeData.sectionsConfig)
+    ? resumeData.sectionsConfig
+    : DEFAULT_KEYS.map((key) => ({
+        id: key,
+        key,
+        label: prettyLabel(key),
+        visible: true,
+      }));
+
+  const sections = config.filter(
+    (section) => section && section.visible && section.key !== 'basics',
+  );
 
   return (
-    <div className="resume-template academic" style={{
-      width: '100%', background: '#ffffff', color: INK,
-      fontFamily: FONT, padding: '0 0.35in',
-    }}>
-      <Header personalInfo={data.personalInfo} />
-      {sections.map((sec) => {
-        const body = renderSectionBody(sec, data);
+    <div
+      className="resume-template academic"
+      style={{
+        width: '100%',
+        boxSizing: 'border-box',
+        background: '#ffffff',
+        color: INK,
+        fontFamily: FONT,
+        padding: '0 0.35in',
+        // Use one explicit line-height for consistent leading across fonts.
+        lineHeight: LH,
+      }}
+    >
+      <Header personalInfo={resumeData.personalInfo} />
+
+      {sections.map((section, index) => {
+        const body = renderSectionBody(section, resumeData);
         if (body === null) return null;
+
         return (
-          <section key={sec.id}>
-            <SectionTitle>{sec.label}</SectionTitle>
+          <section key={section.id || section.key || index}>
+            <SectionTitle>{labelOf(section)}</SectionTitle>
             {body}
           </section>
         );
