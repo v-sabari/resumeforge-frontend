@@ -15,29 +15,17 @@
 const FONT = "'Calibri', 'Carlito', 'Lato', 'Segoe UI', sans-serif";
 const INK  = '#111111';
 const RULE = '#8a8a8a';
-const LH   = '1.25'; // single line-height used for every text block
 
 const ensure = (arr) => (Array.isArray(arr) ? arr : []);
-const isText = (v) => typeof v === 'string' && v.trim() !== '';
-
-/* Fallbacks used only when the builder hands us no/blank section data. */
-const DEFAULT_KEYS = ['summary', 'experience', 'education', 'projects',
-  'skills', 'certifications', 'achievements', 'languages'];
-const prettyLabel = (key) =>
-  String(key || '').replace(/[-_]+/g, ' ').trim()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-const labelOf = (sec) => (isText(sec.label) ? sec.label.trim() : prettyLabel(sec.key) || 'Section');
 
 /* ─── Section heading: centered bold title with a thin rule directly
-   above AND below — identical treatment for every section. breakAfter
-   keeps a heading from being stranded at the bottom of a page. ───────── */
+   above AND below — identical treatment for every section. ─────────── */
 const SectionTitle = ({ children }) => (
   <div style={{
-    marginTop: '7pt', marginBottom: '4pt',
+    marginTop: '11pt', marginBottom: '5pt',
     borderTop: `0.75pt solid ${RULE}`, borderBottom: `0.75pt solid ${RULE}`,
     textAlign: 'center', fontSize: '10pt', fontWeight: 'bold',
-    letterSpacing: '0.04em', color: INK, padding: '2pt 0',
-    breakAfter: 'avoid', pageBreakAfter: 'avoid',
+    letterSpacing: '0.04em', color: INK, padding: '2.5pt 0',
   }}>
     {children}
   </div>
@@ -46,21 +34,21 @@ const SectionTitle = ({ children }) => (
 /* ─── Bullet: 10pt, drawn-dot marker, indented row (marker column + text). ─ */
 const Bullet = ({ text }) => (
   <div style={{
-    display: 'flex', fontSize: '10pt', lineHeight: LH,
-    margin: '0 0 1pt 0', breakInside: 'avoid',
+    display: 'flex', fontSize: '10pt', lineHeight: '1.3',
+    margin: '0 0 1.5pt 0', breakInside: 'avoid',
   }}>
     {/* Bullet dot is DRAWN with CSS, not the "●" text character: the PDF renderer
         (headless Chromium on Vercel) lacks a font with that glyph, so the character
-        printed blank in the exported PDF. A drawn circle needs no font. The 1.25em
+        printed blank in the exported PDF. A drawn circle needs no font. The 1.3em
         height equals one text line, so the dot stays on the first line of wrapped
         bullets. Width stays 11pt so the layout is unchanged. */}
     <span style={{
       width: '11pt', flexShrink: 0, alignSelf: 'flex-start',
-      height: '1.25em', display: 'flex', alignItems: 'center',
+      height: '1.3em', display: 'flex', alignItems: 'center',
     }}>
       <span style={{ width: '4.6pt', height: '4.6pt', borderRadius: '50%', background: 'currentColor' }} />
     </span>
-    <span style={{ flex: 1, minWidth: 0, overflowWrap: 'anywhere' }}>{text}</span>
+    <span style={{ flex: 1, minWidth: 0 }}>{text}</span>
   </div>
 );
 
@@ -76,13 +64,6 @@ const linkNode = (url) => (url && String(url).trim()
   ? <a href={hrefOf(url)} style={{ color: 'inherit', textDecoration: 'none' }}>{shortUrl(url)}</a>
   : null);
 
-/* Right-hand slot style: dates/locations stay on one line; URLs may wrap
-   (anywhere) instead of overflowing the margin or crushing the left text. */
-const rightSlot = (nowrap) => ({
-  flexShrink: 0, maxWidth: '55%', textAlign: 'right',
-  whiteSpace: nowrap ? 'nowrap' : 'normal', overflowWrap: 'anywhere',
-});
-
 /* ─── Entry: title + date on the top row, subtitle + location on the
    second row, an optional italic 9pt meta/tech line, then bullets.
    Right-hand slots (all optional, right-aligned on the same row):
@@ -92,27 +73,27 @@ const Entry = ({ title, date, titleRight, subtitle, location, meta, metaRight, s
   const bulletList = ensure(bullets).filter(Boolean);
   const topRight = date || titleRight;
   return (
-    <div style={{ marginBottom: '3pt', breakInside: 'avoid' }}>
+    <div style={{ marginBottom: '6pt', breakInside: 'avoid' }}>
       {(title || topRight) && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '10pt' }}>
-          <span style={{ fontSize: '10.6pt', fontWeight: 'bold', color: INK, minWidth: 0, overflowWrap: 'anywhere' }}>{title}</span>
-          {topRight ? <span style={{ fontSize: '9pt', fontWeight: 'normal', ...rightSlot(!!date) }}>{topRight}</span> : null}
+          <span style={{ fontSize: '10.6pt', fontWeight: 'bold', color: INK, minWidth: 0 }}>{title}</span>
+          {topRight ? <span style={{ fontSize: '9pt', fontWeight: 'normal', whiteSpace: 'nowrap' }}>{topRight}</span> : null}
         </div>
       )}
       {(subtitle || location) && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '10pt' }}>
-          <span style={{ fontSize: '10pt', fontStyle: 'italic', minWidth: 0, overflowWrap: 'anywhere' }}>{subtitle}</span>
-          {location ? <span style={{ fontSize: '9pt', fontStyle: 'italic', flexShrink: 0, whiteSpace: 'nowrap' }}>{location}</span> : null}
+          <span style={{ fontSize: '10pt', fontStyle: 'italic', minWidth: 0 }}>{subtitle}</span>
+          {location ? <span style={{ fontSize: '9pt', fontStyle: 'italic', whiteSpace: 'nowrap' }}>{location}</span> : null}
         </div>
       )}
-      {summary ? <p style={{ fontSize: '10pt', lineHeight: LH, margin: '1pt 0 0' }}>{summary}</p> : null}
+      {summary ? <p style={{ fontSize: '10pt', lineHeight: '1.35', margin: '1pt 0 0' }}>{summary}</p> : null}
       {(meta || metaRight) ? (
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
           gap: '10pt', fontSize: '9pt', fontStyle: 'italic', marginTop: '1pt',
         }}>
-          <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{meta}</span>
-          {metaRight ? <span style={rightSlot(false)}>{metaRight}</span> : null}
+          <span style={{ minWidth: 0 }}>{meta}</span>
+          {metaRight ? <span style={{ whiteSpace: 'nowrap' }}>{metaRight}</span> : null}
         </div>
       ) : null}
       {bulletList.length > 0 && (
@@ -124,20 +105,17 @@ const Entry = ({ title, date, titleRight, subtitle, location, meta, metaRight, s
   );
 };
 
-/* ─── Grid: bold category label over its regular items. 3 columns by
-   default (the design); `maxCols` lets sparse lists (e.g. 1–2
-   certifications) use fewer columns instead of wrapping in a 1/3 cell. ─ */
-const Grid = ({ columns, maxCols = 3 }) => {
+/* ─── 3-column grid: bold category label over its regular items. ────── */
+const Grid = ({ columns }) => {
   const cols = ensure(columns).filter(Boolean);
   if (!cols.length) return null;
-  const n = Math.max(1, Math.min(maxCols, cols.length));
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))`, columnGap: '14pt', rowGap: '3pt' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', columnGap: '14pt', rowGap: '5pt' }}>
       {cols.map((col, i) => (
-        <div key={i} style={{ breakInside: 'avoid', minWidth: 0, overflowWrap: 'anywhere' }}>
+        <div key={i} style={{ breakInside: 'avoid' }}>
           {col.label ? <div style={{ fontSize: '10pt', fontWeight: 'bold', color: INK }}>{col.label}</div> : null}
           {ensure(col.items).filter(Boolean).length > 0 ? (
-            <div style={{ fontSize: '10pt', lineHeight: LH }}>
+            <div style={{ fontSize: '10pt', lineHeight: '1.3' }}>
               {ensure(col.items).filter(Boolean).join(', ')}
             </div>
           ) : null}
@@ -168,8 +146,8 @@ const renderCustomBody = (id, customSections) => {
     if (!items.length) return null;
     return items.map((it, i) => <Bullet key={i} text={it} />);
   }
-  if (!isText(c.text)) return null;
-  return <p style={{ fontSize: '10pt', lineHeight: LH, margin: 0 }}>{c.text}</p>;
+  if (!c.text || !c.text.trim()) return null;
+  return <p style={{ fontSize: '10pt', lineHeight: '1.35' }}>{c.text}</p>;
 };
 
 /* ─── Skills → 3-column grid. A line in the flat skills array like
@@ -178,19 +156,14 @@ const renderCustomBody = (id, customSections) => {
    data ({ label, items } objects) also renders directly. ───────────── */
 const skillsToColumns = (skills) =>
   ensure(skills).filter(Boolean).map((s) => {
-    if (typeof s === 'object') {
-      return { label: s.label || '', items: ensure(s.items).filter(Boolean).map(String) };
+    if (typeof s === 'string' && s.includes(':')) {
+      const idx = s.indexOf(':');
+      const label = s.slice(0, idx).trim();
+      const rest = s.slice(idx + 1).split(',').map((x) => x.trim()).filter(Boolean);
+      return { label, items: rest.length ? rest : [s] };
     }
-    const str = String(s);
-    if (str.includes(':')) {
-      const idx = str.indexOf(':');
-      const label = str.slice(0, idx).trim();
-      const rest = str.slice(idx + 1).split(',').map((x) => x.trim()).filter(Boolean);
-      if (rest.length) return { label, items: rest };
-      return { label: '', items: label ? [label] : [] }; // "Python:" with nothing after it; bare ":" is dropped
-    }
-    return { label: '', items: [str] };
-  }).filter((c) => c.label || c.items.length);
+    return { label: '', items: [String(s)] };
+  });
 
 /* ─── "Tech Stack: A, B, C" — adds the label once, even if the user
    already typed it into the field. ───────────────────────────────────── */
@@ -207,38 +180,38 @@ const renderSectionBody = (sec, data) => {
   }
   switch (sec.key) {
     case 'summary': {
-      if (!isText(data.summary)) return null;
-      return <p style={{ fontSize: '10pt', lineHeight: LH, margin: 0 }}>{data.summary}</p>;
+      if (!data.summary || !data.summary.trim()) return null;
+      return <p style={{ fontSize: '10pt', lineHeight: '1.35' }}>{data.summary}</p>;
     }
     case 'experience': {
-      const rows = ensure(data.experience).filter((e) => e && (e.position || e.company));
-      if (!rows.length) return null;
-      return rows.map((e, i) => (
-        <Entry key={i} title={e.position} date={e.duration}
-          subtitle={[e.company, e.employmentType].filter(Boolean).join(' · ')}
-          location={e.location} summary={e.summary} bullets={e.responsibilities} />
-      ));
+      if (!ensure(data.experience).length) return null;
+      return ensure(data.experience)
+        .filter((e) => e.position || e.company)
+        .map((e, i) => (
+          <Entry key={i} title={e.position} date={e.duration}
+            subtitle={[e.company, e.employmentType].filter(Boolean).join(' · ')}
+            location={e.location} summary={e.summary} bullets={e.responsibilities} />
+        ));
     }
     case 'education': {
-      const rows = ensure(data.education)
-        .filter((e) => e && (e.degree || e.field || e.institution || e.year || e.details || e.gpa));
-      if (!rows.length) return null;
-      return rows.map((e, i) => (
+      if (!ensure(data.education).length) return null;
+      return ensure(data.education).map((e, i) => (
         <Entry key={i} title={[e.degree, e.field].filter(Boolean).join(', ')} date={e.year}
           subtitle={e.institution} location=""
           summary={[e.details, e.gpa].filter(Boolean).join(' — ') || undefined} />
       ));
     }
     case 'projects': {
-      const rows = ensure(data.projects).filter((p) => p && p.name);
-      if (!rows.length) return null;
-      return rows.map((p, i) => (
-        <Entry key={i} title={p.name} subtitle={p.role}
-          titleRight={linkNode(p.github)}
-          meta={techStackLine(p.technologies)}
-          metaRight={linkNode(p.link)}
-          bullets={p.highlights} />
-      ));
+      if (!ensure(data.projects).length) return null;
+      return ensure(data.projects)
+        .filter((p) => p.name)
+        .map((p, i) => (
+          <Entry key={i} title={p.name} subtitle={p.role}
+            titleRight={linkNode(p.github)}
+            meta={techStackLine(p.technologies)}
+            metaRight={linkNode(p.link)}
+            bullets={p.highlights} />
+        ));
     }
     case 'skills': {
       const columns = skillsToColumns(data.skills);
@@ -246,11 +219,9 @@ const renderSectionBody = (sec, data) => {
     }
     case 'certifications': {
       const items = ensure(data.certifications).filter(Boolean)
-        .map((c) => (typeof c === 'string' ? c : [c?.name, c?.issuer, c?.year].filter(Boolean).join(' — ')))
+        .map((c) => [c?.name, c?.issuer, c?.year].filter(Boolean).join(' — '))
         .filter(Boolean);
-      return items.length
-        ? <Grid maxCols={3} columns={items.map((t) => ({ label: '', items: [t] }))} />
-        : null;
+      return items.length ? <Grid columns={items.map((t) => ({ label: '', items: [t] }))} /> : null;
     }
     case 'achievements': {
       const items = ensure(data.achievements).filter(Boolean);
@@ -260,7 +231,7 @@ const renderSectionBody = (sec, data) => {
     case 'languages': {
       const items = ensure(data.languages).filter(Boolean);
       if (!items.length) return null;
-      return <p style={{ fontSize: '10pt', lineHeight: LH, margin: 0 }}>{items.join(' · ')}</p>;
+      return <p style={{ fontSize: '10pt', lineHeight: '1.3' }}>{items.join(' · ')}</p>;
     }
     default:
       return renderCustomBody(sec.id, data.customSections);
@@ -277,7 +248,7 @@ const Header = ({ personalInfo }) => {
   const left = contact.slice(0, half);
   const right = contact.slice(half);
   return (
-    <header style={{ marginBottom: '3pt' }}>
+    <header style={{ marginBottom: '5pt' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: '0 8pt' }}>
         <h1 style={{ fontSize: '17pt', fontWeight: 'bold', color: '#000', margin: 0 }}>
           {p.fullName || 'Your Name'}
@@ -286,11 +257,11 @@ const Header = ({ personalInfo }) => {
       </div>
       {contact.length > 0 && (
         <div style={{
-          display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', columnGap: '14pt',
+          display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '14pt',
           rowGap: '1pt', marginTop: '4pt', fontSize: '9pt', color: INK,
         }}>
-          <div>{left.map((it, i) => <div key={i} style={{ overflowWrap: 'anywhere' }}>{it}</div>)}</div>
-          <div>{right.map((it, i) => <div key={i} style={{ overflowWrap: 'anywhere' }}>{it}</div>)}</div>
+          <div>{left.map((it, i) => <div key={i} style={{ wordBreak: 'break-word' }}>{it}</div>)}</div>
+          <div>{right.map((it, i) => <div key={i} style={{ wordBreak: 'break-word' }}>{it}</div>)}</div>
         </div>
       )}
     </header>
@@ -298,27 +269,21 @@ const Header = ({ personalInfo }) => {
 };
 
 export const AcademicTemplate = ({ data }) => {
-  const d = data || {};
-  const config = Array.isArray(d.sectionsConfig)
-    ? d.sectionsConfig
-    : DEFAULT_KEYS.map((key) => ({ id: key, key, label: prettyLabel(key), visible: true }));
-  const sections = config.filter((s) => s && s.visible && s.key !== 'basics');
+  const sections = (data.sectionsConfig || [])
+    .filter((s) => s.visible && s.key !== 'basics');
 
   return (
     <div className="resume-template academic" style={{
-      width: '100%', boxSizing: 'border-box', background: '#ffffff', color: INK,
+      width: '100%', background: '#ffffff', color: INK,
       fontFamily: FONT, padding: '0 0.35in',
-      // One explicit line-height for every row that doesn't set its own, so leading is
-      // identical in Calibri, Open Sans (the PDF renderer's fallback) or any other font.
-      lineHeight: LH,
     }}>
-      <Header personalInfo={d.personalInfo} />
-      {sections.map((sec, idx) => {
-        const body = renderSectionBody(sec, d);
+      <Header personalInfo={data.personalInfo} />
+      {sections.map((sec) => {
+        const body = renderSectionBody(sec, data);
         if (body === null) return null;
         return (
-          <section key={sec.id || sec.key || idx}>
-            <SectionTitle>{labelOf(sec)}</SectionTitle>
+          <section key={sec.id}>
+            <SectionTitle>{sec.label}</SectionTitle>
             {body}
           </section>
         );
