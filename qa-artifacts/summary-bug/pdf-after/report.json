@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-11-13T18:13:26.814Z",
+  "summaryNewlines": 6,
+  "templates": {
+    "modern": {
+      "ok": true,
+      "bytes": 286136,
+      "pages": 5,
+      "file": "qa-artifacts/summary-bug/pdf-after/modern.pdf"
+    },
+    "classic": {
+      "ok": true,
+      "bytes": 265352,
+      "pages": 4,
+      "file": "qa-artifacts/summary-bug/pdf-after/classic.pdf"
+    },
+    "academic": {
+      "ok": true,
+      "bytes": 314417,
+      "pages": 5,
+      "file": "qa-artifacts/summary-bug/pdf-after/academic.pdf"
+    },
+    "clean": {
+      "ok": true,
+      "bytes": 275148,
+      "pages": 4,
+      "file": "qa-artifacts/summary-bug/pdf-after/clean.pdf"
+    },
+    "executive": {
+      "ok": true,
+      "bytes": 299535,
+      "pages": 5,
+      "file": "qa-artifacts/summary-bug/pdf-after/executive.pdf"
+    },
+    "finance": {
+      "ok": true,
+      "bytes": 279112,
+      "pages": 5,
+      "file": "qa-artifacts/summary-bug/pdf-after/finance.pdf"
+    }
+  }
+}

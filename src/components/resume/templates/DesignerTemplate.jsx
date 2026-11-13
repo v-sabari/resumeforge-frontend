@@ -41,7 +41,7 @@ export const DesignerTemplate = ({ data }) => {
       return <div key={sec.id} className="mb-4 break-after-avoid"><SH>{labelOf(sec)}</SH><CustomContent content={content} /></div>;
     }
     switch (sec.key) {
-      case 'summary': return summary ? (<div key="summary" className="mb-4"><SH>{labelOf(sec, 'About')}</SH><p className="text-[11px] text-gray-600 leading-relaxed break-words">{summary}</p></div>) : null;
+      case 'summary': return summary ? (<div key="summary" className="mb-4"><SH>{labelOf(sec, 'About')}</SH><p className="text-[11px] text-gray-600 leading-relaxed break-words whitespace-pre-line">{summary}</p></div>) : null;
       case 'experience': return experience?.length ? (<div key="experience" className="mb-4"><SH>{labelOf(sec, 'Experience')}</SH>{experience.map((e,i)=>(
         <div key={i} className="mb-3 break-inside-avoid">
           <div className="flex items-baseline justify-between gap-1 flex-wrap">

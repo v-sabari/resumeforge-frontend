@@ -24,7 +24,7 @@ export const TechTemplate = ({ data }) => {
     if (sec.type === 'custom') return <CustomBlock key={sec.id} label={labelOf(sec)} content={(customSections||{})[sec.id]}/>;
     switch (sec.key) {
       case 'basics': return null;
-      case 'summary': return summary ? <div key="summary" className="mb-2"><SH>{labelOf(sec, 'Profile')}</SH><p className="text-[11px] text-gray-600 leading-relaxed break-words">{summary}</p></div> : null;
+      case 'summary': return summary ? <div key="summary" className="mb-2"><SH>{labelOf(sec, 'Profile')}</SH><p className="text-[11px] text-gray-600 leading-relaxed break-words whitespace-pre-line">{summary}</p></div> : null;
       case 'skills': return skills?.length ? (<div key="skills" className="mb-2"><SH>{labelOf(sec, 'Skills')}</SH><div className="grid gap-x-4 gap-y-0.5 px-1 grid-cols-3">{(Array.isArray(skills)?skills:[skills]).map((s,i)=><span key={i} className="text-[11px] text-gray-700 break-words break-inside-avoid">{s}</span>)}</div></div>) : null;
       case 'experience': return experience?.length ? (<div key="experience" className="mb-2"><SH>{labelOf(sec, 'Experience')}</SH>{experience.map((e,i)=>(
         <div key={i} className="mb-3 break-inside-avoid">

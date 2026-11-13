@@ -39,7 +39,7 @@ export const ModernProTemplate = ({ data }) => {
       case 'summary': return summary ? (
         <div key="summary" className="mb-4">
           <h2 className="flex items-center gap-2 text-[10.5px] font-bold uppercase tracking-[0.22em] text-gray-800 mb-2 break-after-avoid"><span className={`h-2 w-2 rounded-sm ${ACCENT} shrink-0`}></span><span className="break-words min-w-0">{labelOf(sec, 'Profile')}</span></h2>
-          <p className={P}>{summary}</p>
+          <p className={`${P} whitespace-pre-line`}>{summary}</p>
         </div>) : null;
       case 'experience': return experience?.length ? (
         <div key="experience" className="mb-4">

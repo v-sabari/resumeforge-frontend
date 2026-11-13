@@ -1,0 +1,168 @@
+{
+  "generatedAt": "2026-11-13T18:14:02.138Z",
+  "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "sourceData": "qa-artifacts/template-preview-data.json",
+  "css": "api/_pdf-compiled.css",
+  "templates": {
+    "modern": {
+      "component": "ModernProTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/modern.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 162312
+    },
+    "classic": {
+      "component": "ClassicTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/classic.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 165938
+    },
+    "minimal": {
+      "component": "MinimalATSTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/minimal.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 168899
+    },
+    "executive": {
+      "component": "ExecutiveTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/executive.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 160932
+    },
+    "fresher": {
+      "component": "FresherTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/fresher.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 164341
+    },
+    "creative": {
+      "component": "CreativeATSTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/creative.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 193211
+    },
+    "corporate": {
+      "component": "CorporateTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/corporate.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 153952
+    },
+    "traditional": {
+      "component": "TraditionalTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/traditional.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 115660
+    },
+    "clean": {
+      "component": "CleanTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/clean.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 176051
+    },
+    "graduate": {
+      "component": "GraduateTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/graduate.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 161645
+    },
+    "tech": {
+      "component": "TechTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/tech.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 104004
+    },
+    "engineering": {
+      "component": "EngineeringTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/engineering.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 176248
+    },
+    "leadership": {
+      "component": "LeadershipTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/leadership.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 169339
+    },
+    "designer": {
+      "component": "DesignerTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/designer.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 179096
+    },
+    "sleek": {
+      "component": "SleekTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/sleek.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 155406
+    },
+    "contemporary": {
+      "component": "ContemporaryTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/contemporary.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 155023
+    },
+    "academic": {
+      "component": "AcademicTemplate",
+      "pageSize": "816x1056",
+      "image": "public/templates/academic.png",
+      "width": 816,
+      "height": 1056,
+      "bytes": 88626
+    },
+    "research": {
+      "component": "ResearchTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/research.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 158982
+    },
+    "medical": {
+      "component": "MedicalTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/medical.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 159162
+    },
+    "finance": {
+      "component": "FinanceTemplate",
+      "pageSize": "794x1123",
+      "image": "public/templates/finance.png",
+      "width": 794,
+      "height": 1123,
+      "bytes": 158869
+    }
+  }
+}

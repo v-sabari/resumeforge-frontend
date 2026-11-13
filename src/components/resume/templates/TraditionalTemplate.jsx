@@ -32,7 +32,7 @@ export const TraditionalTemplate = ({ data }) => {
       return <div key={sec.id} className="mb-4 break-after-avoid"><MainHead>{labelOf(sec)}</MainHead><CustomContent content={content} /></div>;
     }
     switch (sec.key) {
-      case 'summary': return summary ? <div key="summary" className="mb-4"><MainHead>{labelOf(sec, 'Summary')}</MainHead><p className="text-[11px] leading-relaxed break-words">{summary}</p></div> : null;
+      case 'summary': return summary ? <div key="summary" className="mb-4"><MainHead>{labelOf(sec, 'Summary')}</MainHead><p className="text-[11px] leading-relaxed break-words whitespace-pre-line">{summary}</p></div> : null;
       case 'experience': return experience?.length ? (<div key="experience" className="mb-4"><MainHead>{labelOf(sec, 'Professional Experience')}</MainHead>{experience.map((e,i)=>(
         <div key={i} className="mb-2.5 break-inside-avoid">
           <div className="flex flex-wrap items-baseline justify-between gap-1">

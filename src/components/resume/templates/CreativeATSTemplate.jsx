@@ -24,7 +24,7 @@ export const CreativeATSTemplate = ({ data }) => {
     if (sec.type === 'custom') return <CustomBlock key={sec.id} label={labelOf(sec)} content={(customSections||{})[sec.id]}/>;
     switch (sec.key) {
       case 'basics': return null;
-      case 'summary': return summary ? (<div key="summary" className="mb-2"><SH>{labelOf(sec, 'About Me')}</SH><p className="text-[11px] text-gray-600 leading-relaxed break-words">{summary}</p></div>) : null;
+      case 'summary': return summary ? (<div key="summary" className="mb-2"><SH>{labelOf(sec, 'About Me')}</SH><p className="text-[11px] text-gray-600 leading-relaxed break-words whitespace-pre-line">{summary}</p></div>) : null;
       case 'experience': return experience?.length ? (<div key="experience" className="mb-2"><SH>{labelOf(sec, 'Experience')}</SH>{experience.map((e,i)=>(
         <div key={i} className="mb-3 break-inside-avoid">
           <div className="flex items-baseline justify-between gap-1 flex-wrap">

@@ -28,7 +28,7 @@ export const ExecutiveTemplate = ({ data }) => {
         <div key="summary">
           <SH>{labelOf(sec, 'Executive Profile')}</SH>
           <div className="bg-slate-50 border-l-4 border-slate-800 py-2 px-3">
-            <p className="text-[11.5px] text-slate-800 italic font-medium leading-relaxed break-words">{summary}</p>
+            <p className="text-[11.5px] text-slate-800 italic font-medium leading-relaxed break-words whitespace-pre-line">{summary}</p>
           </div>
         </div>) : null;
       case 'experience': return experience?.length ? (<div key="experience"><SH>{labelOf(sec, 'Professional Experience')}</SH>{experience.map((e,i)=>(

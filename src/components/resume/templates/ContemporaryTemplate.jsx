@@ -32,7 +32,7 @@ export const ContemporaryTemplate = ({ data }) => {
     }
     switch (sec.key) {
       case 'basics': return null;
-      case 'summary': return summary ? <Card key="summary" accent={ACCENT} title={labelOf(sec, 'Profile')}><p className="text-[11px] text-gray-600 leading-relaxed break-words">{summary}</p></Card> : null;
+      case 'summary': return summary ? <Card key="summary" accent={ACCENT} title={labelOf(sec, 'Profile')}><p className="text-[11px] text-gray-600 leading-relaxed break-words whitespace-pre-line">{summary}</p></Card> : null;
       case 'skills': return skills?.length ? <Card key="skills" accent={ACCENT} title={labelOf(sec, 'Skills')}><div className="flex flex-wrap gap-1.5">{(Array.isArray(skills)?skills:[skills]).map((s,i)=><span key={i} className="text-[10.5px] bg-indigo-50 text-indigo-800 rounded px-2 py-0.5 break-words">{s}</span>)}</div></Card> : null;
       case 'experience': return experience?.length ? (
         <Card key="experience" accent={ACCENT} title={labelOf(sec, 'Experience')}>

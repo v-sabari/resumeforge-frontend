@@ -1,0 +1,11 @@
+{
+  "description": "QA summary-wrapping dataset. Derived from resume-max-coverage.json with ONLY `summary` replaced by a string that exercises: multiple paragraphs separated by blank lines, an accented + Unicode/emoji line, a long unbroken URL, and a 100+ character single token.",
+  "cases": {
+    "longSentence": "Results-driven platform engineer with 12+ years building accessible, high-performance web products for fintech and healthcare teams.",
+    "paragraph2": "Led a nine-person team that shipped a full redesign three weeks ahead of schedule and cut median page load from 4.1s to 1.3s.",
+    "unicodeLine": "Résumé — QA ✓ Tamil: தமிழ் · 東京 · مرحبا · 🚀",
+    "longUrl": "Portfolio: https://example.com/a/very/long/path/segment/that/keeps/going/and/going/until/it/forces/a/wrap/at/the/container/edge?utm_source=resume&utm_medium=qa",
+    "longToken": "Token: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  },
+  "summary": "Results-driven platform engineer with 12+ years building accessible, high-performance web products for fintech and healthcare teams.\n\nLed a nine-person team that shipped a full redesign three weeks ahead of schedule and cut median page load from 4.1s to 1.3s.\n\nRésumé — QA ✓ Tamil: தமிழ் · 東京 · مرحبا · 🚀\nPortfolio: https://example.com/a/very/long/path/segment/that/keeps/going/and/going/until/it/forces/a/wrap/at/the/container/edge?utm_source=resume&utm_medium=qa\nToken: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+}

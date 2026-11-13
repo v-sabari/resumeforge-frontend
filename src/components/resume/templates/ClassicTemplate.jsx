@@ -24,7 +24,7 @@ export const ClassicTemplate = ({ data }) => {
     if (sec.type === 'custom') return <CustomBlock key={sec.id} label={labelOf(sec)} content={(customSections||{})[sec.id]}/>;
     switch (sec.key) {
       case 'basics': return null;
-      case 'summary': return summary ? <div key="summary" className="mb-3"><SH>{labelOf(sec, 'Objective')}</SH><p className="text-[11px] text-gray-700 leading-relaxed break-words">{summary}</p></div> : null;
+      case 'summary': return summary ? <div key="summary" className="mb-3"><SH>{labelOf(sec, 'Objective')}</SH><p className="text-[11px] text-gray-700 leading-relaxed break-words whitespace-pre-line">{summary}</p></div> : null;
       case 'experience': return experience?.length ? (<div key="experience" className="mb-3"><SH>{labelOf(sec, 'Experience')}</SH>{experience.map((e,i)=>(
         <div key={i} className="mb-2 break-inside-avoid">
           <div className="flex justify-between items-baseline flex-wrap gap-1">
