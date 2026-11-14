@@ -7,7 +7,7 @@ import {
   labelOf,
 } from './shared.jsx';
 
-const H = ({children}) => <h2 className="text-[9.5px] uppercase tracking-[0.2em] text-gray-500 mb-1 break-after-avoid">{children}</h2>;
+const H = ({children}) => <h2 className="text-[9.5px] uppercase tracking-[0.2em] text-gray-500 mb-1 break-words break-after-avoid">{children}</h2>;
 
 const CustomBlock = ({ label, content, tone }) => {
   if (!hasCustomContent(content)) return null;
