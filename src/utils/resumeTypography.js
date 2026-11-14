@@ -185,14 +185,19 @@ export const getFontScale = (fontSize) =>
  * the live preview and the exported PDF.
  *
  * `zoom` is honoured by Chromium (preview + PDF engine), Safari and modern
- * Firefox. `width: 100 / scale` counteracts the zoom so the template still
- * spans the full page width instead of spilling out of the page sheet.
+ * Firefox. `zoom` scales the template's own layout box as well as its
+ * contents, and Chromium resolves a percentage width against the containing
+ * block divided by the element's own zoom. A plain `100%` therefore renders
+ * the wrapper at exactly the sheet width at every zoom (and is inert at the
+ * default scale 1). The previous `100 / scale %` instead rendered it at
+ * `sheet / scale`, i.e. WIDER than the sheet as soon as scale < 1, so at small
+ * sizes the content box spilled past the A4 sheet's right edge and was clipped.
  */
 export const getResumeTypographyProps = (fontFamily, fontSize) => {
   const family = normaliseFontFamily(fontFamily);
   const scale  = getFontScale(fontSize);
 
-  const style = { width: `${100 / scale}%` };
+  const style = { width: '100%' };
   // scale === 1 (the default) leaves the wrapper completely inert.
   if (scale !== 1) {
     style.zoom = scale;

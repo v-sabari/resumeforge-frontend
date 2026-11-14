@@ -164,7 +164,7 @@ var getFontScale = (fontSize) => normaliseFontSize(fontSize) / BASE_FONT_SIZE_PT
 var getResumeTypographyProps = (fontFamily, fontSize) => {
   const family = normaliseFontFamily(fontFamily);
   const scale = getFontScale(fontSize);
-  const style = { width: `${100 / scale}%` };
+  const style = { width: "100%" };
   if (scale !== 1) {
     style.zoom = scale;
     if (typeof CSS !== "undefined" && typeof CSS.supports === "function" && !CSS.supports("zoom", String(scale))) {
@@ -304,7 +304,7 @@ var BulletList = ({ items, tone = "light", className = "", itemClassName = "", m
   const t = TONES[tone] || TONES.light;
   return /* @__PURE__ */ jsx("ul", { className: className || "space-y-0.5", children: list.map((item, index) => /* @__PURE__ */ jsxs("li", { className: itemClassName || t.item, children: [
     marker ? /* @__PURE__ */ jsx("span", { className: "break-words", children: marker }) : null,
-    /* @__PURE__ */ jsx("span", { className: "break-words", children: item })
+    /* @__PURE__ */ jsx("span", { className: "break-words min-w-0", children: item })
   ] }, index)) });
 };
 var CertItem = ({ cert, tone = "light", className = "" }) => {
@@ -1458,7 +1458,7 @@ var TraditionalTemplate = ({ data }) => {
 
 // src/components/resume/templates/CleanTemplate.jsx
 import { jsx as jsx10, jsxs as jsxs10 } from "react/jsx-runtime";
-var H2 = ({ children }) => /* @__PURE__ */ jsx10("h2", { className: "text-[9.5px] uppercase tracking-[0.2em] text-gray-500 mb-1 break-after-avoid", children });
+var H2 = ({ children }) => /* @__PURE__ */ jsx10("h2", { className: "text-[9.5px] uppercase tracking-[0.2em] text-gray-500 mb-1 break-words break-after-avoid", children });
 var CustomBlock8 = ({ label, content, tone }) => {
   if (!hasCustomContent(content)) return null;
   return /* @__PURE__ */ jsxs10("div", { className: "mb-3 break-after-avoid", children: [
