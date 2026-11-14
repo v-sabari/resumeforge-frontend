@@ -1,6 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "PHASE_6_COMMENT": "NEW FILE. vercel.json was referenced in src/services/api.js ('/api/:path* rewrites to the Render backend') but was absent from the repository. This file recreates that rewrite, adds the SPA catch-all, the /api/render-pdf serverless function exclusion, security headers (Phase 6e), and the static 404.html for unknown paths (Phase 6a). CSP is shipped as Report-Only per the brief — DO NOT enforce blind.",
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
