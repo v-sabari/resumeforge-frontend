@@ -12,6 +12,8 @@ import {
   DEFAULT_FONT_SIZE,
   normaliseFontFamily,
   normaliseFontSize,
+  getFontSizeWarning,
+  formatFontSizePt,
 } from '../../utils/resumeTypography.js';
 
 const TemplateCard = ({ template, active, locked, onSelect }) => (
@@ -91,6 +93,13 @@ export const TemplatesPanel = () => {
   const fontFamily = normaliseFontFamily(resume?.fontFamily);
   const fontSize   = normaliseFontSize(resume?.fontSize);
 
+  // The control is bounded to the supported range, but an existing resume may
+  // hold a value outside it (e.g. an old 8px = 6pt). We NEVER clamp or rewrite
+  // that stored value — we only pin the slider's thumb into range and surface
+  // the advisory warning; the badge always shows the true value.
+  const sliderValue = Math.min(Math.max(fontSize, MIN_FONT_SIZE), MAX_FONT_SIZE);
+  const sizeWarning = getFontSizeWarning(fontSize);
+
   const applyTypography = (patch, label) => {
     setResume((prev) => ({ ...prev, ...patch }));
     setSuccess(currentId
@@ -136,7 +145,8 @@ export const TemplatesPanel = () => {
 
       {/* Resume-only typography — affects the preview, PDF and DOCX text only.
           The application UI is never styled by these values (see
-          utils/resumeTypography.js and the scoped rules in index.css). */}
+          utils/resumeTypography.js — the family CSS is generated there and
+          scoped to `.resume-typography[data-font-family]`). */}
       <div className="rounded-xl border border-surface-200 bg-white p-4 space-y-4">
         <div>
           <p className="kicker mb-1">Typography</p>
@@ -176,7 +186,7 @@ export const TemplatesPanel = () => {
               Base font size
             </label>
             <span className="rounded-full bg-surface-100 px-2 py-0.5 text-[11px] font-semibold text-ink-600">
-              {fontSize.toFixed(1)} px
+              {formatFontSizePt(fontSize)}
             </span>
           </div>
           <input
@@ -186,14 +196,29 @@ export const TemplatesPanel = () => {
             min={MIN_FONT_SIZE}
             max={MAX_FONT_SIZE}
             step={FONT_SIZE_STEP}
-            value={fontSize}
+            value={sliderValue}
+            aria-valuetext={`${fontSize.toFixed(1)} points`}
+            aria-describedby={sizeWarning ? 'resume-font-size-warning' : undefined}
             onChange={(e) => {
               const next = normaliseFontSize(e.target.value);
-              applyTypography({ fontSize: next }, `Font size set to ${next.toFixed(1)} px`);
+              applyTypography({ fontSize: next }, `Font size set to ${formatFontSizePt(next)}`);
             }}
           />
+          {sizeWarning && (
+            <p
+              id="resume-font-size-warning"
+              role={sizeWarning.level === 'warn' ? 'status' : undefined}
+              className={
+                sizeWarning.level === 'warn'
+                  ? 'text-[11px] font-medium text-amber-700'
+                  : 'text-[11px] text-ink-400'
+              }
+            >
+              {sizeWarning.message}
+            </p>
+          )}
           <div className="flex items-center justify-between text-[11px] text-ink-400">
-            <span>{MIN_FONT_SIZE.toFixed(1)} px</span>
+            <span>{formatFontSizePt(MIN_FONT_SIZE)}</span>
             <button
               type="button"
               className="font-semibold text-primary-700 underline underline-offset-2 hover:text-primary-800"
@@ -204,7 +229,7 @@ export const TemplatesPanel = () => {
             >
               Reset to template defaults
             </button>
-            <span>{MAX_FONT_SIZE.toFixed(1)} px</span>
+            <span>{formatFontSizePt(MAX_FONT_SIZE)}</span>
           </div>
         </div>
       </div>

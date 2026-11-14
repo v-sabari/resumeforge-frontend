@@ -43,6 +43,7 @@ export function useResumeEditor(resumeId) {
   const [resume,      setResume]      = useState({ ...defaultResume, template: 'modern' });
   const [loading,     setLoading]     = useState(Boolean(resumeId));
   const [saving,      setSaving]      = useState(false);
+  const [saveFailed,  setSaveFailed]  = useState(false);
   const [error,       setError]       = useState('');
   const [success,     setSuccess]     = useState('');
   const [currentId,   setCurrentId]   = useState(resumeId || null);
@@ -125,7 +126,7 @@ export function useResumeEditor(resumeId) {
 
   /* ── Save ─────────────────────────────────────────────────────── */
   const saveResume = async () => {
-    setSaving(true); setError(''); setSuccess('');
+    setSaving(true); setError(''); setSuccess(''); setSaveFailed(false);
     const payload = { ...resume, template };
     try {
       if (currentId) {
@@ -145,7 +146,11 @@ export function useResumeEditor(resumeId) {
         navigate(`/app/builder/${id}`, { replace: true });
       }
     } catch (e) {
-      setError(formatApiError(e, 'Could not save the resume.'));
+      // Save failed: KEEP the local draft exactly as-is (resume state is never
+      // reset here) and surface a retryable error. We never discard edits and
+      // never silently change the size or any other field.
+      setSaveFailed(true);
+      setError(`Save failed. ${formatApiError(e, 'Could not save the resume.')} Your changes are still here.`);
     } finally {
       setSaving(false);
     }
@@ -426,7 +431,7 @@ export function useResumeEditor(resumeId) {
 
   return {
     // state
-    resume, setResume, loading, saving, error, setError, success, setSuccess,
+    resume, setResume, loading, saving, saveFailed, error, setError, success, setSuccess,
     currentId, template, setTemplate,
     sectionsConfig, setSectionsConfig, visibleSections,
     premium, exportStatus,
