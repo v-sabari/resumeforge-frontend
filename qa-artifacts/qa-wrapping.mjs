@@ -17,6 +17,19 @@
  *      (clipVsColumn <= 0.5) and the page must not overflow horizontally
  *      (scrollWidth <= clientWidth), with the A4Viewer scale in (0, 1].
  *
+ *   C. OWNER REPRO — Finance + Times at small sizes. The reported bug:
+ *      /app/builder/14/templates, Finance template, Times New Roman, ~1920px
+ *      wide, 7.5pt (the smallest size) — text, section rules, the Skills grid
+ *      and the right-aligned dates ran to/past the sheet's right edge and were
+ *      clipped, while 9.5pt looked fine. Root cause: the size control's
+ *      `zoom` wrapper compensated its width with `100 / zoom %`, which
+ *      Chromium resolves to `sheet / zoom` — WIDER than the sheet as soon as
+ *      zoom < 1. Invariant asserted here: at 7.5 / 8 / 9.5 / 12pt, in the
+ *      hidden true-size node, the template's border box AND content box right
+ *      edges must not exceed the sheet width, no painted text node may exceed
+ *      the content box, and the sheet must stay inside its frame. Fails before
+ *      the fix at 7.5pt (content box right edge ~803.2 > 794), passes after.
+ *
  * KNOWN / ACCEPTED (non-gating): because the body-size control is a CSS `zoom`
  * on `.resume-typography` whose wrapper compensates width with `100/zoom %`,
  * a template's own horizontal padding (fixed in template units) is rendered at
@@ -117,6 +130,62 @@ const measureWrapping = () => {
   return { zoom: +zoom.toFixed(4), over, offenders, overflowing, contentBoxRightDrift, pages: window.__harness.probe().sheetCount };
 };
 
+/**
+ * Invariant C: geometry of the typography wrapper vs the A4 sheet, in the
+ * hidden true-size measurement node (page coordinates). Returns the sheet
+ * width, the wrapper/template right edges and the max painted-text right edge
+ * — all relative to the sheet's own left edge — plus how far the content box
+ * and the max text line spill past the sheet.
+ */
+const measureSheetGeometry = () => {
+  const hidden = document.querySelector('div[aria-hidden="true"]');
+  const wrap = hidden && hidden.firstElementChild && hidden.firstElementChild.firstElementChild; // .resume-typography
+  const tpl = wrap && wrap.querySelector('.resume-template');
+  if (!wrap || !tpl) return null;
+  const sheetLeft = hidden.getBoundingClientRect().left;
+  const pageW = hidden.getBoundingClientRect().width;
+  const zoom = parseFloat(wrap.style.zoom) || 1;
+  const wRect = wrap.getBoundingClientRect();
+  const tRect = tpl.getBoundingClientRect();
+  const tcs = getComputedStyle(tpl);
+  const padR = (parseFloat(tcs.paddingRight) || 0) * zoom;
+  const contentRight = tRect.right - sheetLeft - padR;
+
+  let maxTextRight = -Infinity;
+  let overContent = 0;
+  const offenders = [];
+  const walker = document.createTreeWalker(tpl, NodeFilter.SHOW_TEXT);
+  let n;
+  while ((n = walker.nextNode())) {
+    if (!n.nodeValue || !n.nodeValue.trim()) continue;
+    const range = document.createRange();
+    range.selectNodeContents(n);
+    for (const r of range.getClientRects()) {
+      if (r.width <= 0 || r.height <= 0) continue;
+      const right = r.right - sheetLeft;
+      if (right > maxTextRight) maxTextRight = right;
+      if (right > contentRight + 0.5) {
+        overContent += 1;
+        if (offenders.length < 3) offenders.push({ text: n.nodeValue.replace(/\s+/g, ' ').trim().slice(0, 40), excess: +(right - contentRight).toFixed(1) });
+      }
+    }
+  }
+  return {
+    pageW: +pageW.toFixed(2),
+    inlineWidth: wrap.style.width,
+    zoom: +zoom.toFixed(4),
+    wrapRight: +(wRect.right - sheetLeft).toFixed(2),
+    tplRight: +(tRect.right - sheetLeft).toFixed(2),
+    contentRight: +contentRight.toFixed(2),
+    maxTextRight: maxTextRight === -Infinity ? null : +maxTextRight.toFixed(2),
+    overContent,
+    offenders,
+    templatePastSheet: +Math.max(0, (wRect.right - sheetLeft) - pageW).toFixed(2),
+    contentPastSheet: +Math.max(0, contentRight - pageW).toFixed(2),
+    fontLoaded: typeof document.fonts.check === 'function' ? document.fonts.check("16px 'Tinos'") : null,
+  };
+};
+
 async function main() {
   if (!fs.existsSync(CHROME)) throw new Error(`Chrome not found at ${CHROME}`);
   fs.mkdirSync(outDir, { recursive: true });
@@ -157,9 +226,16 @@ async function main() {
   await pageB.setContent(html(scalingHarnessJs), { waitUntil: 'networkidle0' });
   await pageB.evaluate(() => document.fonts.ready);
 
+  // Fidelity: the dataset stores the size in px (the persisted unit), exactly
+  // like a saved resume; the app converts px→pt at its read boundary
+  // (services/resumeService.js fontSizeFromStoredPx) before ResumePreview sees
+  // it. Do the same here so section B renders an EXISTING resume at its saved
+  // size (10.5px → 7.875pt → scale 1), not an accidental scale-1.33 size.
+  const datasetAtSavedSize = { ...dataset, fontSize: pxToPt(dataset.fontSize ?? 10.5) };
+
   for (const template of TEMPLATES) {
     report.scaling[template] = {};
-    await pageB.evaluate((r, t) => window.__scaling.set({ ...r }, t), dataset, template);
+    await pageB.evaluate((r, t) => window.__scaling.set({ ...r }, t), datasetAtSavedSize, template);
     for (const [vw, vh] of VIEWPORTS) {
       await pageB.setViewport({ width: vw, height: vh, deviceScaleFactor: 1 });
       await settle(pageB);
@@ -175,6 +251,38 @@ async function main() {
       console.log(`[B] ${template.padEnd(12)} ${String(vw).padStart(4)}x${String(vh).padEnd(4)} scale=${m.scale.toFixed(4)} clip=${clip.toFixed(1)} ovfPage=${ovfPage} pages=${m.sheetCount} ${checks.length ? '<<< FAIL' : 'OK'}`);
     }
   }
+
+  /* ── C. owner repro — Finance + Times, small sizes ────────────────────── */
+  const ownerRepro = JSON.parse(fs.readFileSync(path.join(here, 'finance-repro.json'), 'utf8'));
+  const OWNER_SIZES = [7.5, 8, 9.5, 12];
+  const OWNER_VIEWPORTS = [[1920, 1080], [1536, 674]];
+  report.ownerRepro = {};
+  for (const [vw, vh] of OWNER_VIEWPORTS) {
+    await pageB.setViewport({ width: vw, height: vh, deviceScaleFactor: 1 });
+    await pageB.evaluate((r) => window.__scaling.set({ ...r }, 'finance'), ownerRepro);
+    await pageB.evaluate(() => document.fonts.ready);
+    report.ownerRepro[`${vw}x${vh}`] = {};
+    for (const pt of OWNER_SIZES) {
+      await pageB.evaluate((r, pt) => window.__scaling.set({ ...r, fontSize: pt }, 'finance'), ownerRepro, pt);
+      await pageB.evaluate(() => document.fonts.ready);
+      await settle(pageB);
+      const g = await pageB.evaluate(measureSheetGeometry);
+      const sc = await pageB.evaluate(() => window.__scaling.measure());
+      report.ownerRepro[`${vw}x${vh}`][pt] = { ...g, scale: sc.scale, clipVsColumn: sc.clipVsColumn, overflowPage: sc.viewport.overflowPage, pages: sc.sheetCount };
+      const checks = [];
+      if (!g) checks.push('no .resume-template found');
+      else {
+        if (g.templatePastSheet > 0.5) checks.push(`template box ${g.templatePastSheet.toFixed(1)}px past the sheet (right edge ${g.tplRight} > ${g.pageW})`);
+        if (g.contentPastSheet > 0.5) checks.push(`content box ${g.contentPastSheet.toFixed(1)}px past the sheet (right edge ${g.contentRight} > ${g.pageW})`);
+        if (g.overContent > 0) checks.push(`${g.overContent} text node(s) past the content box`);
+      }
+      if (sc.clipVsColumn > 0.5) checks.push(`sheet clipped ${sc.clipVsColumn.toFixed(1)}px past frame`);
+      if (sc.viewport.overflowPage > 0.5) checks.push(`page overflows horizontally ${sc.viewport.overflowPage.toFixed(1)}px`);
+      if (checks.length) failures.push(`C finance@${pt}pt ${vw}x${vh}: ${checks.join('; ')}`);
+      console.log(`[C] finance@${String(pt).padEnd(4)}pt ${String(vw).padStart(4)}x${String(vh).padEnd(4)} zoom=${g ? g.zoom : '?'} tplRight=${g ? g.tplRight : '?'}/${g ? g.pageW : '?'} contentRight=${g ? g.contentRight : '?'} maxTextRight=${g ? g.maxTextRight : '?'} clip=${sc.clipVsColumn.toFixed(1)} pages=${sc.sheetCount} ${checks.length ? '<<< FAIL' : 'OK'}`);
+    }
+  }
+
   await pageB.close();
 
   /* ── KNOWN/ACCEPTED: content-box edge drift (documented, non-gating) ───── */
@@ -188,8 +296,10 @@ async function main() {
 
   const totalA = TEMPLATES.length * SIZES_PX.length;
   const totalB = TEMPLATES.length * VIEWPORTS.length;
+  const totalC = OWNER_SIZES.length * OWNER_VIEWPORTS.length;
   console.log(`\nA. wrapping: ${totalA - failures.filter((f) => f.startsWith('A ')).length}/${totalA} OK`);
   console.log(`B. sheet-in-frame: ${totalB - failures.filter((f) => f.startsWith('B ')).length}/${totalB} OK`);
+  console.log(`C. owner repro (finance+times): ${totalC - failures.filter((f) => f.startsWith('C ')).length}/${totalC} OK`);
   console.log(`KNOWN/ACCEPTED content-box-edge drift (page px): modern ${JSON.stringify(report.knownAccepted.modern)}`);
   console.log('report:', path.relative(root, path.join(outDir, 'report.json')).replace(/\\/g, '/'));
   if (failures.length) {
