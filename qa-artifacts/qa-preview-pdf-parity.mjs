@@ -19,6 +19,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
+import { fontSizeToStoredPx, normaliseFontFamily } from '../src/utils/resumeTypography.js';
 
 const require = createRequire(import.meta.url);
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -33,7 +34,13 @@ const args = process.argv.slice(2);
 for (let i = 0; i < args.length; i++) if (args[i] === '--out') outDir = path.resolve(args[++i]);
 
 const TEMPLATES = (process.env.QA_TEMPLATES || 'modern,classic,academic,engineering,research').split(',');
-const FONT_SIZES = (process.env.QA_FONTS || '8.0,10.5,13.0').split(',').map(Number);
+// Sizes are PT (the UI unit). The preview receives pt directly; the PDF handler
+// receives the stored px equivalent — the same boundary services/resumeService.js
+// performs on read. This is what makes the two surfaces comparable post-migration.
+const FONT_SIZES = (process.env.QA_FONTS || '9,10.5,12').split(',').map(Number);
+// Family ids to sweep (see FONT_FAMILY_OPTIONS). Default: just `template`, so a
+// plain run is unchanged; set QA_FAMILIES to sweep the bundled families.
+const FONT_FAMILIES = (process.env.QA_FAMILIES || 'template').split(',').map((s) => s.trim()).filter(Boolean);
 
 function buildLocalHandler() {
   fs.mkdirSync(buildDir, { recursive: true });
@@ -99,66 +106,77 @@ async function main() {
   const report = { generatedAt: new Date().toISOString(), fontSizes: FONT_SIZES, cases: {} };
 
   for (const template of TEMPLATES) {
-    for (const fontSize of FONT_SIZES) {
-      const key = `${template}:${fontSize}`;
-      const resumeForSize = { ...resume, template, fontSize };
-      console.log(`[${key}] rendering PDF…`);
+    for (const fontSizePt of FONT_SIZES) {
+      for (const familyId of FONT_FAMILIES) {
+        const family = normaliseFontFamily(familyId);
+        const key = `${template}:${fontSizePt}pt:${family}`;
+        // The preview consumes the UI unit (pt); the PDF handler consumes the
+        // stored unit (px) exactly as the backend payload delivers it.
+        const resumeForPreview = { ...resume, template, fontSize: fontSizePt, fontFamily: family };
+        const resumeForHandler = { ...resume, template, fontSize: fontSizeToStoredPx(fontSizePt), fontFamily: family };
+        console.log(`[${key}] rendering PDF…`);
 
-      // 1. PDF via the real handler.
-      const res = {
-        statusCode: 200, headers: {},
-        setHeader(k, v) { this.headers[k] = v; },
-        status(c) { this.statusCode = c; return this; },
-        json(b) { this.jsonBody = b; return this; },
-        send(b) { this.body = Buffer.from(b); },
-      };
-      await handler({ method: 'POST', headers: { 'x-internal-secret': SECRET }, body: { resume: resumeForSize, template } }, res);
-      if (res.statusCode !== 200 || !res.body) {
-        report.cases[key] = { ok: false, error: res.jsonBody };
-        console.log(`${key.padEnd(20)} PDF FAILED ${JSON.stringify(res.jsonBody)}`);
-        continue;
-      }
-      const pdfPages = countPdfPages(res.body);
-      const pdfFile = path.join(outDir, `${template}-${fontSize}.pdf`);
-      fs.writeFileSync(pdfFile, res.body);
+        // 1. PDF via the real handler.
+        const res = {
+          statusCode: 200, headers: {},
+          setHeader(k, v) { this.headers[k] = v; },
+          status(c) { this.statusCode = c; return this; },
+          json(b) { this.jsonBody = b; return this; },
+          send(b) { this.body = Buffer.from(b); },
+        };
+        await handler({ method: 'POST', headers: { 'x-internal-secret': SECRET }, body: { resume: resumeForHandler, template } }, res);
+        if (res.statusCode !== 200 || !res.body) {
+          report.cases[key] = { ok: false, error: res.jsonBody };
+          console.log(`${key.padEnd(28)} PDF FAILED ${JSON.stringify(res.jsonBody)}`);
+          continue;
+        }
+        const pdfPages = countPdfPages(res.body);
+        const pdfFile = path.join(outDir, `${template}-${fontSizePt}pt-${family}.pdf`);
+        fs.writeFileSync(pdfFile, res.body);
 
-      // 2. Preview page count.
-      const page = await browser.newPage();
-      await page.setViewport({ width: 900, height: 1200, deviceScaleFactor: 1 });
-      await page.setContent(`<!doctype html><html><head><meta charset="utf-8" /><style>
+        // 2. Preview page count.
+        const page = await browser.newPage();
+        await page.setViewport({ width: 900, height: 1200, deviceScaleFactor: 1 });
+        await page.setContent(`<!doctype html><html><head><meta charset="utf-8" /><style>
         html, body { margin: 0; padding: 0; background: #e2e8f0; }
         #root { width: 794px; }
         ${INTER_FONT_FACES.map((f) => `@font-face{font-family:'Inter';font-style:normal;font-weight:${f.weight};font-display:block;src:url(data:font/woff2;base64,${f.base64}) format('woff2');}`).join('\n')}
         ${compiledCss}
         </style></head><body><div id="root"></div><script>${harnessJs}</script></body></html>`, { waitUntil: 'networkidle0' });
-      await page.evaluate(() => document.fonts.ready);
-      await page.evaluate((r, t) => window.__harness.set(r, t), resumeForSize, template);
-      await page.evaluate(() => new Promise((res2) => requestAnimationFrame(() => requestAnimationFrame(res2))));
-      await new Promise((r) => setTimeout(r, 500));
-      const previewProbe = await page.evaluate(() => window.__harness.probe());
-      await page.close();
+        await page.evaluate(() => document.fonts.ready);
+        await page.evaluate((r, t) => window.__harness.set(r, t), resumeForPreview, template);
+        // The bundled family is lazily imported + awaited inside the component;
+        // wait for document.fonts to settle so pagination used the real metrics.
+        await page.evaluate(() => document.fonts.ready);
+        await page.evaluate(() => new Promise((res2) => requestAnimationFrame(() => requestAnimationFrame(res2))));
+        await new Promise((r) => setTimeout(r, 500));
+        await page.evaluate(() => document.fonts.ready);
+        const previewProbe = await page.evaluate(() => window.__harness.probe());
+        await page.close();
 
-      // 3. PDF text completeness: every identifying resume token survives.
-      const text = await extractText(res.body);
-      const flat = text.replace(/\s+/g, '').toLowerCase();
-      const expected = [
-        resume.fullName,
-        resume.professionalTitle,
-        ...(resume.experience || []).map((e) => e.company),
-        ...(resume.education || []).map((e) => e.institution),
-      ].filter(Boolean);
-      const missing = expected.filter((t) => !flat.includes(String(t).replace(/\s+/g, '').toLowerCase()));
-      const nameOk = flat.includes(String(resume.fullName).replace(/\s+/g, '').toLowerCase());
+        // 3. PDF text completeness: every identifying resume token survives.
+        const text = await extractText(res.body);
+        const flat = text.replace(/\s+/g, '').toLowerCase();
+        const expected = [
+          resume.fullName,
+          resume.professionalTitle,
+          ...(resume.experience || []).map((e) => e.company),
+          ...(resume.education || []).map((e) => e.institution),
+        ].filter(Boolean);
+        const missing = expected.filter((t) => !flat.includes(String(t).replace(/\s+/g, '').toLowerCase()));
+        const nameOk = flat.includes(String(resume.fullName).replace(/\s+/g, '').toLowerCase());
 
-      const rec = {
-        pdfPages, previewPages: previewProbe.sheetCount, nameOk, missing,
-        bytes: res.body.length,
-        pdfFile: path.relative(root, pdfFile).replace(/\\/g, '/'),
-      };
-      rec.pageCountMatch = pdfPages === previewProbe.sheetCount;
-      rec.ok = rec.pageCountMatch && nameOk && missing.length === 0;
-      report.cases[key] = rec;
-      console.log(`${key.padEnd(20)} pdf=${pdfPages} preview=${previewProbe.sheetCount} match=${rec.pageCountMatch} name=${nameOk} missing=${missing.length} -> ${rec.ok ? 'OK' : 'FAIL'}`);
+        const rec = {
+          template, fontSizePt, family,
+          pdfPages, previewPages: previewProbe.sheetCount, nameOk, missing,
+          bytes: res.body.length,
+          pdfFile: path.relative(root, pdfFile).replace(/\\/g, '/'),
+        };
+        rec.pageCountMatch = pdfPages === previewProbe.sheetCount;
+        rec.ok = rec.pageCountMatch && nameOk && missing.length === 0;
+        report.cases[key] = rec;
+        console.log(`${key.padEnd(28)} pdf=${pdfPages} preview=${previewProbe.sheetCount} match=${rec.pageCountMatch} name=${nameOk} missing=${missing.length} -> ${rec.ok ? 'OK' : 'FAIL'}`);
+      }
     }
   }
 

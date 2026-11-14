@@ -46,7 +46,9 @@ import { A4_W, A4_H, getPageMargin, getPageSize } from '../utils/pageLayout.js';
 import { DEFAULT_SECTIONS_CONFIG } from '../utils/sectionsCatalog.js';
 import {
   getResumeTypographyProps,
-  getFontFamilyStack,
+  getResumeTypographyCss,
+  getBundledFontFamily,
+  fontSizeFromStoredPx,
   normaliseFontFamily,
 } from '../utils/resumeTypography.js';
 // Self-hosted Inter faces: the serverless Chromium build ships no system
@@ -54,6 +56,10 @@ import {
 // silently falls back to a metrically different font (wrong wraps -> wrong
 // page breaks). Previously exported but never imported.
 import { INTER_FONT_FACES } from '../../api/_pdf-fonts.js';
+// Bundled metric-compatible OFL families (see src/fonts/). The EXACT same
+// WOFF2 bytes are lazy-loaded by the live preview, so the two surfaces can
+// never disagree on glyph metrics — hence never on wraps or page count.
+import { getBundledPdfFontFaces } from '../fonts/pdfFonts.js';
 import {
   ModernProTemplate,
   MinimalATSTemplate,
@@ -139,7 +145,10 @@ try {
   // Chrome's native pagination (no annotation) — export still works.
 }
 
-function wrapHtml(bodyHtml, pageW, extraCss = '') {
+function wrapHtml(bodyHtml, pageW, extraCss = '', bundledFaces = []) {
+  const bundledCss = bundledFaces
+    .map((f) => `@font-face{font-family:'${f.family}';font-style:normal;font-weight:${f.weight};font-display:block;src:url(data:font/woff2;base64,${f.base64}) format('woff2');}`)
+    .join('\n');
   return `<!doctype html>
 <html>
 <head>
@@ -150,6 +159,9 @@ function wrapHtml(bodyHtml, pageW, extraCss = '') {
   body { width: ${pageW}px; }
   /* Self-hosted Inter (weights 300–700) — see api/_pdf-fonts.js. */
   ${INTER_FONT_FACES.map((f) => `@font-face{font-family:'Inter';font-style:normal;font-weight:${f.weight};font-display:block;src:url(data:font/woff2;base64,${f.base64}) format('woff2');}`).join('\n')}
+  /* Bundled metric-compatible OFL family for the selected typography choice.
+     Identical bytes to the preview's lazily-injected @font-face. */
+  ${bundledCss}
   ${compiledCss}
   /* RESUME TYPOGRAPHY: same scoped override the live preview applies. Scoped
      to .resume-typography .resume-template, so it cannot affect anything
@@ -229,20 +241,25 @@ export default async function handler(req, res) {
     // the first element of <body>, so the pagination pass below measures the
     // same visual-space geometry the preview measured.
     const fontFamily = normaliseFontFamily(resume.fontFamily);
-    const fontStack = getFontFamilyStack(fontFamily);
-    const typography = getResumeTypographyProps(fontFamily, resume.fontSize);
+    // The backend sends the stored px value (ExportService.buildRenderPayload
+    // puts resume.getFontSize() straight through). Convert px -> pt here, the
+    // same boundary the live preview uses (services/resumeService.js), so both
+    // surfaces compute the identical zoom scale.
+    const fontSizePt = fontSizeFromStoredPx(resume.fontSize);
+    const typography = getResumeTypographyProps(fontFamily, fontSizePt);
     const typographyStyle = Object.entries(typography.style)
       .map(([k, v]) => `${k.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)}:${v}`)
       .join(';');
-    const typographyCss = fontStack
-      ? `.resume-typography .resume-template,
-         .resume-typography .resume-template * { font-family: ${fontStack} !important; }`
-      : '';
+    // Same string the live preview injects (single source of truth).
+    const typographyCss = getResumeTypographyCss(fontFamily);
+    // Embed ONLY the selected family's faces (the exact bytes the preview
+    // loads) — keeps the print page small and guarantees metric parity.
+    const bundledFaces = getBundledPdfFontFaces(getBundledFontFamily(fontFamily));
 
     const templateEl = React.createElement(Template, { data });
     const markup = ReactDOMServer.renderToStaticMarkup(templateEl);
     const bodyHtml = `<div class="${typography.className}" data-font-family="${fontFamily}" style="${typographyStyle}">${markup}</div>`;
-    const html = wrapHtml(bodyHtml, pageW, typographyCss);
+    const html = wrapHtml(bodyHtml, pageW, typographyCss, bundledFaces);
 
     const browser = await getBrowser();
     const page = await browser.newPage();

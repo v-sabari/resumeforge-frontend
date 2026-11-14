@@ -1,0 +1,172 @@
+{
+  "generatedAt": "2026-11-14T12:29:20.664Z",
+  "cases": {
+    "A.slider-bounds-default": {
+      "ok": true,
+      "slider": {
+        "min": "7.5",
+        "max": "9.75",
+        "step": "0.5",
+        "value": "8",
+        "ariaValueText": "7.9 points",
+        "ariaDescribedBy": "resume-font-size-warning"
+      },
+      "family": "template",
+      "badge": "7.9 pt",
+      "warning": "Small text may be hard to read or parse.",
+      "optCount": 9,
+      "checks": {
+        "min": true,
+        "max": true,
+        "step": true,
+        "defaultValue": true,
+        "ariaValueText": true,
+        "familyDefault": true,
+        "badge": true,
+        "defaultWarns": true,
+        "familyOptions": true,
+        "storedDefault": true
+      },
+      "note": ""
+    },
+    "B.reset-restores-defaults": {
+      "ok": true,
+      "before": {
+        "state": {
+          "fontFamily": "courier",
+          "fontSize": 9.5,
+          "template": "modern",
+          "resumeTemplate": "modern",
+          "currentId": null
+        },
+        "slider": {
+          "min": "7.5",
+          "max": "9.75",
+          "step": "0.5",
+          "value": "9.5",
+          "ariaValueText": "9.5 points",
+          "ariaDescribedBy": "resume-font-size-warning"
+        },
+        "family": "courier"
+      },
+      "after": {
+        "state": {
+          "fontFamily": "template",
+          "fontSize": 7.875,
+          "template": "modern",
+          "resumeTemplate": "modern",
+          "currentId": null
+        },
+        "slider": {
+          "min": "7.5",
+          "max": "9.75",
+          "step": "0.5",
+          "value": "8",
+          "ariaValueText": "7.9 points",
+          "ariaDescribedBy": "resume-font-size-warning"
+        },
+        "family": "template"
+      },
+      "checks": {
+        "clicked": true,
+        "appliedBefore": true,
+        "resetFamily": true,
+        "resetSize": true,
+        "warningBack": true
+      },
+      "note": ""
+    },
+    "D.template-switch-preserves-typography": {
+      "ok": true,
+      "state": {
+        "fontFamily": "calibri",
+        "fontSize": 9,
+        "template": "classic",
+        "resumeTemplate": "classic",
+        "currentId": null
+      },
+      "slider": {
+        "min": "7.5",
+        "max": "9.75",
+        "step": "0.5",
+        "value": "9",
+        "ariaValueText": "9.0 points",
+        "ariaDescribedBy": "resume-font-size-warning"
+      },
+      "family": "calibri",
+      "checks": {
+        "clicked": true,
+        "templateChanged": true,
+        "familyPreserved": true,
+        "sizePreserved": true
+      },
+      "note": ""
+    },
+    "C.page-count-grows-with-size": {
+      "ok": true,
+      "small": 2,
+      "large": 3,
+      "note": "2 -> 3 pages"
+    },
+    "G.preview-default-body-pt": {
+      "ok": true,
+      "measured": {
+        "tag": "LI",
+        "fontSizePx": 11,
+        "text": ""
+      },
+      "note": "11px = 8.25pt"
+    },
+    "G2.pdf-default-body-pt": {
+      "ok": true,
+      "medianPt": 8.249999656249999,
+      "note": "8.25pt (median text height)"
+    }
+  },
+  "delegated": {
+    "scaling": {
+      "ok": true,
+      "status": 0,
+      "out": "C:\\Users\\Sabari\\Downloads\\resumeforge-frontend-master\\resumeforge-frontend-master\\qa-artifacts\\typography\\scaling"
+    },
+    "parity-sizes": {
+      "ok": true,
+      "status": 0,
+      "out": "C:\\Users\\Sabari\\Downloads\\resumeforge-frontend-master\\resumeforge-frontend-master\\qa-artifacts\\typography\\parity-sizes",
+      "env": {
+        "QA_TEMPLATES": "modern,classic,academic,engineering,research",
+        "QA_FONTS": "7.5,9,9.75",
+        "QA_FAMILIES": "template"
+      }
+    },
+    "parity-families": {
+      "ok": true,
+      "status": 0,
+      "out": "C:\\Users\\Sabari\\Downloads\\resumeforge-frontend-master\\resumeforge-frontend-master\\qa-artifacts\\typography\\parity-families",
+      "env": {
+        "QA_TEMPLATES": "modern",
+        "QA_FONTS": "10.5",
+        "QA_FAMILIES": "times,georgia,garamond,arial,helvetica,calibri,cambria,courier"
+      }
+    }
+  },
+  "knownLimitations": {
+    "parity-future-max-12pt": {
+      "ok": false,
+      "status": 1,
+      "out": "C:\\Users\\Sabari\\Downloads\\resumeforge-frontend-master\\resumeforge-frontend-master\\qa-artifacts\\typography\\parity-future-max-12pt",
+      "env": {
+        "QA_TEMPLATES": "modern,classic,academic,engineering,research",
+        "QA_FONTS": "12",
+        "QA_FAMILIES": "template"
+      }
+    }
+  },
+  "measuredPreviewBodyPt": {
+    "tag": "LI",
+    "fontSizePx": 11,
+    "text": "",
+    "fontSizePt": 8.25
+  },
+  "measuredPdfBodyPt": 8.249999656249999
+}

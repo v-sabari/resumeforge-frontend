@@ -15,7 +15,9 @@ export const defaultResume = {
   languages: [], customSections: {},
   sectionsConfig: null, // null → use DEFAULT_SECTIONS_CONFIG
   // Resume-only typography (see utils/resumeTypography.js). `template` keeps
-  // the design each template ships with; 10.5 is its native body size.
+  // the design each template ships with; the default size is the historical
+  // 10.5px base expressed in the UI's unit (pt) = 7.875pt, so new resumes keep
+  // their original size. Persisted in px (see services/resumeService.js).
   fontFamily: DEFAULT_FONT_FAMILY,
   fontSize: DEFAULT_FONT_SIZE,
 };

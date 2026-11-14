@@ -91,7 +91,7 @@ const ViewPanel = ({ view, resume, setResume, currentId, premium, exportStatus, 
 const BuilderLayoutInner = () => {
   const editor = useResumeEditorContext();
   const {
-    resume, setResume, loading, saving, error, success, currentId, setSuccess,
+    resume, setResume, loading, saving, saveFailed, error, success, currentId, setSuccess,
     template, saveResume, handleImport, refreshStatuses,
     premium, exportStatus, sectionsConfig,
   } = editor;
@@ -161,7 +161,23 @@ const BuilderLayoutInner = () => {
       />
 
       <div className="mt-4 space-y-2">
-        {error   && <Alert variant="error">{error}</Alert>}
+        {error && (
+          <Alert variant="error">
+            {saveFailed ? (
+              <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span>{error}</span>
+                <button
+                  type="button"
+                  onClick={saveResume}
+                  disabled={saving}
+                  className="font-semibold underline underline-offset-2 hover:no-underline disabled:opacity-60"
+                >
+                  {saving ? 'Retrying…' : 'Retry'}
+                </button>
+              </span>
+            ) : error}
+          </Alert>
+        )}
         {success && <Alert variant="success">{success}</Alert>}
         {!currentId && (
           <Alert variant="warning">Save this resume to persist your edits, template choice, and to export it.</Alert>
@@ -187,9 +203,14 @@ const BuilderLayoutInner = () => {
             />
           </div>
 
-          {/* Live preview (50%), sticky */}
+          {/* Live preview (50%), sticky. `min-w-0` is load-bearing: without it
+              the A4 sheet's true 794px width inflates this grid item's
+              min-content size, the 1fr track grows past its share, and the
+              sheet is clipped off the right edge of the page. It lets the
+              track shrink so A4Viewer can measure the real frame width and
+              scale the sheet to fit. */}
           <div className={[
-            'flex flex-col gap-5',
+            'min-w-0 flex flex-col gap-5',
             'lg:sticky lg:top-6',
             'lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-1',
           ].join(' ')} style={{ scrollbarWidth: 'thin' }}>

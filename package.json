@@ -10,7 +10,8 @@
     "build:pdf-css": "tailwindcss -c tailwind.pdf.config.js -i ./src/pdf-input.css -o ./api/_pdf-compiled.css --minify",
     "build:api": "node scripts/build-pagination.mjs && esbuild src/pdf/renderPdfHandler.jsx --bundle --platform=node --format=esm --target=node22 --outfile=api/render-pdf.js --external:puppeteer-core --external:@sparticuz/chromium-min --external:react --external:react-dom --external:react-dom/server --loader:.jsx=jsx --jsx=automatic",
     "preview": "node node_modules/vite/bin/vite.js preview",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 0",
+    "test:typography": "npm run build:pdf-css && npm run build:api && node qa-artifacts/build-app-css.mjs && node qa-artifacts/build-preview-harness.mjs && node qa-artifacts/build-scaling-harness.mjs && node qa-artifacts/build-typography-harness.mjs && node --test qa-artifacts/typography-logic.test.mjs && node qa-artifacts/qa-typography.mjs"
   },
   "engines": {
     "node": ">=22"
