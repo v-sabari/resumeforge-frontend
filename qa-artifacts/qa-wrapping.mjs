@@ -30,13 +30,16 @@
  *      the content box, and the sheet must stay inside its frame. Fails before
  *      the fix at 7.5pt (content box right edge ~803.2 > 794), passes after.
  *
- * KNOWN / ACCEPTED (non-gating): because the body-size control is a CSS `zoom`
- * on `.resume-typography` whose wrapper compensates width with `100/zoom %`,
- * a template's own horizontal padding (fixed in template units) is rendered at
- * `padding * zoom`. The content-box right edge therefore drifts with the size:
- * for a 794px A4 sheet with 32px right padding it is ~769.6px at 8px, 762px at
- * 10.5px and ~754.4px at 13px. This is by design — moving the padding outside
- * the zoom would change the page geometry — so it is recorded, not asserted.
+ * CONTENT-BOX EDGE (recorded, non-gating). The size control is a CSS `zoom`
+ * on `.resume-typography`, so a template's own horizontal padding (fixed in
+ * template units) is rendered at `padding * zoom` and the content-box right
+ * edge is `sheet − padding * zoom`. For a 794px A4 sheet with 32px right
+ * padding that is ~769.6px at 8px, 762px at 10.5px and ~754.4px at 13px, i.e.
+ * it still moves slightly with the size. This is by design — moving the padding
+ * outside the zoom would change the page geometry — so the value is recorded,
+ * not asserted. What IS asserted is that the content box (and the template
+ * border box) never pass the SHEET's right edge, and that no text passes the
+ * content box (section A / section C).
  *
  * Usage: node qa-artifacts/qa-wrapping.mjs [--out <dir>]
  * Requires the harness bundles (built by the `test:wrapping` npm script).
@@ -122,7 +125,8 @@ const measureWrapping = () => {
   for (const el of tpl.querySelectorAll('*')) {
     if (el.scrollWidth > el.clientWidth + 1) overflowing.push(`${el.tagName}.${(el.className || '').toString().slice(0, 40)} sw=${el.scrollWidth} cw=${el.clientWidth}`);
   }
-  // KNOWN/ACCEPTED drift metric (see header): page width minus zoom-scaled padding.
+  // Recorded (non-gating) content-box right edge: page width minus the
+  // zoom-scaled padding (see header). Not asserted.
   // The hidden measure wrapper carries the true page width (e.g. 794 for A4); the
   // template's own padding is fixed in template units and rendered at `padding*zoom`.
   const pageW = Math.round(hidden.getBoundingClientRect().width);
@@ -215,7 +219,7 @@ async function main() {
       report.wrapping[template][px] = m;
       const ok = !!m && m.over === 0 && m.overflowing.length === 0;
       if (!ok) failures.push(`A ${template}@${px}px: over=${m && m.over} overflowing=${m && m.overflowing.length} ${m && m.overflowing[0] ? '| ' + m.overflowing[0] : ''}`);
-      console.log(`[A] ${template.padEnd(12)} ${String(px).padStart(4)}px  over=${m.over} ovf=${m.overflowing.length} pages=${m.pages} drift=${m.contentBoxRightDrift} ${ok ? 'OK' : '<<< FAIL'}`);
+      console.log(`[A] ${template.padEnd(12)} ${String(px).padStart(4)}px  over=${m.over} ovf=${m.overflowing.length} pages=${m.pages} contentRight=${m.contentBoxRightDrift} ${ok ? 'OK' : '<<< FAIL'}`);
     }
   }
   await pageA.close();
@@ -285,7 +289,7 @@ async function main() {
 
   await pageB.close();
 
-  /* ── KNOWN/ACCEPTED: content-box edge drift (documented, non-gating) ───── */
+  /* ── recorded (non-gating): content-box right edge (documented) ────────── */
   for (const template of ['modern', 'classic', 'clean']) {
     report.knownAccepted[template] = {};
     for (const px of SIZES_PX) report.knownAccepted[template][px] = report.wrapping[template][px].contentBoxRightDrift;
@@ -300,7 +304,7 @@ async function main() {
   console.log(`\nA. wrapping: ${totalA - failures.filter((f) => f.startsWith('A ')).length}/${totalA} OK`);
   console.log(`B. sheet-in-frame: ${totalB - failures.filter((f) => f.startsWith('B ')).length}/${totalB} OK`);
   console.log(`C. owner repro (finance+times): ${totalC - failures.filter((f) => f.startsWith('C ')).length}/${totalC} OK`);
-  console.log(`KNOWN/ACCEPTED content-box-edge drift (page px): modern ${JSON.stringify(report.knownAccepted.modern)}`);
+  console.log(`recorded content-box right edge (page px): modern ${JSON.stringify(report.knownAccepted.modern)}`);
   console.log('report:', path.relative(root, path.join(outDir, 'report.json')).replace(/\\/g, '/'));
   if (failures.length) {
     console.log(`\n${failures.length} FAILURE(S):`);
