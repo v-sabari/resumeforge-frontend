@@ -45,6 +45,29 @@ export function fromApiResponse(data) {
   };
 }
 
+/**
+ * PHASE-1 DATA SAFETY: title fallback.
+ *
+ * Previously: `resume.title || resume.fullName || 'Untitled Resume'` — so a
+ * brand-new resume with only a professionalTitle (no fullName) was saved
+ * with title='' (empty), and a resume with fullName="Priya" but no
+ * professionalTitle got title="Priya" (no role context). The requirement is
+ * '<Full name> – <Professional title>' when both exist, falling back to
+ * whichever exists, finally 'Untitled resume' (lowercase 'r' per spec) when
+ * neither does. Combined with the editor-side `hasContent()` gate, this
+ * guarantees we never POST a record whose title is the empty string.
+ */
+const computeResumeTitle = (resume) => {
+  const explicit = (resume.title || '').trim();
+  if (explicit) return explicit;
+  const name = (resume.fullName || '').trim();
+  const role = (resume.professionalTitle || '').trim();
+  if (name && role) return `${name} – ${role}`;
+  if (name) return name;
+  if (role) return role;
+  return 'Untitled resume';
+};
+
 export function toApiPayload(resume) {
   const s = (v) => { if (v==null) return null; if (typeof v==='string') return v; try{return JSON.stringify(v);}catch{return null;} };
   const personalInfo = {
@@ -53,7 +76,7 @@ export function toApiPayload(resume) {
     linkedin: resume.linkedin||'', github: resume.github||'', portfolio: resume.portfolio||'',
   };
   return {
-    title:          resume.title || resume.fullName || 'Untitled Resume',
+    title:          computeResumeTitle(resume),
     template:       resume.template ?? 'modern',
     personalInfo:   s(personalInfo),
     summary:        resume.summary ?? null,
@@ -74,8 +97,26 @@ export function toApiPayload(resume) {
   };
 }
 
-export const createResume    = async (r)     => { const {data} = await api.post('/api/resumes', toApiPayload(r)); return fromApiResponse(data); };
-export const updateResume    = async (id, r) => { const {data} = await api.put(`/api/resumes/${id}`, toApiPayload(r)); return fromApiResponse(data); };
+/**
+ * PHASE-1 DATA SAFETY: `opts.skipAuthRedirect` is forwarded to axios as
+ * `skipAuthRedirect:true` on the request config. The response interceptor in
+ * api.js reads this flag and suppresses the global 401→/login redirect for
+ * that one call, so an expired session during autosave surfaces as a
+ * rejected promise (caught by the editor) instead of a navigation that
+ * would discard the user's unsaved edits.
+ */
+export const createResume = async (r, opts = {}) => {
+  const { data } = await api.post('/api/resumes', toApiPayload(r), {
+    skipAuthRedirect: Boolean(opts.skipAuthRedirect),
+  });
+  return fromApiResponse(data);
+};
+export const updateResume = async (id, r, opts = {}) => {
+  const { data } = await api.put(`/api/resumes/${id}`, toApiPayload(r), {
+    skipAuthRedirect: Boolean(opts.skipAuthRedirect),
+  });
+  return fromApiResponse(data);
+};
 export const getResumeById   = async (id)    => { const {data} = await api.get(`/api/resumes/${id}`); return fromApiResponse(data); };
 export const getAllResumes    = async ()      => { const {data} = await api.get('/api/resumes'); return data.map(fromApiResponse); };
 export const deleteResume    = async (id)    => api.delete(`/api/resumes/${id}`);

@@ -69,6 +69,53 @@ export const ResourcesPage = () => (
   </div>
 );
 
+/* ── PHASE-6c: Article JSON-LD for /resources/:slug pages ───────────
+ * Injects Article structured data (headline, datePublished, author,
+ * publisher) into the page so search engines can render article-rich
+ * results. The article's `date` field (e.g. "March 2026") is converted
+ * to ISO 8601 (2026-03-01) for datePublished — the 1st of the named
+ * month is used because the exact publish day is not stored in the data
+ * model. Author/publisher are "ResumeForge AI" until real bylines exist.
+ */
+const ArticleSchema = ({ article }) => {
+  const monthToISO = (dateStr) => {
+    if (!dateStr) return new Date().toISOString().slice(0, 10);
+    const m = dateStr.match(/^(\w+)\s+(\d{4})$/);
+    if (!m) return dateStr;
+    const months = { January:'01', February:'02', March:'03', April:'04', May:'05', June:'06',
+      July:'07', August:'08', September:'09', October:'10', November:'11', December:'12' };
+    const mo = months[m[1]] || '01';
+    return `${m[2]}-${mo}-01`;
+  };
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.title,
+    description: article.excerpt,
+    datePublished: monthToISO(article.date),
+    dateModified: monthToISO(article.date),
+    author: { '@type': 'Organization', name: 'ResumeForge AI' },
+    publisher: {
+      '@type': 'Organization',
+      name: 'ResumeForge AI',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://www.resumeforgeai.site/favicon-master-512.png',
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://www.resumeforgeai.site/resources/${article.slug}`,
+    },
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+};
+
 /* ── Individual article page ─────────────────────────────────────── */
 export const ArticlePage = () => {
   const { slug } = useParams();
@@ -89,6 +136,8 @@ export const ArticlePage = () => {
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12">
+      {/* PHASE-6c: Article JSON-LD for /resources/:slug pages */}
+      <ArticleSchema article={article} />
       <nav className="flex items-center gap-2 text-sm text-ink-400 mb-8">
         <Link to="/resources" className="hover:text-brand-600 transition-colors">
           Resources

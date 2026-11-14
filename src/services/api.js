@@ -42,7 +42,20 @@ api.interceptors.response.use(
     // (so public pages don't log console 401s), meaning this redirect only
     // fires when a genuinely protected endpoint 401s while the user is inside
     // the /app area — e.g. an expired session mid-use.
-    if (error.response?.status === 401 && window.location.pathname.startsWith('/app')) {
+    //
+    // PHASE-1 DATA SAFETY: autosave (and any explicit save call) sets
+    // `skipAuthRedirect: true` on the request config so an expired session
+    // mid-edit does NOT instantly redirect to /login and discard the user's
+    // unsaved edits. Instead the save promise rejects with the 401, the
+    // editor catches it, mirrors the draft to localStorage, and surfaces a
+    // "Re-login needed" banner. The user re-logs in, gets bounced back to
+    // /app/builder/:id, and the draft is restored from localStorage — no
+    // edits lost.
+    if (
+      error.response?.status === 401 &&
+      window.location.pathname.startsWith('/app') &&
+      !error.config?.skipAuthRedirect
+    ) {
       // Remember where the user was heading so /login can bounce them back
       // after they sign in (LoginPage reads this via sessionStorage).
       try {

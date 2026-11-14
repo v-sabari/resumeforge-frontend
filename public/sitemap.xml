@@ -1,53 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- PHASE-6b: sitemap.xml rebuilt from the route list in src/routes/AppRoutes.jsx.
+     Changes:
+       • Added /templates (was missing — public marketing route).
+       • Added <lastmod> to every URL (today's date, ISO 8601).
+       • Removed /login and /register (auth pages should not be indexed; they
+         are noindex in useSeoMeta.js and add no search value).
+       • Added /cookie-policy (public legal page, was missing).
+       • Kept /pricing, /about, /contact, /terms, /privacy, /refund-policy,
+         /tools, /tools/linkedin, /tools/ats-score, /resources, and all 8
+         /resources/* article slugs.
+       • Did NOT include /app/* (authenticated, noindex), /payment/* (noindex),
+         /verify-email, /forgot-password, /reset-password (noindex auth pages).
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- Core pages -->
+  <!-- Core marketing pages -->
   <url>
     <loc>https://www.resumeforgeai.site/</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.resumeforgeai.site/pricing</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.resumeforgeai.site/templates</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.resumeforgeai.site/about</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://www.resumeforgeai.site/contact</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-  </url>
-
-  <!-- Auth pages -->
-  <url>
-    <loc>https://www.resumeforgeai.site/register</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.resumeforgeai.site/login</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
   </url>
 
   <!-- Legal -->
   <url>
     <loc>https://www.resumeforgeai.site/terms</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://www.resumeforgeai.site/privacy</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://www.resumeforgeai.site/refund-policy</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://www.resumeforgeai.site/cookie-policy</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
@@ -55,16 +75,19 @@
   <!-- Free tools -->
   <url>
     <loc>https://www.resumeforgeai.site/tools</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.resumeforgeai.site/tools/linkedin</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.resumeforgeai.site/tools/ats-score</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -72,6 +95,7 @@
   <!-- Resources hub -->
   <url>
     <loc>https://www.resumeforgeai.site/resources</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -79,41 +103,49 @@
   <!-- Articles -->
   <url>
     <loc>https://www.resumeforgeai.site/resources/how-to-write-ats-resume</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.resumeforgeai.site/resources/resume-action-verbs-list</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.resumeforgeai.site/resources/resume-vs-cv-difference</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.resumeforgeai.site/resources/gaps-in-employment-resume</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.resumeforgeai.site/resources/linkedin-profile-tips</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.resumeforgeai.site/resources/how-to-write-cover-letter</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.resumeforgeai.site/resources/resume-for-remote-jobs</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.resumeforgeai.site/resources/interview-preparation-guide</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

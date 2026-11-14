@@ -35,6 +35,8 @@ export default function ListField({
   className = 'input min-h-[80px] resize-none',
   placeholder,
   rows,
+  id,                    // PHASE-2f: passed through to the textarea for htmlFor+id labeling
+  ariaLabel,
 }) {
   const separator = mode === 'lines' ? '\n' : ', ';
   const splitter  = mode === 'lines' ? '\n' : ',';
@@ -56,10 +58,12 @@ export default function ListField({
 
   return (
     <textarea
+      id={id}
       className={className}
       rows={rows}
       value={draft}
       placeholder={placeholder}
+      aria-label={ariaLabel}
       onChange={(e) => {
         const text = e.target.value;
         setDraft(text);

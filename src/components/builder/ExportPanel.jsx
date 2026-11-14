@@ -14,6 +14,9 @@ import { Loader } from '../common/Loader';
 import { Icon } from '../icons/Icon';
 import { formatApiError, prettyDate } from '../../utils/helpers';
 import { FREE_EXPORT_LIMIT } from '../../utils/constants';
+// PHASE-4c: pull the live resume from the shared editor context so we can
+// compute the standardized download filename (<Full_Name>_<Role>_Resume.<ext>).
+import { useResumeEditorContext } from '../../context/ResumeEditorContext';
 
 export const ExportPanel = ({
   resumeId,
@@ -23,6 +26,10 @@ export const ExportPanel = ({
   refreshStatuses,
 }) => {
   const navigate = useNavigate();
+  // PHASE-4c: the live resume object (same instance the preview renders).
+  // Used only to compute the download filename — never to mutate state.
+  const editorCtx = useResumeEditorContext();
+  const resume = editorCtx?.resume;
 
   const [loading,    setLoading]    = useState(false);
   // BUG-006 FIX: This was previously a hardcoded literal —
@@ -104,9 +111,11 @@ export const ExportPanel = ({
       // FIX 6: recordExport backend requires @NotBlank format field.
       // Previously sent only { resumeId } causing 400 validation error.
       await recordExport({ resumeId, format: format.toUpperCase() });
-      if (format === 'pdf')  await Promise.race([downloadResumePdf(resumeId),  timeoutPromise]);
-      if (format === 'docx') await Promise.race([downloadResumeDocx(resumeId), timeoutPromise]);
-      if (format === 'txt')  await Promise.race([downloadResumeTxt(resumeId),  timeoutPromise]);
+      // PHASE-4c: pass the live `resume` so the download filename is
+      // standardized as <Full_Name>_<Role>_Resume.<ext>.
+      if (format === 'pdf')  await Promise.race([downloadResumePdf(resumeId, resume),  timeoutPromise]);
+      if (format === 'docx') await Promise.race([downloadResumeDocx(resumeId, resume), timeoutPromise]);
+      if (format === 'txt')  await Promise.race([downloadResumeTxt(resumeId, resume),  timeoutPromise]);
       await refreshStatuses?.();
       setVariant('success');
       setMessage(`${format.toUpperCase()} downloaded successfully.`);
@@ -183,6 +192,18 @@ export const ExportPanel = ({
 
         {/* Download buttons */}
         <div className="space-y-2">
+          {/* PHASE-4a: explicit free-vs-quota labels. Backend (ExportService)
+              counts ALL three formats (PDF, DOCX, TXT) against the free
+              user's 3-export daily quota — none is free. Premium = unlimited.
+              This copy matches that behavior so users know exactly what
+              consuming an export means. */}
+          <div className="rounded-lg bg-surface-50 border border-surface-200 px-3 py-2 text-xs text-ink-500">
+            {premium?.isPremium ? (
+              <span>All formats unlimited with Premium.</span>
+            ) : (
+              <span>Each download (PDF, DOCX, TXT) counts as <strong>1 of {FREE_EXPORT_LIMIT} free exports per day</strong>. Failed downloads do not count.</span>
+            )}
+          </div>
           <button type="button"
             onClick={() => handleExport('pdf')}
             disabled={loading}

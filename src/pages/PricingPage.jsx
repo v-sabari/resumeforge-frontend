@@ -6,7 +6,11 @@ import { Alert } from '../components/common/Alert';
 import { Icon } from '../components/icons/Icon';
 import { premiumFeatures } from '../utils/constants';
 
-const freeFeatures = ['Full resume builder', 'AI writing assistance', '3 PDF exports', 'Classic template', 'Secure cloud storage'];
+// PHASE-5 CONTENT & TRUST: Free plan previously listed "Classic template" (singular),
+// which understated the actual free entitlement — there are 10 free templates
+// (see FREE_TEMPLATE_IDS in utils/constants.js). Updated to "10 free templates"
+// so the pricing copy matches the actual product surface.
+const freeFeatures = ['Full resume builder', 'AI writing assistance', '3 PDF exports per day', '10 free templates', 'Secure cloud storage'];
 
 export const PricingPage = () => {
   const { isAuthenticated, premium } = useAuth();

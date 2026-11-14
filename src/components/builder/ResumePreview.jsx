@@ -60,7 +60,12 @@ const PAGE_GAP = 16; // px between simulated sheets, at true (unscaled) size
 const A4Viewer = ({ children, margin, size, onPagesChange }) => {
   const shellRef   = useRef(null);
   const measureRef = useRef(null);
-  const [scale, setScale] = useState(1);
+  // PHASE-3a: zoom controls. 'fit' = auto-scale to frame width (default,
+  // preserves existing behavior). '75' / '100' / '125' = fixed scale factors
+  // that do NOT auto-fit — the page may overflow horizontally and the frame
+  // scrolls (overflow-x: auto) instead of clipping.
+  const [zoomMode, setZoomMode] = useState('fit');
+  const [fitScale, setFitScale] = useState(1);
   const { w: pageW, h: pageH, name: pageName } = size;
   const [rawH,  setRawH]  = useState(pageH);
   const [pageStarts, setPageStarts] = useState(null);
@@ -81,7 +86,7 @@ const A4Viewer = ({ children, margin, size, onPagesChange }) => {
     const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
     const aw   = shell.clientWidth - padX;
     if (aw <= 0) return;
-    setScale(aw / pageW);
+    setFitScale(aw / pageW);
     setRawH(measure.getBoundingClientRect().height);
     // Element-aware page boundaries (whole atomic blocks, never a sliced
     // line) — see utils/previewPagination.js. Falls back to null (uniform
@@ -103,6 +108,11 @@ const A4Viewer = ({ children, margin, size, onPagesChange }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size]);
 
+  // PHASE-3a: resolve the effective scale from the zoom mode.
+  const scale = zoomMode === 'fit'
+    ? fitScale
+    : { '75': 0.75, '100': 1, '125': 1.25 }[zoomMode] ?? fitScale;
+
   const numPages = (pageStarts && pageStarts.length > 0)
     ? pageStarts.length
     : Math.max(1, Math.ceil(rawH / visibleH));
@@ -111,13 +121,41 @@ const A4Viewer = ({ children, margin, size, onPagesChange }) => {
 
   useEffect(() => { onPagesChange?.(numPages); }, [numPages, onPagesChange]);
 
+  const ZOOM_OPTIONS = [
+    { value: 'fit',  label: 'Fit' },
+    { value: '75',   label: '75%' },
+    { value: '100',  label: '100%' },
+    { value: '125',  label: '125%' },
+  ];
+
   return (
-    <div ref={shellRef} className="w-full rounded-xl" style={{ background: '#475569', padding: '16px' }}>
-      <div className="flex items-center justify-between mb-3">
+    <div ref={shellRef} className="w-full rounded-xl" style={{ background: '#475569', padding: '16px', overflowX: 'auto' }}>
+      <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
         <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-widest">{pageName} Preview</span>
-        <span className="rounded-full bg-slate-700 px-2.5 py-0.5 text-[10px] font-medium text-slate-300">
-          {numPages} {numPages === 1 ? 'page' : 'pages'}
-        </span>
+        <div className="flex items-center gap-2">
+          {/* PHASE-3a: zoom controls */}
+          <div className="flex items-center gap-0.5 rounded-lg bg-slate-700 p-0.5" role="group" aria-label="Preview zoom">
+            {ZOOM_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setZoomMode(opt.value)}
+                className={`px-2 py-1 text-[10px] font-medium rounded transition-colors ${
+                  zoomMode === opt.value
+                    ? 'bg-slate-900 text-white'
+                    : 'text-slate-300 hover:text-white'
+                }`}
+                aria-pressed={zoomMode === opt.value}
+                aria-label={`Zoom ${opt.label}`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          <span className="rounded-full bg-slate-700 px-2.5 py-0.5 text-[10px] font-medium text-slate-300">
+            {numPages} {numPages === 1 ? 'page' : 'pages'}
+          </span>
+        </div>
       </div>
 
       {/* Hidden measurement copy — full, unsliced content at true width and
