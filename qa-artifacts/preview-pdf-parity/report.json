@@ -1,0 +1,160 @@
+{
+  "generatedAt": "2026-11-14T11:38:01.224Z",
+  "fontSizes": [
+    8,
+    10.5,
+    13
+  ],
+  "cases": {
+    "modern:8": {
+      "pdfPages": 3,
+      "previewPages": 3,
+      "nameOk": true,
+      "missing": [],
+      "bytes": 274478,
+      "pdfFile": "qa-artifacts/preview-pdf-parity/modern-8.pdf",
+      "pageCountMatch": true,
+      "ok": true
+    },
+    "modern:10.5": {
+      "pdfPages": 4,
+      "previewPages": 4,
+      "nameOk": true,
+      "missing": [],
+      "bytes": 271321,
+      "pdfFile": "qa-artifacts/preview-pdf-parity/modern-10.5.pdf",
+      "pageCountMatch": true,
+      "ok": true
+    },
+    "modern:13": {
+      "pdfPages": 7,
+      "previewPages": 7,
+      "nameOk": true,
+      "missing": [],
+      "bytes": 287753,
+      "pdfFile": "qa-artifacts/preview-pdf-parity/modern-13.pdf",
+      "pageCountMatch": true,
+      "ok": true
+    },
+    "classic:8": {
+      "pdfPages": 3,
+      "previewPages": 3,
+      "nameOk": true,
+      "missing": [],
+      "bytes": 258338,
+      "pdfFile": "qa-artifacts/preview-pdf-parity/classic-8.pdf",
+      "pageCountMatch": true,
+      "ok": true
+    },
+    "classic:10.5": {
+      "pdfPages": 4,
+      "previewPages": 4,
+      "nameOk": true,
+      "missing": [],
+      "bytes": 251050,
+      "pdfFile": "qa-artifacts/preview-pdf-parity/classic-10.5.pdf",
+      "pageCountMatch": true,
+      "ok": true
+    },
+    "classic:13": {
+      "pdfPages": 7,
+      "previewPages": 7,
+      "nameOk": true,
+      "missing": [],
+      "bytes": 265136,
+      "pdfFile": "qa-artifacts/preview-pdf-parity/classic-13.pdf",
+      "pageCountMatch": true,
+      "ok": true
+    },
+    "academic:8": {
+      "pdfPages": 3,
+      "previewPages": 3,
+      "nameOk": true,
+      "missing": [],
+      "bytes": 297740,
+      "pdfFile": "qa-artifacts/preview-pdf-parity/academic-8.pdf",
+      "pageCountMatch": true,
+      "ok": true
+    },
+    "academic:10.5": {
+      "pdfPages": 4,
+      "previewPages": 4,
+      "nameOk": true,
+      "missing": [],
+      "bytes": 299211,
+      "pdfFile": "qa-artifacts/preview-pdf-parity/academic-10.5.pdf",
+      "pageCountMatch": true,
+      "ok": true
+    },
+    "academic:13": {
+      "pdfPages": 7,
+      "previewPages": 7,
+      "nameOk": true,
+      "missing": [],
+      "bytes": 307586,
+      "pdfFile": "qa-artifacts/preview-pdf-parity/academic-13.pdf",
+      "pageCountMatch": true,
+      "ok": true
+    },
+    "engineering:8": {
+      "pdfPages": 3,
+      "previewPages": 3,
+      "nameOk": true,
+      "missing": [],
+      "bytes": 271577,
+      "pdfFile": "qa-artifacts/preview-pdf-parity/engineering-8.pdf",
+      "pageCountMatch": true,
+      "ok": true
+    },
+    "engineering:10.5": {
+      "pdfPages": 4,
+      "previewPages": 4,
+      "nameOk": true,
+      "missing": [],
+      "bytes": 266329,
+      "pdfFile": "qa-artifacts/preview-pdf-parity/engineering-10.5.pdf",
+      "pageCountMatch": true,
+      "ok": true
+    },
+    "engineering:13": {
+      "pdfPages": 7,
+      "previewPages": 7,
+      "nameOk": true,
+      "missing": [],
+      "bytes": 278810,
+      "pdfFile": "qa-artifacts/preview-pdf-parity/engineering-13.pdf",
+      "pageCountMatch": true,
+      "ok": true
+    },
+    "research:8": {
+      "pdfPages": 3,
+      "previewPages": 3,
+      "nameOk": true,
+      "missing": [],
+      "bytes": 261923,
+      "pdfFile": "qa-artifacts/preview-pdf-parity/research-8.pdf",
+      "pageCountMatch": true,
+      "ok": true
+    },
+    "research:10.5": {
+      "pdfPages": 4,
+      "previewPages": 4,
+      "nameOk": true,
+      "missing": [],
+      "bytes": 258825,
+      "pdfFile": "qa-artifacts/preview-pdf-parity/research-10.5.pdf",
+      "pageCountMatch": true,
+      "ok": true
+    },
+    "research:13": {
+      "pdfPages": 7,
+      "previewPages": 7,
+      "nameOk": true,
+      "missing": [],
+      "bytes": 269315,
+      "pdfFile": "qa-artifacts/preview-pdf-parity/research-13.pdf",
+      "pageCountMatch": true,
+      "ok": true
+    }
+  }
+}
