@@ -6,9 +6,11 @@ import { ResumePreview } from '../src/components/builder/ResumePreview.jsx';
  * preview-scaling-harness.jsx
  *
  * Mounts the REAL ResumePreview inside a wrapper that mirrors the Builder's
- * actual DOM: AppLayout's `mx-auto max-w-7xl px-4 sm:px-6` container, then the
- * Builder's `grid gap-6 lg:grid-cols-2` split with the same preview column
- * classes (components/builder/BuilderLayout.jsx + layouts/AppLayout.jsx).
+ * actual DOM, including the FULL AppLayout shell: the desktop sidebar
+ * (`hidden lg:flex w-56`), the scrolling `<main class="flex-1 overflow-y-auto">`
+ * (which takes a real vertical scrollbar), the `mx-auto max-w-7xl px-4 sm:px-6`
+ * container, then the Builder's `grid gap-6 lg:grid-cols-2` split with the same
+ * preview column classes (components/builder/BuilderLayout.jsx + AppLayout.jsx).
  *
  * The point is to measure whether the A4 sheet is clipped by its frame at the
  * widths the spec calls out (390/768/1024/1536). It does NOT reimplement any
@@ -23,27 +25,42 @@ let state = { resume: null, template: 'modern', legacy: !!window.__LEGACY__ };
 const render = () => root.render(
   createElement(
     'div',
-    { className: 'mx-auto max-w-7xl px-4 sm:px-6 py-6' },
+    { className: 'flex h-screen overflow-hidden bg-surface-50' },
+    // Desktop sidebar — EXACT classes from AppSidebar.jsx (w-56 = 224px).
+    createElement('aside', { className: 'hidden lg:flex flex-col w-56 shrink-0 bg-white border-r border-surface-200 h-screen sticky top-0 overflow-y-auto' },
+      createElement('div', { className: 'p-3' }, 'sidebar')),
     createElement(
       'div',
-      { className: 'grid gap-6 lg:grid-cols-2' },
-      // Left tool panel (placeholder) — same min-w-0 the real one has.
-      createElement('div', { className: 'min-w-0 space-y-5' },
-        createElement('div', { style: { height: 40 } }, 'left panel')),
-      // Live preview column — EXACT classes from BuilderLayout.jsx.
-      // `legacy` reproduces the pre-fix markup (no min-w-0) for before/after.
+      { className: 'flex flex-1 flex-col overflow-hidden' },
       createElement(
-        'div',
-        {
-          className: [
-            state.legacy ? '' : 'min-w-0',
-            'flex flex-col gap-5',
-            'lg:sticky lg:top-6',
-            'lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-1',
-          ].filter(Boolean).join(' '),
-          style: { scrollbarWidth: 'thin' },
-        },
-        createElement(ResumePreview, { resume: state.resume, template: state.template }),
+        'main',
+        { className: 'flex-1 overflow-y-auto' },
+        createElement(
+          'div',
+          { className: 'mx-auto max-w-7xl px-4 sm:px-6 py-6' },
+          createElement(
+            'div',
+            { className: 'grid gap-6 lg:grid-cols-2' },
+            // Left tool panel (placeholder) — same min-w-0 the real one has.
+            createElement('div', { className: 'min-w-0 space-y-5' },
+              createElement('div', { style: { height: 40 } }, 'left panel')),
+            // Live preview column — EXACT classes from BuilderLayout.jsx.
+            // `legacy` reproduces the pre-fix markup (no min-w-0) for before/after.
+            createElement(
+              'div',
+              {
+                className: [
+                  state.legacy ? '' : 'min-w-0',
+                  'flex flex-col gap-5',
+                  'lg:sticky lg:top-6',
+                  'lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-1',
+                ].filter(Boolean).join(' '),
+                style: { scrollbarWidth: 'thin' },
+              },
+              createElement(ResumePreview, { resume: state.resume, template: state.template }),
+            ),
+          ),
+        ),
       ),
     ),
   ),
