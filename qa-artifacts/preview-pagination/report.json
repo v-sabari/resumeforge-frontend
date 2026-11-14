@@ -1,0 +1,736 @@
+{
+  "generatedAt": "2026-11-14T11:39:14.102Z",
+  "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "fontSizes": [
+    8,
+    10.5,
+    13
+  ],
+  "cases": {
+    "long:modern": {
+      "template": "modern",
+      "dataset": "long",
+      "visibleH": 1059,
+      "byFont": {
+        "8": {
+          "pages": 3,
+          "badge": "3 pages",
+          "mounts": 1,
+          "measureH": 2576,
+          "starts": [
+            0,
+            914.2,
+            1942.5
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "13": {
+          "pages": 7,
+          "badge": "7 pages",
+          "mounts": 1,
+          "measureH": 5593,
+          "starts": [
+            0,
+            676.2,
+            1590.7,
+            2128.2,
+            3150.6,
+            4122.7,
+            5115.5
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "10.5": {
+          "pages": 4,
+          "badge": "4 pages",
+          "mounts": 1,
+          "measureH": 3548,
+          "starts": [
+            0,
+            1004.1,
+            2063.1,
+            3079.6
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        }
+      },
+      "checks": [],
+      "notes": [],
+      "liveEdit": {
+        "hasEdit": true,
+        "mounts": 1
+      },
+      "afterResize": {
+        "pages": 4,
+        "issues": [],
+        "straddleBlocks": 0,
+        "lineCuts": 0
+      },
+      "ok": true
+    },
+    "long:classic": {
+      "template": "classic",
+      "dataset": "long",
+      "visibleH": 1075,
+      "byFont": {
+        "8": {
+          "pages": 3,
+          "badge": "3 pages",
+          "mounts": 1,
+          "measureH": 2503,
+          "starts": [
+            0,
+            886.6,
+            1954
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "13": {
+          "pages": 7,
+          "badge": "7 pages",
+          "mounts": 1,
+          "measureH": 5391,
+          "starts": [
+            0,
+            609.7,
+            1506.7,
+            2036.1,
+            3062.5,
+            4030.9,
+            5066
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "10.5": {
+          "pages": 4,
+          "badge": "4 pages",
+          "mounts": 1,
+          "measureH": 3437,
+          "starts": [
+            0,
+            967.8,
+            2022.6,
+            3094.9
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        }
+      },
+      "checks": [],
+      "notes": [],
+      "liveEdit": {
+        "hasEdit": true,
+        "mounts": 1
+      },
+      "afterResize": {
+        "pages": 4,
+        "issues": [],
+        "straddleBlocks": 0,
+        "lineCuts": 0
+      },
+      "ok": true
+    },
+    "long:academic": {
+      "template": "academic",
+      "dataset": "long",
+      "visibleH": 988.8,
+      "byFont": {
+        "8": {
+          "pages": 3,
+          "badge": "3 pages",
+          "mounts": 1,
+          "measureH": 2405,
+          "starts": [
+            0,
+            943,
+            1908.7
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "13": {
+          "pages": 7,
+          "badge": "7 pages",
+          "mounts": 1,
+          "measureH": 5944,
+          "starts": [
+            0,
+            715.5,
+            1654.9,
+            2200.8,
+            3177,
+            4165.8,
+            5077.3
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "10.5": {
+          "pages": 4,
+          "badge": "4 pages",
+          "mounts": 1,
+          "measureH": 3725,
+          "starts": [
+            0,
+            976.8,
+            1891.3,
+            2834
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        }
+      },
+      "checks": [],
+      "notes": [],
+      "liveEdit": {
+        "hasEdit": true,
+        "mounts": 1
+      },
+      "afterResize": {
+        "pages": 4,
+        "issues": [],
+        "straddleBlocks": 0,
+        "lineCuts": 0
+      },
+      "ok": true
+    },
+    "long:engineering": {
+      "template": "engineering",
+      "dataset": "long",
+      "visibleH": 1059,
+      "byFont": {
+        "8": {
+          "pages": 3,
+          "badge": "3 pages",
+          "mounts": 1,
+          "measureH": 2408,
+          "starts": [
+            0,
+            893,
+            1805.8
+          ],
+          "issues": [],
+          "straddleBlocks": 1,
+          "straddlers": [
+            {
+              "tag": "DIV",
+              "top": 812.5,
+              "bottom": 905.6,
+              "h": 93.1,
+              "boundary": 893,
+              "text": "LanguagesEnglish (Native / Bilingual)Tamil (Native)Hindi (Pr"
+            }
+          ],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "13": {
+          "pages": 7,
+          "badge": "7 pages",
+          "mounts": 1,
+          "measureH": 6033,
+          "starts": [
+            0,
+            1055.9,
+            1511.1,
+            2521,
+            3576.9,
+            4267.2,
+            5074.7
+          ],
+          "issues": [],
+          "straddleBlocks": 1,
+          "straddlers": [
+            {
+              "tag": "DIV",
+              "top": 2358.7,
+              "bottom": 3114.6,
+              "h": 755.9,
+              "boundary": 2521,
+              "text": "Orbit — Multi-Region Service Mesh Control Plane(Creator & Ma"
+            }
+          ],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "10.5": {
+          "pages": 4,
+          "badge": "4 pages",
+          "mounts": 1,
+          "measureH": 3395,
+          "starts": [
+            0,
+            845.6,
+            1904.6,
+            2691.1
+          ],
+          "issues": [],
+          "straddleBlocks": 1,
+          "straddlers": [
+            {
+              "tag": "DIV",
+              "top": 251.4,
+              "bottom": 866,
+              "h": 614.6,
+              "boundary": 845.6,
+              "text": "Principal Platform ArchitectJan 2021 – PresentNorthstar Fina"
+            }
+          ],
+          "lineCuts": 0,
+          "cutLines": []
+        }
+      },
+      "checks": [],
+      "notes": [
+        "font=8: 1 block(s) re-flow across a boundary (no line cut)",
+        "font=10.5: 1 block(s) re-flow across a boundary (no line cut)",
+        "font=13: 1 block(s) re-flow across a boundary (no line cut)"
+      ],
+      "liveEdit": {
+        "hasEdit": true,
+        "mounts": 1
+      },
+      "afterResize": {
+        "pages": 4,
+        "issues": [],
+        "straddleBlocks": 1,
+        "lineCuts": 0
+      },
+      "ok": true
+    },
+    "long:research": {
+      "template": "research",
+      "dataset": "long",
+      "visibleH": 1067,
+      "byFont": {
+        "8": {
+          "pages": 3,
+          "badge": "3 pages",
+          "mounts": 1,
+          "measureH": 2454,
+          "starts": [
+            0,
+            917.3,
+            1907.2
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "13": {
+          "pages": 7,
+          "badge": "7 pages",
+          "mounts": 1,
+          "measureH": 5535,
+          "starts": [
+            0,
+            664.8,
+            1640,
+            2159.3,
+            3036.7,
+            4081.4,
+            4897.5
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "10.5": {
+          "pages": 4,
+          "badge": "4 pages",
+          "mounts": 1,
+          "measureH": 3317,
+          "starts": [
+            0,
+            405.4,
+            1271.1,
+            2325.6
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        }
+      },
+      "checks": [],
+      "notes": [],
+      "liveEdit": {
+        "hasEdit": true,
+        "mounts": 1
+      },
+      "afterResize": {
+        "pages": 4,
+        "issues": [],
+        "straddleBlocks": 0,
+        "lineCuts": 0
+      },
+      "ok": true
+    },
+    "short:modern": {
+      "template": "modern",
+      "dataset": "short",
+      "visibleH": 1059,
+      "byFont": {
+        "8": {
+          "pages": 1,
+          "badge": "1 page",
+          "mounts": 1,
+          "measureH": 797,
+          "starts": [
+            0
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "13": {
+          "pages": 2,
+          "badge": "2 pages",
+          "mounts": 1,
+          "measureH": 1568,
+          "starts": [
+            0,
+            1059
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "10.5": {
+          "pages": 2,
+          "badge": "2 pages",
+          "mounts": 1,
+          "measureH": 1089,
+          "starts": [
+            0,
+            1031.4
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        }
+      },
+      "checks": [],
+      "notes": [],
+      "liveEdit": {
+        "hasEdit": true,
+        "mounts": 1
+      },
+      "afterResize": {
+        "pages": 2,
+        "issues": [],
+        "straddleBlocks": 0,
+        "lineCuts": 0
+      },
+      "ok": true
+    },
+    "short:classic": {
+      "template": "classic",
+      "dataset": "short",
+      "visibleH": 1075,
+      "byFont": {
+        "8": {
+          "pages": 1,
+          "badge": "1 page",
+          "mounts": 1,
+          "measureH": 809,
+          "starts": [
+            0
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "13": {
+          "pages": 2,
+          "badge": "2 pages",
+          "mounts": 1,
+          "measureH": 1549,
+          "starts": [
+            0,
+            1073.7
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "10.5": {
+          "pages": 2,
+          "badge": "2 pages",
+          "mounts": 1,
+          "measureH": 1093,
+          "starts": [
+            0,
+            1033
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        }
+      },
+      "checks": [],
+      "notes": [],
+      "liveEdit": {
+        "hasEdit": true,
+        "mounts": 1
+      },
+      "afterResize": {
+        "pages": 2,
+        "issues": [],
+        "straddleBlocks": 0,
+        "lineCuts": 0
+      },
+      "ok": true
+    },
+    "short:academic": {
+      "template": "academic",
+      "dataset": "short",
+      "visibleH": 988.8,
+      "byFont": {
+        "8": {
+          "pages": 1,
+          "badge": "1 page",
+          "mounts": 1,
+          "measureH": 854,
+          "starts": [
+            0
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "13": {
+          "pages": 2,
+          "badge": "2 pages",
+          "mounts": 1,
+          "measureH": 1713,
+          "starts": [
+            0,
+            937.5
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "10.5": {
+          "pages": 2,
+          "badge": "2 pages",
+          "mounts": 1,
+          "measureH": 1166,
+          "starts": [
+            0,
+            929.3
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        }
+      },
+      "checks": [],
+      "notes": [],
+      "liveEdit": {
+        "hasEdit": true,
+        "mounts": 1
+      },
+      "afterResize": {
+        "pages": 2,
+        "issues": [],
+        "straddleBlocks": 0,
+        "lineCuts": 0
+      },
+      "ok": true
+    },
+    "short:engineering": {
+      "template": "engineering",
+      "dataset": "short",
+      "visibleH": 1059,
+      "byFont": {
+        "8": {
+          "pages": 1,
+          "badge": "1 page",
+          "mounts": 1,
+          "measureH": 807,
+          "starts": [
+            0
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "13": {
+          "pages": 2,
+          "badge": "2 pages",
+          "mounts": 1,
+          "measureH": 1353,
+          "starts": [
+            0,
+            874.3
+          ],
+          "issues": [],
+          "straddleBlocks": 1,
+          "straddlers": [
+            {
+              "tag": "DIV",
+              "top": 804.5,
+              "bottom": 1008.5,
+              "h": 204,
+              "boundary": 874.3,
+              "text": "Ledger Lens(Creator)Tech: React, TypeScript, PostgreSQLgithu"
+            }
+          ],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "10.5": {
+          "pages": 1,
+          "badge": "1 page",
+          "mounts": 1,
+          "measureH": 1059,
+          "starts": [
+            0
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        }
+      },
+      "checks": [],
+      "notes": [
+        "font=13: 1 block(s) re-flow across a boundary (no line cut)"
+      ],
+      "liveEdit": {
+        "hasEdit": true,
+        "mounts": 1
+      },
+      "afterResize": {
+        "pages": 1,
+        "issues": [],
+        "straddleBlocks": 0,
+        "lineCuts": 0
+      },
+      "ok": true
+    },
+    "short:research": {
+      "template": "research",
+      "dataset": "short",
+      "visibleH": 1067,
+      "byFont": {
+        "8": {
+          "pages": 1,
+          "badge": "1 page",
+          "mounts": 1,
+          "measureH": 769,
+          "starts": [
+            0
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "13": {
+          "pages": 2,
+          "badge": "2 pages",
+          "mounts": 1,
+          "measureH": 1537,
+          "starts": [
+            0,
+            875.7
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        },
+        "10.5": {
+          "pages": 1,
+          "badge": "1 page",
+          "mounts": 1,
+          "measureH": 1007,
+          "starts": [
+            0
+          ],
+          "issues": [],
+          "straddleBlocks": 0,
+          "straddlers": [],
+          "lineCuts": 0,
+          "cutLines": []
+        }
+      },
+      "checks": [],
+      "notes": [],
+      "liveEdit": {
+        "hasEdit": true,
+        "mounts": 1
+      },
+      "afterResize": {
+        "pages": 1,
+        "issues": [],
+        "straddleBlocks": 0,
+        "lineCuts": 0
+      },
+      "ok": true
+    }
+  }
+}

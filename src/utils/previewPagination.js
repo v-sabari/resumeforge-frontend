@@ -88,6 +88,72 @@ function collectAtomicBlocks(rootEl, visibleH) {
   return blocks;
 }
 
+/* Every painted text LINE box (one rect per wrapped line) under `rootEl`, as
+   [top, bottom] pairs in the same unzoomed units as the atomic blocks.
+
+   Used ONLY as a fallback when no whole-block seam exists — i.e. a dense,
+   side-by-side multi-column layout whose columns overlap continuously, so no
+   single Y can clear every block at once. A line-granular seam still
+   guarantees no text LINE is sliced in half (the visible artifact); the block
+   simply re-flows between the two pages instead. */
+function collectLineSpans(rootEl, rootRect, z) {
+  const spans = [];
+  if (typeof document === 'undefined' || !document.createTreeWalker) return spans;
+  const walker = document.createTreeWalker(rootEl, NodeFilter.SHOW_TEXT);
+  let node;
+  while ((node = walker.nextNode())) {
+    if (!node.nodeValue || !node.nodeValue.trim()) continue;
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    for (const r of range.getClientRects()) {
+      if (r.height <= 0 || r.width <= 0) continue;
+      spans.push([(r.top - rootRect.top) / z, (r.bottom - rootRect.top) / z]);
+    }
+  }
+  return spans;
+}
+
+/* Snap a candidate boundary to a "zero-cost seam": a Y in
+   (pageStart, capBoundary] that no span in `spans` STRICTLY crosses, so a page
+   window ending there keeps every span whole.
+
+   Why this is needed at all: a page edge is a single horizontal Y that spans
+   EVERY column of a multi-column template (engineering, designer…), but the
+   columns stack independently, so blocks in different columns sit at
+   different Ys. The greedy packer reasons about one reading order, so the Y it
+   chooses can still fall inside a block that belongs to the OTHER column —
+   and the A4Viewer's clipped window then slices that line in half. Merging the
+   vertical span of every span that reaches into this page gives the set of Ys
+   that are safe for ALL columns at once.
+
+   Returns the snapped boundary, the candidate unchanged when it is already
+   safe (the single-column case), or `null` when the candidate lies inside a
+   span that cannot be cleared without losing all progress. */
+function seamForSpans(spans, pageStart, capBoundary, candidate) {
+  const relevant = [];
+  for (const [top, bottom] of spans) {
+    if (top > capBoundary + EPS) continue;
+    if (bottom <= pageStart + EPS) continue;
+    relevant.push([Math.max(top, pageStart), bottom]);
+  }
+  if (!relevant.length) return candidate;
+  relevant.sort((a, b) => a[0] - b[0]);
+  const merged = [];
+  for (const s of relevant) {
+    const last = merged[merged.length - 1];
+    if (last && s[0] <= last[1] + EPS) { if (s[1] > last[1]) last[1] = s[1]; }
+    else merged.push([s[0], s[1]]);
+  }
+  const run = merged.find((m) => candidate > m[0] + EPS && candidate < m[1] - EPS);
+  if (!run) return candidate; // candidate already sits in a gap
+  // Candidate cuts a span. Prefer the span's far edge (keep it whole on this
+  // page) when that still fits the page; otherwise back up to its near edge
+  // (push it wholly to the next page). Both edges are seams for every column.
+  if (run[1] <= capBoundary + EPS) return run[1];
+  if (run[0] > pageStart + EPS) return run[0];
+  return null;
+}
+
 /* The ancestor of `el` that is a DIRECT child of a <section> (or of the
    template root). Used to find the heading that visually couples to a block
    that heads a page. */
@@ -145,6 +211,12 @@ export function computePageStarts(rootEl, visibleH, zoom = 1) {
   const starts = [0];
   let pageStart = 0;
   let idx = 0;
+
+  // Vertical spans used for seam snapping. Block spans are always needed;
+  // line spans are measured lazily, only if some page turns out to have no
+  // whole-block seam (dense side-by-side columns).
+  const blockSpans = blocks.map((b) => [b.top, b.bottom]);
+  let lineSpans = null;
 
   while (idx < blocks.length) {
     // Skip blocks entirely above this page (possible after a forced split).
@@ -253,8 +325,24 @@ export function computePageStarts(rootEl, visibleH, zoom = 1) {
       boundary = lastFit.top;
     }
 
-    // Guard against zero/negative progress (pathological shapes).
     const minGain = Math.min(cap, Math.max(1, cap * 0.1));
+
+    // MULTI-COLUMN SEAM SNAP: the greedy packer above reasons about a single
+    // reading order, so for side-by-side columns its boundary can still fall
+    // inside a block in the other column. Snap it to a Y that is safe for ALL
+    // columns; single-column templates are unaffected (their boundary is
+    // already a seam, so the snap is a no-op).
+    let snapped = seamForSpans(blockSpans, pageStart, capBoundary, boundary);
+    if (snapped == null) {
+      // No whole-block seam exists (the columns overlap continuously). Fall
+      // back to a line-granular seam so at least no text LINE is sliced; the
+      // block re-flows between pages instead of being cut mid-line.
+      if (lineSpans === null) lineSpans = collectLineSpans(rootEl, rootRect, z);
+      snapped = seamForSpans(lineSpans, pageStart, capBoundary, boundary);
+    }
+    if (snapped != null && snapped - pageStart >= minGain) boundary = snapped;
+
+    // Guard against zero/negative progress (pathological shapes).
     if (boundary - pageStart < minGain) boundary = pageStart + minGain;
 
     starts.push(boundary);
