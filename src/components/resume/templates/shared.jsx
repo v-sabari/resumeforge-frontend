@@ -95,7 +95,12 @@ export const BulletList = ({ items, tone = 'light', className = '', itemClassNam
       {list.map((item, index) => (
         <li key={index} className={itemClassName || t.item}>
           {marker ? <span className="break-words">{marker}</span> : null}
-          <span className="break-words">{item}</span>
+          {/* `min-w-0` is load-bearing when the caller makes the <li> a flex
+              row (e.g. CreativeATS project highlights): a flex item's automatic
+              minimum size is its min-content width, so a long unbreakable token
+              (a URL) would otherwise inflate the item past the list and clip on
+              the right. It lets the item shrink so `break-words` can wrap. */}
+          <span className="break-words min-w-0">{item}</span>
         </li>
       ))}
     </ul>

@@ -12,6 +12,7 @@ export default [
       'api/_pdf-compiled.css',
       'api/_pagination.text.js',
       'scripts/build-pagination.mjs',
+      'scripts/fetch-bundled-fonts.mjs',
       // QA audit harnesses (Node .cjs scripts + generated bundles), not app
       // source. See docs/qa/field-coverage-matrix.md.
       'qa-artifacts/**',

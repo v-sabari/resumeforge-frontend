@@ -91,9 +91,14 @@ const ViewPanel = ({ view, resume, setResume, currentId, premium, exportStatus, 
 const BuilderLayoutInner = () => {
   const editor = useResumeEditorContext();
   const {
-    resume, setResume, loading, saving, error, success, currentId, setSuccess,
+    resume, setResume, loading, saving, saveFailed, error, success, currentId, setSuccess,
     template, saveResume, handleImport, refreshStatuses,
     premium, exportStatus, sectionsConfig,
+    // PHASE-1 DATA SAFETY: autosave status for the header indicator + the
+    // re-login prompt that replaces the auto-redirect on 401.
+    isDirty, lastSavedAt, needsReauth, goToReLogin,
+    // PHASE-2d/2e: reorder + undo/redo (exposed for the header buttons)
+    moveItem, undo, redo, canUndo, canRedo,
   } = editor;
 
   const navigate = useNavigate();
@@ -106,6 +111,10 @@ const BuilderLayoutInner = () => {
     if (location.pathname.endsWith('/templates')) return 'templates';
     return 'editor';
   });
+  // PHASE-3c: mobile Editor/Preview toggle. Default 'editor' so the user
+  // lands on the editing surface. On lg+ this state is ignored (both panels
+  // always render side-by-side).
+  const [mobileView, setMobileView] = useState('editor');
 
   const changeView = (v) => {
     setActiveView(v);
@@ -138,6 +147,99 @@ const BuilderLayoutInner = () => {
     />
   );
 
+  /* ── PHASE-1 DATA SAFETY: header status indicator ───────────────────
+   *
+   * One of:
+   *   • "Saving…"              — autosave or manual save in flight
+   *   • "Saved <relative time>" — last successful save (manual or auto)
+   *   • "Save failed – retry"   — last save attempt failed (non-401)
+   *   • "Re-login needed"       — last save hit a 401; draft preserved
+   *   • "Unsaved"               — new resume, no content yet, no autosave
+   *
+   * The manual Save button stays next to it for explicit saves.
+   */
+  const formatSavedTime = (ts) => {
+    if (!ts) return '';
+    const seconds = Math.round((Date.now() - ts.getTime()) / 1000);
+    if (seconds < 5) return 'just now';
+    if (seconds < 60) return `${seconds}s ago`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    // P2-4: unambiguous format ("6 Sep 2026") instead of toLocaleDateString()
+    // which produced "9/6/2026" (ambiguous M/D vs D/M). The explicit format
+    // is locale-independent and matches the brief.
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${ts.getDate()} ${months[ts.getMonth()]} ${ts.getFullYear()}`;
+  };
+
+  // `saving` covers both manual and autosave (autosave does NOT set saving,
+  // so the indicator's "Saving…" state is driven by `saving` for manual
+  // saves only; autosave is silent). To surface "Saving…" during autosave
+  // too, we'd need a separate flag — for now the autosave indicator is
+  // "Saved <time>" flipping to the new time on success.
+  const statusEl = (() => {
+    if (needsReauth) {
+      return (
+        <span className="badge-warning text-xs flex items-center gap-1.5" role="status">
+          <Icon name="alert" className="h-3.5 w-3.5" />
+          Re-login needed
+        </span>
+      );
+    }
+    if (saveFailed) {
+      return (
+        <button
+          type="button"
+          onClick={saveResume}
+          disabled={saving}
+          className="badge-warning text-xs flex items-center gap-1.5 hover:bg-amber-100 disabled:opacity-60"
+          role="status"
+          aria-label="Save failed — click to retry"
+        >
+          <Icon name="alert" className="h-3.5 w-3.5" />
+          Save failed – retry
+        </button>
+      );
+    }
+    if (saving) {
+      return (
+        <span className="badge-info text-xs flex items-center gap-1.5" role="status" aria-live="polite">
+          <span className="inline-block h-2 w-2 rounded-full bg-brand-600 animate-pulse" />
+          Saving…
+        </span>
+      );
+    }
+    if (isDirty) {
+      // Dirty but not yet saving — autosave is debouncing (≤2s). Show a
+      // subtle "Saving…" so the user knows their edit was registered.
+      return (
+        <span className="text-xs text-ink-400 flex items-center gap-1.5" role="status" aria-live="polite">
+          <span className="inline-block h-2 w-2 rounded-full bg-ink-300" />
+          Editing…
+        </span>
+      );
+    }
+    if (lastSavedAt) {
+      return (
+        <span className="text-xs text-ink-400 flex items-center gap-1.5" role="status">
+          <Icon name="check" className="h-3.5 w-3.5 text-emerald-600" />
+          Saved {formatSavedTime(lastSavedAt)}
+        </span>
+      );
+    }
+    if (!currentId) {
+      return (
+        <span className="badge-warning text-xs flex items-center gap-1.5" role="status">
+          <Icon name="alert" className="h-3.5 w-3.5" />
+          Unsaved
+        </span>
+      );
+    }
+    return null;
+  })();
+
   return (
     <div className="animate-fade-in">
       <ImportModal open={showImport} onClose={() => setShowImport(false)} onImport={handleImport} />
@@ -148,11 +250,21 @@ const BuilderLayoutInner = () => {
         description="Fill in your details, choose a template, preview in real time, then export."
         actions={
           <div className="flex items-center gap-2 flex-wrap">
+            {statusEl}
+            {/* PHASE-2e: visible undo/redo buttons. Keyboard shortcuts
+                (Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z) are handled inside useUndoRedo. */}
+            <button type="button" className="btn-secondary btn-sm" onClick={undo}
+              disabled={!canUndo} aria-label="Undo (Ctrl+Z)" title="Undo (Ctrl+Z)">
+              <Icon name="chevronUp" className="h-4 w-4 rotate-90" /> Undo
+            </button>
+            <button type="button" className="btn-secondary btn-sm" onClick={redo}
+              disabled={!canRedo} aria-label="Redo (Ctrl+Shift+Z)" title="Redo (Ctrl+Shift+Z)">
+              <Icon name="chevronDown" className="h-4 w-4 rotate-90" /> Redo
+            </button>
             <button type="button" className="btn-secondary btn-sm" onClick={() => setShowImport(true)}>
               <Icon name="export" className="h-4 w-4 rotate-180" /> Import
             </button>
-            {!currentId && <span className="badge-warning text-xs">Unsaved</span>}
-            <button type="button" className="btn-primary" onClick={saveResume} disabled={saving}>
+            <button type="button" className="btn-primary" onClick={saveResume} disabled={saving || needsReauth}>
               <Icon name="check" className="h-4 w-4" />
               {saving ? 'Saving…' : currentId ? 'Save changes' : 'Save resume'}
             </button>
@@ -161,20 +273,85 @@ const BuilderLayoutInner = () => {
       />
 
       <div className="mt-4 space-y-2">
-        {error   && <Alert variant="error">{error}</Alert>}
-        {success && <Alert variant="success">{success}</Alert>}
-        {!currentId && (
-          <Alert variant="warning">Save this resume to persist your edits, template choice, and to export it.</Alert>
+        {needsReauth && (
+          <Alert variant="warning">
+            <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span>Your session has expired. Your edits are preserved locally and will be restored after you re-login.</span>
+              <button
+                type="button"
+                onClick={goToReLogin}
+                className="font-semibold underline underline-offset-2 hover:no-underline"
+              >
+                Re-login
+              </button>
+            </span>
+          </Alert>
         )}
+        {error && !needsReauth && (
+          <Alert variant="error">
+            {saveFailed ? (
+              <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span>{error}</span>
+                <button
+                  type="button"
+                  onClick={saveResume}
+                  disabled={saving}
+                  className="font-semibold underline underline-offset-2 hover:no-underline disabled:opacity-60"
+                >
+                  {saving ? 'Retrying…' : 'Retry'}
+                </button>
+              </span>
+            ) : error}
+          </Alert>
+        )}
+        {success && !needsReauth && <Alert variant="success">{success}</Alert>}
+        {/* PHASE-1 DATA SAFETY: removed the "Save this resume to persist…" warning
+            banner for new resumes. Autosave is now active for both new and
+            existing resumes, so the banner is misleading — it implies the
+            user must manually click Save to persist, when in fact edits are
+            persisted automatically ~2s after each change. The header status
+            indicator ("Unsaved" → "Saving…" → "Saved <time>") communicates
+            the same information without the false implication. */}
       </div>
 
       <div className="mt-5 space-y-5">
         <BuilderTabs activeView={activeView} onChange={changeView} />
 
-        {/* Left = active panel · Right = always-visible preview */}
+        {/* PHASE-3c: mobile Editor/Preview toggle. On screens below lg, the
+            editor and preview stack vertically which is awkward on a 390px
+            viewport. A segmented toggle lets the user switch between them
+            without scrolling. On lg+ both panels are always visible
+            side-by-side (unchanged). The toggle is hidden on lg+ via
+            `lg:hidden`. */}
+        <div className="lg:hidden flex items-center gap-0.5 rounded-xl border border-surface-200 bg-surface-50 p-1">
+          <button
+            type="button"
+            onClick={() => setMobileView('editor')}
+            className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
+              mobileView === 'editor' ? 'bg-white text-ink-950 shadow-sm' : 'text-ink-400'
+            }`}
+            aria-pressed={mobileView === 'editor'}
+          >
+            Editor
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileView('preview')}
+            className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
+              mobileView === 'preview' ? 'bg-white text-ink-950 shadow-sm' : 'text-ink-400'
+            }`}
+            aria-pressed={mobileView === 'preview'}
+          >
+            Preview
+          </button>
+        </div>
+
+        {/* Left = active panel · Right = always-visible preview.
+            PHASE-3c: on mobile, only the selected panel renders (the other
+            is `hidden`). On lg+ both always render. */}
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Active tool panel (50%) */}
-          <div className="min-w-0 space-y-5">
+          <div className={`min-w-0 space-y-5 ${mobileView === 'editor' ? '' : 'hidden'} lg:block`}>
             <ViewPanel
               view={activeView}
               resume={resume}
@@ -187,9 +364,16 @@ const BuilderLayoutInner = () => {
             />
           </div>
 
-          {/* Live preview (50%), sticky */}
+          {/* Live preview (50%), sticky. `min-w-0` is load-bearing: without it
+              the A4 sheet's true 794px width inflates this grid item's
+              min-content size, the 1fr track grows past its share, and the
+              sheet is clipped off the right edge of the page. It lets the
+              track shrink so A4Viewer can measure the real frame width and
+              scale the sheet to fit. */}
           <div className={[
-            'flex flex-col gap-5',
+            'min-w-0 flex flex-col gap-5',
+            mobileView === 'preview' ? '' : 'hidden',
+            'lg:block',
             'lg:sticky lg:top-6',
             'lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-1',
           ].join(' ')} style={{ scrollbarWidth: 'thin' }}>

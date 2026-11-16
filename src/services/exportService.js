@@ -1,4 +1,5 @@
 import api from './api';
+import { buildExportFilename } from '../utils/exportFilename';
 
 export const checkExportAccess = async () => {
   const { data } = await api.post('/api/export/check-access');
@@ -20,29 +21,40 @@ export const getExportHistory = async () => {
   return data;
 };
 
-/** Download resume as PDF. Triggers browser file download. */
-export const downloadResumePdf = async (resumeId) => {
+/**
+ * PHASE-4c: each download function now accepts an optional `resume` object.
+ * If provided, the downloaded file is named `<Full_Name>_<Role>_Resume.<ext>`
+ * (sanitized; falls back to `Resume.<ext>`), OVERRIDING the backend's
+ * Content-Disposition filename (which is derived from the resume title and
+ * may contain en-dashes / spaces). If `resume` is not provided, the
+ * Content-Disposition filename is used (unchanged backend behavior).
+ */
+export const downloadResumePdf = async (resumeId, resume) => {
   if (!resumeId) throw new Error('Resume must be saved before downloading.');
   const r = await blobRequest(`/api/export/download/${resumeId}`);
-  triggerDownload(r, 'resume.pdf', 'application/pdf');
+  const filename = resume ? buildExportFilename(resume, 'pdf') : null;
+  triggerDownload(r, 'resume.pdf', 'application/pdf', filename);
 };
 
 /** Download resume as DOCX. */
-export const downloadResumeDocx = async (resumeId) => {
+export const downloadResumeDocx = async (resumeId, resume) => {
   if (!resumeId) throw new Error('Resume must be saved before downloading.');
   const r = await blobRequest(`/api/export/download/${resumeId}/docx`);
+  const filename = resume ? buildExportFilename(resume, 'docx') : null;
   triggerDownload(
     r,
     'resume.docx',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    filename
   );
 };
 
 /** Download resume as plain text. */
-export const downloadResumeTxt = async (resumeId) => {
+export const downloadResumeTxt = async (resumeId, resume) => {
   if (!resumeId) throw new Error('Resume must be saved before downloading.');
   const r = await blobRequest(`/api/export/download/${resumeId}/txt`);
-  triggerDownload(r, 'resume.txt', 'text/plain');
+  const filename = resume ? buildExportFilename(resume, 'txt') : null;
+  triggerDownload(r, 'resume.txt', 'text/plain', filename);
 };
 
 /**
@@ -88,14 +100,17 @@ async function blobRequest(url) {
   }
 }
 
-function triggerDownload(response, defaultFilename, mimeType) {
+function triggerDownload(response, defaultFilename, mimeType, filenameOverride) {
   const blob = new Blob([response.data], { type: mimeType });
   const url  = window.URL.createObjectURL(blob);
-  const cd   = response.headers['content-disposition'];
-  let filename = defaultFilename;
-  if (cd) {
-    const m = cd.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-    if (m?.[1]) filename = m[1].replace(/['"]/g, '');
+  // PHASE-4c: explicit override wins; then Content-Disposition; then default.
+  let filename = filenameOverride || defaultFilename;
+  if (!filenameOverride) {
+    const cd = response.headers['content-disposition'];
+    if (cd) {
+      const m = cd.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      if (m?.[1]) filename = m[1].replace(/['"]/g, '');
+    }
   }
   const link = document.createElement('a');
   link.href = url;

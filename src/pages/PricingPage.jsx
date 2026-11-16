@@ -1,34 +1,53 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { initiatePayment } from '../utils/razorpay';
 import { Alert } from '../components/common/Alert';
 import { Icon } from '../components/icons/Icon';
-import { premiumFeatures } from '../utils/constants';
+import { premiumFeatures, EXPORT_FREE_SHORT, EXPORT_PREMIUM_LABEL } from '../utils/constants';
 
-const freeFeatures = ['Full resume builder', 'AI writing assistance', '3 PDF exports', 'Classic template', 'Secure cloud storage'];
+// PHASE-5 CONTENT & TRUST: Free plan entitlement. The export quota copy is
+// sourced from the single source of truth in utils/constants.js (P1-4) so
+// every surface says the same thing: 3 exports (PDF/DOCX/TXT) per rolling
+// 24 hours, no watermark.
+const freeFeatures = ['Full resume builder', 'AI writing assistance', EXPORT_FREE_SHORT, '10 free templates', 'Secure cloud storage'];
 
 export const PricingPage = () => {
-  const { isAuthenticated, premium } = useAuth();
+  const { isAuthenticated, premium, user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState('');
+  // PAY-4: ref guard against double-click creating two Razorpay orders.
+  // `disabled={loading}` only takes effect after React commits the re-render,
+  // so two clicks in the same tick would both pass the guard and each call
+  // createPayment(). The ref is synchronous and closes the race.
+  const orderInFlight = useRef(false);
 
   const handleUpgrade = async () => {
     if (!isAuthenticated) { navigate('/register'); return; }
+    if (orderInFlight.current) return; // PAY-4: double-click guard
+    orderInFlight.current = true;
     setLoading(true);
     setError('');
 
+    // PAY-1: pass the signed-in user's profile so Razorpay Checkout pre-fills
+    // name/email/contact and skips the "enter mobile number" step. The phone
+    // is only included if the user actually set one (signup does not require
+    // it); if absent, Razorpay asks for it during checkout.
     initiatePayment(
       // onSuccess — redirect to callback page
       () => {
+        orderInFlight.current = false;
         window.location.href = '/payment/callback';
       },
-      // onFailure — show error
+      // onFailure — show error, re-enable the button
       (errMsg) => {
+        orderInFlight.current = false;
         setError(errMsg || 'Payment failed. Please try again.');
         setLoading(false);
-      }
+      },
+      // userProfile for prefill
+      { id: user?.id, name: user?.name, email: user?.email, phone: user?.phone }
     );
   };
 
@@ -81,6 +100,13 @@ export const PricingPage = () => {
                 <span className="text-5xl font-display font-semibold text-ink-950">₹749</span>
                 <span className="text-ink-400 mb-1">/one-time</span>
               </div>
+              {/* PAY-2: GST disclosure. OWNER DECISION: whether ₹749 is tax-
+                  inclusive or tax-exclusive. The safest consumer-friendly
+                  option (and the default Razorpay India checkout displays) is
+                  tax-inclusive, so the headline price is what the user pays.
+                  If the business is NOT GST-registered or prices tax-exclusive,
+                  change this copy and verify the checkout total. */}
+              <p className="mt-1 text-xs text-ink-400">Inclusive of all taxes (GST).</p>
               <p className="mt-2 text-sm text-ink-400">Pay once. Unlimited access forever.</p>
             </div>
             <ul className="space-y-3 mb-8">
@@ -149,7 +175,10 @@ export const PricingPage = () => {
 
         {/* Trust signals */}
         <div className="mt-12 flex flex-wrap justify-center gap-6 text-sm text-ink-400">
-          {['Secure payment via Razorpay', 'No subscription — pay once', 'Instant activation', '30-day support guarantee'].map((t) => (
+          {/* PAY-5: aligned with the Refund Policy page (7-day refund window)
+              and Terms. The old "30-day support guarantee" contradicted the
+              refund policy's 7-day eligibility. */}
+          {['Secure payment via Razorpay', 'No subscription — pay once', 'Instant activation', '7-day refund window'].map((t) => (
             <span key={t} className="flex items-center gap-2">
               <Icon name="check" className="h-4 w-4 text-success-600" />{t}
             </span>
@@ -164,12 +193,22 @@ export const PricingPage = () => {
               { q: 'Is this a subscription?', a: 'No. It\'s a one-time payment. Pay once, use forever.' },
               { q: 'What payment methods are accepted?', a: 'We use Razorpay which accepts all major credit/debit cards, UPI, net banking, and wallets.' },
               { q: 'When does premium activate?', a: 'Immediately after payment is confirmed — usually within seconds.' },
-              { q: 'Can I get a refund?', a: 'Contact us within 30 days if you have any issues and we\'ll make it right.' },
+              { q: 'Can I get a refund?', a: 'You can request a refund within 7 days of purchase if Premium didn\'t work as described and our support team couldn\'t resolve it. See our Refund Policy for full details.' },
+              { q: 'Is GST included in the price?', a: 'Yes — ₹749 is inclusive of all taxes (GST). No hidden charges.' },
             ].map(({ q, a }) => (
-              <details key={q} className="card group">
-                <summary className="flex cursor-pointer items-center justify-between p-4 text-sm font-semibold text-ink-950 list-none">
-                  {q}
-                  <Icon name="chevronDown" className="h-4 w-4 text-ink-400 transition-transform group-open:rotate-180 shrink-0 ml-3" />
+              // PAY-5: native <details>/<summary> are keyboard accessible by
+              // default (Enter/Space toggles), but list-none + the flex layout
+              // hid the default disclosure triangle and the summary wasn't
+              // focus-visible. Added role/aria + focus ring so keyboard users
+              // get a clear focus indicator and screen readers announce the
+              // toggle state.
+              <details key={q} className="card group" name="payment-faq">
+                <summary
+                  className="flex cursor-pointer items-center justify-between p-4 text-sm font-semibold text-ink-950 list-none rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  tabIndex={0}
+                >
+                  <span>{q}</span>
+                  <Icon name="chevronDown" className="h-4 w-4 text-ink-400 transition-transform group-open:rotate-180 shrink-0 ml-3" aria-hidden="true" />
                 </summary>
                 <div className="px-4 pb-4 text-sm text-ink-500 border-t border-surface-100 pt-3">{a}</div>
               </details>

@@ -1,4 +1,8 @@
-﻿import { memo } from 'react';
+import { memo } from 'react';
+
+// PHASE-2d/2e: added chevronUp (reorder move-up + undo button) and alert
+// (save-status indicators). These were referenced by the new ReorderButtons
+// and the BuilderLayout status banner but did not exist in the icon set.
 
 const strokeIcon = (paths, extras = {}) => {
   const C = (p) => (
@@ -17,7 +21,9 @@ const icons = {
   warning: strokeIcon(<><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><path d="M12 9v4" /><path d="M12 17h.01" /></>),
   arrowRight: strokeIcon(<><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></>),
   chevronDown: strokeIcon(<path d="m6 9 6 6 6-6" />),
+  chevronUp: strokeIcon(<path d="m18 15-6-6-6 6" />),
   chevronRight: strokeIcon(<path d="m9 18 6-6-6-6" />),
+  alert: strokeIcon(<><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><path d="M12 9v4" /><path d="M12 17h.01" /></>),
   close: strokeIcon(<><path d="M18 6 6 18" /><path d="m6 6 12 12" /></>),
   plus: strokeIcon(<><path d="M5 12h14" /><path d="M12 5v14" /></>),
   trash: strokeIcon(<><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><path d="M10 11v6" /><path d="M14 11v6" /></>),

@@ -123,7 +123,18 @@ const getMeta = (path) => {
   if (PAGE_META[path]) return PAGE_META[path];
   const prefix = Object.entries(PAGE_META).find(([k]) =>
     k !== '/' && (path === k || path.startsWith(`${k}/`)));
-  return prefix ? prefix[1] : PAGE_META['/'];
+  if (prefix) return prefix[1];
+  // PHASE-6a: unmatched paths (soft 404 — the SPA catch-all rewrite serves
+  // index.html with HTTP 200, and React Router renders NotFoundPage). Mark
+  // these noindex so search engines do not index soft-404 URLs. The static
+  // public/404.html exists for Vercel to serve when no rewrite matches, but
+  // the SPA catch-all means unknown paths get 200 + NotFoundPage — the
+  // noindex here is the actual indexing guard.
+  return {
+    title: `404 — Page not found – ${APP_NAME}`,
+    description: 'This page does not exist.',
+    noIndex: true,
+  };
 };
 
 export const useSeoMeta = () => {

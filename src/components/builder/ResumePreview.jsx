@@ -3,7 +3,8 @@ import { DEFAULT_SECTIONS_CONFIG } from '../../utils/constants';
 import { buildTransformed } from '../../utils/transformResume';
 import { getPageMargin, getPageSize } from '../../utils/pageLayout';
 import { computePageStarts } from '../../utils/previewPagination';
-import { getResumeTypographyProps } from '../../utils/resumeTypography';
+import { getResumeTypographyProps, getResumeTypographyCss, getBundledFontFamily, normaliseFontFamily } from '../../utils/resumeTypography';
+import { ensureBundledFontLoaded } from '../../fonts/index.js';
 import { OrbitalBlink } from '../common/OrbitalBlink';
 import {
   ModernProTemplate,
@@ -59,7 +60,12 @@ const PAGE_GAP = 16; // px between simulated sheets, at true (unscaled) size
 const A4Viewer = ({ children, margin, size, onPagesChange }) => {
   const shellRef   = useRef(null);
   const measureRef = useRef(null);
-  const [scale, setScale] = useState(1);
+  // PHASE-3a: zoom controls. 'fit' = auto-scale to frame width (default,
+  // preserves existing behavior). '75' / '100' / '125' = fixed scale factors
+  // that do NOT auto-fit — the page may overflow horizontally and the frame
+  // scrolls (overflow-x: auto) instead of clipping.
+  const [zoomMode, setZoomMode] = useState('fit');
+  const [fitScale, setFitScale] = useState(1);
   const { w: pageW, h: pageH, name: pageName } = size;
   const [rawH,  setRawH]  = useState(pageH);
   const [pageStarts, setPageStarts] = useState(null);
@@ -71,9 +77,16 @@ const A4Viewer = ({ children, margin, size, onPagesChange }) => {
     const shell   = shellRef.current;
     const measure = measureRef.current;
     if (!shell || !measure) return;
-    const aw = shell.clientWidth - 32;
+    // Scale from the frame's INNER width (content box), not its border box:
+    // read the real horizontal padding instead of assuming the 16px inline
+    // value, so the sheet always fits exactly inside the frame's content area
+    // and can never be clipped on the right. clientWidth includes padding but
+    // excludes the scrollbar, which is exactly the width available to content.
+    const cs   = getComputedStyle(shell);
+    const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+    const aw   = shell.clientWidth - padX;
     if (aw <= 0) return;
-    setScale(aw / pageW);
+    setFitScale(aw / pageW);
     setRawH(measure.getBoundingClientRect().height);
     // Element-aware page boundaries (whole atomic blocks, never a sliced
     // line) — see utils/previewPagination.js. Falls back to null (uniform
@@ -95,6 +108,11 @@ const A4Viewer = ({ children, margin, size, onPagesChange }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size]);
 
+  // PHASE-3a: resolve the effective scale from the zoom mode.
+  const scale = zoomMode === 'fit'
+    ? fitScale
+    : { '75': 0.75, '100': 1, '125': 1.25 }[zoomMode] ?? fitScale;
+
   const numPages = (pageStarts && pageStarts.length > 0)
     ? pageStarts.length
     : Math.max(1, Math.ceil(rawH / visibleH));
@@ -103,13 +121,41 @@ const A4Viewer = ({ children, margin, size, onPagesChange }) => {
 
   useEffect(() => { onPagesChange?.(numPages); }, [numPages, onPagesChange]);
 
+  const ZOOM_OPTIONS = [
+    { value: 'fit',  label: 'Fit' },
+    { value: '75',   label: '75%' },
+    { value: '100',  label: '100%' },
+    { value: '125',  label: '125%' },
+  ];
+
   return (
-    <div ref={shellRef} className="w-full rounded-xl" style={{ background: '#475569', padding: '16px' }}>
-      <div className="flex items-center justify-between mb-3">
+    <div ref={shellRef} className="w-full rounded-xl" style={{ background: '#475569', padding: '16px', overflowX: 'auto' }}>
+      <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
         <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-widest">{pageName} Preview</span>
-        <span className="rounded-full bg-slate-700 px-2.5 py-0.5 text-[10px] font-medium text-slate-300">
-          {numPages} {numPages === 1 ? 'page' : 'pages'}
-        </span>
+        <div className="flex items-center gap-2">
+          {/* PHASE-3a: zoom controls */}
+          <div className="flex items-center gap-0.5 rounded-lg bg-slate-700 p-0.5" role="group" aria-label="Preview zoom">
+            {ZOOM_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setZoomMode(opt.value)}
+                className={`px-2 py-1 text-[10px] font-medium rounded transition-colors ${
+                  zoomMode === opt.value
+                    ? 'bg-slate-900 text-white'
+                    : 'text-slate-300 hover:text-white'
+                }`}
+                aria-pressed={zoomMode === opt.value}
+                aria-label={`Zoom ${opt.label}`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          <span className="rounded-full bg-slate-700 px-2.5 py-0.5 text-[10px] font-medium text-slate-300">
+            {numPages} {numPages === 1 ? 'page' : 'pages'}
+          </span>
+        </div>
       </div>
 
       {/* Hidden measurement copy — full, unsliced content at true width and
@@ -178,6 +224,16 @@ export const ResumePreview = ({ resume, template = 'modern' }) => {
 
   useEffect(() => { setActive(template); }, [template]);
 
+  // Lazy-load ONLY the bundled metric-compatible font for the selected family
+  // (the default `template` loads nothing). When it finishes, the measurement
+  // node's ResizeObserver re-runs pagination, so the preview repaginates with
+  // the real metrics — the same metrics the PDF will embed.
+  const fontFamily = normaliseFontFamily(resume?.fontFamily);
+  useEffect(() => {
+    const bundled = getBundledFontFamily(fontFamily);
+    if (bundled) ensureBundledFontLoaded(bundled);
+  }, [fontFamily]);
+
   if (!resume) {
     return (
       <div className="flex flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-12 gap-4">
@@ -218,12 +274,17 @@ export const ResumePreview = ({ resume, template = 'modern' }) => {
     finance:       <FinanceTemplate        data={td} />,
   };
 
+  const typography = getResumeTypographyProps(resume.fontFamily, resume.fontSize);
+  const typographyCss = getResumeTypographyCss(resume.fontFamily);
+
   const content = (
-    // Resume-only typography wrapper (font family + size). The CSS rules in
-    // index.css are scoped to `.resume-typography .resume-template`, so this
-    // can never leak into the application UI. The same wrapper is applied by
-    // the PDF handler, which is what keeps preview and export identical.
-    <div {...getResumeTypographyProps(resume.fontFamily, resume.fontSize)}>
+    // Resume-only typography wrapper (font family + size). The family CSS is
+    // generated from the same module the PDF handler uses (single source of
+    // truth) and scoped to `.resume-typography[data-font-family]`, so it can
+    // never leak into the application UI. The same wrapper is applied by the
+    // PDF handler, which is what keeps preview and export identical.
+    <div {...typography}>
+      {typographyCss ? <style>{typographyCss}</style> : null}
       {renders[active] || renders.modern}
     </div>
   );

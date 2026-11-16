@@ -13,7 +13,28 @@ import { Alert } from '../common/Alert';
 import { Loader } from '../common/Loader';
 import { Icon } from '../icons/Icon';
 import { formatApiError, prettyDate } from '../../utils/helpers';
-import { FREE_EXPORT_LIMIT } from '../../utils/constants';
+import { FREE_EXPORT_LIMIT, EXPORT_FREE_FULL, EXPORT_PREMIUM_LABEL } from '../../utils/constants';
+// P1-1: pre-export validation gate — blocks export and names the offending
+// field(s) instead of generating a file with "not-an-email" / invalid URLs.
+import { validateResume } from '../../utils/resumeValidation.js';
+// PHASE-4c: pull the live resume from the shared editor context so we can
+// compute the standardized download filename (<Full_Name>_<Role>_Resume.<ext>).
+import { useResumeEditorContext } from '../../context/ResumeEditorContext';
+
+// P1-1: human-readable labels for the validation error paths returned by
+// validateResume(). Keys are the top-level field name (before any dotted
+// index, e.g. 'experience' from 'experience.0.startDate').
+const VALIDATION_FIELD_LABELS = {
+  email: 'Email',
+  phone: 'Phone',
+  linkedin: 'LinkedIn URL',
+  github: 'GitHub URL',
+  portfolio: 'Portfolio URL',
+  experience: 'Experience date',
+  education: 'Education date',
+  projects: 'Project URL',
+  certifications: 'Certification URL',
+};
 
 export const ExportPanel = ({
   resumeId,
@@ -23,6 +44,10 @@ export const ExportPanel = ({
   refreshStatuses,
 }) => {
   const navigate = useNavigate();
+  // PHASE-4c: the live resume object (same instance the preview renders).
+  // Used only to compute the download filename — never to mutate state.
+  const editorCtx = useResumeEditorContext();
+  const resume = editorCtx?.resume;
 
   const [loading,    setLoading]    = useState(false);
   // BUG-006 FIX: This was previously a hardcoded literal —
@@ -76,6 +101,19 @@ export const ExportPanel = ({
       setShowUpsell(true);
       return;
     }
+    // P1-1: block export while validation errors exist. Name the offending
+    // field(s) so the user knows exactly what to fix. This is the gate the
+    // brief required — invalid email/phone/URLs never make it into the file.
+    if (resume) {
+      const { errors, hasErrors } = validateResume(resume);
+      if (hasErrors) {
+        setVariant('error');
+        const firstKey = Object.keys(errors)[0];
+        const fieldLabel = VALIDATION_FIELD_LABELS[firstKey.split('.')[0]] || firstKey;
+        setMessage(`Fix ${fieldLabel} before exporting: ${errors[firstKey]}`);
+        return;
+      }
+    }
     setLoading(true);
     setVariant('info');
     setMessage(format === 'pdf' ? 'Generating PDF…' : format === 'docx' ? 'Generating DOCX…' : 'Generating TXT…');
@@ -104,9 +142,11 @@ export const ExportPanel = ({
       // FIX 6: recordExport backend requires @NotBlank format field.
       // Previously sent only { resumeId } causing 400 validation error.
       await recordExport({ resumeId, format: format.toUpperCase() });
-      if (format === 'pdf')  await Promise.race([downloadResumePdf(resumeId),  timeoutPromise]);
-      if (format === 'docx') await Promise.race([downloadResumeDocx(resumeId), timeoutPromise]);
-      if (format === 'txt')  await Promise.race([downloadResumeTxt(resumeId),  timeoutPromise]);
+      // PHASE-4c: pass the live `resume` so the download filename is
+      // standardized as <Full_Name>_<Role>_Resume.<ext>.
+      if (format === 'pdf')  await Promise.race([downloadResumePdf(resumeId, resume),  timeoutPromise]);
+      if (format === 'docx') await Promise.race([downloadResumeDocx(resumeId, resume), timeoutPromise]);
+      if (format === 'txt')  await Promise.race([downloadResumeTxt(resumeId, resume),  timeoutPromise]);
       await refreshStatuses?.();
       setVariant('success');
       setMessage(`${format.toUpperCase()} downloaded successfully.`);
@@ -183,6 +223,16 @@ export const ExportPanel = ({
 
         {/* Download buttons */}
         <div className="space-y-2">
+          {/* P1-4: quota copy sourced from the single source of truth in
+              utils/constants.js so this panel, the homepage, pricing, the
+              dashboard and the FAQ all say the same thing. */}
+          <div className="rounded-lg bg-surface-50 border border-surface-200 px-3 py-2 text-xs text-ink-500">
+            {premium?.isPremium ? (
+              <span>{EXPORT_PREMIUM_LABEL} with Premium.</span>
+            ) : (
+              <span>{EXPORT_FREE_FULL}</span>
+            )}
+          </div>
           <button type="button"
             onClick={() => handleExport('pdf')}
             disabled={loading}

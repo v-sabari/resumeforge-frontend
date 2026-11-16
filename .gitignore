@@ -52,3 +52,10 @@ coverage
 # ── Misc ─────────────────────────────────────────────────
 *.tsbuildinfo
 .cache
+
+# QA / build artifacts (do not commit)
+_*.pdf
+_*.png
+qa-artifacts/
+vercel.zip
+*.log

@@ -77,8 +77,8 @@ export const TemplatesPage = () => {
       <div className="text-center mb-10">
         <h1 className="text-3xl sm:text-4xl font-bold text-ink-900 mb-3">Resume Templates</h1>
         <p className="text-ink-500 max-w-2xl mx-auto">
-          Choose from {RESUME_TEMPLATES.length} professionally designed, ATS-optimised templates.
-          {' '}{freeCount} free templates to get started, or upgrade to Premium for all {premiumCount} templates.
+          {' '}Choose from {RESUME_TEMPLATES.length} professionally designed, ATS-optimised templates.
+          {' '}{freeCount} free templates to get started, or upgrade to Premium for all {RESUME_TEMPLATES.length} templates.
         </p>
       </div>
 

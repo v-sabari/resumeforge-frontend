@@ -1,0 +1,99 @@
+{
+  "title": "Finance repro",
+  "fontFamily": "times",
+  "fontSize": 7.5,
+  "fullName": "Sabari V",
+  "professionalTitle": "Financial Analyst",
+  "email": "sabari.v@example.com",
+  "phone": "+91 98765 43210",
+  "location": "Chennai, India",
+  "linkedin": "linkedin.com/in/sabariv",
+  "github": "github.com/sabariv",
+  "portfolio": "sabariv.dev",
+  "summary": "Financial analyst with six years of experience building forecasting models, managing month-end close, and partnering with operations to improve margin. Skilled at translating large datasets into board-ready reporting, automating recurring reconciliations, and tightening internal controls across multi-entity structures. Comfortable owning the full reporting cycle from raw ledgers through variance analysis and commentary for senior leadership.",
+  "skills": [
+    "Financial modelling",
+    "Forecasting & budgeting",
+    "Variance analysis",
+    "Month-end close",
+    "Management reporting",
+    "Power BI & Tableau",
+    "Advanced Excel (VBA)",
+    "SQL & data warehousing",
+    "IFRS & GAAP reporting",
+    "Internal controls",
+    "Process automation",
+    "Stakeholder communication"
+  ],
+  "experience": [
+    {
+      "id": "exp-1",
+      "role": "Senior Financial Analyst",
+      "company": "Northstar Capital Partners",
+      "location": "Chennai, India",
+      "employmentType": "Full-time",
+      "startDate": "03/2021",
+      "endDate": "Present",
+      "summary": "Own the quarterly forecast and monthly management reporting pack for a portfolio of eleven operating entities, presenting results and variance commentary directly to the CFO and audit committee.",
+      "bullets": [
+        "Rebuilt the rolling twelve-month forecast in Power BI and SQL, cutting the reporting cycle from nine days to three and eliminating manual spreadsheet reconciliation.",
+        "Introduced a driver-based margin model that surfaced 4.2m of recoverable cost across procurement and logistics, adopted by the group finance function.",
+        "Led the migration of statutory reporting to a consolidated IFRS basis, coordinating external auditors and closing eleven legacy control gaps."
+      ]
+    },
+    {
+      "id": "exp-2",
+      "role": "Financial Analyst",
+      "company": "Meridian Retail Group",
+      "location": "Bengaluru, India",
+      "employmentType": "Full-time",
+      "startDate": "07/2018",
+      "endDate": "02/2021",
+      "summary": "Supported budgeting, cost accounting, and commercial analysis for a retail network of 140 stores.",
+      "bullets": [
+        "Automated the weekly store-level flash report, replacing a manual process and freeing two days of analyst time each week.",
+        "Partnered with category managers to model promotional ROI, improving contribution margin on the top forty SKUs by 180 basis points."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-1",
+      "name": "Group Consolidation Dashboard",
+      "role": "Lead analyst",
+      "techStack": "Power BI, SQL Server, DAX",
+      "description": "A single reporting layer consolidating eleven entities with automated eliminations, drill-through to journal level, and a board pack exported on demand.",
+      "highlights": [
+        "Reduced consolidation time from five days to under one, with a full audit trail for every adjustment."
+      ]
+    },
+    {
+      "id": "proj-2",
+      "name": "Working Capital Optimisation",
+      "role": "Analyst",
+      "techStack": "Excel, Python, SQL",
+      "description": "Cash-conversion model that identified payment-terms and inventory opportunities across the supply chain.",
+      "highlights": [
+        "Released 6.8m of working capital within two quarters through negotiated terms and demand-based replenishment."
+      ]
+    }
+  ],
+  "education": [
+    { "id": "edu-1", "degree": "B.Com", "field": "Accounting & Finance", "institution": "University of Madras", "startDate": "2014", "endDate": "2017", "gpa": "8.4/10" }
+  ],
+  "certifications": [],
+  "achievements": [],
+  "languages": [],
+  "customSections": {},
+  "sectionsConfig": [
+    { "id": "basics", "key": "basics", "label": "Basics", "visible": true },
+    { "id": "summary", "key": "summary", "label": "Executive Profile", "visible": true },
+    { "id": "skills", "key": "skills", "label": "Core Competencies", "visible": true },
+    { "id": "experience", "key": "experience", "label": "Professional Experience", "visible": true },
+    { "id": "projects", "key": "projects", "label": "Key Projects", "visible": true },
+    { "id": "education", "key": "education", "label": "Education", "visible": true },
+    { "id": "certifications", "key": "certifications", "label": "Certifications", "visible": false },
+    { "id": "achievements", "key": "achievements", "label": "Achievements", "visible": false },
+    { "id": "languages", "key": "languages", "label": "Languages", "visible": false }
+  ]
+}

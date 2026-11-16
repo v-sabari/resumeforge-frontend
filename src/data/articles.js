@@ -5,12 +5,12 @@ export const ARTICLES = [
   // ── 1 ──────────────────────────────────────────────────────────────────────
   {
     slug: 'how-to-write-ats-resume',
-    title: 'How to Write an ATS-Friendly Resume in 2025',
+    title: 'How to Write an ATS-Friendly Resume in 2026',
     excerpt:
       'Most resumes are rejected before a human ever reads them. Learn exactly how Applicant Tracking Systems work and how to structure your resume to pass every ATS filter.',
     category: 'Resume Tips',
     readTime: '10 min read',
-    date: 'March 2025',
+    date: 'March 2026',
     content: `
 ## What is an ATS and Why Does It Matter?
 
@@ -172,12 +172,12 @@ Run your resume through ResumeForge AI's ATS Score tool to get an instant keywor
   // ── 2 ──────────────────────────────────────────────────────────────────────
   {
     slug: 'resume-action-verbs-list',
-    title: '200+ Resume Action Verbs That Get You Hired (2025 List)',
+    title: '200+ Resume Action Verbs That Get You Hired (2026 List)',
     excerpt:
       'Weak verbs like "responsible for" and "helped with" bury your accomplishments. This complete list of power action verbs transforms passive job descriptions into compelling achievements.',
     category: 'Resume Tips',
     readTime: '8 min read',
-    date: 'March 2025',
+    date: 'March 2026',
     content: `
 ## Why Action Verbs Are the Single Most Important Word Choice on Your Resume
 
@@ -364,7 +364,7 @@ The verbs are the starting point. The numbers and outcomes are what make them cr
       'Many job seekers confuse resumes and CVs — and send the wrong document. Here is exactly when to use each one and how they differ by country, industry, and role.',
     category: 'Career Advice',
     readTime: '7 min read',
-    date: 'February 2025',
+    date: 'February 2026',
     content: `
 ## The Core Difference Between a Resume and a CV
 
@@ -528,12 +528,12 @@ A CV can be used largely as-is across applications (with cover letter adjustment
   // ── 4 ──────────────────────────────────────────────────────────────────────
   {
     slug: 'gaps-in-employment-resume',
-    title: 'How to Handle Employment Gaps on Your Resume (2025 Guide)',
+    title: 'How to Handle Employment Gaps on Your Resume (2026 Guide)',
     excerpt:
       'Employment gaps are more common than ever. Here is how to address them honestly on your resume without sabotaging your chances — including real examples that work.',
     category: 'Career Advice',
     readTime: '9 min read',
-    date: 'April 2025',
+    date: 'April 2026',
     content: `
 ## Employment Gaps Are More Normal Than You Think
 
@@ -633,7 +633,7 @@ The structure for a verbal gap explanation is: acknowledge it briefly, explain i
 
 Practice this until it sounds natural and confident. Hesitation or excessive apology signals that you are not comfortable with the gap, which makes the interviewer less comfortable with it too.
 
-## What Recruiters Actually Think About Gaps in 2025
+## What Recruiters Actually Think About Gaps in 2026
 
 Most experienced recruiters understand that careers are not linear. The questions they are actually trying to answer when they see a gap are:
 
@@ -677,12 +677,12 @@ ResumeForge AI helps you write a professional summary and bullet points that put
   // ── 5 ──────────────────────────────────────────────────────────────────────
   {
     slug: 'linkedin-profile-tips',
-    title: 'LinkedIn Profile Tips: How to Get Found by Recruiters in 2025',
+    title: 'LinkedIn Profile Tips: How to Get Found by Recruiters in 2026',
     excerpt:
       'Over 95% of recruiters use LinkedIn to find candidates. This guide shows you exactly how to optimise your headline, About section, and experience to rank higher in recruiter searches.',
     category: 'LinkedIn',
     readTime: '10 min read',
-    date: 'April 2025',
+    date: 'April 2026',
     content: `
 ## Why Your LinkedIn Profile Is Your Most Important Career Asset
 
@@ -864,14 +864,14 @@ ResumeForge AI's LinkedIn Optimiser generates a keyword-rich headline and About 
   // ── 6 ──────────────────────────────────────────────────────────────────────
   {
     slug: 'how-to-write-cover-letter',
-    title: 'How to Write a Cover Letter That Gets Read (2025 Guide)',
+    title: 'How to Write a Cover Letter That Gets Read (2026 Guide)',
     excerpt:
       'Most cover letters are generic and ignored. This guide shows you the exact structure that hiring managers respond to — with examples for fresh graduates and experienced professionals.',
     category: 'Cover Letters',
     readTime: '9 min read',
-    date: 'April 2025',
+    date: 'April 2026',
     content: `
-## Do Cover Letters Still Matter in 2025?
+## Do Cover Letters Still Matter in 2026?
 
 The honest answer is: it depends — but when they matter, they really matter.
 
@@ -1018,7 +1018,7 @@ ResumeForge AI's Cover Letter Generator creates a role-specific, three-paragraph
       'Remote job applications are 3x more competitive than office roles. Here is how to signal remote-readiness, self-management skills, and async communication ability on your resume.',
     category: 'Resume Tips',
     readTime: '8 min read',
-    date: 'May 2025',
+    date: 'May 2026',
     content: `
 ## Why Remote Job Applications Are Different
 
@@ -1205,12 +1205,12 @@ ResumeForge AI tailors your resume for remote roles, generating bullet points th
   // ── 8 ──────────────────────────────────────────────────────────────────────
   {
     slug: 'interview-preparation-guide',
-    title: 'How to Prepare for a Job Interview: The Complete 2025 Guide',
+    title: 'How to Prepare for a Job Interview: The Complete 2026 Guide',
     excerpt:
       'Most candidates wing their interview preparation and it shows. This step-by-step guide covers STAR method, company research, salary negotiation, and the questions you must prepare answers for.',
     category: 'Interviews',
     readTime: '12 min read',
-    date: 'May 2025',
+    date: 'May 2026',
     content: `
 ## Why Most Interview Preparation Fails
 

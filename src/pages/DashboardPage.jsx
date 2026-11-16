@@ -8,7 +8,7 @@ import { EmptyState } from '../components/common/EmptyState';
 import { Loader } from '../components/common/Loader';
 import { Icon } from '../components/icons/Icon';
 import { formatApiError, prettyDate, truncate } from '../utils/helpers';
-import { FREE_EXPORT_LIMIT } from '../utils/constants';
+import { FREE_EXPORT_LIMIT, EXPORT_QUOTA_WINDOW_LABEL } from '../utils/constants';
 
 const StatCard = ({ icon, label, value, sub, accent }) => (
   <div className={`card p-5 ${accent ? 'border-brand-200 bg-brand-50/50' : ''}`}>
@@ -145,7 +145,7 @@ export const DashboardPage = () => {
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard icon="text"     label="Resumes"         value={resumes.length}     sub="in your account" />
-        <StatCard icon="export"   label="Exports used"    value={exportsUsed}        sub={`of ${premium?.isPremium ? '∞' : FREE_EXPORT_LIMIT} available`} />
+        <StatCard icon="export"   label="Exports used"    value={exportsUsed}        sub={`of ${premium?.isPremium ? '∞' : FREE_EXPORT_LIMIT} (${EXPORT_QUOTA_WINDOW_LABEL})`} />
         <StatCard icon="zap"      label="Exports left"    value={exportsRemaining}   sub="remaining"       accent />
         <StatCard icon="crown"    label="Plan"
           value={premium?.isPremium ? 'Premium' : 'Free'}

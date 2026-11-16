@@ -7,6 +7,30 @@ export const APP_NAME          = import.meta.env.VITE_APP_NAME || 'ResumeForge A
 export const INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000;
 export const FREE_EXPORT_LIMIT     = 3;
 
+/* ── P1-4: single source of truth for export-quota copy ────────────────
+ *
+ * The backend (ExportQuotaService) enforces a ROLLING 24-hour window (not a
+ * calendar day) and counts ALL three formats (PDF, DOCX, TXT) against the
+ * free user's 3-export limit. Premium is unlimited. Failed renders do NOT
+ * count. No watermark is applied to free exports (verified in ExportService
+ * — there is no watermark code path).
+ *
+ * These constants centralise the wording so every surface (homepage,
+ * pricing, dashboard, builder export panel, FAQ, Terms) says the same thing
+ * instead of the four inconsistent variants that existed before. The
+ * timezone for "rolling 24h" is the server's (Render, UTC by default) — the
+ * reset is not at a local midnight, so copy deliberately says "per rolling
+ * 24 hours" rather than "per day" to avoid implying a midnight reset.
+ */
+export const EXPORT_QUOTA_WINDOW_LABEL = 'per rolling 24 hours';
+export const EXPORT_FREE_FORMATS = 'PDF, DOCX, and TXT';
+export const EXPORT_FREE_SHORT   = `${FREE_EXPORT_LIMIT} free exports ${EXPORT_QUOTA_WINDOW_LABEL}`;
+export const EXPORT_FREE_FULL    =
+  `${FREE_EXPORT_LIMIT} free exports (${EXPORT_FREE_FORMATS}) ${EXPORT_QUOTA_WINDOW_LABEL}. ` +
+  `Failed downloads don't count. No watermark.`;
+export const EXPORT_PREMIUM_LABEL = 'Unlimited exports (PDF, DOCX, TXT)';
+export const EXPORT_FREE_WATERMARKED = false; // free exports are NOT watermarked
+
 export const defaultResume = {
   fullName: '', professionalTitle: '', email: '', phone: '',
   location: '', linkedin: '', github: '', portfolio: '',
@@ -15,14 +39,15 @@ export const defaultResume = {
   languages: [], customSections: {},
   sectionsConfig: null, // null → use DEFAULT_SECTIONS_CONFIG
   // Resume-only typography (see utils/resumeTypography.js). `template` keeps
-  // the design each template ships with; 10.5 is its native body size.
+  // the design each template ships with; the default size is the historical
+  // 10.5px base expressed in the UI's unit (pt) = 7.875pt, so new resumes keep
+  // their original size. Persisted in px (see services/resumeService.js).
   fontFamily: DEFAULT_FONT_FAMILY,
   fontSize: DEFAULT_FONT_SIZE,
 };
 
 export const premiumFeatures = [
-  'Unlimited PDF + DOCX exports',
-  'No ad interruptions ever',
+  EXPORT_PREMIUM_LABEL,
   'All 20 resume templates (10 premium-exclusive)',
   'AI Cover Letter generation',
   'AI Resume Tailoring to job descriptions',

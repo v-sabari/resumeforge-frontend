@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/icons/Icon';
 import { PublicFeedbackSection } from '../components/feedback/PublicFeedbackSection';
-import { APP_NAME } from '../utils/constants';
+import { APP_NAME, EXPORT_FREE_SHORT, EXPORT_PREMIUM_LABEL } from '../utils/constants';
 
 /* ─── Static data ────────────────────────────────────────────────── */
 
@@ -24,7 +24,7 @@ const steps = [
 const faqs = [
   {
     q: 'Is ResumeForge AI free to use?',
-    a: 'Yes. You can create a full resume and export it free. Free accounts include 3 PDF downloads. Upgrade to Premium once for unlimited exports.',
+    a: `Yes. You can create a full resume and export it free. Free accounts include ${EXPORT_FREE_SHORT}. Upgrade to Premium once for unlimited exports.`,
   },
   {
     q: 'What makes ResumeForge AI different?',
@@ -75,6 +75,50 @@ const FaqSchema = () => {
   );
 };
 
+// ─── PHASE-6c: SoftwareApplication + Offer JSON-LD ───────────────────────────
+// Adds SoftwareApplication structured data to the homepage with two Offer
+// entries (free ₹0, premium ₹749 one-time). This enables Google to display
+// the app in software-rich-result carousels and surfaces pricing in search.
+// The ₹749 price matches the backend PremiumController and the frontend
+// UpsellModal — single source of truth for pricing copy.
+const AppSchema = () => {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: APP_NAME,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    description: `${APP_NAME} is an AI Resume Builder that helps you create ATS-friendly resumes, improve bullet points, tailor your content to job descriptions, and export a recruiter-ready PDF in minutes.`,
+    url: 'https://www.resumeforgeai.site',
+    offers: [
+      {
+        '@type': 'Offer',
+        name: 'Free Plan',
+        price: '0',
+        priceCurrency: 'INR',
+        description: `Full resume builder, AI writing assistance, ${EXPORT_FREE_SHORT}, 10 free templates.`,
+        url: 'https://www.resumeforgeai.site/pricing',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Premium (Lifetime)',
+        price: '749',
+        priceCurrency: 'INR',
+        description: `One-time payment. ${EXPORT_PREMIUM_LABEL}, all 20 templates, AI Cover Letter, AI Resume Tailoring, AI Interview Prep, ATS Pro Scan, Voice & Chat Resume Builder.`,
+        url: 'https://www.resumeforgeai.site/pricing',
+      },
+    ],
+    aggregateRating: undefined,
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+};
+
 // ─── Use Cases ─────────────────────────────────────────────────────────────────
 // FIX HIGH-01: Replaced fabricated TESTIMONIALS array with honest USE_CASES.
 // Changes made:
@@ -83,30 +127,32 @@ const FaqSchema = () => {
 //   - Replaced `quote` with `story` — framed as a use case, not a direct user quote
 //   - Added `outcome` — concrete result, more credible and indexable
 //   - StarRating component removed entirely
-const USE_CASES = [
+/* PHASE-5 CONTENT & TRUST:
+ * The previous USE_CASES array contained four fabricated personas (Priya S.,
+ * James T., Aditi R., Carlos M.) with concrete outcome claims — interview
+ * counts, recruiter quotes, "passed ATS parsing at two Fortune 500 portals".
+ * None of these were real users; the outcomes were invented. Per the brief,
+ * the section is replaced with a how-it-works block (3 factual steps with
+ * no fabricated names, quotes, or statistics). Real testimonials are a TODO.
+ */
+const HOW_IT_WORKS_STEPS = [
   {
-    name:    'Priya S.',
-    role:    'Software Engineer, Bengaluru',
-    story:   'Used AI bullet generation to rewrite 6 years of experience into ATS-ready points. Cut resume writing time from a weekend to under an hour.',
-    outcome: 'Targeted 3 roles; received 2 interview calls within 10 days.',
+    step:   '01',
+    title:  'Pick a template',
+    body:   'Choose from 20 ATS-friendly templates — 10 free, 10 premium. Every template is single-column-safe and parses cleanly through applicant tracking systems.',
+    icon:   'grid',
   },
   {
-    name:    'James T.',
-    role:    'Product Manager, London',
-    story:   'Rebuilt his resume from scratch using the modern template and AI summary tool after a 4-year gap at one company.',
-    outcome: 'Recruiter specifically commented on formatting clarity in the first call.',
+    step:   '02',
+    title:  'Fill with AI assistance',
+    body:   'Add your experience, skills, and education. Use AI bullet rewriting and job-description tailoring to strengthen your content without writing from scratch.',
+    icon:   'sparkles',
   },
   {
-    name:    'Aditi R.',
-    role:    'UX Designer, Mumbai',
-    story:   'Tailored separate resumes for product-focused vs agency roles using the multi-resume feature and job description matching.',
-    outcome: '5 interview invitations across 2 weeks of active applying.',
-  },
-  {
-    name:    'Carlos M.',
-    role:    'Data Analyst, São Paulo',
-    story:   'Exported a bilingual-friendly PDF using the plain-text export and reformatted for a Brazilian multinational application portal.',
-    outcome: 'PDF passed ATS parsing at two Fortune 500 portals without reformatting.',
+    step:   '03',
+    title:  'Preview and export',
+    body:   `Watch the live A4 preview update as you type. Export to PDF, DOCX, or plain text. Free plan includes ${EXPORT_FREE_SHORT}.`,
+    icon:   'export',
   },
 ];
 
@@ -119,37 +165,63 @@ const HeroSection = () => (
       <div className="absolute -bottom-16 -left-16 h-[220px] w-[220px] rounded-full bg-brand-100/40 blur-2xl" />
     </div>
     <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-      <div className="max-w-3xl">
-        <div className="badge-brand mb-6 inline-flex items-center gap-2 px-3 py-1">
-          <Icon name="sparkles" className="h-3.5 w-3.5" />
-          <span>AI Resume Builder</span>
+      {/* PHASE-5g: two-column hero. Left = copy + CTAs. Right = real product
+          screenshot (the Modern Pro template rendered with sample data,
+          exported as an optimized WebP from the existing
+          public/templates/modern.png asset). Explicit width/height attributes
+          prevent layout shift; alt text describes what the screenshot shows. */}
+      <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+        <div className="max-w-3xl">
+          <div className="badge-brand mb-6 inline-flex items-center gap-2 px-3 py-1">
+            <Icon name="sparkles" className="h-3.5 w-3.5" />
+            <span>AI Resume Builder</span>
+          </div>
+          <h1 className="hero-title">
+            AI Resume Builder to Create
+            <br />
+            <span className="gradient-text">ATS-Friendly Resumes</span>
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-500">
+            {APP_NAME} is an AI Resume Builder that helps you create ATS-friendly resumes, improve
+            bullet points, tailor your content to job descriptions, and export a recruiter-ready PDF
+            in minutes.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <Link to="/register" className="btn-primary btn-lg">
+              Build my resume — free
+              <Icon name="arrowRight" className="h-4 w-4" />
+            </Link>
+            <Link to="/tools" className="btn-secondary btn-lg">
+              Free resume tools
+            </Link>
+          </div>
+          <div className="mt-8 flex flex-wrap items-center gap-5 text-sm text-ink-400">
+            {['Free to start', 'No credit card', 'ATS optimised', EXPORT_FREE_SHORT].map((t) => (
+              <span key={t} className="flex items-center gap-1.5">
+                <Icon name="check" className="h-4 w-4 text-success-600" />
+                {t}
+              </span>
+            ))}
+          </div>
         </div>
-        <h1 className="hero-title">
-          AI Resume Builder to Create
-          <br />
-          <span className="gradient-text">ATS-Friendly Resumes</span>
-        </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-500">
-          {APP_NAME} is an AI Resume Builder that helps you create ATS-friendly resumes, improve
-          bullet points, tailor your content to job descriptions, and export a recruiter-ready PDF
-          in minutes.
-        </p>
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          <Link to="/register" className="btn-primary btn-lg">
-            Build my resume — free
-            <Icon name="arrowRight" className="h-4 w-4" />
-          </Link>
-          <Link to="/tools" className="btn-secondary btn-lg">
-            Free resume tools
-          </Link>
-        </div>
-        <div className="mt-8 flex flex-wrap items-center gap-5 text-sm text-ink-400">
-          {['Free to start', 'No credit card', 'ATS optimised', '3 free exports'].map((t) => (
-            <span key={t} className="flex items-center gap-1.5">
-              <Icon name="check" className="h-4 w-4 text-success-600" />
-              {t}
-            </span>
-          ))}
+        <div className="relative lg:pl-8">
+          {/* Product screenshot — Modern Pro template preview. WebP, 57KB,
+              640×905. Frame shadow + rounded corners give it a windowchrome
+              feel without misrepresenting the actual template output. */}
+          <div className="rounded-2xl border border-surface-200 bg-surface-50 p-3 shadow-xl">
+            <img
+              src="/hero-template.webp"
+              alt="Screenshot of the Modern Pro resume template rendered with sample data — single column, sans-serif headings, contact details at the top, experience and education sections below."
+              width={640}
+              height={905}
+              className="block w-full h-auto rounded-lg"
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+          <p className="mt-3 text-center text-xs text-ink-400">
+            Modern Pro template — one of 20 ATS-friendly designs included.
+          </p>
         </div>
       </div>
     </div>
@@ -215,25 +287,29 @@ const UseCasesSection = () => (
   <section className="bg-surface-50 py-16 sm:py-20">
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
-        <p className="kicker mb-2">Use cases</p>
+        <p className="kicker mb-2">How it works</p>
         <h2 className="text-3xl font-display font-semibold text-ink-950">
-          How people use ResumeForge AI
+          Build a resume in three steps
         </h2>
         <p className="mt-2 text-sm text-ink-400">
-          Illustrative use cases based on common outcomes.
+          No sign-up fee, no credit card. Start free, upgrade only if you need more.
         </p>
       </div>
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {USE_CASES.map(({ name, role, story, outcome }) => (
-          <div key={name} className="card p-6 flex flex-col gap-3">
-            <p className="flex-1 text-sm text-ink-600 leading-relaxed">{story}</p>
-            <p className="text-xs font-medium text-success-700 bg-success-50 rounded-lg px-3 py-2">
-              {outcome}
-            </p>
-            <div className="pt-2 border-t border-surface-100">
-              <p className="text-sm font-semibold text-ink-950">{name}</p>
-              <p className="text-xs text-ink-400 mt-0.5">{role}</p>
+      {/* TODO(real-testimonials): Replace this how-it-works block with real
+          user testimonials once we have collected verifiable reviews with
+          consent to publish. Until then, this section stays factual and
+          free of fabricated names, quotes, or outcome statistics. */}
+      <div className="grid gap-5 sm:grid-cols-3">
+        {HOW_IT_WORKS_STEPS.map(({ step, title, body, icon }) => (
+          <div key={step} className="card p-6 flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white">
+                <Icon name={icon} className="h-4 w-4" />
+              </span>
+              <span className="text-xs font-semibold text-ink-300 tracking-widest">{step}</span>
             </div>
+            <h3 className="text-base font-semibold text-ink-950">{title}</h3>
+            <p className="text-sm text-ink-600 leading-relaxed">{body}</p>
           </div>
         ))}
       </div>
@@ -326,7 +402,7 @@ const CtaSection = () => (
         Ready to build your resume?
       </h2>
       <p className="text-ink-500 text-lg mb-8 max-w-lg mx-auto">
-        Join thousands of job seekers using AI to write stronger resumes and land more interviews.
+        Start with a free account — build, preview, and export. Upgrade once for lifetime premium if you need more templates or unlimited exports.
       </p>
       <div className="flex flex-wrap justify-center gap-3">
         <Link to="/register" className="btn-primary btn-lg">
@@ -338,7 +414,7 @@ const CtaSection = () => (
         </Link>
       </div>
       <p className="mt-4 text-xs text-ink-400">
-        No credit card required · 3 free PDF exports · Cancel anytime
+        No credit card required · {EXPORT_FREE_SHORT}
       </p>
     </div>
   </section>
@@ -356,9 +432,15 @@ const CtaSection = () => (
 export const LandingPage = () => (
   <main>
     <FaqSchema />
+    {/* PHASE-6c: SoftwareApplication + Offer JSON-LD on the homepage */}
+    <AppSchema />
     <HeroSection />
     <FeaturesSection />
-    <StepsSection />
+    {/* P2-5: merged the two "How it works" sections into one. The old
+        StepsSection (kicker "How it works", step 1 "Create your account")
+        duplicated UseCasesSection and front-loaded the signup wall (P1-3).
+        UseCasesSection's 3-step flow (Add experience → Use AI → Preview and
+        export) is the guest-friendly framing, so it is the single source. */}
     <UseCasesSection />
     <PublicFeedbackSection />
     <ReferralSection />
