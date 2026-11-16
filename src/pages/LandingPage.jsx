@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/icons/Icon';
 import { PublicFeedbackSection } from '../components/feedback/PublicFeedbackSection';
-import { APP_NAME } from '../utils/constants';
+import { APP_NAME, EXPORT_FREE_SHORT, EXPORT_PREMIUM_LABEL } from '../utils/constants';
 
 /* ─── Static data ────────────────────────────────────────────────── */
 
@@ -24,7 +24,7 @@ const steps = [
 const faqs = [
   {
     q: 'Is ResumeForge AI free to use?',
-    a: 'Yes. You can create a full resume and export it free. Free accounts include 3 PDF downloads. Upgrade to Premium once for unlimited exports.',
+    a: `Yes. You can create a full resume and export it free. Free accounts include ${EXPORT_FREE_SHORT}. Upgrade to Premium once for unlimited exports.`,
   },
   {
     q: 'What makes ResumeForge AI different?',
@@ -96,7 +96,7 @@ const AppSchema = () => {
         name: 'Free Plan',
         price: '0',
         priceCurrency: 'INR',
-        description: 'Full resume builder, AI writing assistance, 3 PDF exports per day, 10 free templates.',
+        description: `Full resume builder, AI writing assistance, ${EXPORT_FREE_SHORT}, 10 free templates.`,
         url: 'https://www.resumeforgeai.site/pricing',
       },
       {
@@ -104,7 +104,7 @@ const AppSchema = () => {
         name: 'Premium (Lifetime)',
         price: '749',
         priceCurrency: 'INR',
-        description: 'One-time payment. Unlimited PDF + DOCX exports, all 20 templates, AI Cover Letter, AI Resume Tailoring, AI Interview Prep, ATS Pro Scan, Voice & Chat Resume Builder.',
+        description: `One-time payment. ${EXPORT_PREMIUM_LABEL}, all 20 templates, AI Cover Letter, AI Resume Tailoring, AI Interview Prep, ATS Pro Scan, Voice & Chat Resume Builder.`,
         url: 'https://www.resumeforgeai.site/pricing',
       },
     ],
@@ -151,7 +151,7 @@ const HOW_IT_WORKS_STEPS = [
   {
     step:   '03',
     title:  'Preview and export',
-    body:   'Watch the live A4 preview update as you type. Export to PDF, DOCX, or plain text. Free plan includes 3 PDF exports per day.',
+    body:   `Watch the live A4 preview update as you type. Export to PDF, DOCX, or plain text. Free plan includes ${EXPORT_FREE_SHORT}.`,
     icon:   'export',
   },
 ];
@@ -196,7 +196,7 @@ const HeroSection = () => (
             </Link>
           </div>
           <div className="mt-8 flex flex-wrap items-center gap-5 text-sm text-ink-400">
-            {['Free to start', 'No credit card', 'ATS optimised', '3 free exports'].map((t) => (
+            {['Free to start', 'No credit card', 'ATS optimised', EXPORT_FREE_SHORT].map((t) => (
               <span key={t} className="flex items-center gap-1.5">
                 <Icon name="check" className="h-4 w-4 text-success-600" />
                 {t}
@@ -414,7 +414,7 @@ const CtaSection = () => (
         </Link>
       </div>
       <p className="mt-4 text-xs text-ink-400">
-        No credit card required · 3 free PDF exports per day
+        No credit card required · {EXPORT_FREE_SHORT}
       </p>
     </div>
   </section>
@@ -436,7 +436,11 @@ export const LandingPage = () => (
     <AppSchema />
     <HeroSection />
     <FeaturesSection />
-    <StepsSection />
+    {/* P2-5: merged the two "How it works" sections into one. The old
+        StepsSection (kicker "How it works", step 1 "Create your account")
+        duplicated UseCasesSection and front-loaded the signup wall (P1-3).
+        UseCasesSection's 3-step flow (Add experience → Use AI → Preview and
+        export) is the guest-friendly framing, so it is the single source. */}
     <UseCasesSection />
     <PublicFeedbackSection />
     <ReferralSection />

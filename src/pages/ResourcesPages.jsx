@@ -1,6 +1,26 @@
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/icons/Icon';
 import {ARTICLES} from '../data/articles';
+
+/* P3: sort articles by date, newest first. The ARTICLES array in
+ * src/data/articles.js is in authoring order (not chronological), so the
+ * resources hub showed March before February before April. Parse the
+ * "Month YYYY" string into a comparable epoch and sort descending. */
+const MONTHS = { january:0, february:1, march:2, april:3, may:4, june:5,
+  july:6, august:7, september:8, october:9, november:10, december:11,
+  jan:0, feb:1, mar:2, apr:3, jun:5, jul:6, aug:7, sep:8, sept:8, oct:9, nov:10, dec:11 };
+const dateToEpoch = (s) => {
+  if (!s) return 0;
+  const m = String(s).match(/^([A-Za-z]+)\s+(\d{4})$/);
+  if (!m) return 0;
+  const mon = MONTHS[m[1].toLowerCase()];
+  if (mon == null) return 0;
+  return new Date(Number(m[2]), mon, 1).getTime();
+};
+const ARTICLES_BY_DATE_DESC = [...ARTICLES].sort(
+  (a, b) => dateToEpoch(b.date) - dateToEpoch(a.date)
+);
+
 /* ── Inline markdown renderer ──────────────────────────────────── */
 const renderInlineMarkdown = (text) => {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
@@ -34,7 +54,7 @@ export const ResourcesPage = () => (
     </div>
 
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {ARTICLES.map((article) => (
+      {ARTICLES_BY_DATE_DESC.map((article) => (
         <Link
           key={article.slug}
           to={`/resources/${article.slug}`}

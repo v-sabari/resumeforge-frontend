@@ -10,48 +10,22 @@ import { useState, useEffect, useRef } from 'react';
  *   • aria-invalid="true" when the field has a validation error.
  *   • Auto-prepends https:// to URL fields when missing.
  *
- * Validation rules:
- *   • email: must match a basic email regex (user@domain.tld).
- *   • phone: digits, +, spaces, dashes; 7-15 digits after stripping non-digits.
- *   • url: must start with http:// or https:// and have a valid domain.
- *
+ * Validation rules live in src/utils/resumeValidation.js (the single source
+ * of truth shared with the editor, preview, save payload and export gate).
  * Per the brief: invalid values DO NOT block autosave (Phase 1 autosave
  * continues to fire), but they MUST block export. The export-blocking is
- * implemented in ExportPanel via a pre-export validation pass that reads the
- * same validation helpers exported below.
+ * implemented in ExportPanel via validateResume().
  */
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_DIGITS_RE = /\d/g;
-const URL_RE = /^https?:\/\/[^\s]+\.[^\s]+/;
-
-export const isValidEmail = (v) => !v || EMAIL_RE.test(v);
-export const isValidPhone = (v) => {
-  if (!v) return true;
-  const digits = (v.match(PHONE_DIGITS_RE) || []).join('');
-  if (digits.length < 7 || digits.length > 15) return false;
-  // Allow digits, +, spaces, dashes, parentheses only
-  return /^[0-9+\-\s()]+$/.test(v);
-};
-export const isValidUrl = (v) => !v || URL_RE.test(v);
-
-/** Auto-prepend https:// to a URL string if it looks like a bare domain. */
-export const normalizeUrl = (v) => {
-  if (!v) return v;
-  const trimmed = v.trim();
-  if (!trimmed) return '';
-  if (/^https?:\/\//i.test(trimmed)) return trimmed;
-  // Don't prepend if it's clearly not a URL (e.g. just text)
-  if (/^[a-z0-9-]+(\.[a-z0-9-]+)+/i.test(trimmed)) return `https://${trimmed}`;
-  return trimmed;
-};
-
-export const validateField = (type, value) => {
-  if (type === 'email' && !isValidEmail(value)) return 'Enter a valid email address.';
-  if (type === 'tel'  && !isValidPhone(value)) return 'Enter a valid phone (7-15 digits, +/spaces/dashes allowed).';
-  if (type === 'url'  && !isValidUrl(value))   return 'Enter a valid URL (e.g. https://example.com).';
-  return '';
-};
+export {
+  EMAIL_RE,
+  URL_RE,
+  isValidEmail,
+  isValidPhone,
+  isValidUrl,
+  normalizeUrl,
+  validateField,
+} from '../../utils/resumeValidation.js';
 
 export const ValidatedInput = ({
   id,

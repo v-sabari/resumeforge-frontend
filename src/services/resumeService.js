@@ -5,6 +5,7 @@ import {
   fontSizeFromStoredPx,
   fontSizeToStoredPx,
 } from '../utils/resumeTypography.js';
+import { normalizeResumeUrls } from '../utils/resumeValidation.js';
 
 const safeJsonParse = (value, fallback = null) => {
   if (value == null || value === '') return fallback;
@@ -69,31 +70,35 @@ const computeResumeTitle = (resume) => {
 };
 
 export function toApiPayload(resume) {
+  // P1-1: normalize URL fields (trim + https://) at the save boundary so the
+  // server always receives canonical URLs. This matches what the preview
+  // renders (transformResume.js applies the same normalizeUrl).
+  const r = normalizeResumeUrls(resume);
   const s = (v) => { if (v==null) return null; if (typeof v==='string') return v; try{return JSON.stringify(v);}catch{return null;} };
   const personalInfo = {
-    fullName: resume.fullName||'', professionalTitle: resume.professionalTitle||'',
-    email: resume.email||'', phone: resume.phone||'', location: resume.location||'',
-    linkedin: resume.linkedin||'', github: resume.github||'', portfolio: resume.portfolio||'',
+    fullName: r.fullName||'', professionalTitle: r.professionalTitle||'',
+    email: r.email||'', phone: r.phone||'', location: r.location||'',
+    linkedin: r.linkedin||'', github: r.github||'', portfolio: r.portfolio||'',
   };
   return {
-    title:          computeResumeTitle(resume),
-    template:       resume.template ?? 'modern',
+    title:          computeResumeTitle(r),
+    template:       r.template ?? 'modern',
     personalInfo:   s(personalInfo),
-    summary:        resume.summary ?? null,
-    experience:     s(resume.experience),
-    education:      s(resume.education),
-    skills:         s(resume.skills),
-    projects:       s(resume.projects),
-    certifications: s(resume.certifications),
-    achievements:   s(resume.achievements),
-    languages:      s(resume.languages),
-    customSections: s(resume.customSections),
-    sectionsConfig: s(resume.sectionsConfig),
+    summary:        r.summary ?? null,
+    experience:     s(r.experience),
+    education:      s(r.education),
+    skills:         s(r.skills),
+    projects:       s(r.projects),
+    certifications: s(r.certifications),
+    achievements:   s(r.achievements),
+    languages:      s(r.languages),
+    customSections: s(r.customSections),
+    sectionsConfig: s(r.sectionsConfig),
     // Resume-only typography: persisted with the resume so export matches the
     // preview exactly. UI unit is pt; the API/stored unit is px — convert here.
     // Backend re-validates both (allow-list + 8.0–16.0px after V28).
-    fontFamily: normaliseFontFamily(resume.fontFamily),
-    fontSize:   fontSizeToStoredPx(resume.fontSize),
+    fontFamily: normaliseFontFamily(r.fontFamily),
+    fontSize:   fontSizeToStoredPx(r.fontSize),
   };
 }
 

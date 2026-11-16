@@ -52,9 +52,9 @@ export const BASE_FONT_SIZE_PT = pxToPt(BASE_FONT_SIZE_PX); // 7.875
  * MAX_FONT_SIZE is a single constant: it currently equals the backend's live
  * ceiling (13px = 9.75pt). Once migration V28 (16px) is confirmed live this is
  * raised to 12 (pt) in one line — see the deploy notes in the PR. */
-export const DEFAULT_FONT_SIZE = BASE_FONT_SIZE_PT; // 7.875pt (= legacy 10.5px)
+export const DEFAULT_FONT_SIZE = 9; // pt (= 12px). P2-4: raised from the legacy 7.875pt (10.5px) which was too small for print. New resumes now start at a readable 9pt; existing resumes keep their stored size.
 export const MIN_FONT_SIZE     = 7.5;               // pt
-export const MAX_FONT_SIZE     = 9.75;              // pt (= 13px, backend live ceiling)
+export const MAX_FONT_SIZE     = 12;                // pt (= 16px, backend ceiling after V28). P2-4: was 9.75pt (13px) — now matches the live @DecimalMax(16.0).
 export const FONT_SIZE_STEP    = 0.5;               // pt
 
 /* ── Readability guidance (advisory only) ─────────────────────────────────

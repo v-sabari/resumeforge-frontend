@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { createResume, getResumeById, updateResume } from '../services/resumeService';
 import { SectionCard } from '../components/builder/SectionCard';
@@ -44,6 +44,7 @@ const FieldGroup = ({ children }) => (
  */
 export function useResumeEditor(resumeId) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { premium, exportStatus, refreshExportStatus, refreshPremiumStatus } = useAuth();
 
   const [resume,      setResume]      = useState({ ...defaultResume, template: 'modern' });
@@ -252,10 +253,14 @@ export function useResumeEditor(resumeId) {
   // bounce-back-to-/app/builder/:id flow restores it. Manual save 401s
   // also surface a retryable error.
   const doSave = useCallback(async (isManual) => {
-    // Never save an empty resume — would create a meaningless "Untitled
-    // resume" record the user didn't ask for. Manual save with no content
-    // is a no-op (the Save button stays enabled, the user can keep typing).
-    if (!hasContent(resume)) {
+    // P0-2 FIX: only gate CREATE on hasContent. A brand-new resume with no
+    // content would create a meaningless "Untitled resume" record, so we skip
+    // the first autosave until the user types something. But an EXISTING
+    // resume (currentId set) must ALWAYS be saveable — clearing every field
+    // is a legitimate edit that must persist. Previously the hasContent gate
+    // applied to both create and update, so clearing all fields left the
+    // status stuck on "Editing…" forever and the server was never updated.
+    if (!currentId && !hasContent(resume)) {
       if (isManual) {
         setError('Add at least one field before saving.');
         setSaveFailed(false);
@@ -347,7 +352,9 @@ export function useResumeEditor(resumeId) {
    *
    * Fires when ALL of:
    *   • isDirty            — there is something to save
-   *   • hasContent(resume) — not an empty/untouched resume
+   *   • (!currentId ? hasContent : true) — new resumes need content before
+   *     the first create; existing resumes always save (P0-2: clearing all
+   *     fields must persist).
    *   • !saving            — not already saving (manual or autosave)
    *   • !needsReauth       — not suspended waiting for re-login
    *   • !autosaveInFlight  — defensive: never double-fire
@@ -359,7 +366,9 @@ export function useResumeEditor(resumeId) {
    */
   useEffect(() => {
     if (!isDirty) return;
-    if (!hasContent(resume)) return;
+    // P0-2 FIX: existing resumes always autosave (even when cleared); only
+    // gate the very first CREATE on hasContent.
+    if (!currentId && !hasContent(resume)) return;
     if (saving) return;
     if (needsReauth) return;
     if (autosaveInFlight.current) return;
@@ -372,6 +381,61 @@ export function useResumeEditor(resumeId) {
     const timer = setTimeout(() => { doSave(false); }, 2000);
     return () => clearTimeout(timer);
   }, [resume, isDirty, saving, needsReauth, currentId, hasContent, doSave]);
+
+  /* ── P0-2: backoff retry on autosave failure ───────────────────────
+   *
+   * When an autosave fails with a non-401 error (network drop, 5xx), the
+   * status shows "Save failed – retry" but the user had to click it.
+   * This schedules up to 3 automatic retries with exponential backoff
+   * (4s, 8s, 16s) before giving up and leaving the manual retry button.
+   * 401 (needsReauth) is NOT retried — it requires re-login.
+   */
+  const retryCount = useRef(0);
+  useEffect(() => {
+    if (!saveFailed || needsReauth) {
+      retryCount.current = 0;
+      return;
+    }
+    if (retryCount.current >= 3) return; // give up; manual retry button shown
+    const delay = Math.min(4000 * 2 ** retryCount.current, 16000);
+    retryCount.current += 1;
+    const t = setTimeout(() => { doSave(false); }, delay);
+    return () => clearTimeout(t);
+  }, [saveFailed, needsReauth, doSave]);
+
+  /* ── P0-2: flush pending changes on tab hide + route change ────────
+   *
+   * visibilitychange (tab switch/minimize): fire a save immediately (no
+   * debounce) if dirty — the user may not come back, and mobile browsers
+   * may discard the tab. beforeunload still warns on actual close.
+   *
+   * Route change (SPA navigation away from the builder): React Router's
+   * location changes before this component unmounts; we flush a
+   * fire-and-forget save here so navigating to /app/dashboard doesn't lose
+   * the last 2s of edits. State updates after unmount are no-ops in
+   * React 18, so only the API call (the part that matters) lands.
+   */
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.hidden && isDirty && !saving && !needsReauth && !autosaveInFlight.current) {
+        doSave(false);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, [isDirty, saving, needsReauth, doSave]);
+
+  const lastPath = useRef(null);
+  useEffect(() => {
+    const path = location.pathname;
+    if (lastPath.current === null) { lastPath.current = path; return; }
+    if (path !== lastPath.current) {
+      lastPath.current = path;
+      if (isDirty && !saving && !needsReauth && !autosaveInFlight.current) {
+        doSave(false); // fire-and-forget flush on SPA route change
+      }
+    }
+  }, [location.pathname, isDirty, saving, needsReauth, doSave]);
 
   /* ── PHASE-1 DATA SAFETY: beforeunload warning while unsaved ──────
    *
@@ -507,28 +571,28 @@ export function useResumeEditor(resumeId) {
           <div className="grid gap-4 sm:grid-cols-2">
             <ValidatedInput id={`basics-fullName`} label="Full name" type="text"
               value={resume.fullName} onChange={(v) => top('fullName', v)}
-              placeholder="Sarah Mitchell" />
+              placeholder="Priya Sharma" />
             <ValidatedInput id={`basics-professionalTitle`} label="Professional title" type="text"
               value={resume.professionalTitle} onChange={(v) => top('professionalTitle', v)}
               placeholder="Senior Full-Stack Engineer" />
             <ValidatedInput id={`basics-email`} label="Email" type="email"
               value={resume.email} onChange={(v) => top('email', v)}
-              placeholder="sarah@example.com" />
+              placeholder="priya@example.com" />
             <ValidatedInput id={`basics-phone`} label="Phone" type="tel"
               value={resume.phone} onChange={(v) => top('phone', v)}
-              placeholder="+1 (415) 555-0132" />
+              placeholder="+91 98765 43210" />
             <ValidatedInput id={`basics-location`} label="Location / City" type="text"
               value={resume.location} onChange={(v) => top('location', v)}
-              placeholder="San Francisco, CA" />
+              placeholder="Chennai, Tamil Nadu" />
             <ValidatedInput id={`basics-linkedin`} label="LinkedIn URL" type="url"
               value={resume.linkedin} onChange={(v) => top('linkedin', v)}
-              placeholder="https://linkedin.com/in/sarahmitchell" />
+              placeholder="https://linkedin.com/in/priyasharma" />
             <ValidatedInput id={`basics-github`} label="GitHub URL" type="url"
               value={resume.github} onChange={(v) => top('github', v)}
-              placeholder="https://github.com/sarahmitchell" />
+              placeholder="https://github.com/priyasharma" />
             <ValidatedInput id={`basics-portfolio`} label="Portfolio URL" type="url"
               value={resume.portfolio} onChange={(v) => top('portfolio', v)}
-              placeholder="https://sarahmitchell.dev"
+              placeholder="https://priyasharma.dev"
               containerClassName="sm:col-span-2" />
           </div>
         </SectionCard>
@@ -581,10 +645,10 @@ export function useResumeEditor(resumeId) {
                   placeholder="Frontend Developer" />
                 <ValidatedInput id={`exp-${exp.id}-company`} label="Company" type="text"
                   value={exp.company} onChange={(v) => arr('experience', exp.id, 'company', v)}
-                  placeholder="Acme Technologies" />
+                  placeholder="Acme Technologies (India)" />
                 <ValidatedInput id={`exp-${exp.id}-location`} label="Location" type="text"
                   value={exp.location} onChange={(v) => arr('experience', exp.id, 'location', v)}
-                  placeholder="Chennai, India" />
+                  placeholder="Bengaluru, Karnataka" />
                 <EmploymentTypeSelect id={`exp-${exp.id}-employmentType`} label="Employment type"
                   value={exp.employmentType} onChange={(v) => arr('experience', exp.id, 'employmentType', v)} />
                 <MonthYearPicker idPrefix={`exp-${exp.id}-start`} label="Start date"

@@ -98,11 +98,14 @@ export const MonthYearPicker = ({
   const yearId = `${idPrefix}-year`;
   const presentId = `${idPrefix}-present`;
 
-  // Year options: current year back 50 years, plus current year + 5 forward
+  // Year options: current year back to 1960 (covers all working-age adults),
+  // plus current year + 5 forward for end-dates in the near future.
+  // P2-3: previously currentYear-50 (reached 1976 for 2026), which excluded
+  // anyone who started their career before 1976. 1960 is a safe floor.
   const currentYear = new Date().getFullYear();
   const years = useMemo(() => {
     const arr = [{ value: '', label: 'Year' }];
-    for (let y = currentYear + 5; y >= currentYear - 50; y--) {
+    for (let y = currentYear + 5; y >= 1960; y--) {
       arr.push({ value: String(y), label: String(y) });
     }
     return arr;

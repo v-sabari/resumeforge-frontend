@@ -85,6 +85,12 @@ export const PublicFeedbackSection = () => {
 
   const openModal = () => window.dispatchEvent(new Event('feedback:open'));
 
+  // P2-5: hide the entire section until real feedback entries exist. The old
+  // empty state ("Be the first to share feedback") read as a placeholder
+  // testimonials section, which undermined trust. The FeedbackButton (fixed
+  // bottom-right) still lets users submit feedback regardless.
+  if (!loading && !error && items.length === 0) return null;
+
   return (
     <section className="bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

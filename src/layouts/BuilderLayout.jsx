@@ -167,7 +167,11 @@ const BuilderLayoutInner = () => {
     if (minutes < 60) return `${minutes}m ago`;
     const hours = Math.floor(minutes / 60);
     if (hours < 24) return `${hours}h ago`;
-    return ts.toLocaleDateString();
+    // P2-4: unambiguous format ("6 Sep 2026") instead of toLocaleDateString()
+    // which produced "9/6/2026" (ambiguous M/D vs D/M). The explicit format
+    // is locale-independent and matches the brief.
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${ts.getDate()} ${months[ts.getMonth()]} ${ts.getFullYear()}`;
   };
 
   // `saving` covers both manual and autosave (autosave does NOT set saving,

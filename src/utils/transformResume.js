@@ -13,13 +13,24 @@
  * Any change to field mapping only ever needs to happen in ONE place per
  * codebase, and the two copies must be kept in sync (see
  * render-service/README.md for the sync procedure).
+ *
+ * P1-1: URL fields are normalized (https:// prepended, trimmed) and invalid
+ * email/phone are suppressed (blanked) so the preview and the exported PDF
+ * never render obviously-wrong contact details. The editor's ValidatedInput
+ * still shows the inline "fix this" error to guide the user.
  */
+import { normalizeUrl, isValidEmail, isValidPhone, isValidUrl } from './resumeValidation.js';
+
+const cleanUrl = (v) => (v ? normalizeUrl(v) : '');
+const cleanEmail = (v) => (v && isValidEmail(v) ? v : '');
+const cleanPhone = (v) => (v && isValidPhone(v) ? v : '');
+const cleanUrlField = (v) => (v && isValidUrl(v) ? cleanUrl(v) : '');
 
 export const normCerts = (arr = []) =>
   arr.map((c) =>
     typeof c === 'string'
       ? { name: c, issuer: '', year: '', credentialUrl: '' }
-      : { name: c?.name || '', issuer: c?.issuer || '', year: c?.year || '', credentialUrl: c?.credentialUrl || '' }
+      : { name: c?.name || '', issuer: c?.issuer || '', year: c?.year || '', credentialUrl: c?.credentialUrl ? cleanUrlField(c.credentialUrl) : '' }
   );
 
 export const buildTransformed = (resume, sectionsConfig) => ({
@@ -27,18 +38,22 @@ export const buildTransformed = (resume, sectionsConfig) => ({
   personalInfo: {
     fullName:  resume.fullName          || 'Your Name',
     title:     resume.professionalTitle || '',
-    email:     resume.email    || '',
-    phone:     resume.phone    || '',
+    // P1-1: suppress invalid email/phone so the preview/PDF don't render
+    // "not-an-email" / "abc123". The editor shows the inline validation error.
+    email:     cleanEmail(resume.email),
+    phone:     cleanPhone(resume.phone),
     location:  resume.location || '',
-    linkedin:  resume.linkedin  || '',
-    github:    resume.github    || '',
-    portfolio: resume.portfolio || '',
+    linkedin:  cleanUrlField(resume.linkedin),
+    github:    cleanUrlField(resume.github),
+    portfolio: cleanUrlField(resume.portfolio),
   },
   summary:    resume.summary || '',
   experience: (resume.experience || []).map((e) => ({
     position:       e.role           || '',
     company:        e.company        || '',
-    duration:       e.duration       || `${e.startDate||''} – ${e.endDate||'Present'}`.trim(),
+    // P1-1: hide the dangling "– Present" when there is no start date.
+    duration:       (!e.startDate && !e.endDate) ? ''
+                     : `${e.startDate||''} – ${e.endDate||'Present'}`.trim(),
     location:       e.location       || '',
     employmentType: e.employmentType || '',
     summary:        e.summary        || '',
@@ -56,8 +71,8 @@ export const buildTransformed = (resume, sectionsConfig) => ({
   projects: (resume.projects || []).map((p) => ({
     name:         p.name        || '',
     role:         p.role        || '',
-    link:         p.link        || '',
-    github:       p.github      || '',
+    link:         cleanUrlField(p.link),
+    github:       cleanUrlField(p.github),
     description:  p.description || '',
     technologies: p.techStack   || p.technologies || '',
     highlights:   p.highlights  || [],
