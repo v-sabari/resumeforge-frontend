@@ -2,20 +2,22 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
-  "rewrites": [
-    {
-      "source": "/api/render-pdf",
-      "destination": "/api/render-pdf"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "https://resumeforge-backend-9uj6.onrender.com/api/$1"
-    },
-    {
-      "source": "/((?!api/|assets/|.*\\..*).*)",
-      "destination": "/index.html"
-    }
-  ],
+  
+"rewrites": [
+  {
+    "source": "/api/render-pdf",
+    "destination": "/api/render-pdf"
+  },
+  {
+    "source": "/api/(.*)",
+    "destination": "https://resumeforge-backend-9uj6.onrender.com/api/$1"
+  },
+  {
+    "source": "/(.*)",
+    "destination": "/index.html"
+  }
+]
+,
   "headers": [
     {
       "source": "/(.*)",
